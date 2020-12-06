@@ -1,7 +1,9 @@
 package music;
 
+import util.MathUtils;
+
 /**
- * An object representing a musical Rhythm via a fraction of the duration and the number of units dividing up a whole note
+ * An object representing a musical rhythm via a fraction of the duration and the number of units dividing up a whole note
  * @author zrona
  */
 public class Rhythm{
@@ -16,19 +18,62 @@ public class Rhythm{
 	private int unit;
 	
 	/**
-	 * 
+	 * Create a new {@link Rhythm} with the given duration and unit
+	 * @param duration see {@link #duration}
+	 * @param unit see {@link #unit}
 	 */
-	public Rhythm(){ // TODO
-		
+	public Rhythm(int duration, int unit){
+		this.setDuration(duration);
+		this.setUnit(unit);
 	}
 	
 	/**
-	 * TODO rename?
-	 * Determine the length of this {@link Rhythm} based on the duration and unit 
-	 * @return The length
+	 * Get the duration of this {@link Rhythm}
+	 * @return The duration, see {@link #duration}
 	 */
-	public double getRatioLength(){ // TODO
-		return 1;
+	public int getDuration(){
+		return duration;
+	}
+	
+	/**
+	 * Set the duration of this {@link Rhythm}
+	 * @param duration The duration, see {@link #duration}
+	 */
+	public void setDuration(int duration){
+		this.duration = duration;
+	}
+
+	/**
+	 * Get the unit of this {@link Rhythm}
+	 * @return The unit, see {@link #unit}
+	 */
+	public int getUnit(){
+		return unit;
+	}
+
+	/**
+	 * Set the unit of this {@link Rhythm}
+	 * @param unit The unit, see {@link #unit}
+	 */
+	public void setUnit(int unit){
+		this.unit = unit;
+	}
+	
+	/**
+	 * Bring the {@link #duration} and {@link #unit} to their most simple form
+	 */
+	public void simplify(){
+		int divisor = MathUtils.gcd(this.getDuration(), this.getUnit());
+		this.setDuration(this.getDuration() / divisor);
+		this.setUnit(this.getUnit() / divisor);
+	}
+
+	/**
+	 * Determine the length of this {@link Rhythm} based on the duration and unit 
+	 * @return The length in terms of number of whole notes
+	 */
+	public double getLength(){
+		return (double)this.getDuration() / this.getUnit();
 	}
 	
 }
