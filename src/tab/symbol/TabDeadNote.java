@@ -8,7 +8,6 @@ import tab.TabString;
  * @author zrona
  */
 public class TabDeadNote extends TabSymbol{
-	
 
 	/**
 	 * Get the text representing this dead note

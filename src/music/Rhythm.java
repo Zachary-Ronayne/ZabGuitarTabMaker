@@ -6,9 +6,7 @@ package music;
  */
 public class Rhythm{
 	
-	/**
-	 * The amount of units of this {@link Rhythm} i.e. if this.units is 4, and this.duration is 1, then it is 1 quarter note
-	 */
+	/** The amount of units of this {@link Rhythm} i.e. if this.units is 4, and this.duration is 1, then it is 1 quarter note */
 	private int duration;
 	
 	/**
@@ -30,7 +28,6 @@ public class Rhythm{
 	 * @return The length
 	 */
 	public double getRatioLength(){ // TODO
-		// TODO
 		return 1;
 	}
 	

@@ -9,9 +9,7 @@ import tab.TabString;
  */
 public abstract class TabPitch extends TabSymbol{
 	
-	/**
-	 * The {@link Pitch} of this {@link TabPitch}, i.e. the musical note
-	 */
+	/** The {@link Pitch} of this {@link TabPitch}, i.e. the musical note */
 	private Pitch pitch;
 	
 	/**

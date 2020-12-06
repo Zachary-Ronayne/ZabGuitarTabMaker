@@ -9,9 +9,7 @@ import tab.TabString;
  */
 public abstract class TabSymbol{
 	
-	/**
-	 * The {@link TabModifier} used by this {@link TabSymbol}
-	 */
+	/** The {@link TabModifier} used by this {@link TabSymbol} */
 	private TabModifier modifier;
 	
 	/**

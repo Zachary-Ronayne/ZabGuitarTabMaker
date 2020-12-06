@@ -13,10 +13,27 @@ public class Pitch{
 	private int note;
 	
 	/**
-	 * TODO
+	 * Set the integer note of this Pitch
+	 * @param note
 	 */
-	public Pitch(){
-		
+	public Pitch(int note){
+		this.setNote(note);
+	}
+	
+	/**
+	 * Get the integer representing the {@link #note} of his {@link Pitch}
+	 * @return The integer
+	 */
+	public int getNote(){
+		return note;
+	}
+
+	/**
+	 * Set the integer representing the {@link #note} of his {@link Pitch}
+	 * @param note The integer
+	 */
+	public void setNote(int note){
+		this.note = note;
 	}
 
 	/**

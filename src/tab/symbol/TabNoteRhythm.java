@@ -8,9 +8,7 @@ import music.Rhythm;
  */
 public class TabNoteRhythm{
 	
-	/**
-	 * The {@link Rhythm} of this {@link TabNoteRhythm}
-	 */
+	/** The {@link Rhythm} of this {@link TabNoteRhythm} */
 	private Rhythm rhythm;
 	
 }

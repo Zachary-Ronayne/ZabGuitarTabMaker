@@ -6,9 +6,7 @@ package tab.symbol;
  */
 public class TabModifier{
 	
-	/**
-	 * The text modifier for a symbol
-	 */
+	/** The text modifier for a symbol */
 	private String modifier;
 	
 }
