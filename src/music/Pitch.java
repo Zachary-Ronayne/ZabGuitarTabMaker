@@ -23,7 +23,7 @@ public class Pitch{
 	 * Get the name of this pitch, i.e. if this note represents E4, then "E4" is returned
 	 * @return The pitch name
 	 */
-	public String getPitchName(){
+	public String getPitchName(){ // TODO
 		return "";
 	}
 	

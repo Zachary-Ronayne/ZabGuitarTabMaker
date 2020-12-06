@@ -18,9 +18,9 @@ public class Rhythm{
 	private int unit;
 	
 	/**
-	 * TODO
+	 * 
 	 */
-	public Rhythm(){
+	public Rhythm(){ // TODO
 		
 	}
 	
@@ -29,7 +29,7 @@ public class Rhythm{
 	 * Determine the length of this {@link Rhythm} based on the duration and unit 
 	 * @return The length
 	 */
-	public double getRatioLength(){
+	public double getRatioLength(){ // TODO
 		// TODO
 		return 1;
 	}
