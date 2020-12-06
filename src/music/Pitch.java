@@ -35,13 +35,22 @@ public class Pitch{
 	public void setNote(int note){
 		this.note = note;
 	}
+	
+	/**
+	 * Get the name of this pitch using sharps, i.e. if this note represents E4, then "E4" is returned
+	 * @return The pitch name
+	 */
+	public String getPitchName(){
+		return this.getPitchName(false);
+	}
 
 	/**
 	 * Get the name of this pitch, i.e. if this note represents E4, then "E4" is returned
+	 * @param useFlats true to represent relevant notes with flats, false for sharps
 	 * @return The pitch name
 	 */
-	public String getPitchName(){ // TODO
-		return "";
+	public String getPitchName(boolean useFlats){
+		return Music.intToNote(this.getNote(), useFlats);
 	}
 	
 }
