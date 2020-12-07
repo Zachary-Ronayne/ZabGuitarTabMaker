@@ -6,7 +6,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import util.UtilsTest;
+import util.testUtils.UtilsTest;
 
 public class TestRhythm{
 	

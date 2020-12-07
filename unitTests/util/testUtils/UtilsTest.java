@@ -1,4 +1,4 @@
-package util;
+package util.testUtils;
 
 public final class UtilsTest{
 	

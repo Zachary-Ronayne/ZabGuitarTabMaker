@@ -8,9 +8,13 @@ import tab.TabString;
  * @author zrona
  */
 public abstract class TabPitch extends TabSymbol{
-	
+
 	/** The {@link Pitch} of this {@link TabPitch}, i.e. the musical note */
 	private Pitch pitch;
+	
+	public TabPitch(TabPosition pos, TabModifier modifier){ // TODO add pitch
+		super(pos, modifier);
+	}
 	
 	/**
 	 * Get the symbol representing the pitch of this {@link TabPitch}
