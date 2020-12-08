@@ -69,4 +69,13 @@ public class TabString extends ArrayList<TabSymbol>{
 		return this.getTabNumber(tab.getPitch());
 	}
 	
+	/**
+	 * Create a {@link Pitch} which will be the note played on the given fret of this {@link TabString}
+	 * @param fret The fret number to use, can use 0 for open string, can also use negative numbers
+	 * @return The correct pitch
+	 */
+	public Pitch createPitch(int fret){
+		return new Pitch(this.getRootPitch().getNote() + fret);
+	}
+	
 }

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import music.Music;
 import music.Pitch;
 import tab.symbol.TabNote;
 
@@ -78,6 +79,15 @@ public class TestTabString{
 		assertEquals(5, string.getTabNumber(notes[6]), "Checking tab number is correctly found");
 		
 		assertEquals(-7, string.getTabNumber(negPitch), "Checking negative tab number is correctly found");
+	}
+
+	@Test
+	public void createPitch(){
+		assertEquals(Music.createNote(Music.E, 4), string.createPitch(0).getNote(), "Checking open string generates correct pitch");
+		assertEquals(Music.createNote(Music.F, 4), string.createPitch(1).getNote(), "Checking fret position generates correct pitch");
+		assertEquals(Music.createNote(Music.D, 4), string.createPitch(-2).getNote(), "Checking negative position generates correct pitch");
+		assertEquals(Music.createNote(Music.E, 5), string.createPitch(12).getNote(), "Checking high octave generates correct pitch");
+		assertEquals(Music.createNote(Music.E, 3), string.createPitch(-12).getNote(), "Checking low octave generates correct pitch");
 	}
 	
 	@AfterEach
