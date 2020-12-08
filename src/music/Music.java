@@ -135,6 +135,49 @@ public final class Music{
 	}
 	
 	/**
+	 * Get the pitch integer for the specified note.<br>
+	 * Specify using constants defined in {@link Music}<br>
+	 * Pitch is defined as: {@link Pitch#note}
+	 * @param note The String constant specifying the note
+	 * @param octave The octave to use, i.e. use 4 for the octave of middle C 
+	 * @return The pitch integer
+	 */
+	public static int createNote(String note, int octave){
+		if(note == null) throw new IllegalArgumentException("note must not be null");
+		
+		int p;
+		
+		switch(note){
+			case B_SHARP:	case C: 		p = 0; break;
+			case C_SHARP: 	case D_FLAT:	p = 1; break;
+			case D: 						p = 2; break;
+			case D_SHARP: 	case E_FLAT:	p = 3; break;
+			case E: 		case F_FLAT: 	p = 4; break;
+			case F: 		case E_SHARP: 	p = 5; break;
+			case F_SHARP:	case G_FLAT:	p = 6; break;
+			case G:							p = 7; break;
+			case G_SHARP:	case A_FLAT:	p = 8; break;
+			case A: 						p = 9; break;
+			case A_SHARP:	case B_FLAT:	p = 10; break;
+			case B:			case C_FLAT:	p = 11; break;
+			default: throw new IllegalArgumentException("createNote must be given a valid string");
+		}
+		// Take the octave and subtract 4 to bring middle C to equal 0, then multiply by 12 to make it an octave
+		return p + (octave - 4) * 12;
+	}
+	
+	/**
+	 * Get the pitch integer for the specified note, only for defined constants.<br>
+	 * Specify a note in the middle C octave (C4 through B4) using constants defined in {@link Music}<br>
+	 * Pitch is defined as: {@link Pitch#note}
+	 * @param note The String constant specifying the note
+	 * @return The pitch integer
+	 */
+	public static int createNote(String note){
+		return createNote(note, 4);
+	}
+	
+	/**
 	 * Instances of MusicConstants are not permitted
 	 */
 	private Music(){}
