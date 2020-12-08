@@ -15,6 +15,7 @@ public class TestRhythm{
 	private Rhythm third;
 	private Rhythm threeHalf;
 	private Rhythm fives;
+	private Rhythm simplify;
 	
 	@BeforeEach
 	public void setup(){
@@ -23,6 +24,7 @@ public class TestRhythm{
 		third = new Rhythm(1, 3);
 		threeHalf = new Rhythm(3, 2);
 		fives = new Rhythm(2, 5);
+		simplify = new Rhythm(10, 4);
 	}
 	
 	@Test
@@ -32,6 +34,8 @@ public class TestRhythm{
 		assertEquals(1, third.getDuration(), "Checking correct initilaized duration");
 		assertEquals(3, threeHalf.getDuration(), "Checking correct initilaized duration");
 		assertEquals(2, fives.getDuration(), "Checking correct initilaized duration");
+		
+		assertEquals(5, simplify.getDuration(), "Checking simplified initilaized duration");
 	}
 	
 	@Test
@@ -47,6 +51,8 @@ public class TestRhythm{
 		assertEquals(3, third.getUnit(), "Checking correct initilaized unit");
 		assertEquals(2, threeHalf.getUnit(), "Checking correct initilaized unit");
 		assertEquals(5, fives.getUnit(), "Checking correct initilaized unit");
+		
+		assertEquals(2, simplify.getUnit(), "Checking simplified initilaized unit");
 	}
 	
 	@Test

@@ -12,15 +12,53 @@ public abstract class TabPitch extends TabSymbol{
 	/** The {@link Pitch} of this {@link TabPitch}, i.e. the musical note */
 	private Pitch pitch;
 	
-	public TabPitch(TabPosition pos, TabModifier modifier){ // TODO add pitch
+	/**
+	 * Create a new {@link TabPitch} using the given values
+	 * @param pitch Initial value for {@link #pitch}
+	 * @param pos Initial value for {@link TabSymbol#pos}
+	 * @param modifier Initial value for {@link TabSymbol#modifier}
+	 */
+	public TabPitch(Pitch pitch, TabPosition pos, TabModifier modifier){
 		super(pos, modifier);
+		this.setPitch(pitch);
+	}
+
+	/**
+	 * Create a new {@link TabPitch} using the given values and no modifier
+	 * @param pitch Initial value for {@link #pitch}
+	 * @param pos Initial value for {@link TabSymbol#pos}
+	 */
+	public TabPitch(Pitch pitch, TabPosition pos){
+		this(pitch, pos, null);
 	}
 	
 	/**
-	 * Get the symbol representing the pitch of this {@link TabPitch}
+	 * Get the pitch of this {@link TabPitch}
+	 * @return See {@link #pitch}
 	 */
-	public String getSymbol(TabString string){ // TODO
-		return "";
+	public Pitch getPitch(){
+		return pitch;
+	}
+	
+	/**
+	 * Set the pitch of this {@link TabPitch}
+	 * @param pitch See {@link #pitch}
+	 */
+	public void setPitch(Pitch pitch){
+		this.pitch = pitch;
+	}
+
+	/**
+	 * Set the pitch of this {@link TabPitch} based on an integer
+	 * @param pitch The integer for see {@link #pitch}
+	 */
+	public void setPitch(int pitch){
+		this.pitch = new Pitch(pitch);
+	}
+	
+	/***/
+	public String getSymbol(TabString string){
+		return String.valueOf(string.getTabNumber(this.getPitch()));
 	}
 	
 }

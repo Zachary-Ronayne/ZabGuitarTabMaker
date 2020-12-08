@@ -1,10 +1,14 @@
 package tab.symbol;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import music.Pitch;
+import tab.TabString;
 
 public class TestTabSymbol{
 	
@@ -12,6 +16,7 @@ public class TestTabSymbol{
 	private TabSymbol symbol;
 	private TabPosition pos;
 	private TabModifier mod;
+	private TabString string;
 	
 	private TabPosition newPos;
 	private TabModifier newMod;
@@ -20,9 +25,14 @@ public class TestTabSymbol{
 	public void setup(){
 		newPos = new TabPosition(5);
 		newMod = new TabModifier("{", "}");
+		
 		pos = new TabPosition(3);
 		mod = new TabModifier("[", "]");
-		symbol = new TabNote(pos, mod);
+		string = new TabString(new Pitch(-4));
+		symbol = new TabSymbol(pos, mod){
+			@Override
+			public String getSymbol(TabString string){return "A";}
+		};
 	}
 	
 	@Test
@@ -49,10 +59,22 @@ public class TestTabSymbol{
 	
 	@Test
 	public void getModifiedSymbol(){
-		assertEquals("[]", symbol.getModifiedSymbol(null), "Checking modified symbol obtained");
+		assertEquals("[A]", symbol.getModifiedSymbol(string), "Checking modified symbol obtained");
 		
 		symbol.setModifier(newMod);
-		assertEquals("{}", symbol.getModifiedSymbol(null), "Checking modified symbol obtained after changing fields");
+		assertEquals("{A}", symbol.getModifiedSymbol(string), "Checking modified symbol obtained after changing fields");
+	}
+	
+	@Test
+	public void compareTo(){
+		TabSymbol c = new TabNote(0, 0);
+		assertTrue("Pos 0 should compare less than 0 for pos 3", c.compareTo(symbol) < 0);
+		
+		c.setPos(new TabPosition(4));
+		assertTrue("Pos 4 should compare greater than 0 for pos 3", c.compareTo(symbol) > 0);
+
+		c.setPos(new TabPosition(3));
+		assertTrue("Pos 3 should compare equal to 0 for pos 3", c.compareTo(symbol) == 0);
 	}
 	
 	@AfterEach

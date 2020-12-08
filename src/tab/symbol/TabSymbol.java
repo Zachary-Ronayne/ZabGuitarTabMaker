@@ -7,13 +7,13 @@ import tab.TabString;
  * A symbol used in a {@link Tab} to represent anything on a tab, i.e. fret numbers and dead notes
  * @author zrona
  */
-public abstract class TabSymbol{
+public abstract class TabSymbol implements Comparable<TabSymbol>{
 
 	/** The position of this {@link TabSymbol} on a {@link TabString} */
 	private TabPosition pos;
 	
 	/**
-	 * The {@link TabModifier} used by this {@link TabSymbol} to specify how it is played<br>
+	 * The {@link TabModifier} used by this {@link TabSymbol} to specify how it is played on an instrument<br>
 	 * Can be null to represent no modifier
 	 */
 	private TabModifier modifier;
@@ -74,6 +74,15 @@ public abstract class TabSymbol{
 	 */
 	public String getModifiedSymbol(TabString string){
 		return this.getModifier().modifySymbol(this.getSymbol(string));
+	}
+	
+	/***/
+	@Override
+	public int compareTo(TabSymbol t){
+		double p1 = this.getPos().getValue();
+		double p2 = t.getPos().getValue();
+		if(p1 < p2) return -1;
+		return (p1 > p2) ? 1 : 0;
 	}
 	
 }

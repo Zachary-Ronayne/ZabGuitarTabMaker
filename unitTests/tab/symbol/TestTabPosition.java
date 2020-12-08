@@ -17,13 +17,13 @@ public class TestTabPosition{
 	
 	@Test
 	public void getPosition(){
-		assertEquals(3, pos.getPosition(), "Checking position is initialized");
+		assertEquals(3, pos.getValue(), "Checking value is initialized");
 	}
 	
 	@Test
 	public void setPosition(){
 		pos.setPosition(2);
-		assertEquals(2, pos.getPosition(), "Checking position is set");
+		assertEquals(2, pos.getValue(), "Checking value is set");
 	}
 	
 	@AfterEach

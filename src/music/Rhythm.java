@@ -12,19 +12,21 @@ public class Rhythm{
 	private int duration;
 	
 	/**
-	 * The unit dividing up a whole note. If this value is 1, then this.duration represents a number of whole notes,
+	 * The unit dividing up a whole note. If this value is 1, then this.duration represents a number of whole notes, 
 	 * 	if this number is a 2, then this.duration represents a number of half notes
 	 */
 	private int unit;
 	
 	/**
-	 * Create a new {@link Rhythm} with the given duration and unit
+	 * Create a new {@link Rhythm} with the given duration and unit.<br>
+	 * Also simplifies the ratio of duration and unit if applicable
 	 * @param duration see {@link #duration}
 	 * @param unit see {@link #unit}
 	 */
 	public Rhythm(int duration, int unit){
 		this.setDuration(duration);
 		this.setUnit(unit);
+		this.simplify();
 	}
 	
 	/**

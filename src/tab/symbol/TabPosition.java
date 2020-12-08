@@ -8,31 +8,31 @@ import tab.Tab;
  */
 public class TabPosition{
 	
-	/** The position held by this {@link TabPosition} */
-	private double position;
+	/** The position held by this {@link TabPosition} representing the number of whole notes to where the position is */
+	private double value;
 	
 	/**
 	 * Create a new {@link TabPosition} with the given value
-	 * @param position The position to use
+	 * @param value See {@link #value}
 	 */
-	public TabPosition(double position){
-		this.setPosition(position);
+	public TabPosition(double value){
+		this.setPosition(value);
 	}
 	
 	/**
-	 * Get the {@link #position} of this {@link TabPosition}
-	 * @return The position
+	 * Get the {@link #value} of this {@link TabPosition}
+	 * @return The position value
 	 */
-	public double getPosition(){
-		return position;
+	public double getValue(){
+		return value;
 	}
 
 	/**
-	 * Set the {@link #position} of this {@link TabPosition}
+	 * Set the {@link #value} of this {@link TabPosition}
 	 * @param position The position
 	 */
 	public void setPosition(double position){
-		this.position = position;
+		this.value = position;
 	}
 	
 }
