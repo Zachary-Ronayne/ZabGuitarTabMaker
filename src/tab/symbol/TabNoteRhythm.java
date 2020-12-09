@@ -2,6 +2,7 @@ package tab.symbol;
 
 import music.Pitch;
 import music.Rhythm;
+import util.ObjectUtils;
 
 /**
  * An instantiation of a {@link TabPitch} with rhythmic information
@@ -33,6 +34,17 @@ public class TabNoteRhythm extends TabPitch{
 	public TabNoteRhythm(Pitch pitch, Rhythm rhythm, TabPosition pos){
 		this(pitch, rhythm, pos, null);
 	}
+	
+	/***/
+	@Override
+	public TabNoteRhythm copy(){
+		return new TabNoteRhythm(
+				this.getPitch().copy(),
+				this.getRhythm().copy(),
+				this.getPos().copy(),
+				this.getModifier().copy()
+		);
+	}
 
 	/**
 	 * Create a new {@link TabNoteRhythm} using the given values and no modifier
@@ -58,5 +70,14 @@ public class TabNoteRhythm extends TabPitch{
 	 */
 	public void setRhythm(Rhythm rhythm){
 		this.rhythm = rhythm;
+	}
+
+	/***/
+	@Override
+	public boolean equals(Object obj){
+		if(!ObjectUtils.isType(obj, this.getClass())) return false;
+		TabNoteRhythm n = (TabNoteRhythm)obj;
+		return	super.equals(obj) &&
+				this.getRhythm().equals(n.getRhythm());
 	}
 }

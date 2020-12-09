@@ -1,5 +1,7 @@
 package tab.symbol;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.AfterEach;
@@ -50,6 +52,13 @@ public class TestTabNoteRhythm{
 		assertEquals(3, noteValues.getPos().getValue(), "Checking pos initialized for values constructor");
 		assertEquals(null, noteValues.getModifier(), "Checking modifier null for values constructor");
 	}
+
+	@Test
+	public void copy(){
+		TabNoteRhythm copy = note.copy();
+		assertTrue("Checking copy is equal to the source object", copy.equals(note));
+		assertTrue("Checking copy is not the same as the source object", copy != note);
+	}
 	
 	@Test
 	public void getRhythm(){
@@ -60,6 +69,15 @@ public class TestTabNoteRhythm{
 	public void setRhythm(){
 		note.setRhythm(newRhythm);
 		assertEquals(newRhythm, note.getRhythm(), "Checking rhythm set");
+	}
+	@Test
+	public void equals(){
+		TabNoteRhythm n = new TabNoteRhythm(pitch, rhythm, pos, mod);
+		assertFalse("Checking objects are not the same object", n == note);
+		assertTrue("Checking objects are equal", n.equals(note));
+		
+		n.setRhythm(new Rhythm(20, 10));
+		assertFalse("Checking objects are not equal", n.equals(note));
 	}
 	
 	@AfterEach

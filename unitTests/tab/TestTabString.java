@@ -1,5 +1,7 @@
 package tab;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.AfterEach;
@@ -35,6 +37,13 @@ public class TestTabString{
 				new TabNote(9, 6),
 		};
 		negPitch = new Pitch(-3);
+	}
+
+	@Test
+	public void copy(){
+		TabString copy = string.copy();
+		assertTrue("Checking copy is equal to the source object", copy.equals(string));
+		assertTrue("Checking copy is not the same as the source object", copy != string);
 	}
 	
 	@Test
@@ -88,6 +97,27 @@ public class TestTabString{
 		assertEquals(Music.createNote(Music.D, 4), string.createPitch(-2).getNote(), "Checking negative position generates correct pitch");
 		assertEquals(Music.createNote(Music.E, 5), string.createPitch(12).getNote(), "Checking high octave generates correct pitch");
 		assertEquals(Music.createNote(Music.E, 3), string.createPitch(-12).getNote(), "Checking low octave generates correct pitch");
+	}
+
+	@Test
+	public void equals(){
+		TabString s = new TabString(pitch);
+		s.add(notes[0]);
+		s.add(notes[1]);
+		string.add(notes[0]);
+		string.add(notes[1]);
+		assertFalse("Checking objects are not the same object", s == string);
+		assertTrue("Checking objects are equal", s.equals(string));
+		
+		s.setRootPitch(newPitch);
+		assertFalse("Checking objects are not equal", s.equals(string));
+		
+		s.setRootPitch(pitch);
+		assertTrue("Checking objects are equal", s.equals(string));
+		s.remove(notes[0]);
+		assertFalse("Checking objects are not equal", s.equals(string));
+		s.add(notes[0]);
+		assertTrue("Checking objects are equal", s.equals(string));
 	}
 	
 	@AfterEach

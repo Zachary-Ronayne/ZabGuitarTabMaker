@@ -1,10 +1,13 @@
 package tab.symbol;
 
+import util.Copyable;
+import util.ObjectUtils;
+
 /**
  * An object tracking the modifier for a symbol, i.e. for hammer ons, pull offs, slides, and so on
  * @author zrona
  */
-public class TabModifier{
+public class TabModifier implements Copyable<TabModifier>{
 	
 	/** The text modifier which goes before symbol */
 	private String before;
@@ -20,6 +23,12 @@ public class TabModifier{
 	public TabModifier(String before, String after){
 		this.setBefore(before);
 		this.setAfter(after);
+	}
+	
+	/***/
+	@Override
+	public TabModifier copy(){
+		return new TabModifier(this.getBefore(), this.getAfter());
 	}
 	
 	/**
@@ -62,5 +71,14 @@ public class TabModifier{
 	public String modifySymbol(String s){
 		return this.getBefore() + s + this.getAfter();
 	}
-	
+
+	/***/
+	@Override
+	public boolean equals(Object obj){
+		if(!ObjectUtils.isType(obj, this.getClass())) return false;
+		TabModifier m = (TabModifier)obj;
+		return	super.equals(obj) ||
+				this.getBefore().equals(m.getBefore()) &&
+				this.getAfter().equals(m.getAfter());
+	}
 }

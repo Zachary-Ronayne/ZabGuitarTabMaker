@@ -1,5 +1,7 @@
 package tab.symbol;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.AfterEach;
@@ -20,15 +22,26 @@ public class TestTabPitch{
 	private TabPitch noteNoMod;
 	private TabString string;
 	
+	private class TestT extends TabPitch{
+		public TestT(Pitch pitch, TabPosition pos, TabModifier mod){
+			super(pitch, pos, mod);
+		}
+		@Override
+		public TabSymbol copy(){return this;}
+	}
+	
 	@BeforeEach
 	public void setup(){
 		pitch = new Pitch(4);
 		newPitch = new Pitch(2);
 		pos = new TabPosition(2);
 		mod = new TabModifier("{", "}");
-		note = new TabPitch(pitch, pos, mod){};
+		note = new TestT(pitch, pos, mod);
 		
-		noteNoMod = new TabPitch(pitch, pos){};
+		noteNoMod = new TabPitch(pitch, pos){
+			@Override
+			public TabSymbol copy(){return this;}
+		};
 		string = new TabString(new Pitch(4));
 	}
 	
@@ -64,6 +77,17 @@ public class TestTabPitch{
 		
 		note.setPitch(2);
 		assertEquals("-2", note.getSymbol(string), "Checking correct symbol is found");
+	}
+	
+	@Test
+	public void equals(){
+		TabPitch n = new TestT(pitch, pos, mod);
+		
+		assertFalse("Checking objects are not the same object", n == note);
+		assertTrue("Checking objects are equal", n.equals(note));
+		
+		n.setPitch(new Pitch(0));
+		assertFalse("Checking objects are not equal", n.equals(note));
 	}
 	
 	@AfterEach

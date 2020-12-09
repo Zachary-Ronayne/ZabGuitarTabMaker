@@ -1,12 +1,14 @@
 package music;
 
+import util.Copyable;
 import util.MathUtils;
+import util.ObjectUtils;
 
 /**
  * An object representing a musical rhythm via a fraction of the duration and the number of units dividing up a whole note
  * @author zrona
  */
-public class Rhythm{
+public class Rhythm implements Copyable<Rhythm>{
 	
 	/** The amount of units of this {@link Rhythm} i.e. if this.units is 4, and this.duration is 1, then it is 1 quarter note */
 	private int duration;
@@ -27,6 +29,12 @@ public class Rhythm{
 		this.setDuration(duration);
 		this.setUnit(unit);
 		this.simplify();
+	}
+	
+	/***/
+	@Override
+	public Rhythm copy(){
+		return new Rhythm(this.getDuration(), this.getUnit());
 	}
 	
 	/**
@@ -77,5 +85,14 @@ public class Rhythm{
 	public double getLength(){
 		return (double)this.getDuration() / this.getUnit();
 	}
-	
+
+	/***/
+	@Override
+	public boolean equals(Object obj){
+		if(!ObjectUtils.isType(obj, this.getClass())) return false;
+		Rhythm r = (Rhythm)obj;
+		return	super.equals(obj) ||
+				this.getDuration() == r.getDuration() &&
+				this.getUnit() == r.getUnit();
+	}
 }

@@ -6,12 +6,14 @@ import music.Pitch;
 import tab.symbol.TabPitch;
 import tab.symbol.TabSymbol;
 import util.ArrayUtils;
+import util.Copyable;
+import util.ObjectUtils;
 
 /**
  * A class representing one string of a tablature
  * @author zrona
  */
-public class TabString extends ArrayList<TabSymbol>{
+public class TabString extends ArrayList<TabSymbol> implements Copyable<TabString>{
 	private static final long serialVersionUID = 1L;
 
 	/** The {@link Pitch} which this {@link TabString} is tuned to, i.e. the note of this string when played open. */
@@ -24,6 +26,19 @@ public class TabString extends ArrayList<TabSymbol>{
 	public TabString(Pitch root){
 		super();
 		this.setRootPitch(root);
+	}
+	
+	/***/
+	@Override
+	public TabString copy(){
+		// Make a new TabString with the same root pitch
+		TabString string = new TabString(this.getRootPitch().copy());
+		
+		// Copy over each of the 
+		for(TabSymbol s: this){
+			string.add(s.copy());
+		}
+		return string;
 	}
 	
 	/**
@@ -76,6 +91,15 @@ public class TabString extends ArrayList<TabSymbol>{
 	 */
 	public Pitch createPitch(int fret){
 		return new Pitch(this.getRootPitch().getNote() + fret);
+	}
+
+	/***/
+	@Override
+	public boolean equals(Object obj){
+		if(!ObjectUtils.isType(obj, this.getClass())) return false;
+		TabString s = (TabString)obj;
+		return	super.equals(obj) &&
+				this.getRootPitch().equals(s.getRootPitch());
 	}
 	
 }

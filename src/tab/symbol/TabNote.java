@@ -35,5 +35,11 @@ public class TabNote extends TabPitch{
 	public TabNote(int pitch, double pos){
 		this(new Pitch(pitch), new TabPosition(pos));
 	}
+	
+	/***/
+	@Override
+	public TabNote copy(){
+		return new TabNote(this.getPitch().copy(), this.getPos().copy(), this.getModifier().copy());
+	}
 
 }

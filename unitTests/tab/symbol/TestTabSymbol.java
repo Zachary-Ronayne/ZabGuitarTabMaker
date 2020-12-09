@@ -1,5 +1,6 @@
 package tab.symbol;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -21,6 +22,16 @@ public class TestTabSymbol{
 	private TabPosition newPos;
 	private TabModifier newMod;
 	
+	private class TestT extends TabSymbol{
+		public TestT(TabPosition pos, TabModifier modifier){
+			super(pos, modifier);
+		}
+		@Override
+		public String getSymbol(TabString string){return "A";}
+		@Override
+		public TabSymbol copy(){return this;}
+	}
+	
 	@BeforeEach
 	public void setup(){
 		newPos = new TabPosition(5);
@@ -29,10 +40,7 @@ public class TestTabSymbol{
 		pos = new TabPosition(3);
 		mod = new TabModifier("[", "]");
 		string = new TabString(new Pitch(-4));
-		symbol = new TabSymbol(pos, mod){
-			@Override
-			public String getSymbol(TabString string){return "A";}
-		};
+		symbol = new TestT(pos, mod);
 	}
 	
 	@Test
@@ -75,6 +83,21 @@ public class TestTabSymbol{
 
 		c.setPos(new TabPosition(3));
 		assertTrue("Pos 3 should compare equal to 0 for pos 3", c.compareTo(symbol) == 0);
+	}
+
+	@Test
+	public void equals(){
+		TabSymbol s = new TestT(pos, mod);
+		assertFalse("Checking objects are not the same object", s == symbol);
+		assertTrue("Checking objects are equal", s.equals(symbol));
+		
+		s.setPos(new TabPosition(4));
+		assertFalse("Checking objects are not equal", s.equals(symbol));
+
+		s.setPos(pos);
+		assertTrue("Checking objects are equal", s.equals(symbol));
+		s.setModifier(new TabModifier("a", "b"));
+		assertFalse("Checking objects are not equal", s.equals(symbol));
 	}
 	
 	@AfterEach

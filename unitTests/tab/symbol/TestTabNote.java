@@ -1,5 +1,6 @@
 package tab.symbol;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.AfterEach;
@@ -42,6 +43,13 @@ public class TestTabNote{
 		assertEquals(3, noteValues.getPitch().getNote(), "Checking pitch initialized in values constructor");
 		assertEquals(2, noteValues.getPos().getValue(), "Checking position initialized in values constructor");
 		assertEquals(null, noteValues.getModifier(), "Checking modifier null in values constructor");
+	}
+	
+	@Test
+	public void copy(){
+		TabNote copy = note.copy();
+		assertTrue("Checking copy is equal to the source object", copy.equals(note));
+		assertTrue("Checking copy is not the same as the source object", copy != note);
 	}
 	
 	@AfterEach

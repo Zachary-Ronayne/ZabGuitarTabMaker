@@ -1,5 +1,7 @@
 package music;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.AfterEach;
@@ -25,6 +27,13 @@ public class TestRhythm{
 		threeHalf = new Rhythm(3, 2);
 		fives = new Rhythm(2, 5);
 		simplify = new Rhythm(10, 4);
+	}
+	
+	@Test
+	public void copy(){
+		Rhythm copy = half.copy();
+		assertTrue("Checking copy is equal to the source object", copy.equals(half));
+		assertTrue("Checking copy is not the same as the source object", copy != half);
 	}
 	
 	@Test
@@ -89,6 +98,21 @@ public class TestRhythm{
 		whole.simplify();
 		assertEquals(7, whole.getDuration(), "Checking duration is unchanged");
 		assertEquals(5, whole.getUnit(), "Checking unit is unchanged");
+	}
+	
+	@Test
+	public void equals(){
+		Rhythm r = new Rhythm(1, 2);
+		assertFalse("Checking objects are not the same object", r == half);
+		assertTrue("Checking objects are equal", r.equals(half));
+		
+		r.setDuration(10);
+		assertFalse("Checking objects are not equal", r.equals(half));
+		
+		r.setDuration(1);
+		assertTrue("Checking objects are equal", r.equals(half));
+		r.setUnit(20);
+		assertFalse("Checking objects are not equal", r.equals(half));
 	}
 	
 	@AfterEach

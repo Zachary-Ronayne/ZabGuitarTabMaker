@@ -16,6 +16,12 @@ public class TabDeadNote extends TabSymbol{
 	public TabDeadNote(TabPosition pos){
 		super(pos, null);
 	}
+	
+	/***/
+	@Override
+	public TabDeadNote copy(){
+		return new TabDeadNote(this.getPos());
+	}
 
 	/**
 	 * Get the text representing this dead note

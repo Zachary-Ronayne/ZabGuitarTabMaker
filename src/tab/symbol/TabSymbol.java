@@ -2,12 +2,14 @@ package tab.symbol;
 
 import tab.Tab;
 import tab.TabString;
+import util.Copyable;
+import util.ObjectUtils;
 
 /**
  * A symbol used in a {@link Tab} to represent anything on a tab, i.e. fret numbers and dead notes
  * @author zrona
  */
-public abstract class TabSymbol implements Comparable<TabSymbol>{
+public abstract class TabSymbol implements Comparable<TabSymbol>, Copyable<TabSymbol>{
 
 	/** The position of this {@link TabSymbol} on a {@link TabString} */
 	private TabPosition pos;
@@ -73,7 +75,9 @@ public abstract class TabSymbol implements Comparable<TabSymbol>{
 	 * @return The text
 	 */
 	public String getModifiedSymbol(TabString string){
-		return this.getModifier().modifySymbol(this.getSymbol(string));
+		String symbol = this.getSymbol(string);
+		if(this.getModifier() == null) return symbol;
+		return this.getModifier().modifySymbol(symbol);
 	}
 	
 	/***/
@@ -83,6 +87,18 @@ public abstract class TabSymbol implements Comparable<TabSymbol>{
 		double p2 = t.getPos().getValue();
 		if(p1 < p2) return -1;
 		return (p1 > p2) ? 1 : 0;
+	}
+
+	/***/
+	@Override
+	public boolean equals(Object obj){
+		if(!ObjectUtils.isType(obj, this.getClass())) return false;
+		TabSymbol s = (TabSymbol)obj;
+		TabModifier m1 = this.getModifier();
+		TabModifier m2 = s.getModifier();
+		return	super.equals(obj) ||
+				this.getPos().equals(s.getPos()) &&
+				(m1 == null && m2 == null || m1.equals(m2));
 	}
 	
 }

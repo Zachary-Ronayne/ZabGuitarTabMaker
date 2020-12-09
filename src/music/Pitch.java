@@ -1,10 +1,13 @@
 package music;
 
+import util.Copyable;
+import util.ObjectUtils;
+
 /**
  * An object representing an individual pitch in 12 tone equal temperament
  * @author zrona
  */
-public class Pitch{
+public class Pitch implements Copyable<Pitch>{
 	
 	/**
 	 * The number of semitones this {@link Pitch} is from middle C, i.e. C4
@@ -18,6 +21,12 @@ public class Pitch{
 	 */
 	public Pitch(int note){
 		this.setNote(note);
+	}
+	
+	/***/
+	@Override
+	public Pitch copy(){
+		return new Pitch(this.getNote());
 	}
 	
 	/**
@@ -51,6 +60,15 @@ public class Pitch{
 	 */
 	public String getPitchName(boolean useFlats){
 		return Music.intToNote(this.getNote(), useFlats);
+	}
+	
+	/***/
+	@Override
+	public boolean equals(Object obj){
+		if(!ObjectUtils.isType(obj, this.getClass())) return false;
+		Pitch p = (Pitch)obj;
+		return 	super.equals(obj) ||
+				this.getNote() == p.getNote();
 	}
 	
 }
