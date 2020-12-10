@@ -46,6 +46,23 @@ public class Pitch implements Copyable<Pitch>{
 	}
 	
 	/**
+	 * Does the same thing as {@link #tune(int)}.
+	 * Here for convenience
+	 * @param note The note to add
+	 */
+	public void addNote(int note){
+		this.tune(note);
+	}
+	
+	/**
+	 * Tune this pitch up or down by a number of semitones
+	 * @param change The change in semitones, use positive for higher pitch, negative for lower pitch
+	 */
+	public void tune(int change){
+		this.setNote(this.getNote() + change);
+	}
+	
+	/**
 	 * Get the name of this pitch using sharps, i.e. if this note represents E4, then "E4" is returned
 	 * @return The pitch name
 	 */

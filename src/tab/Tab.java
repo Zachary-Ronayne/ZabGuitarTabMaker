@@ -2,6 +2,7 @@ package tab;
 
 import java.util.ArrayList;
 
+import music.Pitch;
 import util.Copyable;
 import util.ObjectUtils;
 
@@ -62,6 +63,16 @@ public class Tab implements Copyable<Tab>{
 	 */
 	public void setStrings(ArrayList<TabString> strings){
 		this.strings = strings;
+	}
+	
+	/**
+	 * Get the note integer, as defined in {@link Pitch#note} of the root note of the specified string
+	 * @param string The index of the string, not the actual string number,
+	 * 	i.e. use 0 for the first string, 1 for the second string, etc.
+	 * @return The note integer
+	 */
+	public int getRootNote(int string){
+		return this.getStrings().get(string).getRootNote();
 	}
 
 	/***/

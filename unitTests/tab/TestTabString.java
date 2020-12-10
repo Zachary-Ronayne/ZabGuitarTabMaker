@@ -21,6 +21,8 @@ public class TestTabString{
 	
 	private TabNote[] notes;
 	
+	private TabString noteAndOctave;
+	
 	@BeforeEach
 	public void setup(){
 		newPitch = new Pitch(0);
@@ -37,6 +39,8 @@ public class TestTabString{
 				new TabNote(9, 6),
 		};
 		negPitch = new Pitch(-3);
+		
+		noteAndOctave = new TabString(Music.B, 3);
 	}
 
 	@Test
@@ -49,12 +53,22 @@ public class TestTabString{
 	@Test
 	public void getRootPitch(){
 		assertEquals(pitch, string.getRootPitch(), "Checking root pitch initialized");
+		
+		
+		assertTrue("Checking note and octave constructor generates correct root note",
+					noteAndOctave.getRootPitch().equals(new Pitch(-1)));
 	}
 	
 	@Test
 	public void setRootPitch(){
 		string.setRootPitch(newPitch);
 		assertEquals(newPitch, string.getRootPitch(), "Checking root pitch initialized");
+	}
+	
+	@Test
+	public void getRootNote(){
+		assertEquals(4, string.getRootNote(), "Checking correct root note is found");
+		assertEquals(-1, noteAndOctave.getRootNote(), "Checking correct root note is found");
 	}
 	
 	@Test

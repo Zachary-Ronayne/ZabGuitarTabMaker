@@ -42,6 +42,26 @@ public class TestPitch{
 	}
 	
 	@Test
+	public void addNote(){
+		c5.setNote(0);
+		c5.addNote(2);
+		assertEquals(2, c5.getNote(), "Checking correct note is set after adding");
+	}
+	
+	@Test
+	public void tune(){
+		c5.setNote(0);
+		c5.tune(4);
+		assertEquals(4, c5.getNote(), "Checking correct note is set after tuning");
+		
+		c5.tune(-3);
+		assertEquals(1, c5.getNote(), "Checking correct note is set after tuning");
+		
+		c5.tune(-10);
+		assertEquals(-9, c5.getNote(), "Checking correct note is set after tuning");
+	}
+	
+	@Test
 	public void getPitchName(){
 		assertEquals(Music.F_SHARP + "3", fSharp3.getPitchName(), "Checking correct note name is found");
 		assertEquals(Music.G_FLAT + "3", fSharp3.getPitchName(true), "Checking correct note name is found as flat");

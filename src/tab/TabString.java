@@ -2,6 +2,7 @@ package tab;
 
 import java.util.ArrayList;
 
+import music.Music;
 import music.Pitch;
 import tab.symbol.TabPitch;
 import tab.symbol.TabSymbol;
@@ -28,13 +29,22 @@ public class TabString extends ArrayList<TabSymbol> implements Copyable<TabStrin
 		this.setRootPitch(root);
 	}
 	
+	/**
+	 * Create a new {@link TabString} with the given note and octave as the root note
+	 * @param note The note, defined by constants in {@link Music}
+	 * @param octave The octave number, i.e. use 4 for middle C
+	 */
+	public TabString(String note, int octave){
+		this(new Pitch(Music.createNote(note, octave)));
+	}
+	
 	/***/
 	@Override
 	public TabString copy(){
 		// Make a new TabString with the same root pitch
 		TabString string = new TabString(this.getRootPitch().copy());
 		
-		// Copy over each of the 
+		// Copy over each of the symbols
 		for(TabSymbol s: this){
 			string.add(s.copy());
 		}
@@ -55,6 +65,14 @@ public class TabString extends ArrayList<TabSymbol> implements Copyable<TabStrin
 	 */
 	public void setRootPitch(Pitch rootPitch){
 		this.rootPitch = rootPitch;
+	}
+	
+	/**
+	 * Get the note integer, as defined in {@link Pitch#note} of the root note of this string
+	 * @return The note integer
+	 */
+	public int getRootNote(){
+		return this.getRootPitch().getNote();
 	}
 
 	/**

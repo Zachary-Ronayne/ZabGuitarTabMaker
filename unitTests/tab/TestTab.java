@@ -17,16 +17,16 @@ public class TestTab{
 
 	private Tab tab;
 	private ArrayList<TabString> strings;
-	private TabString lowString;
 	private TabString highString;
+	private TabString lowString;
 	
 	@BeforeEach
 	public void setup(){
-		lowString = new TabString(new Pitch(Music.createNote(Music.C, 2)));
 		highString = new TabString(new Pitch(Music.createNote(Music.C, 3)));
+		lowString = new TabString(new Pitch(Music.createNote(Music.C, 2)));
 		strings = new ArrayList<TabString>();
-		strings.add(lowString);
 		strings.add(highString);
+		strings.add(lowString);
 		tab = new Tab(strings);
 	}
 	
@@ -52,14 +52,20 @@ public class TestTab{
 	@Test
 	public void equals(){
 		ArrayList<TabString> s = new ArrayList<TabString>();
-		s.add(lowString);
 		s.add(highString);
+		s.add(lowString);
 		Tab t = new Tab(s);
 		assertFalse("Checking objects are not the same object", t == tab);
 		assertTrue("Checking objects are equal", t.equals(tab));
 		
 		s.remove(lowString);
 		assertFalse("Checking objects are not equal", t.equals(tab));
+	}
+	
+	@Test
+	public void getRootNote(){
+		assertEquals(-12, tab.getRootNote(0), "Checking root note found");
+		assertEquals(-24, tab.getRootNote(1), "Checking root note found");
 	}
 	
 	@AfterEach
