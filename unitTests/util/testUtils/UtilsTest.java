@@ -19,7 +19,7 @@ public final class UtilsTest{
 	 * Utility for testing {@link Saveable} objects
 	 * Using a the {@link Saveable#save(PrintWriter)} method, simulate save the given object, 
 	 * 	and return a string representing the saved text.<br>
-	 * Automatically removes excess characters
+	 * Automatically removes excess \r characters
 	 * @param s The {@link Saveable} object
 	 * @return The string, or null if saving failed
 	 */

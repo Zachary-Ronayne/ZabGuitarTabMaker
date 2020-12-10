@@ -17,7 +17,7 @@ public class SettingString extends Setting<String>{
 	/***/
 	@Override
 	public void loadValue(Scanner reader) throws Exception{
-		this.setValue(reader.next());
+		this.setValue(reader.nextLine());
 	}
 	
 	/***/

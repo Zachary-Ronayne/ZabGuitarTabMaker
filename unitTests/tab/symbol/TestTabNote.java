@@ -1,5 +1,6 @@
 package tab.symbol;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import music.Pitch;
+import music.Rhythm;
 
 public class TestTabNote{
 
@@ -43,6 +45,37 @@ public class TestTabNote{
 		assertEquals(3, noteValues.getPitch().getNote(), "Checking pitch initialized in values constructor");
 		assertEquals(2, noteValues.getPos().getValue(), "Checking position initialized in values constructor");
 		assertEquals(null, noteValues.getModifier(), "Checking modifier null in values constructor");
+	}
+	
+	@Test
+	public void convertToRhythm(){
+		Rhythm r = new Rhythm(3, 8);
+		TabNoteRhythm n = note.convertToRhythm(r);
+		
+		assertTrue("Checking pitch is equal", n.getPitch().equals(note.getPitch()));
+		assertTrue("Checking pos is equal", n.getPos().equals(note.getPos()));
+		assertTrue("Checking modifier is equal", n.getModifier().equals(note.getModifier()));
+		assertTrue("Checking rhythm is the same as the set rhythm", n.getRhythm() == r);
+		
+		assertFalse("Checking pitch is not the same object", n.getPitch() == note.getPitch());
+		assertFalse("Checking pos is not the same object", n.getPos() == note.getPos());
+		assertFalse("Checking modifier is not the same object", n.getModifier() == note.getModifier());
+		
+
+		r = new Rhythm(3, 7);
+		n = note.convertToRhythm(r.getDuration(), r.getUnit());
+
+		assertTrue("Checking pitch is equal", n.getPitch().equals(note.getPitch()));
+		assertTrue("Checking pos is equal", n.getPos().equals(note.getPos()));
+		assertTrue("Checking modifier is equal", n.getModifier().equals(note.getModifier()));
+		assertTrue("Checking rhythm is equal, expected duration " + r.getDuration() + " and unit " + r.getUnit() +
+				   ", But got duration " + n.getRhythm().getDuration() + " and unit " + n.getRhythm().getUnit(),
+					n.getRhythm().equals(r));
+
+		assertFalse("Checking pitch is not the same object", n.getPitch() == note.getPitch());
+		assertFalse("Checking pos is not the same object", n.getPos() == note.getPos());
+		assertFalse("Checking modifier is not the same object", n.getModifier() == note.getModifier());
+		assertFalse("Checking rhythm is not the same as the set rhythm", n.getRhythm() == r);
 	}
 	
 	@Test

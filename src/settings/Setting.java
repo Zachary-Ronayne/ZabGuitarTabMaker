@@ -3,12 +3,12 @@ package settings;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
-import appUtils.Settings;
+import appUtils.ZabSettings;
 import util.ObjectUtils;
 import util.Saveable;
 
 /**
- * A class representing a setting used by {@link Settings}
+ * A class representing a setting used by {@link ZabSettings}
  * @param T the type of object used by this setting
  * @author zrona
  */

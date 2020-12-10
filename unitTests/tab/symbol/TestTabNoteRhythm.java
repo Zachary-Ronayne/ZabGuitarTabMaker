@@ -70,6 +70,19 @@ public class TestTabNoteRhythm{
 		note.setRhythm(newRhythm);
 		assertEquals(newRhythm, note.getRhythm(), "Checking rhythm set");
 	}
+	
+	@Test
+	public void convertToNoRhythm(){
+		TabNote n = note.convertToNoRhythm();
+		assertTrue("Checking pitch is equal", n.getPitch().equals(note.getPitch()));
+		assertTrue("Checking pos is equal", n.getPos().equals(note.getPos()));
+		assertTrue("Checking modifier is equal", n.getModifier().equals(note.getModifier()));
+		
+		assertFalse("Checking pitch is not the same object", n.getPitch() == note.getPitch());
+		assertFalse("Checking pos is not the same object", n.getPos() == note.getPos());
+		assertFalse("Checking modifier is not the same object", n.getModifier() == note.getModifier());
+	}
+	
 	@Test
 	public void equals(){
 		TabNoteRhythm n = new TabNoteRhythm(pitch, rhythm, pos, mod);

@@ -178,6 +178,29 @@ public final class Music{
 	}
 	
 	/**
+	 * Get the {@link Pitch} for the specified note.<br>
+	 * Specify using constants defined in {@link Music}<br>
+	 * Pitch is defined as: {@link Pitch#note}
+	 * @param note The String constant specifying the note
+	 * @param octave The octave to use, i.e. use 4 for the octave of middle C 
+	 * @return The {@link Pitch}
+	 */
+	public static Pitch createPitch(String note, int octave){
+		return new Pitch(createNote(note, octave));
+	}
+	
+	/**
+	 * Get the {@link Pitch} for the specified note, only for defined constants.<br>
+	 * Specify a note in the middle C octave (C4 through B4) using constants defined in {@link Music}<br>
+	 * Pitch is defined as: {@link Pitch#note}
+	 * @param note The String constant specifying the note
+	 * @return The {@link Pitch}
+	 */
+	public static Pitch createPitch(String note){
+		return new Pitch(createNote(note));
+	}
+	
+	/**
 	 * Instances of MusicConstants are not permitted
 	 */
 	private Music(){}

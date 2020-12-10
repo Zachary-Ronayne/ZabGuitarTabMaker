@@ -1,6 +1,7 @@
 package tab.symbol;
 
 import music.Pitch;
+import music.Rhythm;
 
 /**
  * An instantiation of a {@link TabPitch} with no rhythmic information
@@ -34,6 +35,29 @@ public class TabNote extends TabPitch{
 	 */
 	public TabNote(int pitch, double pos){
 		this(new Pitch(pitch), new TabPosition(pos));
+	}
+	
+	/**
+	 * Create a new version of this {@link TabNote} as a {@link TabNoteRhythm} which uses the given {@link Rhythm}
+	 * @param r The rhythm, uses the object itself, not a copy
+	 * @return The new {@link TabNoteRhythm}
+	 */
+	public TabNoteRhythm convertToRhythm(Rhythm r){
+		return new TabNoteRhythm(
+				this.getPitch().copy(), r,
+				this.getPos().copy(),
+				this.getModifier().copy()
+		);
+	}
+	
+	/**
+	 * Create a new version of this {@link TabNote} as a {@link TabNoteRhythm} which uses the given {@link Rhythm}
+	 * @param duraiton See {@link Rhythm#duration}
+	 * @param unit See {@link Rhythm#unit}
+	 * @return The new {@link TabNoteRhythm}
+	 */
+	public TabNoteRhythm convertToRhythm(int duraiton, int unit){
+		return convertToRhythm(new Rhythm(duraiton, unit));
 	}
 	
 	/***/

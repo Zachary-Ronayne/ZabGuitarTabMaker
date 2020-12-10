@@ -71,6 +71,14 @@ public class TabNoteRhythm extends TabPitch{
 	public void setRhythm(Rhythm rhythm){
 		this.rhythm = rhythm;
 	}
+	
+	/**
+	 * Convert this {@link TabNoteRhythm} to a version with no rhythmic information as a {@link TabNote}
+	 * @return The {@link TabNote}
+	 */
+	public TabNote convertToNoRhythm(){
+		return new TabNote(this.getPitch().copy(), this.getPos().copy(), this.getModifier().copy());
+	}
 
 	/***/
 	@Override

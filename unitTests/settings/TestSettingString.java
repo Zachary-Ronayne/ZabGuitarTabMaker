@@ -19,7 +19,7 @@ public class TestSettingString{
 	
 	@BeforeEach
 	public void setup(){
-		setting = new SettingString("q");
+		setting = new SettingString("q z");
 	}
 	
 	@Test
@@ -34,15 +34,15 @@ public class TestSettingString{
 	
 	@Test
 	public void loadValue(){
-		Scanner read = new Scanner("word");
+		Scanner read = new Scanner("word z");
 		setting.load(read);
-		assertEquals("word", setting.getValue(), "Checking value loaded from scanner");
+		assertEquals("word z", setting.getValue(), "Checking value loaded from scanner");
 	}
 	
 	@Test
 	public void saveValue() throws FileNotFoundException{
 		String result = UtilsTest.testSave(setting);
-		assertEquals("q\n", result, "Checking value saved by writer");
+		assertEquals("q z\n", result, "Checking value saved by writer");
 	}
 	
 	@AfterEach

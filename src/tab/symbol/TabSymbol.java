@@ -11,7 +11,7 @@ import util.ObjectUtils;
  */
 public abstract class TabSymbol implements Comparable<TabSymbol>, Copyable<TabSymbol>{
 
-	/** The position of this {@link TabSymbol} on a {@link TabString} */
+	/** The position of this {@link TabSymbol} on a {@link TabString} where each integer is one whole note */
 	private TabPosition pos;
 	
 	/**

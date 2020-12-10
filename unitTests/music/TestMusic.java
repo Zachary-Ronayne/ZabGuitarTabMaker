@@ -1,5 +1,6 @@
 package music;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -173,6 +174,15 @@ public class TestMusic{
 		
 		assertEquals(12, Music.createNote(Music.C, 5), "Checking correct note is found with high octave");
 		assertEquals(18, Music.createNote(Music.F_SHARP, 5), "Checking correct note is found with high octave");
+	}
+	
+	public void createPitch(){
+		assertTrue("Checking pitch is generated with no octave", Music.createPitch(Music.C).equals(new Pitch(0)));
+		assertTrue("Checking pitch is generated with no octave", Music.createPitch(Music.E).equals(new Pitch(4)));
+		
+		assertTrue("Checking pitch is generated with octave", Music.createPitch(Music.C, 4).equals(new Pitch(0)));
+		assertTrue("Checking pitch is generated with octave", Music.createPitch(Music.C, 5).equals(new Pitch(12)));
+		assertTrue("Checking pitch is generated with octave", Music.createPitch(Music.E, 3).equals(new Pitch(-8)));
 	}
 	
 	@AfterEach
