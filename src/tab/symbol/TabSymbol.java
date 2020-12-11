@@ -1,5 +1,7 @@
 package tab.symbol;
 
+import music.NotePosition;
+import music.TimeSignature;
 import tab.Tab;
 import tab.TabString;
 import util.Copyable;
@@ -11,8 +13,8 @@ import util.ObjectUtils;
  */
 public abstract class TabSymbol implements Comparable<TabSymbol>, Copyable<TabSymbol>{
 
-	/** The position of this {@link TabSymbol} on a {@link TabString} where each integer is one whole note */
-	private TabPosition pos;
+	/** The position {@link NotePosition} object of this {@link TabSymbol} on a {@link TabString}*/
+	private NotePosition pos;
 	
 	/**
 	 * The {@link TabModifier} used by this {@link TabSymbol} to specify how it is played on an instrument<br>
@@ -25,7 +27,7 @@ public abstract class TabSymbol implements Comparable<TabSymbol>, Copyable<TabSy
 	 * @param pos The {@link #pos}
 	 * @param modifier The {@link #modifier}
 	 */
-	public TabSymbol(TabPosition pos, TabModifier modifier){
+	public TabSymbol(NotePosition pos, TabModifier modifier){
 		this.setPos(pos);
 		this.setModifier(modifier);
 	}
@@ -34,7 +36,7 @@ public abstract class TabSymbol implements Comparable<TabSymbol>, Copyable<TabSy
 	 * Get the {@link #pos} of this {@link TabSymbol}
 	 * @return The position
 	 */
-	public TabPosition getPos(){
+	public NotePosition getPos(){
 		return pos;
 	}
 
@@ -42,7 +44,7 @@ public abstract class TabSymbol implements Comparable<TabSymbol>, Copyable<TabSy
 	 * Set the {@link #pos} of this {@link TabSymbol}
 	 * @param pos The position
 	 */
-	public void setPos(TabPosition pos){
+	public void setPos(NotePosition pos){
 		this.pos = pos;
 	}
 
@@ -69,6 +71,7 @@ public abstract class TabSymbol implements Comparable<TabSymbol>, Copyable<TabSy
 	 */
 	public abstract String getSymbol(TabString string);
 
+	
 	/**
 	 * Get the text representing this symbol with all modifiers
 	 * @param string The {@link TabString} to base the symbol off of
@@ -78,6 +81,16 @@ public abstract class TabSymbol implements Comparable<TabSymbol>, Copyable<TabSy
 		String symbol = this.getSymbol(string);
 		if(this.getModifier() == null) return symbol;
 		return this.getModifier().modifySymbol(symbol);
+	}
+	
+	/**
+	 * Quantize this {@link TabSymbol} position to the nearest place in a measure
+	 * @param sig The time signature to base the quantization off of
+	 * @param divisor The amount to divide up the units of a whole note.<br>
+	 * 	i.e. use 4 to quantize to quarter notes, use 6 to quantize to dotted quarter notes, etc
+	 */
+	public void quantize(TimeSignature sig, int divisor){
+		this.getPos().quantize(sig, divisor);
 	}
 	
 	/***/

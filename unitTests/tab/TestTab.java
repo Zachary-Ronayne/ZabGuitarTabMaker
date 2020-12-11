@@ -12,10 +12,15 @@ import org.junit.jupiter.api.Test;
 
 import music.Music;
 import music.Pitch;
+import music.TimeSignature;
+import tab.symbol.TabNote;
+import util.testUtils.UtilsTest;
 
 public class TestTab{
 
 	private Tab tab;
+	private Tab tabDefault;
+	private Tab tabSpecific;
 	private ArrayList<TabString> strings;
 	private TabString highString;
 	private TabString lowString;
@@ -28,6 +33,9 @@ public class TestTab{
 		strings.add(highString);
 		strings.add(lowString);
 		tab = new Tab(strings);
+		
+		tabDefault = new Tab();
+		tabSpecific = new Tab(strings, new TimeSignature(3, 2));
 	}
 	
 	@Test
@@ -50,6 +58,35 @@ public class TestTab{
 	}
 	
 	@Test
+	public void getTimeSignature(){
+		assertEquals(new TimeSignature(4, 4), tab.getTimeSignature(), "Checking time signature initialized");
+		assertEquals(new TimeSignature(4, 4), tabDefault.getTimeSignature(), "Checking time signature initialized");
+		assertEquals(new TimeSignature(3, 2), tabSpecific.getTimeSignature(), "Checking time signature initialized");
+	}
+	
+	@Test
+	public void setTimeSignature(){
+		TimeSignature t = new TimeSignature(5, 4);
+		tab.setTimeSignature(t);
+		assertEquals(t, tab.getTimeSignature(), "Checking time signature set");
+	}
+	
+	@Test
+	public void quantize(){
+		lowString.add(new TabNote(0, 1.1));
+		highString.add(new TabNote(0, 2.1));
+		tab.quantize(1);
+		assertEquals(1, lowString.get(0).getPos().getValue(), UtilsTest.DELTA, "Checking string is quantized");
+		assertEquals(2, highString.get(0).getPos().getValue(), UtilsTest.DELTA, "Checking string is quantized");
+	}
+	
+	@Test
+	public void getRootNote(){
+		assertEquals(-12, tab.getRootNote(0), "Checking root note found");
+		assertEquals(-24, tab.getRootNote(1), "Checking root note found");
+	}
+	
+	@Test
 	public void equals(){
 		ArrayList<TabString> s = new ArrayList<TabString>();
 		s.add(highString);
@@ -60,12 +97,6 @@ public class TestTab{
 		
 		s.remove(lowString);
 		assertFalse("Checking objects are not equal", t.equals(tab));
-	}
-	
-	@Test
-	public void getRootNote(){
-		assertEquals(-12, tab.getRootNote(0), "Checking root note found");
-		assertEquals(-24, tab.getRootNote(1), "Checking root note found");
 	}
 	
 	@AfterEach

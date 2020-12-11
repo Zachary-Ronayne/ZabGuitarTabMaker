@@ -7,14 +7,16 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import music.NotePosition;
+
 public class TestTabDeadNote{
 	
 	private TabDeadNote note;
-	private TabPosition pos;
+	private NotePosition pos;
 	
 	@BeforeEach
 	public void setup(){
-		pos = new TabPosition(4);
+		pos = new NotePosition(4);
 		note = new TabDeadNote(pos);
 	}
 	

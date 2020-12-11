@@ -8,6 +8,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import music.NotePosition;
 import music.Pitch;
 import music.Rhythm;
 
@@ -18,13 +19,13 @@ public class TestTabNote{
 	private TabNote noteValues;
 	
 	private Pitch pitch;
-	private TabPosition pos;
+	private NotePosition pos;
 	private TabModifier mod;
 	
 	@BeforeEach
 	public void setup(){
 		pitch = new Pitch(2);
-		pos = new TabPosition(1);
+		pos = new NotePosition(1);
 		mod = new TabModifier("(", ")");
 		
 		note = new TabNote(pitch, pos, mod);

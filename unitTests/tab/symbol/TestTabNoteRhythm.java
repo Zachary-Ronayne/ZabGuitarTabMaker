@@ -8,6 +8,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import music.NotePosition;
 import music.Pitch;
 import music.Rhythm;
 
@@ -16,7 +17,7 @@ public class TestTabNoteRhythm{
 	private TabNoteRhythm note;
 	private Pitch pitch;
 	private Rhythm rhythm;
-	private TabPosition pos;
+	private NotePosition pos;
 	private TabModifier mod;
 	
 	private Rhythm newRhythm;
@@ -30,7 +31,7 @@ public class TestTabNoteRhythm{
 		
 		pitch = new Pitch(3);
 		rhythm = new Rhythm(1, 2);
-		pos = new TabPosition(2);
+		pos = new NotePosition(2);
 		mod = new TabModifier("[", "]");
 		note = new TabNoteRhythm(pitch, rhythm, pos, mod);
 		

@@ -3,12 +3,12 @@ package tab;
 import appUtils.ZabAppSettings;
 import appUtils.ZabSettings;
 import music.Music;
+import music.NotePosition;
 import music.Pitch;
 import music.Rhythm;
 import tab.symbol.TabModifier;
 import tab.symbol.TabNote;
 import tab.symbol.TabNoteRhythm;
-import tab.symbol.TabPosition;
 import tab.symbol.TabSymbol;
 
 /**
@@ -26,7 +26,7 @@ public final class TabFactory{
 	 * @return The {@link TabNote}
 	 */
 	public static TabNote modifiedPitch(String note, int octave, double pos, TabModifier mod){
-		return new TabNote(new Pitch(Music.createNote(note, octave)), new TabPosition(pos), mod);
+		return new TabNote(new Pitch(Music.createNote(note, octave)), new NotePosition(pos), mod);
 	}
 
 	/**
@@ -52,7 +52,7 @@ public final class TabFactory{
 	 */
 	public static TabNote modifiedFret(TabString string, int fret, double pos, TabModifier mod){
 		Pitch p = string.createPitch(fret);
-		return new TabNote(p, new TabPosition(pos), mod);
+		return new TabNote(p, new NotePosition(pos), mod);
 	}
 	
 	/**

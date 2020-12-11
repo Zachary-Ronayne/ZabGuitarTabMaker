@@ -8,6 +8,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import music.NotePosition;
 import music.Pitch;
 import tab.TabString;
 
@@ -15,7 +16,7 @@ public class TestTabPitch{
 
 	private Pitch pitch;
 	private Pitch newPitch;
-	private TabPosition pos;
+	private NotePosition pos;
 	private TabModifier mod;
 	private TabPitch note;
 	
@@ -23,7 +24,7 @@ public class TestTabPitch{
 	private TabString string;
 	
 	private class TestT extends TabPitch{
-		public TestT(Pitch pitch, TabPosition pos, TabModifier mod){
+		public TestT(Pitch pitch, NotePosition pos, TabModifier mod){
 			super(pitch, pos, mod);
 		}
 		@Override
@@ -34,7 +35,7 @@ public class TestTabPitch{
 	public void setup(){
 		pitch = new Pitch(4);
 		newPitch = new Pitch(2);
-		pos = new TabPosition(2);
+		pos = new NotePosition(2);
 		mod = new TabModifier("{", "}");
 		note = new TestT(pitch, pos, mod);
 		

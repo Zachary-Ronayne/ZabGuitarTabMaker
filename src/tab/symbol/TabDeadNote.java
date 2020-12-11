@@ -1,5 +1,6 @@
 package tab.symbol;
 
+import music.NotePosition;
 import tab.Tab;
 import tab.TabString;
 
@@ -13,7 +14,7 @@ public class TabDeadNote extends TabSymbol{
 	 * Create a dead note for a tab
 	 * @param pos The {@link TabSymbol#pos} of this {@link TabDeadNote}
 	 */
-	public TabDeadNote(TabPosition pos){
+	public TabDeadNote(NotePosition pos){
 		super(pos, null);
 	}
 	

@@ -8,6 +8,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import music.NotePosition;
 import music.Pitch;
 import tab.TabString;
 
@@ -15,15 +16,15 @@ public class TestTabSymbol{
 	
 	
 	private TabSymbol symbol;
-	private TabPosition pos;
+	private NotePosition pos;
 	private TabModifier mod;
 	private TabString string;
 	
-	private TabPosition newPos;
+	private NotePosition newPos;
 	private TabModifier newMod;
 	
 	private class TestT extends TabSymbol{
-		public TestT(TabPosition pos, TabModifier modifier){
+		public TestT(NotePosition pos, TabModifier modifier){
 			super(pos, modifier);
 		}
 		@Override
@@ -34,10 +35,10 @@ public class TestTabSymbol{
 	
 	@BeforeEach
 	public void setup(){
-		newPos = new TabPosition(5);
+		newPos = new NotePosition(5);
 		newMod = new TabModifier("{", "}");
 		
-		pos = new TabPosition(3);
+		pos = new NotePosition(3);
 		mod = new TabModifier("[", "]");
 		string = new TabString(new Pitch(-4));
 		symbol = new TestT(pos, mod);
@@ -78,10 +79,10 @@ public class TestTabSymbol{
 		TabSymbol c = new TabNote(0, 0);
 		assertTrue("Pos 0 should compare less than 0 for pos 3", c.compareTo(symbol) < 0);
 		
-		c.setPos(new TabPosition(4));
+		c.setPos(new NotePosition(4));
 		assertTrue("Pos 4 should compare greater than 0 for pos 3", c.compareTo(symbol) > 0);
 
-		c.setPos(new TabPosition(3));
+		c.setPos(new NotePosition(3));
 		assertTrue("Pos 3 should compare equal to 0 for pos 3", c.compareTo(symbol) == 0);
 	}
 
@@ -91,7 +92,7 @@ public class TestTabSymbol{
 		assertFalse("Checking objects are not the same object", s == symbol);
 		assertTrue("Checking objects are equal", s.equals(symbol));
 		
-		s.setPos(new TabPosition(4));
+		s.setPos(new NotePosition(4));
 		assertFalse("Checking objects are not equal", s.equals(symbol));
 
 		s.setPos(pos);

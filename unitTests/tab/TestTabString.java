@@ -10,7 +10,9 @@ import org.junit.jupiter.api.Test;
 
 import music.Music;
 import music.Pitch;
+import music.TimeSignature;
 import tab.symbol.TabNote;
+import util.testUtils.UtilsTest;
 
 public class TestTabString{
 	
@@ -112,7 +114,25 @@ public class TestTabString{
 		assertEquals(Music.createNote(Music.E, 5), string.createPitch(12).getNote(), "Checking high octave generates correct pitch");
 		assertEquals(Music.createNote(Music.E, 3), string.createPitch(-12).getNote(), "Checking low octave generates correct pitch");
 	}
-
+	
+	@Test
+	public void quantize(){ // TODO
+		for(TabNote n : notes){
+			n.getPos().addValue(1.1);
+			string.add(n);
+		}
+		
+		string.quantize(new TimeSignature(4, 4), 1);
+		
+		assertEquals(1, string.get(0).getPos().getValue(), UtilsTest.DELTA, "Checking note is quantized");
+		assertEquals(2, string.get(1).getPos().getValue(), UtilsTest.DELTA, "Checking note is quantized");
+		assertEquals(3, string.get(2).getPos().getValue(), UtilsTest.DELTA, "Checking note is quantized");
+		assertEquals(4, string.get(3).getPos().getValue(), UtilsTest.DELTA, "Checking note is quantized");
+		assertEquals(5, string.get(4).getPos().getValue(), UtilsTest.DELTA, "Checking note is quantized");
+		assertEquals(6, string.get(5).getPos().getValue(), UtilsTest.DELTA, "Checking note is quantized");
+		assertEquals(7, string.get(6).getPos().getValue(), UtilsTest.DELTA, "Checking note is quantized");
+	}
+	
 	@Test
 	public void equals(){
 		TabString s = new TabString(pitch);

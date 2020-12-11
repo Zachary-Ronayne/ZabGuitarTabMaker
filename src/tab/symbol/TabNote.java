@@ -1,5 +1,6 @@
 package tab.symbol;
 
+import music.NotePosition;
 import music.Pitch;
 import music.Rhythm;
 
@@ -15,7 +16,7 @@ public class TabNote extends TabPitch{
 	 * @param pos Initial value for {@link TabSymbol#pos}
 	 * @param modifier Initial value for {@link TabSymbol#modifier}
 	 */
-	public TabNote(Pitch pitch, TabPosition pos, TabModifier modifier){
+	public TabNote(Pitch pitch, NotePosition pos, TabModifier modifier){
 		super(pitch, pos, modifier);
 	}
 
@@ -24,7 +25,7 @@ public class TabNote extends TabPitch{
 	 * @param pitch Initial value for {@link TabPitch#pitch}
 	 * @param pos Initial value for {@link TabSymbol#pos}
 	 */
-	public TabNote(Pitch pitch, TabPosition pos){
+	public TabNote(Pitch pitch, NotePosition pos){
 		super(pitch, pos, null);
 	}
 	
@@ -34,7 +35,7 @@ public class TabNote extends TabPitch{
 	 * @param pos The numerical value for the position of {@link TabPitch#pos}
 	 */
 	public TabNote(int pitch, double pos){
-		this(new Pitch(pitch), new TabPosition(pos));
+		this(new Pitch(pitch), new NotePosition(pos));
 	}
 	
 	/**

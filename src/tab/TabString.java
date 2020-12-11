@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import music.Music;
 import music.Pitch;
+import music.TimeSignature;
 import tab.symbol.TabPitch;
 import tab.symbol.TabSymbol;
 import util.ArrayUtils;
@@ -109,6 +110,16 @@ public class TabString extends ArrayList<TabSymbol> implements Copyable<TabStrin
 	 */
 	public Pitch createPitch(int fret){
 		return new Pitch(this.getRootPitch().getNote() + fret);
+	}
+	
+	/**
+	 * Quantize all {@link TabSymbol} objects on this {@link TabString}
+	 * @param sig The time signature to base the quantization off of
+	 * @param divisor The amount to divide up the units of a whole note.<br>
+	 * 	i.e. use 4 to quantize to quarter notes, use 6 to quantize to dotted quarter notes, etc
+	 */
+	public void quantize(TimeSignature sig, int divisor){
+		for(TabSymbol s : this) s.getPos().quantize(sig, divisor);
 	}
 
 	/***/
