@@ -64,7 +64,7 @@ public class TabNote extends TabPitch{
 	/***/
 	@Override
 	public TabNote copy(){
-		return new TabNote(this.getPitch().copy(), this.getPos().copy(), this.getModifier().copy());
+		return new TabNote(this.getPitch().copy(), this.getPos().copy(), this.copyModifier());
 	}
 
 }

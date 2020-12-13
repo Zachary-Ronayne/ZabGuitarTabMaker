@@ -93,6 +93,15 @@ public abstract class TabSymbol implements Comparable<TabSymbol>, Copyable<TabSy
 		this.getPos().quantize(sig, divisor);
 	}
 	
+	/**
+	 * Create a copy of the {@link #modifier} used by this {@link TabSymbol}
+	 * @return The modifier, can be null for no modifier
+	 */
+	public TabModifier copyModifier(){
+		if(this.getModifier() == null) return null;
+		return this.getModifier().copy();
+	}
+	
 	/***/
 	@Override
 	public int compareTo(TabSymbol t){
