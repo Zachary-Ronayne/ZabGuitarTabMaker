@@ -3,10 +3,12 @@ package tab.symbol;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 import music.NotePosition;
 import music.Pitch;
@@ -45,6 +47,23 @@ public class TestTabSymbol{
 	}
 	
 	@Test
+	public void constructor(){
+		assertThrows(IllegalArgumentException.class, new Executable(){
+			@Override
+			public void execute() throws Throwable{
+				new TestT(null, mod);
+			}
+		}, "Checking exception is thrown on null position");
+		
+		assertThrows(IllegalArgumentException.class, new Executable(){
+			@Override
+			public void execute() throws Throwable{
+				new TestT(pos, null);
+			}
+		}, "Checking exception is thrown on null modifier");
+	}
+	
+	@Test
 	public void getPos(){
 		assertEquals(pos, symbol.getPos(), "Checking position initialized");
 	}
@@ -53,6 +72,9 @@ public class TestTabSymbol{
 	public void setPos(){
 		symbol.setPos(newPos);
 		assertEquals(newPos, symbol.getPos(), "Checking position set");
+		
+		symbol.setPos(null);
+		assertEquals(newPos, symbol.getPos(), "Checking position not changed to null");
 	}
 	
 	@Test
@@ -64,6 +86,9 @@ public class TestTabSymbol{
 	public void setModifier(){
 		symbol.setModifier(newMod);
 		assertEquals(newMod, symbol.getModifier(), "Checking modifier set");
+		
+		symbol.setModifier(null);
+		assertEquals(newMod, symbol.getModifier(), "Checking modifier not chaNged to null");
 	}
 	
 	@Test

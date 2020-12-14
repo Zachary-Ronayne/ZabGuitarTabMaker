@@ -25,6 +25,13 @@ public class TabModifier implements Copyable<TabModifier>{
 		this.setAfter(after);
 	}
 	
+	/**
+	 * Create an empty {@link TabModifier}
+	 */
+	public TabModifier(){
+		this("", "");
+	}
+	
 	/***/
 	@Override
 	public TabModifier copy(){

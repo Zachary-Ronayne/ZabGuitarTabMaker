@@ -11,7 +11,7 @@ import util.ObjectUtils;
  */
 public abstract class TabPitch extends TabSymbol{
 
-	/** The {@link Pitch} of this {@link TabPitch}, i.e. the musical note */
+	/** The {@link Pitch} of this {@link TabPitch}, i.e. the musical note. Cannot be null. */
 	private Pitch pitch;
 	
 	/**
@@ -22,6 +22,7 @@ public abstract class TabPitch extends TabSymbol{
 	 */
 	public TabPitch(Pitch pitch, NotePosition pos, TabModifier modifier){
 		super(pos, modifier);
+		if(pitch == null) throw new IllegalArgumentException("Pitch cannot be null");
 		this.setPitch(pitch);
 	}
 
@@ -31,7 +32,7 @@ public abstract class TabPitch extends TabSymbol{
 	 * @param pos Initial value for {@link TabSymbol#pos}
 	 */
 	public TabPitch(Pitch pitch, NotePosition pos){
-		this(pitch, pos, null);
+		this(pitch, pos, new TabModifier());
 	}
 	
 	/**
@@ -47,6 +48,7 @@ public abstract class TabPitch extends TabSymbol{
 	 * @param pitch See {@link #pitch}
 	 */
 	public void setPitch(Pitch pitch){
+		if(pitch == null) return;
 		this.pitch = pitch;
 	}
 

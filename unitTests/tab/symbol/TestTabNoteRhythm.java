@@ -3,10 +3,12 @@ package tab.symbol;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 import music.NotePosition;
 import music.Pitch;
@@ -47,11 +49,18 @@ public class TestTabNoteRhythm{
 		
 		assertEquals(pitch, noteNoMod.getPitch(), "Checking pitch initialized for no modifier constructor");
 		assertEquals(pos, noteNoMod.getPos(), "Checking pos initialized for no modifier constructor");
-		assertEquals(null, noteNoMod.getModifier(), "Checking modifier null for no modifier constructor");
+		assertEquals(new TabModifier(), noteNoMod.getModifier(), "Checking modifier initialized for no modifier constructor");
 		
 		assertEquals(2, noteValues.getPitch().getNote(), "Checking pitch initialized for values constructor");
 		assertEquals(3, noteValues.getPos().getValue(), "Checking pos initialized for values constructor");
-		assertEquals(null, noteValues.getModifier(), "Checking modifier null for values constructor");
+		assertEquals(new TabModifier(), noteValues.getModifier(), "Checking modifier initialized for values constructor");
+		
+		assertThrows(IllegalArgumentException.class, new Executable(){
+			@Override
+			public void execute() throws Throwable{
+				new TabNoteRhythm(pitch, null, pos);
+			}
+		}, "Checking exception is thrown on null rhythm");
 	}
 
 	@Test
@@ -70,6 +79,9 @@ public class TestTabNoteRhythm{
 	public void setRhythm(){
 		note.setRhythm(newRhythm);
 		assertEquals(newRhythm, note.getRhythm(), "Checking rhythm set");
+		
+		note.setRhythm(null);
+		assertEquals(newRhythm, note.getRhythm(), "Checking rhythm not changed with null parameter");
 	}
 	
 	@Test

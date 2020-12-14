@@ -11,7 +11,7 @@ import util.ObjectUtils;
  */
 public class TabNoteRhythm extends TabPitch{
 
-	/** The rhythmic information of this {@link TabNoteRhythm} */
+	/** The rhythmic information of this {@link TabNoteRhythm}. Cannot be null. */
 	private Rhythm rhythm;
 	
 	/**
@@ -23,6 +23,7 @@ public class TabNoteRhythm extends TabPitch{
 	 */
 	public TabNoteRhythm(Pitch pitch, Rhythm rhythm, NotePosition pos, TabModifier modifier){
 		super(pitch, pos, modifier);
+		if(rhythm == null) throw new IllegalArgumentException("Rhythm cannot be null");
 		this.setRhythm(rhythm);
 	}
 	
@@ -33,18 +34,7 @@ public class TabNoteRhythm extends TabPitch{
 	 * @param pos Initial value for {@link TabSymbol#pos}
 	 */
 	public TabNoteRhythm(Pitch pitch, Rhythm rhythm, NotePosition pos){
-		this(pitch, rhythm, pos, null);
-	}
-	
-	/***/
-	@Override
-	public TabNoteRhythm copy(){
-		return new TabNoteRhythm(
-				this.getPitch().copy(),
-				this.getRhythm().copy(),
-				this.getPos().copy(),
-				this.getModifier().copy()
-		);
+		this(pitch, rhythm, pos, new TabModifier());
 	}
 
 	/**
@@ -55,6 +45,16 @@ public class TabNoteRhythm extends TabPitch{
 	 */
 	public TabNoteRhythm(int pitch, Rhythm rhythm, int pos){
 		this(new Pitch(pitch), rhythm, new NotePosition(pos));
+	}
+	
+	/***/
+	@Override
+	public TabNoteRhythm copy(){
+		Pitch p = ObjectUtils.copy(this.getPitch());
+		Rhythm r = ObjectUtils.copy(this.getRhythm());
+		NotePosition pos = ObjectUtils.copy(this.getPos());
+		TabModifier mod = ObjectUtils.copy(this.getModifier());
+		return new TabNoteRhythm(p, r, pos, mod);
 	}
 	
 	/**
@@ -70,6 +70,7 @@ public class TabNoteRhythm extends TabPitch{
 	 * @param rhythm see {@link #rhythm}
 	 */
 	public void setRhythm(Rhythm rhythm){
+		if(rhythm == null) return;
 		this.rhythm = rhythm;
 	}
 	

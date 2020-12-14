@@ -3,6 +3,7 @@ package tab.symbol;
 import music.NotePosition;
 import music.Pitch;
 import music.Rhythm;
+import util.ObjectUtils;
 
 /**
  * An instantiation of a {@link TabPitch} with no rhythmic information
@@ -26,7 +27,7 @@ public class TabNote extends TabPitch{
 	 * @param pos Initial value for {@link TabSymbol#pos}
 	 */
 	public TabNote(Pitch pitch, NotePosition pos){
-		super(pitch, pos, null);
+		super(pitch, pos, new TabModifier());
 	}
 	
 	/**
@@ -64,7 +65,10 @@ public class TabNote extends TabPitch{
 	/***/
 	@Override
 	public TabNote copy(){
-		return new TabNote(this.getPitch().copy(), this.getPos().copy(), this.copyModifier());
+		Pitch p = ObjectUtils.copy(this.getPitch());
+		NotePosition pos = ObjectUtils.copy(this.getPos());
+		TabModifier mod = ObjectUtils.copy(this.getModifier());
+		return new TabNote(p, pos, mod);
 	}
 
 }

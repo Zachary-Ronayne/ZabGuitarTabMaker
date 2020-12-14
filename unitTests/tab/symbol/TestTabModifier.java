@@ -11,10 +11,12 @@ import org.junit.jupiter.api.Test;
 public class TestTabModifier{
 
 	private TabModifier mod;
+	private TabModifier empty;
 	
 	@BeforeEach
 	public void setup(){
 		mod = new TabModifier("(", ")");
+		empty = new TabModifier();
 	}
 
 	@Test
@@ -27,6 +29,8 @@ public class TestTabModifier{
 	@Test
 	public void getBefore(){
 		assertEquals("(", mod.getBefore(), "Checking before initialized");
+		
+		assertEquals("", empty.getBefore(), "Checking empty constructor has an empty before string");
 	}
 	
 	@Test
@@ -38,6 +42,8 @@ public class TestTabModifier{
 	@Test
 	public void getAfter(){
 		assertEquals(")", mod.getAfter(), "Checking after initialized");
+		
+		assertEquals("", empty.getAfter(), "Checking empty constructor has an empty after string");
 	}
 	
 	@Test

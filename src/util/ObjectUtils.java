@@ -17,6 +17,17 @@ public final class ObjectUtils{
 		return obj != null && type.isInstance(obj);
 	}
 	
+	/**
+	 * Create a deep copy of the given {@link Copyable} object, checking for null values
+	 * @param <T> The type of the {@link Copyable} object
+	 * @param c The object to copy
+	 * @return The copied object, or null if c is null
+	 */
+	public static <T> T copy(Copyable<T> c){
+		if(c == null) return null;
+		return c.copy();
+	}
+	
 	/** Cannot make instances of {@link ObjectUtils} */
 	private ObjectUtils(){};
 	

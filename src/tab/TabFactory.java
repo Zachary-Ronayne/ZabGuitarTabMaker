@@ -56,6 +56,17 @@ public final class TabFactory{
 	}
 	
 	/**
+	 * Generate a {@link TabNote} based on the string and fret number, and with no modifier
+	 * @param string The string to use to generate the note
+	 * @param fret The fret number on the string, can be zero for open string, or negative for a normally invalid fret position
+	 * @param pos The position value, see {@link TabSymbol#pos}
+	 * @return The note
+	 */
+	public static TabNote modifiedFret(TabString string, int fret, double pos){
+		return modifiedFret(string, fret, pos, new TabModifier());
+	}
+	
+	/**
 	 * Generate a {@link TabNoteRhythm} based on the string and fret number
 	 * @param string The string to use to generate the note
 	 * @param fret The fret number on the string, can be zero for open string, or negative for a normally invalid fret position

@@ -3,10 +3,12 @@ package tab.symbol;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 import music.NotePosition;
 import music.Pitch;
@@ -52,7 +54,14 @@ public class TestTabPitch{
 		assertEquals(mod, note.getModifier(), "Checking modifier initialized in full constructor");
 		
 		assertEquals(pos, noteNoMod.getPos(), "Checking position initialized in no modifier constructor");
-		assertEquals(null, noteNoMod.getModifier(), "Checking modifier null in no modifier constructor");
+		assertEquals(new TabModifier(), noteNoMod.getModifier(), "Checking modifier initialized in no modifier constructor");
+		
+		assertThrows(IllegalArgumentException.class, new Executable(){
+			@Override
+			public void execute() throws Throwable{
+				new TestT(null, pos, mod);
+			}
+		}, "Checking exception is thrown on null pitch");
 	}
 	
 	@Test
@@ -67,6 +76,9 @@ public class TestTabPitch{
 		
 		note.setPitch(5);
 		assertEquals(5, note.getPitch().getNote(), "Checking pitch initialized using integer");
+		
+		note.setPitch(null);
+		assertEquals(5, note.getPitch().getNote(), "Checking pitch not changed with null parameter");
 	}
 	
 	@Test

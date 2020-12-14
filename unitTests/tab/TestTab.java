@@ -78,12 +78,12 @@ public class TestTab{
 		TabString copyL;
 		TimeSignature newTime;
 		
-		highString.add(TabFactory.modifiedFret(lowString, 0, 0, null));
-		highString.add(TabFactory.modifiedFret(lowString, 0, 0.75, null));
-		highString.add(TabFactory.modifiedFret(lowString, 0, 1, null));
-		highString.add(TabFactory.modifiedFret(lowString, 0, 1.25, null));
-		lowString.add(TabFactory.modifiedFret(lowString, 0, 2, null));
-		lowString.add(TabFactory.modifiedFret(lowString, 0, 2.9, null));
+		highString.add(TabFactory.modifiedFret(lowString, 0, 0));
+		highString.add(TabFactory.modifiedFret(lowString, 0, 0.75));
+		highString.add(TabFactory.modifiedFret(lowString, 0, 1));
+		highString.add(TabFactory.modifiedFret(lowString, 0, 1.25));
+		lowString.add(TabFactory.modifiedFret(lowString, 0, 2));
+		lowString.add(TabFactory.modifiedFret(lowString, 0, 2.9));
 		
 		copy = tab.copy();
 		copyH = copy.getStrings().get(0);

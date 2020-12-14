@@ -2,6 +2,7 @@ package util;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,6 +35,29 @@ public class TestObjectUtils{
 		assertTrue("Checking objects extending each other are the same type", ObjectUtils.isType(c, A.class));
 		assertTrue("Checking objects extending each other are the same type", ObjectUtils.isType(c, C.class));
 		assertFalse("Checking objects extending each other are not a different type", ObjectUtils.isType(c, B.class));
+	}
+	
+	@Test
+	public void copy(){
+		class A implements Copyable<A>{
+			public int x;
+			public A(int x){
+				this.x = x;
+			}
+			@Override
+			public A copy(){
+				return new A(this.x);
+			}
+		}
+		A a;
+		
+		a = null;
+		assertEquals(null, ObjectUtils.copy(a), "Checking null returned on null parameter");
+		
+		a = new A(1);
+		A copy = a.copy();
+		assertEquals(1, copy.x, "Checking copy has the same value");
+		assertFalse("Checking copy is not the same object", a == copy);
 	}
 	
 	@AfterEach

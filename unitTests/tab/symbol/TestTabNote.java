@@ -41,11 +41,11 @@ public class TestTabNote{
 		
 		assertEquals(pitch, noteNoMod.getPitch(), "Checking pitch initialized in no modifier constructor");
 		assertEquals(pos, noteNoMod.getPos(), "Checking position initialized in no modifier constructor");
-		assertEquals(null, noteNoMod.getModifier(), "Checking modifier null in no modifier constructor");
+		assertEquals(new TabModifier(), noteNoMod.getModifier(), "Checking empty modifier in no modifier constructor");
 		
 		assertEquals(3, noteValues.getPitch().getNote(), "Checking pitch initialized in values constructor");
 		assertEquals(2, noteValues.getPos().getValue(), "Checking position initialized in values constructor");
-		assertEquals(null, noteValues.getModifier(), "Checking modifier null in values constructor");
+		assertEquals(new TabModifier(), noteValues.getModifier(), "Checking empty odifier in values constructor");
 	}
 	
 	@Test

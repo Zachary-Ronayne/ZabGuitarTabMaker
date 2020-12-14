@@ -3,6 +3,7 @@ package tab.symbol;
 import music.NotePosition;
 import tab.Tab;
 import tab.TabString;
+import util.ObjectUtils;
 
 /**
  * A symbol for a {@link Tab} representing a dead note or muted note
@@ -15,13 +16,13 @@ public class TabDeadNote extends TabSymbol{
 	 * @param pos The {@link TabSymbol#pos} of this {@link TabDeadNote}
 	 */
 	public TabDeadNote(NotePosition pos){
-		super(pos, null);
+		super(pos, new TabModifier());
 	}
 	
 	/***/
 	@Override
 	public TabDeadNote copy(){
-		return new TabDeadNote(this.getPos());
+		return new TabDeadNote(ObjectUtils.copy(this.getPos()));
 	}
 
 	/**

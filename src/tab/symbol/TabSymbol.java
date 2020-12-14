@@ -13,12 +13,11 @@ import util.ObjectUtils;
  */
 public abstract class TabSymbol implements Comparable<TabSymbol>, Copyable<TabSymbol>{
 
-	/** The position {@link NotePosition} object of this {@link TabSymbol} on a {@link TabString}*/
+	/** The position {@link NotePosition} object of this {@link TabSymbol} on a {@link TabString}. Cannot be null. */
 	private NotePosition pos;
 	
 	/**
-	 * The {@link TabModifier} used by this {@link TabSymbol} to specify how it is played on an instrument<br>
-	 * Can be null to represent no modifier
+	 * The {@link TabModifier} used by this {@link TabSymbol} to specify how it is played on an instrument. Cannot be null.
 	 */
 	private TabModifier modifier;
 	
@@ -28,6 +27,8 @@ public abstract class TabSymbol implements Comparable<TabSymbol>, Copyable<TabSy
 	 * @param modifier The {@link #modifier}
 	 */
 	public TabSymbol(NotePosition pos, TabModifier modifier){
+		if(pos == null) throw new IllegalArgumentException("Pos cannot be null");
+		if(modifier == null) throw new IllegalArgumentException("Modifier cannot be null");
 		this.setPos(pos);
 		this.setModifier(modifier);
 	}
@@ -45,6 +46,7 @@ public abstract class TabSymbol implements Comparable<TabSymbol>, Copyable<TabSy
 	 * @param pos The position
 	 */
 	public void setPos(NotePosition pos){
+		if(pos == null) return;
 		this.pos = pos;
 	}
 
@@ -61,6 +63,7 @@ public abstract class TabSymbol implements Comparable<TabSymbol>, Copyable<TabSy
 	 * @param The modifier
 	 */
 	public void setModifier(TabModifier modifier){
+		if(modifier == null) return;
 		this.modifier = modifier;
 	}
 
@@ -91,15 +94,6 @@ public abstract class TabSymbol implements Comparable<TabSymbol>, Copyable<TabSy
 	 */
 	public void quantize(TimeSignature sig, int divisor){
 		this.getPos().quantize(sig, divisor);
-	}
-	
-	/**
-	 * Create a copy of the {@link #modifier} used by this {@link TabSymbol}
-	 * @return The modifier, can be null for no modifier
-	 */
-	public TabModifier copyModifier(){
-		if(this.getModifier() == null) return null;
-		return this.getModifier().copy();
 	}
 	
 	/***/
