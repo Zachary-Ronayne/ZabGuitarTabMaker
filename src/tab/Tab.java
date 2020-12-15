@@ -80,6 +80,11 @@ public class Tab implements Copyable<Tab>{
 		for(TabString s : this.getStrings()){
 			tab.getStrings().add(s.copy());
 		}
+		
+		// Copy other fields
+		tab.setTimeSignature(ObjectUtils.copy(this.getTimeSignature()));
+		tab.setUsesRhythm(this.usesRhythm());
+		
 		return tab;
 	}
 	
@@ -268,7 +273,9 @@ public class Tab implements Copyable<Tab>{
 		if(!ObjectUtils.isType(obj, this.getClass())) return false;
 		Tab t = (Tab)obj;
 		return	super.equals(obj) ||
-				this.getStrings().equals(t.getStrings());
+				this.getStrings().equals(t.getStrings()) &&
+				this.getTimeSignature().equals(t.getTimeSignature()) &&
+				this.usesRhythm() == t.usesRhythm();
 	}
 	
 }

@@ -239,7 +239,7 @@ public class TestTab{
 	}
 	
 	@Test
-	public void addRhythm(){ // TODO
+	public void addRhythm(){
 		highString.add(TabFactory.modifiedFret(highString, 0, 0));
 		highString.add(TabFactory.modifiedFret(highString, 0, 1));
 		highString.add(TabFactory.modifiedFret(highString, 0, 1.5));
@@ -305,7 +305,17 @@ public class TestTab{
 		assertTrue("Checking objects are equal", t.equals(tab));
 		
 		s.remove(lowString);
-		assertFalse("Checking objects are not equal", t.equals(tab));
+		assertFalse("Checking objects are not equal after changing strings", t.equals(tab));
+		s.add(lowString);
+		assertTrue("Checking objects equal", t.equals(tab));
+		
+		t.setTimeSignature(new TimeSignature(1, 8));
+		assertFalse("Checking objects not equal with different time signatures", t.equals(tab));
+		t.setTimeSignature(new TimeSignature(4, 4));
+		assertTrue("Checking objects equal", t.equals(tab));
+		
+		t.setUsesRhythm(true);
+		assertFalse("Checking objects not equal with different rhythm usage", t.equals(tab));
 	}
 	
 	@AfterEach

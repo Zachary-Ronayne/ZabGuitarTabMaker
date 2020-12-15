@@ -39,6 +39,15 @@ public class TabNote extends TabPitch{
 		this(new Pitch(pitch), new NotePosition(pos));
 	}
 	
+	/***/
+	@Override
+	public TabNote copy(){
+		Pitch p = ObjectUtils.copy(this.getPitch());
+		NotePosition pos = ObjectUtils.copy(this.getPos());
+		TabModifier mod = ObjectUtils.copy(this.getModifier());
+		return new TabNote(p, pos, mod);
+	}
+	
 	/**
 	 * Create a new version of this {@link TabNote} as a {@link TabNoteRhythm} which uses the given {@link Rhythm}
 	 * @param r The rhythm, uses the object itself, not a copy
@@ -73,15 +82,6 @@ public class TabNote extends TabPitch{
 	@Override
 	public boolean usesRhythm(){
 		return false;
-	}
-	
-	/***/
-	@Override
-	public TabNote copy(){
-		Pitch p = ObjectUtils.copy(this.getPitch());
-		NotePosition pos = ObjectUtils.copy(this.getPos());
-		TabModifier mod = ObjectUtils.copy(this.getModifier());
-		return new TabNote(p, pos, mod);
 	}
 
 }

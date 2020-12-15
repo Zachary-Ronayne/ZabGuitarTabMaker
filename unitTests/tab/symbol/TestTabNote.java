@@ -45,7 +45,14 @@ public class TestTabNote{
 		
 		assertEquals(3, noteValues.getPitch().getNote(), "Checking pitch initialized in values constructor");
 		assertEquals(2, noteValues.getPos().getValue(), "Checking position initialized in values constructor");
-		assertEquals(new TabModifier(), noteValues.getModifier(), "Checking empty odifier in values constructor");
+		assertEquals(new TabModifier(), noteValues.getModifier(), "Checking empty modifier in values constructor");
+	}
+	
+	@Test
+	public void copy(){
+		TabNote copy = note.copy();
+		assertTrue("Checking copy is equal to the source object", copy.equals(note));
+		assertTrue("Checking copy is not the same as the source object", copy != note);
 	}
 	
 	@Test
@@ -87,13 +94,6 @@ public class TestTabNote{
 	@Test
 	public void usesRhythm(){
 		assertFalse("Checking note doesn't use rhythm", note.usesRhythm());
-	}
-	
-	@Test
-	public void copy(){
-		TabNote copy = note.copy();
-		assertTrue("Checking copy is equal to the source object", copy.equals(note));
-		assertTrue("Checking copy is not the same as the source object", copy != note);
 	}
 	
 	@AfterEach

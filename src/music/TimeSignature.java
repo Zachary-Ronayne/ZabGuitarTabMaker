@@ -1,12 +1,13 @@
 package music;
 
+import util.Copyable;
 import util.ObjectUtils;
 
 /**
  * An object keeping track of a musical time signature
  * @author zrona
  */
-public class TimeSignature{
+public class TimeSignature implements Copyable<TimeSignature>{
 	
 	/** The upper number of the time signature, i.e. the "how many" part, must be greater than 0 */
 	private int upper;
@@ -21,6 +22,12 @@ public class TimeSignature{
 	public TimeSignature(int upper, int lower){
 		this.setUpper(upper);
 		this.setLower(lower);
+	}
+	
+	/***/
+	@Override
+	public TimeSignature copy(){
+		return new TimeSignature(this.getUpper(), this.getLower());
 	}
 	
 	/**

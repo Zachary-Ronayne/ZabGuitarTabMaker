@@ -30,6 +30,14 @@ public class TestTimeSignature{
 	}
 	
 	@Test
+	public void copy(){
+		TimeSignature copy = four4.copy();
+		assertTrue("Checking copy is equal to the source object", copy.equals(four4));
+		assertTrue("Checking copy is not the same as the source object", copy != four4);
+	
+	}
+	
+	@Test
 	public void getUpper(){
 		assertEquals(4, four4.getUpper(), "Checking upper initialized");
 		assertEquals(5, five8.getUpper(), "Checking upper initialized");
