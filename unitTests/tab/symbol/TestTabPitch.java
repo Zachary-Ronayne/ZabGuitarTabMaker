@@ -12,6 +12,7 @@ import org.junit.jupiter.api.function.Executable;
 
 import music.NotePosition;
 import music.Pitch;
+import music.Rhythm;
 import tab.TabString;
 
 public class TestTabPitch{
@@ -29,8 +30,17 @@ public class TestTabPitch{
 		public TestT(Pitch pitch, NotePosition pos, TabModifier mod){
 			super(pitch, pos, mod);
 		}
+		public TestT(Pitch pitch, NotePosition pos){
+			super(pitch, pos);
+		}
 		@Override
 		public TabSymbol copy(){return this;}
+		@Override
+		public TabSymbol convertToRhythm(Rhythm r){return this;}
+		@Override
+		public TabSymbol removeRhythm(){return this;}
+		@Override
+		public boolean usesRhythm(){return false;}
 	}
 	
 	@BeforeEach
@@ -41,10 +51,7 @@ public class TestTabPitch{
 		mod = new TabModifier("{", "}");
 		note = new TestT(pitch, pos, mod);
 		
-		noteNoMod = new TabPitch(pitch, pos){
-			@Override
-			public TabSymbol copy(){return this;}
-		};
+		noteNoMod = new TestT(pitch, pos);
 		string = new TabString(new Pitch(4));
 	}
 	

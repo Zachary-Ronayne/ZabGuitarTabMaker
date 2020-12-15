@@ -1,6 +1,7 @@
 package tab.symbol;
 
 import music.NotePosition;
+import music.Rhythm;
 import tab.Tab;
 import tab.TabString;
 import util.ObjectUtils;
@@ -23,6 +24,23 @@ public class TabDeadNote extends TabSymbol{
 	@Override
 	public TabDeadNote copy(){
 		return new TabDeadNote(ObjectUtils.copy(this.getPos()));
+	}
+	
+	/***/
+	@Override
+	public TabDeadNote convertToRhythm(Rhythm r){
+		return this;
+	}
+
+	/***/
+	@Override
+	public TabDeadNote removeRhythm(){
+		return this;
+	}
+	
+	@Override
+	public boolean usesRhythm(){
+		return false;
 	}
 
 	/**

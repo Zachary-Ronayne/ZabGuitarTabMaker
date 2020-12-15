@@ -12,8 +12,12 @@ import org.junit.jupiter.api.Test;
 
 import music.Music;
 import music.Pitch;
+import music.Rhythm;
 import music.TimeSignature;
+import tab.symbol.TabModifier;
 import tab.symbol.TabNote;
+import tab.symbol.TabNoteRhythm;
+import tab.symbol.TabSymbol;
 import util.testUtils.UtilsTest;
 
 public class TestTab{
@@ -21,6 +25,7 @@ public class TestTab{
 	private Tab tab;
 	private Tab tabDefault;
 	private Tab tabSpecific;
+	private Tab tabFull;
 	private ArrayList<TabString> strings;
 	private TabString highString;
 	private TabString lowString;
@@ -36,6 +41,7 @@ public class TestTab{
 		
 		tabDefault = new Tab();
 		tabSpecific = new Tab(strings, new TimeSignature(3, 2));
+		tabFull = new Tab(strings, new TimeSignature(4, 4), true);
 	}
 	
 	@Test
@@ -69,6 +75,24 @@ public class TestTab{
 		TimeSignature t = new TimeSignature(5, 4);
 		tab.setTimeSignature(t);
 		assertEquals(t, tab.getTimeSignature(), "Checking time signature set");
+	}
+	
+	@Test
+	public void usesRhythm(){
+		assertFalse("Checking rhythm initialized", tab.usesRhythm());
+		assertTrue("Checking initialized", tabFull.usesRhythm());
+	}
+	
+	@Test
+	public void setUsesRhythm(){
+		lowString.add(TabFactory.modifiedFret(lowString, 0, 0));
+		tab.setUsesRhythm(true);
+		assertTrue("Checking rhythm set", tab.usesRhythm());
+		assertTrue("Checking note uses rhythm", lowString.get(0).usesRhythm());
+		
+		tab.setUsesRhythm(false);
+		assertFalse("Checking rhythm set", tab.usesRhythm());
+		assertFalse("Checking note doesn't use rhythm", lowString.get(0).usesRhythm());
 	}
 	
 	@Test
@@ -198,6 +222,77 @@ public class TestTab{
 	public void getRootNote(){
 		assertEquals(-12, tab.getRootNote(0), "Checking root note found");
 		assertEquals(-24, tab.getRootNote(1), "Checking root note found");
+	}
+	
+	@Test
+	public void removeRhythms(){
+		tabFull.getStrings().get(0).add(TabFactory.modifiedFretRhythm(highString, 0, new Rhythm(1, 1), 0, new TabModifier()));
+		tabFull.getStrings().get(1).add(TabFactory.modifiedFretRhythm(lowString, 0, new Rhythm(1, 1), 0, new TabModifier()));
+		assertTrue("Checking using rhythm is set to true initially", tabFull.usesRhythm());
+		assertTrue("Checking rhythm is being used", highString.get(0).usesRhythm());
+		assertTrue("Checking rhythm is being used", lowString.get(0).usesRhythm());
+		
+		tabFull.removeRhythms();
+		assertFalse("Checking using rhythm is set to false", tabFull.usesRhythm());
+		assertFalse("Checking rhythm is not being used", highString.get(0).usesRhythm());
+		assertFalse("Checking rhythm is not being used", lowString.get(0).usesRhythm());
+	}
+	
+	@Test
+	public void addRhythm(){ // TODO
+		highString.add(TabFactory.modifiedFret(highString, 0, 0));
+		highString.add(TabFactory.modifiedFret(highString, 0, 1));
+		highString.add(TabFactory.modifiedFret(highString, 0, 1.5));
+		lowString.add(TabFactory.modifiedFret(lowString, 0, 2));
+		lowString.add(TabFactory.modifiedFret(lowString, 0, 2.25));
+		lowString.add(TabFactory.modifiedFret(lowString, 0, 2.375));
+		assertFalse("Checking using rhythm is set to false initially", tab.usesRhythm());
+		assertFalse("Checking note doesn't use rhythm", highString.get(0).usesRhythm());
+		assertFalse("Checking note doesn't use rhythm", highString.get(1).usesRhythm());
+		assertFalse("Checking note doesn't use rhythm", highString.get(2).usesRhythm());
+		assertFalse("Checking note doesn't use rhythm", lowString.get(0).usesRhythm());
+		assertFalse("Checking note doesn't use rhythm", lowString.get(1).usesRhythm());
+		assertFalse("Checking note doesn't use rhythm", lowString.get(2).usesRhythm());
+		
+		Rhythm one8 = new Rhythm(1, 8);
+		tab.addRhythm(one8);
+		assertTrue("Checking using rhythm is set to true", tab.usesRhythm());
+		rhythmEqualTest(1, 8, highString.get(0));
+		rhythmEqualTest(1, 8, highString.get(1));
+		rhythmEqualTest(1, 8, highString.get(2));
+		rhythmEqualTest(1, 8, lowString.get(0));
+		rhythmEqualTest(1, 8, lowString.get(1));
+		rhythmEqualTest(1, 8, lowString.get(2));
+		
+		tab.removeRhythms();
+		tab.addRhythm(null);
+		assertTrue("Checking using rhythm is set to true", tab.usesRhythm());
+		rhythmEqualTest(1, 1, highString.get(0));
+		rhythmEqualTest(1, 2, highString.get(1));
+		rhythmEqualTest(1, 4, highString.get(2));
+		rhythmEqualTest(1, 4, lowString.get(0));
+		rhythmEqualTest(1, 8, lowString.get(1));
+		rhythmEqualTest(1, 4, lowString.get(2));
+		
+		highString.clear();
+		lowString.clear();
+		tab.addRhythm(null);
+		assertEquals(0, highString.size(), "Checking nothing happens when adding rhythms to empty strings");
+		assertEquals(0, lowString.size(), "Checking nothing happens when adding rhythms to empty strings");
+	}
+	
+	/***
+	 * Helper method for checking rhythmic equality and showing test information
+	 * @param duration
+	 * @param unit
+	 * @param note
+	 */
+	private void rhythmEqualTest(int duration, int unit, TabSymbol note){
+		Rhythm r = ((TabNoteRhythm)note).getRhythm();
+		assertTrue("Checking note has correct rhythm."
+				+ "Expected duration: " + duration + " and unit: " + unit + ", "
+				+ "but got duration: " + r.getDuration() + " and unit: " + r.getUnit(),
+				r.getDuration() == duration && r.getUnit() == unit);
 	}
 	
 	@Test

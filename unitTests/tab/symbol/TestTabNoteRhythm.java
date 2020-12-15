@@ -85,8 +85,8 @@ public class TestTabNoteRhythm{
 	}
 	
 	@Test
-	public void convertToNoRhythm(){
-		TabNote n = note.convertToNoRhythm();
+	public void removeRhythm(){
+		TabNote n = note.removeRhythm();
 		assertTrue("Checking pitch is equal", n.getPitch().equals(note.getPitch()));
 		assertTrue("Checking pos is equal", n.getPos().equals(note.getPos()));
 		assertTrue("Checking modifier is equal", n.getModifier().equals(note.getModifier()));
@@ -94,6 +94,16 @@ public class TestTabNoteRhythm{
 		assertFalse("Checking pitch is not the same object", n.getPitch() == note.getPitch());
 		assertFalse("Checking pos is not the same object", n.getPos() == note.getPos());
 		assertFalse("Checking modifier is not the same object", n.getModifier() == note.getModifier());
+	}
+	
+	@Test
+	public void convertToRhythm(){
+		assertEquals(note, note.convertToRhythm(rhythm), "Checking new note is the same as the original");
+	}
+	
+	@Test
+	public void usesRhythm(){
+		assertTrue("Checking note uses rhythm", note.usesRhythm());
 	}
 	
 	@Test

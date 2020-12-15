@@ -1,6 +1,7 @@
 package tab.symbol;
 
 import music.NotePosition;
+import music.Rhythm;
 import music.TimeSignature;
 import tab.Tab;
 import tab.TabString;
@@ -95,6 +96,27 @@ public abstract class TabSymbol implements Comparable<TabSymbol>, Copyable<TabSy
 	public void quantize(TimeSignature sig, int divisor){
 		this.getPos().quantize(sig, divisor);
 	}
+
+	/**
+	 * Create a new version of this {@link TabSymbol} as using the given {@link Rhythm}.<br>
+	 * This method should just return this object if this object cannot use rhythmic information
+	 * @param r The rhythm, uses the object itself, not a copy. 
+	 * @return The new {@link TabSymbol} using the rhythmic information.
+	 */
+	public abstract TabSymbol convertToRhythm(Rhythm r);
+	
+	/**
+	 * Create a new version of this {@link TabSymbol} using not rhythmic information.<br>
+	 * This method should just return this object if this object already uses no rhythmic information
+	 * @return The new {@link TabSymbol} not using the rhythmic information.
+	 */
+	public abstract TabSymbol removeRhythm();
+	
+	/**
+	 * Determine if this {@link TabSymbol} uses rhythmic information
+	 * @return true if it uses rhythmic information, false otherwise
+	 */
+	public abstract boolean usesRhythm();
 	
 	/***/
 	@Override

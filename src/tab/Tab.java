@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import music.NotePosition;
 import music.Pitch;
+import music.Rhythm;
 import music.TimeSignature;
 import tab.symbol.TabSymbol;
 import util.Copyable;
@@ -28,17 +29,34 @@ public class Tab implements Copyable<Tab>{
 	private TimeSignature timeSignature;
 	
 	/**
+	 * Keeps track of if this {@link Tab} should hold notes with rhythmic information or not.<br>
+	 * true to hold rhythmic information, false to not hold it
+	 */
+	private boolean usesRhythm;
+	
+	/**
 	 * Create a Tab using the given list of Strings in 4/4 time
+	 * @param strings see {@link #strings}
+	 * @param timeSignature  See {@link #timeSignature}
+	 * @param usesRhythm See {@link #usesRhythm}
+	 */
+	public Tab(ArrayList<TabString> strings, TimeSignature timeSignature, boolean usesRhythm){
+		this.setStrings(strings);
+		this.setTimeSignature(timeSignature);
+		this.setUsesRhythm(usesRhythm);
+	}
+	
+	/**
+	 * Create a Tab using the given list of Strings in 4/4 time using no rhythmic information
 	 * @param strings see {@link #strings}
 	 * @param timeSignature The {@link TimeSignature} to use
 	 */
 	public Tab(ArrayList<TabString> strings, TimeSignature timeSignature){
-		this.setStrings(strings);
-		this.setTimeSignature(timeSignature);
+		this(strings, timeSignature, false);
 	}
 	
 	/**
-	 * Create a Tab using the given list of Strings in 4/4 time
+	 * Create a Tab using the given list of Strings in 4/4 time using no rhythmic information
 	 * @param strings see {@link #strings}
 	 */
 	public Tab(ArrayList<TabString> strings){
@@ -46,7 +64,7 @@ public class Tab implements Copyable<Tab>{
 	}
 	
 	/**
-	 * Create an empty Tab with no strings in 4/4 time
+	 * Create an empty Tab with no strings in 4/4 time using no rhythmic information
 	 */
 	public Tab(){
 		this(new ArrayList<TabString>());
@@ -97,6 +115,25 @@ public class Tab implements Copyable<Tab>{
 		this.timeSignature = timeSignature;
 	}
 	
+	/**
+	 * Determine if this {@link Tab} uses rhythmic information
+	 * @return see {@link #usesRhythm}
+	 */
+	public boolean usesRhythm(){
+		return usesRhythm;
+	}
+	
+	/**
+	 * Set whether or not this {@link Tab} uses rhythmic information.<br>
+	 * Also updates all notes currently in this tab. If rhythms are set to be used, all notes rhythmic values are guessed
+	 * @return see {@link #usesRhythm}
+	 */
+	public void setUsesRhythm(boolean usesRhythm){
+		this.usesRhythm = usesRhythm;
+		if(this.usesRhythm) this.addRhythm(null);
+		else this.removeRhythms();
+	}
+
 	/**
 	 * Change the {@link TimeSignature} of this {@link Tab} and update the positions of all symbols in this {@link Tab} 
 	 * 	based on the given parameters 
@@ -178,6 +215,51 @@ public class Tab implements Copyable<Tab>{
 	 */
 	public int getRootNote(int string){
 		return this.getStrings().get(string).getRootNote();
+	}
+	
+	/**
+	 * Remove all rhythmic information from notes in this tab
+	 */
+	public void removeRhythms(){
+		this.usesRhythm = false;
+		for(TabString s : this.getStrings()){
+			for(int i = 0; i < s.size(); i++) s.set(i, s.get(i).removeRhythm());
+		}
+	}
+	
+	/**
+	 * Provide rhythmic information for every not in this tab
+	 * @param rhythm The rhythm to apply, or null to give rhythms based on the space between symbols.
+	 */
+	public void addRhythm(Rhythm rhythm){
+		this.usesRhythm = true;
+		
+		for(TabString s : this.getStrings()){
+			int size = s.size();
+			// TODO rework code for better formatting
+			// Skip the string if there is not at least one note
+			if(size > 0){
+				if(rhythm == null){
+					// Going one less than the number of notes on the string
+					for(int i = 0; i < size - 1; i++){
+						// Guess and set the rhythm based on the space between the notes
+						s.set(i, s.get(i).convertToRhythm(this.getTimeSignature().guessRhythm(
+								s.get(i + 1).getPos().getValue() -
+								s.get(i).getPos().getValue()
+							))
+						);
+					}
+					
+					// Set the rhythm of the last note
+					s.set(size - 1, s.get(size - 1).convertToRhythm(new Rhythm(1, 4))); // TODO make this a setting
+				}
+				else{
+					for(int i = 0; i < size; i++){
+						s.set(i, s.get(i).convertToRhythm(rhythm));
+					}
+				}
+			}
+		}
 	}
 
 	/***/

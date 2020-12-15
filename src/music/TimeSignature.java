@@ -88,6 +88,39 @@ public class TimeSignature{
 		return Math.round(pos * d) / d;
 	}
 	
+	/***
+	 * Guess the rhythmic information of a length based on this {@link TimeSignature}
+	 * @param duration The length in number of measures for the rhythmic information
+	 * @return The guessed {@link Rhythm}. Only can guess from whole notes to 16th notes, no dotted notes or triplets
+	 */
+	public Rhythm guessRhythm(double duration){
+		Rhythm r = new Rhythm(1, 1);
+		// The length of the rhythm to guess converted to be in terms of number of whole notes
+		double length = duration * this.getRatio();
+		// The closest to a whole number a note has been so far
+		double best = 1;
+		
+		// Go through each note type which can be guessed, and find the one which best approximates the distance
+		for(int n = 1; n <= 16; n *= 2){
+			// The number of the current number of notes, mean number of whole notes, half notes, etc
+			double amount = length * n;
+			
+			// The closest integer amount of notes of that type which can be made
+			int closeAmount = (int)Math.round(amount);
+			
+			// The amount of the duration not accounted for by the integer amount of notes
+			double remain = Math.abs(closeAmount - amount);
+			
+			// If the amount of the duration remaining is less than the best so far, then update the rhythm to use that length
+			if(remain < best){
+				best = remain;
+				r.setDuration(closeAmount);
+				r.setUnit(n);
+			}
+		}
+		return r;
+	}
+	
 	/***/
 	@Override
 	public boolean equals(Object obj){

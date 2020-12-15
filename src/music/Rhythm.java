@@ -73,6 +73,7 @@ public class Rhythm implements Copyable<Rhythm>{
 	 * Bring the {@link #duration} and {@link #unit} to their most simple form
 	 */
 	public void simplify(){
+		if(this.getUnit() == 0) return;
 		int divisor = MathUtils.gcd(this.getDuration(), this.getUnit());
 		this.setDuration(this.getDuration() / divisor);
 		this.setUnit(this.getUnit() / divisor);

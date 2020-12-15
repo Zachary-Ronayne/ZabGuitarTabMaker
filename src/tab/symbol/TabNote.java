@@ -44,6 +44,7 @@ public class TabNote extends TabPitch{
 	 * @param r The rhythm, uses the object itself, not a copy
 	 * @return The new {@link TabNoteRhythm}
 	 */
+	@Override
 	public TabNoteRhythm convertToRhythm(Rhythm r){
 		return new TabNoteRhythm(
 				this.getPitch().copy(), r,
@@ -60,6 +61,18 @@ public class TabNote extends TabPitch{
 	 */
 	public TabNoteRhythm convertToRhythm(int duraiton, int unit){
 		return convertToRhythm(new Rhythm(duraiton, unit));
+	}
+	
+	/***/
+	@Override
+	public TabNote removeRhythm(){
+		return this;
+	}
+	
+	/***/
+	@Override
+	public boolean usesRhythm(){
+		return false;
 	}
 	
 	/***/

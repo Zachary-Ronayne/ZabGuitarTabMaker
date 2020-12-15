@@ -38,13 +38,13 @@ public class TestRhythm{
 	
 	@Test
 	public void getDuration(){
-		assertEquals(1, whole.getDuration(), "Checking correct initilaized duration");
-		assertEquals(1, half.getDuration(), "Checking correct initilaized duration");
-		assertEquals(1, third.getDuration(), "Checking correct initilaized duration");
-		assertEquals(3, threeHalf.getDuration(), "Checking correct initilaized duration");
-		assertEquals(2, fives.getDuration(), "Checking correct initilaized duration");
+		assertEquals(1, whole.getDuration(), "Checking correct initialized duration");
+		assertEquals(1, half.getDuration(), "Checking correct initialized duration");
+		assertEquals(1, third.getDuration(), "Checking correct initialized duration");
+		assertEquals(3, threeHalf.getDuration(), "Checking correct initialized duration");
+		assertEquals(2, fives.getDuration(), "Checking correct initialized duration");
 		
-		assertEquals(5, simplify.getDuration(), "Checking simplified initilaized duration");
+		assertEquals(5, simplify.getDuration(), "Checking simplified initialized duration");
 	}
 	
 	@Test
@@ -55,13 +55,13 @@ public class TestRhythm{
 	
 	@Test
 	public void getUnit(){
-		assertEquals(1, whole.getUnit(), "Checking correct initilaized unit");
-		assertEquals(2, half.getUnit(), "Checking correct initilaized unit");
-		assertEquals(3, third.getUnit(), "Checking correct initilaized unit");
-		assertEquals(2, threeHalf.getUnit(), "Checking correct initilaized unit");
-		assertEquals(5, fives.getUnit(), "Checking correct initilaized unit");
+		assertEquals(1, whole.getUnit(), "Checking correct initialized unit");
+		assertEquals(2, half.getUnit(), "Checking correct initialized unit");
+		assertEquals(3, third.getUnit(), "Checking correct initialized unit");
+		assertEquals(2, threeHalf.getUnit(), "Checking correct initialized unit");
+		assertEquals(5, fives.getUnit(), "Checking correct initialized unit");
 		
-		assertEquals(2, simplify.getUnit(), "Checking simplified initilaized unit");
+		assertEquals(2, simplify.getUnit(), "Checking simplified initialized unit");
 	}
 	
 	@Test
@@ -98,6 +98,12 @@ public class TestRhythm{
 		whole.simplify();
 		assertEquals(7, whole.getDuration(), "Checking duration is unchanged");
 		assertEquals(5, whole.getUnit(), "Checking unit is unchanged");
+		
+		whole.setDuration(1);
+		whole.setUnit(0);
+		whole.simplify();
+		assertEquals(1, whole.getDuration(), "Checking duration is unchanged with unit at zero");
+		assertEquals(0, whole.getUnit(), "Checking unit is unchanged");
 	}
 	
 	@Test

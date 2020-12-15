@@ -125,6 +125,38 @@ public class TestTimeSignature{
 	}
 	
 	@Test
+	public void guessRhythm(){
+		guessRhythmHelper(1, 1, 1, four4);
+		guessRhythmHelper(2, 1, 2, four4);
+		guessRhythmHelper(2, 1, 2.01, four4);
+		guessRhythmHelper(3, 1, 2.99, four4);
+		guessRhythmHelper(3, 2, 1.5, four4);
+		guessRhythmHelper(3, 2, 1.51, four4);
+		guessRhythmHelper(5, 4, 1.26, four4);
+		guessRhythmHelper(9, 8, 1.126, four4);
+		guessRhythmHelper(17, 16, 1.0626, four4);
+		
+		guessRhythmHelper(5, 8, 1, five8);
+		guessRhythmHelper(5, 8, 1.01, five8);
+		guessRhythmHelper(1, 8, 0.21, five8);
+	}
+	
+	/**
+	 * Helper method for testing {@link #guessRhythm()}
+	 * @param expectDuration The expected duration value for the guessed rhythm
+	 * @param expectUnit The expected unit value for the guessed rhythm
+	 * @param duration The duration to guess from
+	 * @param sig The {@link TimeSignature} to use
+	 */
+	private void guessRhythmHelper(int expectDuration, int expectUnit, double duration, TimeSignature sig){
+		Rhythm guess = sig.guessRhythm(duration);
+		assertTrue("Checking duration guessing " + expectUnit + " unit notes in " + sig.symbol() + ", "
+				+ "expected duration: " + expectDuration + " unit: " + expectUnit + ", "
+				+ " but got duration: " + guess.getDuration() + " unit: " + guess.getUnit(),
+				expectDuration == guess.getDuration() && expectUnit == guess.getUnit());
+	}
+	
+	@Test
 	public void equals(){
 		TimeSignature new4 = new TimeSignature(4, 4);
 		assertTrue("Checking identical time signatures are equal", four4.equals(new4));

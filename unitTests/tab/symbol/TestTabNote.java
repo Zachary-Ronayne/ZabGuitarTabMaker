@@ -80,6 +80,16 @@ public class TestTabNote{
 	}
 	
 	@Test
+	public void removeRhythm(){
+		assertEquals(note, note.removeRhythm(), "Checking removed version is the same");
+	}
+	
+	@Test
+	public void usesRhythm(){
+		assertFalse("Checking note doesn't use rhythm", note.usesRhythm());
+	}
+	
+	@Test
 	public void copy(){
 		TabNote copy = note.copy();
 		assertTrue("Checking copy is equal to the source object", copy.equals(note));

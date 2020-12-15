@@ -12,6 +12,7 @@ import org.junit.jupiter.api.function.Executable;
 
 import music.NotePosition;
 import music.Pitch;
+import music.Rhythm;
 import tab.TabString;
 
 public class TestTabSymbol{
@@ -33,6 +34,12 @@ public class TestTabSymbol{
 		public String getSymbol(TabString string){return "A";}
 		@Override
 		public TabSymbol copy(){return this;}
+		@Override
+		public TabSymbol convertToRhythm(Rhythm r){return this;}
+		@Override
+		public TabSymbol removeRhythm(){return this;}
+		@Override
+		public boolean usesRhythm(){return false;}
 	}
 	
 	@BeforeEach
