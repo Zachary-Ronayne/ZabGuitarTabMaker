@@ -71,17 +71,28 @@ public class TestTabSymbol{
 	}
 	
 	@Test
+	public void getPosition(){
+		assertEquals(pos, symbol.getPosition(), "Checking position initialized");
+	}
+	
+	@Test
 	public void getPos(){
-		assertEquals(pos, symbol.getPos(), "Checking position initialized");
+		assertEquals(3, symbol.getPos(), "Checking position initialized");
+	}
+	
+	@Test
+	public void setPosition(){
+		symbol.setPosition(newPos);
+		assertEquals(newPos, symbol.getPosition(), "Checking position set");
+		
+		symbol.setPosition(null);
+		assertEquals(newPos, symbol.getPosition(), "Checking position not changed to null");
 	}
 	
 	@Test
 	public void setPos(){
-		symbol.setPos(newPos);
-		assertEquals(newPos, symbol.getPos(), "Checking position set");
-		
-		symbol.setPos(null);
-		assertEquals(newPos, symbol.getPos(), "Checking position not changed to null");
+		symbol.setPos(8);
+		assertEquals(8, symbol.getPos(), "Checking position set");
 	}
 	
 	@Test
@@ -111,10 +122,10 @@ public class TestTabSymbol{
 		TabSymbol c = new TabNote(0, 0);
 		assertTrue("Pos 0 should compare less than 0 for pos 3", c.compareTo(symbol) < 0);
 		
-		c.setPos(new NotePosition(4));
+		c.setPosition(new NotePosition(4));
 		assertTrue("Pos 4 should compare greater than 0 for pos 3", c.compareTo(symbol) > 0);
 
-		c.setPos(new NotePosition(3));
+		c.setPosition(new NotePosition(3));
 		assertTrue("Pos 3 should compare equal to 0 for pos 3", c.compareTo(symbol) == 0);
 	}
 
@@ -124,10 +135,10 @@ public class TestTabSymbol{
 		assertFalse("Checking objects are not the same object", s == symbol);
 		assertTrue("Checking objects are equal", s.equals(symbol));
 		
-		s.setPos(new NotePosition(4));
+		s.setPosition(new NotePosition(4));
 		assertFalse("Checking objects are not equal", s.equals(symbol));
 
-		s.setPos(pos);
+		s.setPosition(pos);
 		assertTrue("Checking objects are equal", s.equals(symbol));
 		s.setModifier(new TabModifier("a", "b"));
 		assertFalse("Checking objects are not equal", s.equals(symbol));

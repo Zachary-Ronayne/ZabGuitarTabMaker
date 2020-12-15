@@ -3,6 +3,7 @@ package tab.symbol;
 import music.NotePosition;
 import music.Pitch;
 import music.Rhythm;
+import music.TimeSignature;
 import util.ObjectUtils;
 
 /**
@@ -52,7 +53,7 @@ public class TabNoteRhythm extends TabPitch{
 	public TabNoteRhythm copy(){
 		Pitch p = ObjectUtils.copy(this.getPitch());
 		Rhythm r = ObjectUtils.copy(this.getRhythm());
-		NotePosition pos = ObjectUtils.copy(this.getPos());
+		NotePosition pos = ObjectUtils.copy(this.getPosition());
 		TabModifier mod = ObjectUtils.copy(this.getModifier());
 		return new TabNoteRhythm(p, r, pos, mod);
 	}
@@ -80,7 +81,7 @@ public class TabNoteRhythm extends TabPitch{
 	 */
 	@Override
 	public TabNote removeRhythm(){
-		return new TabNote(this.getPitch().copy(), this.getPos().copy(), this.getModifier().copy());
+		return new TabNote(this.getPitch().copy(), this.getPosition().copy(), this.getModifier().copy());
 	}
 
 	/***/
@@ -93,6 +94,15 @@ public class TabNoteRhythm extends TabPitch{
 	@Override
 	public boolean usesRhythm(){
 		return true;
+	}
+	
+	/**
+	 * Quantize this note's position, and also quantize its rhythm
+	 */
+	@Override
+	public void quantize(TimeSignature sig, int divisor){
+		super.quantize(sig, divisor);
+		this.setRhythm(sig.guessRhythmWholeNotes(this.getRhythm().getLength()));
 	}
 	
 	/***/

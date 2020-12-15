@@ -47,7 +47,7 @@ public class TestTabFactory{
 	public void modifiedPitch(){
 		TabNote n = TabFactory.modifiedPitch(note, octave, pos, mod);
 		assertEquals(Music.createNote(note, octave), n.getPitch().getNote(), "Checking note has correct pitch");
-		assertEquals(pos, n.getPos().getValue(), "Checking note has correct position");
+		assertEquals(pos, n.getPosition().getValue(), "Checking note has correct position");
 		assertTrue("Checking note has correct modifier", n.getModifier() == mod);
 	}
 	
@@ -56,7 +56,7 @@ public class TestTabFactory{
 		TabNoteRhythm n = TabFactory.modifiedRhythm(note, octave, rhythm, pos, mod);
 		assertEquals(Music.createNote(note, octave), n.getPitch().getNote(), "Checking note has correct pitch");
 		assertTrue("Checking note has correct rhythm", n.getRhythm() == rhythm);
-		assertEquals(pos, n.getPos().getValue(), "Checking note has correct position");
+		assertEquals(pos, n.getPosition().getValue(), "Checking note has correct position");
 		assertTrue("Checking note has correct modifier", n.getModifier().equals(mod));
 	}
 	
@@ -64,12 +64,12 @@ public class TestTabFactory{
 	public void modifiedFret(){
 		TabNote n = TabFactory.modifiedFret(string, fret, pos, mod);
 		assertEquals(Music.createNote(Music.E, octave), n.getPitch().getNote(), "Checking note has correct pitch");
-		assertEquals(pos, n.getPos().getValue(), "Checking note has correct position");
+		assertEquals(pos, n.getPosition().getValue(), "Checking note has correct position");
 		assertTrue("Checking note has correct modifier", n.getModifier() == mod);
 		
 		n = TabFactory.modifiedFret(string, fret, pos);
 		assertEquals(Music.createNote(Music.E, octave), n.getPitch().getNote(), "Checking note has correct pitch");
-		assertEquals(pos, n.getPos().getValue(), "Checking note has correct position");
+		assertEquals(pos, n.getPosition().getValue(), "Checking note has correct position");
 		assertTrue("Checking note has empty modifier", n.getModifier().equals(new TabModifier()));
 	}
 	
@@ -78,7 +78,7 @@ public class TestTabFactory{
 		TabNoteRhythm n = TabFactory.modifiedFretRhythm(string, fret, rhythm, pos, mod);
 		assertEquals(Music.createNote(Music.E, octave), n.getPitch().getNote(), "Checking note has correct pitch");
 		assertTrue("Checking note has correct rhythm", n.getRhythm() == rhythm);
-		assertEquals(pos, n.getPos().getValue(), "Checking note has correct position");
+		assertEquals(pos, n.getPosition().getValue(), "Checking note has correct position");
 		assertTrue("Checking note has correct modifier", n.getModifier().equals(mod));
 	}
 	
@@ -86,7 +86,7 @@ public class TestTabFactory{
 	public void hammerOn(){
 		TabNote n = TabFactory.hammerOn(string, fret, pos);
 		assertEquals(Music.createNote(Music.E, octave), n.getPitch().getNote(), "Checking note has correct pitch");
-		assertEquals(pos, n.getPos().getValue(), "Checking note has correct position");
+		assertEquals(pos, n.getPosition().getValue(), "Checking note has correct position");
 		assertTrue("Checking note has correct modifier", n.getModifier().equals(new TabModifier("h", "")));
 	}
 	
@@ -94,7 +94,7 @@ public class TestTabFactory{
 	public void pullOff(){
 		TabNote n = TabFactory.pullOff(string, fret, pos);
 		assertEquals(Music.createNote(Music.E, octave), n.getPitch().getNote(), "Checking note has correct pitch");
-		assertEquals(pos, n.getPos().getValue(), "Checking note has correct position");
+		assertEquals(pos, n.getPosition().getValue(), "Checking note has correct position");
 		assertTrue("Checking note has correct modifier", n.getModifier().equals(new TabModifier("p", "")));
 	}
 	
@@ -102,7 +102,7 @@ public class TestTabFactory{
 	public void harmonic(){
 		TabNote n = TabFactory.harmonic(string, fret, pos);
 		assertEquals(Music.createNote(Music.E, octave), n.getPitch().getNote(), "Checking note has correct pitch");
-		assertEquals(pos, n.getPos().getValue(), "Checking note has correct position");
+		assertEquals(pos, n.getPosition().getValue(), "Checking note has correct position");
 		assertTrue("Checking note has correct modifier", n.getModifier().equals(new TabModifier("<", ">")));
 	}
 	

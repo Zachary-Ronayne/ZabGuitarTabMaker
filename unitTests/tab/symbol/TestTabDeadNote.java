@@ -24,7 +24,7 @@ public class TestTabDeadNote{
 	
 	@Test
 	public void constructor(){
-		assertEquals(pos, note.getPos(), "Checking position initialized");
+		assertEquals(pos, note.getPosition(), "Checking position initialized");
 		assertEquals(new TabModifier(), note.getModifier(), "Checking modifier initialized");
 	}
 

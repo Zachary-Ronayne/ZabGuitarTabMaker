@@ -57,7 +57,7 @@ public abstract class TabPitch extends TabSymbol{
 	 * @param pitch The integer for see {@link #pitch}
 	 */
 	public void setPitch(int pitch){
-		this.pitch = new Pitch(pitch);
+		this.setPitch(new Pitch(pitch));
 	}
 	
 	/***/

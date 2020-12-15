@@ -57,10 +57,10 @@ public class TestTabPitch{
 	
 	@Test
 	public void constructor(){
-		assertEquals(pos, note.getPos(), "Checking position initialized in full constructor");
+		assertEquals(pos, note.getPosition(), "Checking position initialized in full constructor");
 		assertEquals(mod, note.getModifier(), "Checking modifier initialized in full constructor");
 		
-		assertEquals(pos, noteNoMod.getPos(), "Checking position initialized in no modifier constructor");
+		assertEquals(pos, noteNoMod.getPosition(), "Checking position initialized in no modifier constructor");
 		assertEquals(new TabModifier(), noteNoMod.getModifier(), "Checking modifier initialized in no modifier constructor");
 		
 		assertThrows(IllegalArgumentException.class, new Executable(){

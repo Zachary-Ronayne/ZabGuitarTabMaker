@@ -150,7 +150,7 @@ public class Tab implements Copyable<Tab>{
 	 * 	What is done with the left overs is determined via deleteExtra
 	 * @param deleteExtra If rescale is true, this parameter does nothing. If rescale is false, then if deleteExtra is true, 
 	 * 	then all symbols remain in the same numerical measure, and any symbols which begin outside of that measure are deleted from the tab.<br>
-	 * 	If deleteExtra is false, then all symbols stay the same duration and position relative to one another, ignoring the time signature's new measure boundries. 
+	 * 	If deleteExtra is false, then all symbols stay the same duration and position relative to one another, ignoring the time signature's new measure boundaries. 
 	 * 	i.e. 3 measures of 4/4 will become 4 measures of 3/4 where all symbols keep the same spacing
 	 */
 	public void retime(TimeSignature newTime, boolean rescale, boolean deleteExtra){
@@ -169,7 +169,7 @@ public class Tab implements Copyable<Tab>{
 						// TODO abstract out this calculation?
 						
 						// Get the position object and value of the symbol
-						NotePosition p = t.getPos();
+						NotePosition p = t.getPosition();
 						double v = p.getValue();
 						
 						// Determine the measure of the position, as well as its position in the measure
@@ -195,7 +195,7 @@ public class Tab implements Copyable<Tab>{
 						// TODO abstract out this calculation?
 						
 						// Update the position based on the new time signature
-						NotePosition p = t.getPos();
+						NotePosition p = t.getPosition();
 						p.setValue(p.getValue() / newTime.getRatio());
 					}
 				}
@@ -237,32 +237,44 @@ public class Tab implements Copyable<Tab>{
 	 * @param rhythm The rhythm to apply, or null to give rhythms based on the space between symbols.
 	 */
 	public void addRhythm(Rhythm rhythm){
+		// Guess the rhythms if one wasn't provided
+		if(rhythm == null) this.guessRhythms();
+		// Set all of the rhythms otherwise
+		else this.setRhythmAll(rhythm);
+	}
+	
+	/**
+	 * For each note on each string of this Tab, give each of them a rhythm based on the space between other notes
+	 */
+	public void guessRhythms(){
 		this.usesRhythm = true;
-		
 		for(TabString s : this.getStrings()){
 			int size = s.size();
-			// TODO rework code for better formatting
+			
 			// Skip the string if there is not at least one note
-			if(size > 0){
-				if(rhythm == null){
-					// Going one less than the number of notes on the string
-					for(int i = 0; i < size - 1; i++){
-						// Guess and set the rhythm based on the space between the notes
-						s.set(i, s.get(i).convertToRhythm(this.getTimeSignature().guessRhythm(
-								s.get(i + 1).getPos().getValue() -
-								s.get(i).getPos().getValue()
-							))
-						);
-					}
-					
-					// Set the rhythm of the last note
-					s.set(size - 1, s.get(size - 1).convertToRhythm(new Rhythm(1, 4))); // TODO make this a setting
-				}
-				else{
-					for(int i = 0; i < size; i++){
-						s.set(i, s.get(i).convertToRhythm(rhythm));
-					}
-				}
+			if(size < 1) continue;
+			
+			// Going one less than the number of notes on the string
+			for(int i = 0; i < size - 1; i++){
+				// Guess and set the rhythm based on the space between the notes
+				TabSymbol t = s.get(i);
+				Rhythm r = this.getTimeSignature().guessRhythmMeasures(s.get(i + 1).getPos() - t.getPos());
+				s.set(i, t.convertToRhythm(r));
+			}
+			// Set the rhythm of the last note
+			s.set(size - 1, s.get(size - 1).convertToRhythm(new Rhythm(1, 4))); // TODO make this a setting
+		}
+	}
+	
+	/**
+	 * Set the rhythm of every symbol in this tab, converting it to a rhythmic note where applicable
+	 * @param r The {@link Rhythm} to use
+	 */
+	public void setRhythmAll(Rhythm r){
+		this.usesRhythm = true;
+		for(TabString s : this.getStrings()){
+			for(int i = 0; i < s.size(); i++){
+				s.set(i, s.get(i).convertToRhythm(r));
 			}
 		}
 	}

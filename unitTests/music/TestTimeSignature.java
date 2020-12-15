@@ -134,30 +134,60 @@ public class TestTimeSignature{
 	
 	@Test
 	public void guessRhythm(){
-		guessRhythmHelper(1, 1, 1, four4);
-		guessRhythmHelper(2, 1, 2, four4);
-		guessRhythmHelper(2, 1, 2.01, four4);
-		guessRhythmHelper(3, 1, 2.99, four4);
-		guessRhythmHelper(3, 2, 1.5, four4);
-		guessRhythmHelper(3, 2, 1.51, four4);
-		guessRhythmHelper(5, 4, 1.26, four4);
-		guessRhythmHelper(9, 8, 1.126, four4);
-		guessRhythmHelper(17, 16, 1.0626, four4);
+		guessRhythmHelper(1, 1, 1, four4, true);
+		guessRhythmHelper(2, 1, 2, four4, true);
+		guessRhythmHelper(2, 1, 2.01, four4, true);
+		guessRhythmHelper(3, 1, 2.99, four4, true);
+		guessRhythmHelper(3, 2, 1.5, four4, true);
+		guessRhythmHelper(3, 2, 1.51, four4, true);
+		guessRhythmHelper(5, 4, 1.26, four4, true);
+		guessRhythmHelper(9, 8, 1.126, four4, true);
+		guessRhythmHelper(17, 16, 1.0626, four4, true);
+		guessRhythmHelper(3, 16, 0.1874, four4, true);
+		guessRhythmHelper(1, 16, 0.0624, four4, true);
+		guessRhythmHelper(1, 16, 0.09374, four4, true);
+		guessRhythmHelper(1, 8, 0.09375, four4, true);
+		guessRhythmHelper(1, 16, 0.06, four4, true);
+		guessRhythmHelper(0, 1, 0.000001, four4, true);
 		
-		guessRhythmHelper(5, 8, 1, five8);
-		guessRhythmHelper(5, 8, 1.01, five8);
-		guessRhythmHelper(1, 8, 0.21, five8);
+		guessRhythmHelper(5, 8, 1, five8, true);
+		guessRhythmHelper(5, 8, 1.01, five8, true);
+		guessRhythmHelper(1, 8, 0.21, five8, true);
+	}
+	
+	@Test
+	public void guessRhythmWholeNotes(){
+		guessRhythmHelper(2, 1, 2.01, four4, false);
+		guessRhythmHelper(3, 1, 2.99, four4, false);
+		guessRhythmHelper(3, 2, 1.5, four4, false);
+		guessRhythmHelper(3, 2, 1.51, four4, false);
+		guessRhythmHelper(5, 4, 1.26, four4, false);
+		
+		guessRhythmHelper(5, 8, 0.626, five8, false);
+		guessRhythmHelper(1, 8, 0.126, five8, false);
+	}
+	
+	@Test
+	public void guessRhythmMeasures(){
+		guessRhythmHelper(2, 1, 2.01, four4, true);
+		guessRhythmHelper(3, 1, 2.99, four4, true);
+		guessRhythmHelper(3, 2, 1.5, four4, true);
+		guessRhythmHelper(3, 2, 1.51, four4, true);
+		guessRhythmHelper(5, 4, 1.26, four4, true);
+		
+		guessRhythmHelper(5, 8, 1.01, five8, true);
+		guessRhythmHelper(1, 8, 0.21, five8, true);
 	}
 	
 	/**
 	 * Helper method for testing {@link #guessRhythm()}
 	 * @param expectDuration The expected duration value for the guessed rhythm
 	 * @param expectUnit The expected unit value for the guessed rhythm
-	 * @param duration The duration to guess from
+	 * @param duration The duration to guess from in number of measures
 	 * @param sig The {@link TimeSignature} to use
 	 */
-	private void guessRhythmHelper(int expectDuration, int expectUnit, double duration, TimeSignature sig){
-		Rhythm guess = sig.guessRhythm(duration);
+	public static void guessRhythmHelper(int expectDuration, int expectUnit, double duration, TimeSignature sig, boolean measures){
+		Rhythm guess = sig.guessRhythm(duration, measures);
 		assertTrue("Checking duration guessing " + expectUnit + " unit notes in " + sig.symbol() + ", "
 				+ "expected duration: " + expectDuration + " unit: " + expectUnit + ", "
 				+ " but got duration: " + guess.getDuration() + " unit: " + guess.getUnit(),

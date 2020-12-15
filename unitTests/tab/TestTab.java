@@ -30,6 +30,10 @@ public class TestTab{
 	private TabString highString;
 	private TabString lowString;
 	
+	private Tab tabForRhythms;
+	private TabString highRhythms;
+	private TabString lowRhythms;
+	
 	@BeforeEach
 	public void setup(){
 		highString = new TabString(new Pitch(Music.createNote(Music.C, 3)));
@@ -42,6 +46,18 @@ public class TestTab{
 		tabDefault = new Tab();
 		tabSpecific = new Tab(strings, new TimeSignature(3, 2));
 		tabFull = new Tab(strings, new TimeSignature(4, 4), true);
+		
+		tabForRhythms = new Tab();
+		highRhythms = new TabString(Music.createPitch(Music.E, 3));
+		lowRhythms = new TabString(Music.createPitch(Music.E, 2));
+		tabForRhythms.getStrings().add(highRhythms);
+		tabForRhythms.getStrings().add(lowRhythms);
+		highRhythms.add(TabFactory.modifiedFret(highRhythms, 0, 0));
+		highRhythms.add(TabFactory.modifiedFret(highRhythms, 0, 1));
+		highRhythms.add(TabFactory.modifiedFret(highRhythms, 0, 1.5));
+		lowRhythms.add(TabFactory.modifiedFret(lowRhythms, 0, 2));
+		lowRhythms.add(TabFactory.modifiedFret(lowRhythms, 0, 2.25));
+		lowRhythms.add(TabFactory.modifiedFret(lowRhythms, 0, 2.375));
 	}
 	
 	@Test
@@ -117,17 +133,17 @@ public class TestTab{
 		assertEquals(newTime, copy.getTimeSignature(), "Checking retime set the time signature");
 		assertEquals(4, copyH.size(), "Checking no symbols were deleted with rescale false, deleteExtra false, converting 4/4 to 5/4");
 		assertEquals(2, copyL.size(), "Checking no symbols were deleted with rescale false, deleteExtra false, converting 4/4 to 5/4");
-		assertEquals(0, copyH.get(0).getPos().getValue(), UtilsTest.DELTA,
+		assertEquals(0, copyH.get(0).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra false, converting 4/4 to 5/4");
-		assertEquals(0.6, copyH.get(1).getPos().getValue(), UtilsTest.DELTA,
+		assertEquals(0.6, copyH.get(1).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra false, converting 4/4 to 5/4");
-		assertEquals(0.8, copyH.get(2).getPos().getValue(), UtilsTest.DELTA,
+		assertEquals(0.8, copyH.get(2).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra false, converting 4/4 to 5/4");
-		assertEquals(1, copyH.get(3).getPos().getValue(), UtilsTest.DELTA,
+		assertEquals(1, copyH.get(3).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra false, converting 4/4 to 5/4");
-		assertEquals(1.6, copyL.get(0).getPos().getValue(), UtilsTest.DELTA,
+		assertEquals(1.6, copyL.get(0).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra false, converting 4/4 to 5/4");
-		assertEquals(2.32, copyL.get(1).getPos().getValue(), UtilsTest.DELTA,
+		assertEquals(2.32, copyL.get(1).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra false, converting 4/4 to 5/4");
 		
 		copy = tab.copy();
@@ -137,17 +153,17 @@ public class TestTab{
 		copy.retime(newTime, false, true);
 		assertEquals(4, copyH.size(), "Checking no symbols were deleted with rescale false, deleteExtra true, converting 4/4 to 5/4");
 		assertEquals(2, copyL.size(), "Checking no symbols were deleted with rescale false, deleteExtra true, converting 4/4 to 5/4");
-		assertEquals(0, copyH.get(0).getPos().getValue(), UtilsTest.DELTA,
+		assertEquals(0, copyH.get(0).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra true, converting 4/4 to 5/4");
-		assertEquals(0.6, copyH.get(1).getPos().getValue(), UtilsTest.DELTA,
+		assertEquals(0.6, copyH.get(1).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra true, converting 4/4 to 5/4");
-		assertEquals(1, copyH.get(2).getPos().getValue(), UtilsTest.DELTA,
+		assertEquals(1, copyH.get(2).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra true, converting 4/4 to 5/4");
-		assertEquals(1.2, copyH.get(3).getPos().getValue(), UtilsTest.DELTA,
+		assertEquals(1.2, copyH.get(3).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra true, converting 4/4 to 5/4");
-		assertEquals(2, copyL.get(0).getPos().getValue(), UtilsTest.DELTA,
+		assertEquals(2, copyL.get(0).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra true, converting 4/4 to 5/4");
-		assertEquals(2.72, copyL.get(1).getPos().getValue(), UtilsTest.DELTA,
+		assertEquals(2.72, copyL.get(1).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra true, converting 4/4 to 5/4");
 		
 		copy = tab.copy();
@@ -157,17 +173,17 @@ public class TestTab{
 		copy.retime(newTime, false, false);
 		assertEquals(4, copyH.size(), "Checking no symbols were deleted with rescale false, deleteExtra false, converting 4/4 to 3/4");
 		assertEquals(2, copyL.size(), "Checking no symbols were deleted with rescale false, deleteExtra false, converting 4/4 to 3/4");
-		assertEquals(0, copyH.get(0).getPos().getValue(), UtilsTest.DELTA,
+		assertEquals(0, copyH.get(0).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra false, converting 4/4 to 3/4");
-		assertEquals(1, copyH.get(1).getPos().getValue(), UtilsTest.DELTA,
+		assertEquals(1, copyH.get(1).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra false, converting 4/4 to 3/4");
-		assertEquals(1.33333333333333, copyH.get(2).getPos().getValue(), UtilsTest.DELTA,
+		assertEquals(1.33333333333333, copyH.get(2).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra false, converting 4/4 to 3/4");
-		assertEquals(1.66666666666667, copyH.get(3).getPos().getValue(), UtilsTest.DELTA,
+		assertEquals(1.66666666666667, copyH.get(3).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra false, converting 4/4 to 3/4");
-		assertEquals(2.66666666666667, copyL.get(0).getPos().getValue(), UtilsTest.DELTA,
+		assertEquals(2.66666666666667, copyL.get(0).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra false, converting 4/4 to 3/4");
-		assertEquals(3.86666666666667, copyL.get(1).getPos().getValue(), UtilsTest.DELTA,
+		assertEquals(3.86666666666667, copyL.get(1).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra false, converting 4/4 to 3/4");
 		
 		copy = tab.copy();
@@ -177,15 +193,15 @@ public class TestTab{
 		copy.retime(newTime, false, true);
 		assertEquals(4, copyH.size(), "Checking no symbols were deleted with rescale false, deleteExtra true, converting 4/4 to 3/4");
 		assertEquals(1, copyL.size(), "Checking one symbol was deleted with rescale false, deleteExtra true, converting 4/4 to 3/4");
-		assertEquals(0, copyH.get(0).getPos().getValue(), UtilsTest.DELTA,
+		assertEquals(0, copyH.get(0).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra true, converting 4/4 to 3/4");
-		assertEquals(1, copyH.get(1).getPos().getValue(), UtilsTest.DELTA,
+		assertEquals(1, copyH.get(1).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra true, converting 4/4 to 3/4");
-		assertEquals(1, copyH.get(2).getPos().getValue(), UtilsTest.DELTA,
+		assertEquals(1, copyH.get(2).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra true, converting 4/4 to 3/4");
-		assertEquals(1.33333333333333, copyH.get(3).getPos().getValue(), UtilsTest.DELTA,
+		assertEquals(1.33333333333333, copyH.get(3).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra true, converting 4/4 to 3/4");
-		assertEquals(2, copyL.get(0).getPos().getValue(), UtilsTest.DELTA,
+		assertEquals(2, copyL.get(0).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra true, converting 4/4 to 3/4");
 		
 		copy = tab.copy();
@@ -195,17 +211,17 @@ public class TestTab{
 		copy.retime(newTime, true, true);
 		assertEquals(4, copyH.size(), "Checking no symbols were deleted with rescale true, converting 4/4 to 5/4");
 		assertEquals(2, copyL.size(), "Checking no symbols were deleted with rescale true, converting 4/4 to 5/4");
-		assertEquals(0, copyH.get(0).getPos().getValue(), UtilsTest.DELTA,
+		assertEquals(0, copyH.get(0).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale true, converting 4/4 to 5/4");
-		assertEquals(0.75, copyH.get(1).getPos().getValue(), UtilsTest.DELTA,
+		assertEquals(0.75, copyH.get(1).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale true, converting 4/4 to 5/4");
-		assertEquals(1, copyH.get(2).getPos().getValue(), UtilsTest.DELTA,
+		assertEquals(1, copyH.get(2).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale true, converting 4/4 to 5/4");
-		assertEquals(1.25, copyH.get(3).getPos().getValue(), UtilsTest.DELTA,
+		assertEquals(1.25, copyH.get(3).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale true, converting 4/4 to 5/4");
-		assertEquals(2, copyL.get(0).getPos().getValue(), UtilsTest.DELTA,
+		assertEquals(2, copyL.get(0).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale true, converting 4/4 to 5/4");
-		assertEquals(2.9, copyL.get(1).getPos().getValue(), UtilsTest.DELTA,
+		assertEquals(2.9, copyL.get(1).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale true, converting 4/4 to 5/4");
 	}
 	
@@ -214,8 +230,8 @@ public class TestTab{
 		lowString.add(new TabNote(0, 1.1));
 		highString.add(new TabNote(0, 2.1));
 		tab.quantize(1);
-		assertEquals(1, lowString.get(0).getPos().getValue(), UtilsTest.DELTA, "Checking string is quantized");
-		assertEquals(2, highString.get(0).getPos().getValue(), UtilsTest.DELTA, "Checking string is quantized");
+		assertEquals(1, lowString.get(0).getPosition().getValue(), UtilsTest.DELTA, "Checking string is quantized");
+		assertEquals(2, highString.get(0).getPosition().getValue(), UtilsTest.DELTA, "Checking string is quantized");
 	}
 	
 	@Test
@@ -240,45 +256,56 @@ public class TestTab{
 	
 	@Test
 	public void addRhythm(){
-		highString.add(TabFactory.modifiedFret(highString, 0, 0));
-		highString.add(TabFactory.modifiedFret(highString, 0, 1));
-		highString.add(TabFactory.modifiedFret(highString, 0, 1.5));
-		lowString.add(TabFactory.modifiedFret(lowString, 0, 2));
-		lowString.add(TabFactory.modifiedFret(lowString, 0, 2.25));
-		lowString.add(TabFactory.modifiedFret(lowString, 0, 2.375));
-		assertFalse("Checking using rhythm is set to false initially", tab.usesRhythm());
-		assertFalse("Checking note doesn't use rhythm", highString.get(0).usesRhythm());
-		assertFalse("Checking note doesn't use rhythm", highString.get(1).usesRhythm());
-		assertFalse("Checking note doesn't use rhythm", highString.get(2).usesRhythm());
-		assertFalse("Checking note doesn't use rhythm", lowString.get(0).usesRhythm());
-		assertFalse("Checking note doesn't use rhythm", lowString.get(1).usesRhythm());
-		assertFalse("Checking note doesn't use rhythm", lowString.get(2).usesRhythm());
+		assertFalse("Checking using rhythm is set to false initially", tabForRhythms.usesRhythm());
+		assertFalse("Checking note doesn't use rhythm", highRhythms.get(0).usesRhythm());
+		assertFalse("Checking note doesn't use rhythm", highRhythms.get(1).usesRhythm());
+		assertFalse("Checking note doesn't use rhythm", highRhythms.get(2).usesRhythm());
+		assertFalse("Checking note doesn't use rhythm", lowRhythms.get(0).usesRhythm());
+		assertFalse("Checking note doesn't use rhythm", lowRhythms.get(1).usesRhythm());
+		assertFalse("Checking note doesn't use rhythm", lowRhythms.get(2).usesRhythm());
 		
 		Rhythm one8 = new Rhythm(1, 8);
-		tab.addRhythm(one8);
-		assertTrue("Checking using rhythm is set to true", tab.usesRhythm());
-		rhythmEqualTest(1, 8, highString.get(0));
-		rhythmEqualTest(1, 8, highString.get(1));
-		rhythmEqualTest(1, 8, highString.get(2));
-		rhythmEqualTest(1, 8, lowString.get(0));
-		rhythmEqualTest(1, 8, lowString.get(1));
-		rhythmEqualTest(1, 8, lowString.get(2));
+		tabForRhythms.addRhythm(one8);
+		assertTrue("Checking using rhythm is set to true", tabForRhythms.usesRhythm());
+		rhythmEqualTest(1, 8, highRhythms.get(0));
 		
-		tab.removeRhythms();
-		tab.addRhythm(null);
-		assertTrue("Checking using rhythm is set to true", tab.usesRhythm());
-		rhythmEqualTest(1, 1, highString.get(0));
-		rhythmEqualTest(1, 2, highString.get(1));
-		rhythmEqualTest(1, 4, highString.get(2));
-		rhythmEqualTest(1, 4, lowString.get(0));
-		rhythmEqualTest(1, 8, lowString.get(1));
-		rhythmEqualTest(1, 4, lowString.get(2));
+		tabForRhythms.removeRhythms();
+		tabForRhythms.addRhythm(null);
+		assertTrue("Checking using rhythm is set to true", tabForRhythms.usesRhythm());
+		rhythmEqualTest(1, 1, highRhythms.get(0));
+		rhythmEqualTest(1, 2, highRhythms.get(1));
 		
-		highString.clear();
-		lowString.clear();
-		tab.addRhythm(null);
-		assertEquals(0, highString.size(), "Checking nothing happens when adding rhythms to empty strings");
-		assertEquals(0, lowString.size(), "Checking nothing happens when adding rhythms to empty strings");
+		highRhythms.clear();
+		lowRhythms.clear();
+		tabForRhythms.addRhythm(null);
+		assertEquals(0, highRhythms.size(), "Checking nothing happens when adding rhythms to empty strings");
+		assertEquals(0, lowRhythms.size(), "Checking nothing happens when adding rhythms to empty strings");
+	}
+	
+	@Test
+	public void guessRhythms(){
+		tabForRhythms.removeRhythms();
+		tabForRhythms.guessRhythms();
+		assertTrue("Checking using rhythm is set to true", tabForRhythms.usesRhythm());
+		rhythmEqualTest(1, 1, highRhythms.get(0));
+		rhythmEqualTest(1, 2, highRhythms.get(1));
+		rhythmEqualTest(1, 4, highRhythms.get(2));
+		rhythmEqualTest(1, 4, lowRhythms.get(0));
+		rhythmEqualTest(1, 8, lowRhythms.get(1));
+		rhythmEqualTest(1, 4, lowRhythms.get(2));
+	}
+
+	@Test
+	public void setRhythmAll(){
+		tabForRhythms.removeRhythms();
+		tabForRhythms.setRhythmAll(new Rhythm(1, 8));
+		assertTrue("Checking using rhythm is set to true", tabForRhythms.usesRhythm());
+		rhythmEqualTest(1, 8, highRhythms.get(0));
+		rhythmEqualTest(1, 8, highRhythms.get(1));
+		rhythmEqualTest(1, 8, highRhythms.get(2));
+		rhythmEqualTest(1, 8, lowRhythms.get(0));
+		rhythmEqualTest(1, 8, lowRhythms.get(1));
+		rhythmEqualTest(1, 8, lowRhythms.get(2));
 	}
 	
 	/***

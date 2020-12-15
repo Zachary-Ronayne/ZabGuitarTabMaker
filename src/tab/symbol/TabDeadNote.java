@@ -23,7 +23,7 @@ public class TabDeadNote extends TabSymbol{
 	/***/
 	@Override
 	public TabDeadNote copy(){
-		return new TabDeadNote(ObjectUtils.copy(this.getPos()));
+		return new TabDeadNote(ObjectUtils.copy(this.getPosition()));
 	}
 	
 	/***/

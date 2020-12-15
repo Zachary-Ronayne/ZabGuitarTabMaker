@@ -43,7 +43,7 @@ public class TabNote extends TabPitch{
 	@Override
 	public TabNote copy(){
 		Pitch p = ObjectUtils.copy(this.getPitch());
-		NotePosition pos = ObjectUtils.copy(this.getPos());
+		NotePosition pos = ObjectUtils.copy(this.getPosition());
 		TabModifier mod = ObjectUtils.copy(this.getModifier());
 		return new TabNote(p, pos, mod);
 	}
@@ -57,7 +57,7 @@ public class TabNote extends TabPitch{
 	public TabNoteRhythm convertToRhythm(Rhythm r){
 		return new TabNoteRhythm(
 				this.getPitch().copy(), r,
-				this.getPos().copy(),
+				this.getPosition().copy(),
 				this.getModifier().copy()
 		);
 	}

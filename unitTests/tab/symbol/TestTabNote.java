@@ -36,15 +36,15 @@ public class TestTabNote{
 	@Test
 	public void constructor(){
 		assertEquals(pitch, note.getPitch(), "Checking pitch initialized in full constructor");
-		assertEquals(pos, note.getPos(), "Checking position initialized in full constructor");
+		assertEquals(pos, note.getPosition(), "Checking position initialized in full constructor");
 		assertEquals(mod, note.getModifier(), "Checking modifier initialized in full constructor");
 		
 		assertEquals(pitch, noteNoMod.getPitch(), "Checking pitch initialized in no modifier constructor");
-		assertEquals(pos, noteNoMod.getPos(), "Checking position initialized in no modifier constructor");
+		assertEquals(pos, noteNoMod.getPosition(), "Checking position initialized in no modifier constructor");
 		assertEquals(new TabModifier(), noteNoMod.getModifier(), "Checking empty modifier in no modifier constructor");
 		
 		assertEquals(3, noteValues.getPitch().getNote(), "Checking pitch initialized in values constructor");
-		assertEquals(2, noteValues.getPos().getValue(), "Checking position initialized in values constructor");
+		assertEquals(2, noteValues.getPosition().getValue(), "Checking position initialized in values constructor");
 		assertEquals(new TabModifier(), noteValues.getModifier(), "Checking empty modifier in values constructor");
 	}
 	
@@ -61,12 +61,12 @@ public class TestTabNote{
 		TabNoteRhythm n = note.convertToRhythm(r);
 		
 		assertTrue("Checking pitch is equal", n.getPitch().equals(note.getPitch()));
-		assertTrue("Checking pos is equal", n.getPos().equals(note.getPos()));
+		assertTrue("Checking pos is equal", n.getPosition().equals(note.getPosition()));
 		assertTrue("Checking modifier is equal", n.getModifier().equals(note.getModifier()));
 		assertTrue("Checking rhythm is the same as the set rhythm", n.getRhythm() == r);
 		
 		assertFalse("Checking pitch is not the same object", n.getPitch() == note.getPitch());
-		assertFalse("Checking pos is not the same object", n.getPos() == note.getPos());
+		assertFalse("Checking pos is not the same object", n.getPosition() == note.getPosition());
 		assertFalse("Checking modifier is not the same object", n.getModifier() == note.getModifier());
 		
 
@@ -74,14 +74,14 @@ public class TestTabNote{
 		n = note.convertToRhythm(r.getDuration(), r.getUnit());
 
 		assertTrue("Checking pitch is equal", n.getPitch().equals(note.getPitch()));
-		assertTrue("Checking pos is equal", n.getPos().equals(note.getPos()));
+		assertTrue("Checking pos is equal", n.getPosition().equals(note.getPosition()));
 		assertTrue("Checking modifier is equal", n.getModifier().equals(note.getModifier()));
 		assertTrue("Checking rhythm is equal, expected duration " + r.getDuration() + " and unit " + r.getUnit() +
 				   ", But got duration " + n.getRhythm().getDuration() + " and unit " + n.getRhythm().getUnit(),
 					n.getRhythm().equals(r));
 
 		assertFalse("Checking pitch is not the same object", n.getPitch() == note.getPitch());
-		assertFalse("Checking pos is not the same object", n.getPos() == note.getPos());
+		assertFalse("Checking pos is not the same object", n.getPosition() == note.getPosition());
 		assertFalse("Checking modifier is not the same object", n.getModifier() == note.getModifier());
 		assertFalse("Checking rhythm is not the same as the set rhythm", n.getRhythm() == r);
 	}

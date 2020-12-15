@@ -97,20 +97,43 @@ public class TimeSignature implements Copyable<TimeSignature>{
 	
 	/***
 	 * Guess the rhythmic information of a length based on this {@link TimeSignature}
+	 * @param duration The length in number of whole notes for the rhythmic information
+	 * @return The guessed {@link Rhythm}. Only can guess from whole notes to 16th notes, no dotted notes or triplets
+	 */
+	public Rhythm guessRhythmWholeNotes(double duration){
+		return this.guessRhythm(duration, false);
+	}
+	
+	
+	/***
+	 * Guess the rhythmic information of a length based on this {@link TimeSignature}
 	 * @param duration The length in number of measures for the rhythmic information
 	 * @return The guessed {@link Rhythm}. Only can guess from whole notes to 16th notes, no dotted notes or triplets
 	 */
-	public Rhythm guessRhythm(double duration){
-		Rhythm r = new Rhythm(1, 1);
+	public Rhythm guessRhythmMeasures(double duration){
+		return this.guessRhythm(duration, true);
+	}
+	
+	/***
+	 * Guess the rhythmic information of a length based on this {@link TimeSignature}
+	 * @param duration The length of the note
+	 * @param measures true if duration is in terms of the number of measures for the rhythmic information, 
+	 * 	false if duration is in terms of the number of whole notes
+	 * @return The guessed {@link Rhythm}. Only can guess from whole notes to 16th notes, no dotted notes or triplets
+	 */
+	public Rhythm guessRhythm(double duration, boolean measures){
+		Rhythm r = new Rhythm(0, 1);
 		// The length of the rhythm to guess converted to be in terms of number of whole notes
-		double length = duration * this.getRatio();
+		if(measures) duration = duration * this.getRatio();
 		// The closest to a whole number a note has been so far
 		double best = 1;
+		// The maximum rhythmic division to end the loop
+		int loopEnd = 16;
 		
 		// Go through each note type which can be guessed, and find the one which best approximates the distance
-		for(int n = 1; n <= 16; n *= 2){
+		for(int n = 1; n <= loopEnd; n *= 2){
 			// The number of the current number of notes, mean number of whole notes, half notes, etc
-			double amount = length * n;
+			double amount = duration * n;
 			
 			// The closest integer amount of notes of that type which can be made
 			int closeAmount = (int)Math.round(amount);
@@ -118,13 +141,18 @@ public class TimeSignature implements Copyable<TimeSignature>{
 			// The amount of the duration not accounted for by the integer amount of notes
 			double remain = Math.abs(closeAmount - amount);
 			
-			// If the amount of the duration remaining is less than the best so far, then update the rhythm to use that length
-			if(remain < best){
+			/*
+			 * If the amount of the duration remaining is less than the best so far,
+			 * 	and there is at least one note, then update the rhythm to use that length.
+			 * Also set the rhythm if the lowest interval is found
+			 */
+			if(amount >= 1 && remain < best || n == loopEnd){
 				best = remain;
 				r.setDuration(closeAmount);
 				r.setUnit(n);
 			}
 		}
+		r.simplify();
 		return r;
 	}
 	

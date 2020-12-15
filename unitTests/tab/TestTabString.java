@@ -116,21 +116,21 @@ public class TestTabString{
 	}
 	
 	@Test
-	public void quantize(){ // TODO
+	public void quantize(){
 		for(TabNote n : notes){
-			n.getPos().addValue(1.1);
+			n.getPosition().addValue(1.1);
 			string.add(n);
 		}
 		
 		string.quantize(new TimeSignature(4, 4), 1);
 		
-		assertEquals(1, string.get(0).getPos().getValue(), UtilsTest.DELTA, "Checking note is quantized");
-		assertEquals(2, string.get(1).getPos().getValue(), UtilsTest.DELTA, "Checking note is quantized");
-		assertEquals(3, string.get(2).getPos().getValue(), UtilsTest.DELTA, "Checking note is quantized");
-		assertEquals(4, string.get(3).getPos().getValue(), UtilsTest.DELTA, "Checking note is quantized");
-		assertEquals(5, string.get(4).getPos().getValue(), UtilsTest.DELTA, "Checking note is quantized");
-		assertEquals(6, string.get(5).getPos().getValue(), UtilsTest.DELTA, "Checking note is quantized");
-		assertEquals(7, string.get(6).getPos().getValue(), UtilsTest.DELTA, "Checking note is quantized");
+		assertEquals(1, string.get(0).getPosition().getValue(), UtilsTest.DELTA, "Checking note is quantized");
+		assertEquals(2, string.get(1).getPosition().getValue(), UtilsTest.DELTA, "Checking note is quantized");
+		assertEquals(3, string.get(2).getPosition().getValue(), UtilsTest.DELTA, "Checking note is quantized");
+		assertEquals(4, string.get(3).getPosition().getValue(), UtilsTest.DELTA, "Checking note is quantized");
+		assertEquals(5, string.get(4).getPosition().getValue(), UtilsTest.DELTA, "Checking note is quantized");
+		assertEquals(6, string.get(5).getPosition().getValue(), UtilsTest.DELTA, "Checking note is quantized");
+		assertEquals(7, string.get(6).getPosition().getValue(), UtilsTest.DELTA, "Checking note is quantized");
 	}
 	
 	@Test

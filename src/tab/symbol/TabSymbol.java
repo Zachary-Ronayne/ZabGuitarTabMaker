@@ -15,7 +15,7 @@ import util.ObjectUtils;
 public abstract class TabSymbol implements Comparable<TabSymbol>, Copyable<TabSymbol>{
 
 	/** The position {@link NotePosition} object of this {@link TabSymbol} on a {@link TabString}. Cannot be null. */
-	private NotePosition pos;
+	private NotePosition position;
 	
 	/**
 	 * The {@link TabModifier} used by this {@link TabSymbol} to specify how it is played on an instrument. Cannot be null.
@@ -24,44 +24,60 @@ public abstract class TabSymbol implements Comparable<TabSymbol>, Copyable<TabSy
 	
 	/**
 	 * Create a new {@link TabSymbol} using the given position and modifier
-	 * @param pos The {@link #pos}
+	 * @param pos The {@link #position}
 	 * @param modifier The {@link #modifier}
 	 */
-	public TabSymbol(NotePosition pos, TabModifier modifier){
-		if(pos == null) throw new IllegalArgumentException("Pos cannot be null");
+	public TabSymbol(NotePosition position, TabModifier modifier){
+		if(position == null) throw new IllegalArgumentException("Pos cannot be null");
 		if(modifier == null) throw new IllegalArgumentException("Modifier cannot be null");
-		this.setPos(pos);
+		this.setPosition(position);
 		this.setModifier(modifier);
 	}
 	
 	/**
-	 * Get the {@link #pos} of this {@link TabSymbol}
+	 * Get the {@link #position} of this {@link TabSymbol}
+	 * @return See {@link #position}
+	 */
+	public NotePosition getPosition(){
+		return this.position;
+	}
+	
+	/**
+	 * Get the value of the {@link #position} of this {@link TabSymbol}
 	 * @return The position
 	 */
-	public NotePosition getPos(){
-		return pos;
+	public double getPos(){
+		return this.getPosition().getValue();
+	}
+	
+	/**
+	 * Set the {@link #position} of this {@link TabSymbol}
+	 * @param pos See {@link #position}
+	 */
+	public void setPosition(NotePosition position){
+		if(position == null) return;
+		this.position = position;
 	}
 
 	/**
-	 * Set the {@link #pos} of this {@link TabSymbol}
-	 * @param pos The position
+	 * Set the value for the {@link #position} of this {@link TabSymbol} creating a new {@link NotePosition} object
+	 * @param pos See {@link #position}
 	 */
-	public void setPos(NotePosition pos){
-		if(pos == null) return;
-		this.pos = pos;
+	public void setPos(double pos){
+		this.setPosition(new NotePosition(pos));
 	}
 
 	/**
 	 * Get the {@link #modifier} of this {@link TabSymbol}
-	 * @return The modifier
+	 * @return See {@link #modifier}
 	 */
 	public TabModifier getModifier(){
-		return modifier;
+		return this.modifier;
 	}
 
 	/**
 	 * Set the {@link #modifier} of this {@link TabSymbol}
-	 * @param The modifier
+	 * @param See {@link #modifier}
 	 */
 	public void setModifier(TabModifier modifier){
 		if(modifier == null) return;
@@ -94,7 +110,7 @@ public abstract class TabSymbol implements Comparable<TabSymbol>, Copyable<TabSy
 	 * 	i.e. use 4 to quantize to quarter notes, use 6 to quantize to dotted quarter notes, etc
 	 */
 	public void quantize(TimeSignature sig, int divisor){
-		this.getPos().quantize(sig, divisor);
+		this.getPosition().quantize(sig, divisor);
 	}
 
 	/**
@@ -121,8 +137,8 @@ public abstract class TabSymbol implements Comparable<TabSymbol>, Copyable<TabSy
 	/***/
 	@Override
 	public int compareTo(TabSymbol t){
-		double p1 = this.getPos().getValue();
-		double p2 = t.getPos().getValue();
+		double p1 = this.getPosition().getValue();
+		double p2 = t.getPosition().getValue();
 		if(p1 < p2) return -1;
 		return (p1 > p2) ? 1 : 0;
 	}
@@ -135,7 +151,7 @@ public abstract class TabSymbol implements Comparable<TabSymbol>, Copyable<TabSy
 		TabModifier m1 = this.getModifier();
 		TabModifier m2 = s.getModifier();
 		return	super.equals(obj) ||
-				this.getPos().equals(s.getPos()) &&
+				this.getPosition().equals(s.getPosition()) &&
 				(m1 == null && m2 == null || m1.equals(m2));
 	}
 	
