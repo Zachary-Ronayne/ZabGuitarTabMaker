@@ -186,20 +186,37 @@ public class TestTab{
 		assertEquals(3.86666666666667, copyL.get(1).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra false, converting 4/4 to 3/4");
 		
+		copy = copy.copy();
+		copyH = copy.getStrings().get(0);
+		copyL = copy.getStrings().get(1);
+		newTime = new TimeSignature(5, 4);
+		copy.retime(newTime, false, false);
+
+		assertEquals(4, copyH.size(), "Checking no symbols were deleted with rescale false, deleteExtra true, converting 3/4 to 5/4");
+		assertEquals(2, copyL.size(), "Checking no symbols were deleted with rescale false, deleteExtra true, converting 3/4 to 5/4");
+		assertEquals(0, copyH.get(0).getPosition().getValue(), UtilsTest.DELTA,
+				"Checking correct retimed note rescale false, deleteExtra true, converting 3/4 to 5/4");
+		assertEquals(0.6, copyH.get(1).getPosition().getValue(), UtilsTest.DELTA,
+				"Checking correct retimed note rescale false, deleteExtra true, converting 3/4 to 5/4");
+		assertEquals(0.8, copyH.get(2).getPosition().getValue(), UtilsTest.DELTA,
+				"Checking correct retimed note rescale false, deleteExtra true, converting 3/4 to 5/4");
+		assertEquals(1, copyH.get(3).getPosition().getValue(), UtilsTest.DELTA,
+				"Checking correct retimed note rescale false, deleteExtra true, converting 3/4 to 5/4");
+		assertEquals(1.6, copyL.get(0).getPosition().getValue(), UtilsTest.DELTA,
+				"Checking correct retimed note rescale false, deleteExtra true, converting 3/4 to 5/4");
+		assertEquals(2.32, copyL.get(1).getPosition().getValue(), UtilsTest.DELTA,
+				"Checking correct retimed note rescale false, deleteExtra true, converting 3/4 to 5/4");
+		
 		copy = tab.copy();
 		copyH = copy.getStrings().get(0);
 		copyL = copy.getStrings().get(1);
 		newTime = new TimeSignature(3, 4);
 		copy.retime(newTime, false, true);
-		assertEquals(4, copyH.size(), "Checking no symbols were deleted with rescale false, deleteExtra true, converting 4/4 to 3/4");
+		assertEquals(2, copyH.size(), "Checking 2 symbols were deleted with rescale false, deleteExtra true, converting 4/4 to 3/4");
 		assertEquals(1, copyL.size(), "Checking one symbol was deleted with rescale false, deleteExtra true, converting 4/4 to 3/4");
 		assertEquals(0, copyH.get(0).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra true, converting 4/4 to 3/4");
-		assertEquals(1, copyH.get(1).getPosition().getValue(), UtilsTest.DELTA,
-				"Checking correct retimed note rescale false, deleteExtra true, converting 4/4 to 3/4");
-		assertEquals(1, copyH.get(2).getPosition().getValue(), UtilsTest.DELTA,
-				"Checking correct retimed note rescale false, deleteExtra true, converting 4/4 to 3/4");
-		assertEquals(1.33333333333333, copyH.get(3).getPosition().getValue(), UtilsTest.DELTA,
+		assertEquals(1.33333333333333, copyH.get(1).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra true, converting 4/4 to 3/4");
 		assertEquals(2, copyL.get(0).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra true, converting 4/4 to 3/4");

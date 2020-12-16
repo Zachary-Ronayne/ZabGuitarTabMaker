@@ -133,6 +133,22 @@ public class TestTimeSignature{
 	}
 	
 	@Test
+	public void retime(){
+		assertEquals(1, three2.retime(six4, 1), UtilsTest.DELTA, "Checking equal retiming with same ratio time signatures");
+		assertEquals(1.5, three2.retime(six4, 1.5), UtilsTest.DELTA, "Checking equal retiming with same ratio time signatures");
+		assertEquals(3.232, three2.retime(six4, 3.232), UtilsTest.DELTA, "Checking equal retiming with same ratio time signatures");
+
+		assertEquals(1.6, five8.retime(four4, 1), UtilsTest.DELTA, "Checking equal retiming 4/4 to 5/8");
+		assertEquals(1, five8.retime(four4, 0.625), UtilsTest.DELTA, "Checking equal retiming 4/4 to 5/8");
+		
+		assertEquals(1.25, four4.retime(five4, 1), UtilsTest.DELTA, "Checking equal retiming 5/4 to 4/4");
+		assertEquals(1.5, four4.retime(five4, 1.2), UtilsTest.DELTA, "Checking equal retiming 5/4 to 4/4");
+		
+		assertEquals(0.83333333333333, three2.retime(five4, 1), UtilsTest.DELTA, "Checking equal retiming 5/4 to 3/2");
+		assertEquals(1.16666666666667, three2.retime(five4, 1.4), UtilsTest.DELTA, "Checking equal retiming 5/4 to 3/2");
+	}
+	
+	@Test
 	public void guessRhythm(){
 		guessRhythmHelper(1, 1, 1, four4, true);
 		guessRhythmHelper(2, 1, 2, four4, true);

@@ -54,6 +54,37 @@ public class NotePosition implements Copyable<NotePosition>{
 	}
 	
 	/**
+	 * Convert this {@link NotePosition} value so that it is the same number of whole notes, but in the new time signature
+	 * @param newTime The {@link TimeSignature} to convert to
+	 * @param oldTime The {@link TimeSignature} which this position was in
+	 */
+	public void retime(TimeSignature newTime, TimeSignature oldTime){
+		this.setValue(newTime.retime(oldTime, this.getValue()));
+	}
+	
+	/**
+	 * Convert this {@link NotePosition} value so that it stays in the same measure and same relative position in the measure.<br>
+	 * i.e. if a note was one quarter note after the second measure, it will still be one quarter note after the second measure, but in the new time signature.
+	 * @param newTime The {@link TimeSignature} to convert to
+	 * @param oldTime The {@link TimeSignature} which this position was in
+	 * @return true if the position is in the same measure, false otherwise
+	 */
+	public boolean retimeMeasure(TimeSignature newTime, TimeSignature oldTime){
+		double v = this.getValue();
+		
+		// Determine the measure of this position, as well as its position in the measure
+		int measure = (int)v;
+		double space = v - measure;
+		
+		// Find the rescaled position
+		double newSpace = newTime.retime(oldTime, space);
+		this.setValue(measure + newSpace);
+		
+		// Determine if the position was inside the measure
+		return newSpace < 1;
+	}
+	
+	/**
 	 * Quantize this position to the nearest place in a measure
 	 * @param sig The time signature to base the quantization off of
 	 * @param divisor The amount to divide up the units of a whole note.<br>

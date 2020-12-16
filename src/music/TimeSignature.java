@@ -95,6 +95,17 @@ public class TimeSignature implements Copyable<TimeSignature>{
 		return Math.round(pos * d) / d;
 	}
 	
+	/**
+	 * Convert the given time value so that it is the same number of whole notes in the old time signature,
+	 * 	but now in this {@link TimeSignature}
+	 * @param oldTime The {@link TimeSignature} of the given value
+	 * @param time The duration of the note to retime
+	 * @return The retimed value
+	 */
+	public double retime(TimeSignature oldTime, double time){
+		return time * oldTime.getRatio() / this.getRatio();
+	}
+	
 	/***
 	 * Guess the rhythmic information of a length based on this {@link TimeSignature}
 	 * @param duration The length in number of whole notes for the rhythmic information

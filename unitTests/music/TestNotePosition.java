@@ -13,10 +13,17 @@ import util.testUtils.UtilsTest;
 public class TestNotePosition{
 	
 	private NotePosition pos;
+	private TimeSignature four4;
+	private TimeSignature five8;
+	private TimeSignature three2;
 	
 	@BeforeEach
 	public void setup(){
 		pos = new NotePosition(3);
+		
+		four4 = new TimeSignature(4, 4);
+		five8 = new TimeSignature(5, 8);
+		three2 = new TimeSignature(3, 2);
 	}
 
 	@Test
@@ -42,6 +49,47 @@ public class TestNotePosition{
 		pos.setValue(2);
 		pos.addValue(3);
 		assertEquals(5, pos.getValue(), "Checking value is added");
+	}
+	
+	@Test
+	public void retime(){
+		pos.setValue(1.5);
+		pos.retime(five8, four4);
+		assertEquals(2.4, pos.getValue(), "Checking retimed position");
+	}
+	
+	@Test
+	public void retimeMeasure(){
+		retimeMeasureHelper(1, 1, four4, five8, true);
+		retimeMeasureHelper(0, 0, four4, five8, true);
+		retimeMeasureHelper(1.4, 1.25, four4, five8, true);
+		retimeMeasureHelper(2.2, 1.75, four4, five8, false);
+		
+		retimeMeasureHelper(1, 1, five8, four4, true);
+		retimeMeasureHelper(1.5, 1.8, five8, four4, true);
+		
+		retimeMeasureHelper(1, 1, four4, three2, true);
+		retimeMeasureHelper(1.5, 1.75, four4, three2, true);
+		
+		retimeMeasureHelper(1.08333333333333, 1.2, five8, three2, true);
+		retimeMeasureHelper(3, 1.83333333333333, three2, five8, false);
+	}
+	
+	/**
+	 * Helper for testing retimeMeasure
+	 * @param expectPos The expected position for the note
+	 * @param currentPos The current position of a note 
+	 * @param oldTime The original time signature of the position
+	 * @param newTime The new time signature of the position
+	 * @param inside true if the note should be inside the same measure, false otherwise
+	 */
+	private void retimeMeasureHelper(double expectPos, double currentPos, TimeSignature oldTime, TimeSignature newTime, boolean inside){
+		NotePosition p = new NotePosition(currentPos);
+		boolean result = p.retimeMeasure(newTime, oldTime);
+		assertEquals(expectPos, p.getValue(), UtilsTest.DELTA, "Checking retiming in the same measure from " 
+				+ oldTime.symbol() + " to " + newTime.symbol());
+		if(inside) assertTrue("Checking retiming is in the original measure", result);
+		else assertFalse("Checking retiming is outside the original measure", result);
 	}
 	
 	@Test

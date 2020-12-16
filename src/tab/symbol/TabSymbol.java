@@ -112,6 +112,25 @@ public abstract class TabSymbol implements Comparable<TabSymbol>, Copyable<TabSy
 	public void quantize(TimeSignature sig, int divisor){
 		this.getPosition().quantize(sig, divisor);
 	}
+	
+	/**
+	 * Convert this {@link TabSymbol} objects position so that it is the same number of whole notes, but in the new time signature
+	 * @param newTime The {@link TimeSignature} to convert to
+	 * @param oldTime The {@link TimeSignature} which this position was in
+	 */
+	public void retime(TimeSignature newTime, TimeSignature oldTime){
+		this.getPosition().retime(newTime, oldTime);
+	}
+	
+	/**
+	 * Convert this {@link NoteSymbol} object position so that it stays in the same measure and same relative position in the measure.<br>
+	 * @param newTime The {@link TimeSignature} to convert to
+	 * @param oldTime The {@link TimeSignature} which the position was in
+	 * @return true if the position is in the same measure, false otherwise
+	 */
+	public boolean retimeMeasure(TimeSignature newTime, TimeSignature oldTime){
+		return this.getPosition().retimeMeasure(newTime, oldTime);
+	}
 
 	/**
 	 * Create a new version of this {@link TabSymbol} as using the given {@link Rhythm}.<br>

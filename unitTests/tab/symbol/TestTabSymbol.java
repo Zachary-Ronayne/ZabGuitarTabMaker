@@ -13,6 +13,7 @@ import org.junit.jupiter.api.function.Executable;
 import music.NotePosition;
 import music.Pitch;
 import music.Rhythm;
+import music.TimeSignature;
 import tab.TabString;
 
 public class TestTabSymbol{
@@ -25,6 +26,9 @@ public class TestTabSymbol{
 	
 	private NotePosition newPos;
 	private TabModifier newMod;
+	
+	private TimeSignature four4;
+	private TimeSignature five8;
 	
 	private class TestT extends TabSymbol{
 		public TestT(NotePosition pos, TabModifier modifier){
@@ -51,6 +55,9 @@ public class TestTabSymbol{
 		mod = new TabModifier("[", "]");
 		string = new TabString(new Pitch(-4));
 		symbol = new TestT(pos, mod);
+		
+		four4 = new TimeSignature(4, 4);
+		five8 = new TimeSignature(5, 8);
 	}
 	
 	@Test
@@ -115,6 +122,27 @@ public class TestTabSymbol{
 		
 		symbol.setModifier(newMod);
 		assertEquals("{A}", symbol.getModifiedSymbol(string), "Checking modified symbol obtained after changing fields");
+	}
+	
+	@Test
+	public void quantize(){
+		symbol.setPos(4.01);
+		symbol.quantize(four4, 4);
+		assertEquals(4, symbol.getPos(), "Checking symbol is quantized");
+	}
+	
+	@Test
+	public void retime(){
+		symbol.setPos(2.25);
+		symbol.retime(five8, four4);
+		assertEquals(3.6, symbol.getPos(), "Checking symbol is retimed to new measure");
+	}
+	
+	@Test
+	public void retimeMeasure(){ 
+		symbol.setPos(2.25);
+		symbol.retimeMeasure(five8, four4);
+		assertEquals(2.4, symbol.getPos(), "Checking symbol is retimed to the same measure");
 	}
 	
 	@Test
