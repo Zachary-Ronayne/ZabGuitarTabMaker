@@ -21,7 +21,7 @@ public final class TabFactory{
 	 * Generate a {@link TabNote} with all of the given data
 	 * @param note The string constant for the note as defined in {@link Music}
 	 * @param octave The octave to use, i.e. use 4 for the octave of middle C 
-	 * @param pos The position value, see {@link TabSymbol#pos}
+	 * @param pos The position value, see {@link TabSymbol#position}
 	 * @param mod The modifier to use, see {@link TabSymbol#modifier}
 	 * @return The {@link TabNote}
 	 */
@@ -34,7 +34,7 @@ public final class TabFactory{
 	 * @param note The string constant for the note as defined in {@link Music}
 	 * @param octave The octave to use, i.e. use 4 for the octave of middle C
 	 * @param r The rhythm to use for the note
-	 * @param pos The position value, see {@link TabSymbol#pos}
+	 * @param pos The position value, see {@link TabSymbol#position}
 	 * @param mod The modifier to use, see {@link TabSymbol#modifier}
 	 * @return The {@link TabNote}
 	 */
@@ -46,7 +46,7 @@ public final class TabFactory{
 	 * Generate a {@link TabNote} based on the string and fret number
 	 * @param string The string to use to generate the note
 	 * @param fret The fret number on the string, can be zero for open string, or negative for a normally invalid fret position
-	 * @param pos The position value, see {@link TabSymbol#pos}
+	 * @param pos The position value, see {@link TabSymbol#position}
 	 * @param mod The modifier to use
 	 * @return The note
 	 */
@@ -59,7 +59,7 @@ public final class TabFactory{
 	 * Generate a {@link TabNote} based on the string and fret number, and with no modifier
 	 * @param string The string to use to generate the note
 	 * @param fret The fret number on the string, can be zero for open string, or negative for a normally invalid fret position
-	 * @param pos The position value, see {@link TabSymbol#pos}
+	 * @param pos The position value, see {@link TabSymbol#position}
 	 * @return The note
 	 */
 	public static TabNote modifiedFret(TabString string, int fret, double pos){
@@ -71,7 +71,7 @@ public final class TabFactory{
 	 * @param string The string to use to generate the note
 	 * @param fret The fret number on the string, can be zero for open string, or negative for a normally invalid fret position
 	 * @param r The rhythm to use for the note
-	 * @param pos The position value, see {@link TabSymbol#pos}
+	 * @param pos The position value, see {@link TabSymbol#position}
 	 * @param mod The modifier to use
 	 * @return The note
 	 */
@@ -83,7 +83,7 @@ public final class TabFactory{
 	 * Generate a {@link TabNote} hammer on note based on the string and fret number
 	 * @param string The string to use to generate the note
 	 * @param fret The fret number on the string, can be zero for open string, or negative for a normally invalid fret position
-	 * @param pos The position value, see {@link TabSymbol#pos}
+	 * @param pos The position value, see {@link TabSymbol#position}
 	 * @return The note
 	 */
 	public static TabNote hammerOn(TabString string, int fret, double pos){
@@ -95,7 +95,7 @@ public final class TabFactory{
 	 * Generate a {@link TabNote} pull off note based on the string and fret number
 	 * @param string The string to use to generate the note
 	 * @param fret The fret number on the string, can be zero for open string, or negative for a normally invalid fret position
-	 * @param pos The position value, see {@link TabSymbol#pos}
+	 * @param pos The position value, see {@link TabSymbol#position}
 	 * @return The note
 	 */
 	public static TabNote pullOff(TabString string, int fret, double pos){
@@ -107,7 +107,7 @@ public final class TabFactory{
 	 * Generate a {@link TabNote} natural harmonic note based on the string and fret number
 	 * @param string The string to use to generate the note
 	 * @param fret The fret number on the string, can be zero for open string, or negative for a normally invalid fret position
-	 * @param pos The position value, see {@link TabSymbol#pos}
+	 * @param pos The position value, see {@link TabSymbol#position}
 	 * @return The note
 	 */
 	public static TabNote harmonic(TabString string, int fret, double pos){

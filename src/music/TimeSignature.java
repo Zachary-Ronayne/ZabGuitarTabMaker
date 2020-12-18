@@ -99,11 +99,29 @@ public class TimeSignature implements Copyable<TimeSignature>{
 	 * Convert the given time value so that it is the same number of whole notes in the old time signature,
 	 * 	but now in this {@link TimeSignature}
 	 * @param oldTime The {@link TimeSignature} of the given value
-	 * @param time The duration of the note to retime
+	 * @param wholeNotes The duration of the note to retime
 	 * @return The retimed value
 	 */
-	public double retime(TimeSignature oldTime, double time){
-		return time * oldTime.getRatio() / this.getRatio();
+	public double retime(TimeSignature oldTime, double wholeNotes){
+		return oldTime.toWholeNotes(this.toMeasures(wholeNotes));
+	}
+	
+	/**
+	 * Determine the number of measures in the given number of whole notes
+	 * @param wholeNotes The number of whole notes
+	 * @return The number of measures in wholeNotes based on this {@link TimeSignature}
+	 */
+	public double toMeasures(double wholeNotes){
+		return wholeNotes / this.getRatio();
+	}
+	
+	/**
+	 * Determine the number of whole notes in the given number of measures
+	 * @param measures The number of measures
+	 * @return The number of whole notes in the given measures based on this {@link TimeSignature}
+	 */
+	public double toWholeNotes(double measures){
+		return measures * this.getRatio();
 	}
 	
 	/***
@@ -134,8 +152,8 @@ public class TimeSignature implements Copyable<TimeSignature>{
 	 */
 	public Rhythm guessRhythm(double duration, boolean measures){
 		Rhythm r = new Rhythm(0, 1);
-		// The length of the rhythm to guess converted to be in terms of number of whole notes
-		if(measures) duration = duration * this.getRatio();
+		// If needed, convert the duration to whole notes
+		if(measures) duration = this.toWholeNotes(duration);
 		// The closest to a whole number a note has been so far
 		double best = 1;
 		// The maximum rhythmic division to end the loop

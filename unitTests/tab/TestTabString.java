@@ -25,6 +25,8 @@ public class TestTabString{
 	
 	private TabString noteAndOctave;
 	
+	private TimeSignature sig;
+	
 	@BeforeEach
 	public void setup(){
 		newPitch = new Pitch(0);
@@ -43,6 +45,8 @@ public class TestTabString{
 		negPitch = new Pitch(-3);
 		
 		noteAndOctave = new TabString(Music.B, 3);
+		
+		sig = new TimeSignature(4, 4);
 	}
 
 	@Test
@@ -91,6 +95,21 @@ public class TestTabString{
 		assertEquals(notes[4], string.get(4), "Checking notes are added in sorted order");
 		assertEquals(notes[5], string.get(5), "Checking notes are added in sorted order");
 		assertEquals(notes[6], string.get(6), "Checking notes are added in sorted order");
+	}
+	
+	@Test
+	public void placeQuantizedNote(){
+		TabNote n;
+		
+		string.placeQuantizedNote(sig, 0, 1.01);
+		n = (TabNote)string.get(0);
+		assertEquals(4, n.getPitch().getNote(), "Checking note has correct pitch");
+		assertEquals(1, n.getPos(), "Checking note has quantized position");
+		
+		string.placeQuantizedNote(sig, 6, 1.49);
+		n = (TabNote)string.get(1);
+		assertEquals(10, n.getPitch().getNote(), "Checking note has correct pitch");
+		assertEquals(1.5, n.getPos(), "Checking note has quantized position");
 	}
 	
 	@Test

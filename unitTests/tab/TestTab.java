@@ -252,6 +252,14 @@ public class TestTab{
 	}
 	
 	@Test
+	public void placeQuantizedNote(){
+		tab.placeQuantizedNote(1, 3, 2.1);
+		TabNote n = (TabNote)lowString.get(0);
+		assertEquals(-21, n.getPitch().getNote(), "Checking note has correct pitch");
+		assertEquals(2.125, n.getPos(), "Checking note has quantized position");
+	}
+	
+	@Test
 	public void getRootNote(){
 		assertEquals(-12, tab.getRootNote(0), "Checking root note found");
 		assertEquals(-24, tab.getRootNote(1), "Checking root note found");

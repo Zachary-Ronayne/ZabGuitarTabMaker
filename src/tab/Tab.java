@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import music.Pitch;
 import music.Rhythm;
 import music.TimeSignature;
+import tab.symbol.TabNote;
 import tab.symbol.TabSymbol;
 import util.Copyable;
 import util.ObjectUtils;
@@ -191,7 +192,18 @@ public class Tab implements Copyable<Tab>{
 	public void quantize(int divisor){
 		for(TabString s : this.getStrings()) s.quantize(this.getTimeSignature(), divisor);
 	}
-
+	
+	/**
+	 * Put a single {@link TabNote} on the given string with the given pitch at the given position.<br>
+	 * The position value is also automatically quantized
+	 * @param string The index of the string to place the note on
+	 * @param fret The fret number of the note
+	 * @param pos The position value of the note. See {@link TabSymbol#position}
+	 */
+	public void placeQuantizedNote(int string, int fret, double pos){
+		this.getStrings().get(string).placeQuantizedNote(this.getTimeSignature(), fret, pos);
+	}
+	
 	/**
 	 * Get the note integer, as defined in {@link Pitch#note} of the root note of the specified string
 	 * @param string The index of the string, not the actual string number,

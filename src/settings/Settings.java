@@ -16,7 +16,7 @@ import util.Saveable;
  */
 public abstract class Settings implements Saveable{
 	
-	/** A list of all of the settings used by this {@link ZabSettings} object */
+	/** A list of all of the settings used by this {@link Settings} object */
 	private ArrayList<Setting<?>> all;
 	
 	/**

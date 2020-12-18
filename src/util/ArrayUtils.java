@@ -7,9 +7,9 @@ public final class ArrayUtils{
 	/**
 	 * Add the given element to the given {@link ArrayList}, inserting it into a position so that the list remains sorted.
 	 * @param <E> The type of the lists, must be {@link Comparable}
-	 * @param arr A sorted array list
+	 * @param arr A sorted ArrayList
 	 * @param e The element to add
-	 * @return
+	 * @return true if the insert is successful, false otherwise
 	 */
 	public static <E extends Comparable<E>> boolean insertSorted(ArrayList<E> arr, E e){
 		// Get the ends of the ArrayList

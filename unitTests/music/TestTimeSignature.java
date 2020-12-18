@@ -149,6 +149,28 @@ public class TestTimeSignature{
 	}
 	
 	@Test
+	public void toMeasures(){
+		assertEquals(2, four4.toMeasures(2), UtilsTest.DELTA, "Checking whole notes to measures is the same for 4/4");
+		
+		assertEquals(0, five8.toMeasures(0), UtilsTest.DELTA, "Checking whole notes to measures is correct for 5/8");
+		assertEquals(3.2, five8.toMeasures(2), UtilsTest.DELTA, "Checking whole notes to measures is correct for 5/8");
+		
+		assertEquals(1.33333333333333, six4.toMeasures(2), UtilsTest.DELTA, "Checking whole notes to measures is correct for 6/4");
+		assertEquals(1, six4.toMeasures(1.5), UtilsTest.DELTA, "Checking whole notes to measures is correct for 6/4");
+	}
+	
+	@Test
+	public void toWholeNotes(){
+		assertEquals(2, four4.toWholeNotes(2), UtilsTest.DELTA, "Checking measures to whole notes is the same for 4/4");
+		
+		assertEquals(0, five8.toWholeNotes(0), UtilsTest.DELTA, "Checking measures to whole notes is correct for 5/8");
+		assertEquals(2, five8.toWholeNotes(3.2), UtilsTest.DELTA, "Checking measures to whole notes is correct for 5/8");
+		
+		assertEquals(2, six4.toWholeNotes(1.33333333333333), UtilsTest.DELTA, "Checking measures to whole notes is correct for 6/4");
+		assertEquals(1.5, six4.toWholeNotes(1), UtilsTest.DELTA, "Checking measures to whole notes is correct for 6/4");
+	}
+	
+	@Test
 	public void guessRhythm(){
 		guessRhythmHelper(1, 1, 1, four4, true);
 		guessRhythmHelper(2, 1, 2, four4, true);

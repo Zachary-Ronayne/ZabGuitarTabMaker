@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import music.Music;
 import music.Pitch;
 import music.TimeSignature;
+import tab.symbol.TabNote;
 import tab.symbol.TabPitch;
 import tab.symbol.TabSymbol;
 import util.ArrayUtils;
@@ -83,6 +84,19 @@ public class TabString extends ArrayList<TabSymbol> implements Copyable<TabStrin
 	@Override
 	public boolean add(TabSymbol e){
 		return ArrayUtils.insertSorted(this, e);
+	}
+	
+	/**
+	 * Put a single {@link TabNote} on this string with the given pitch at the given position.<br>
+	 * The position value is also automatically quantized
+	 * @param sig The {@link TimeSignature} to use for quantizing the note
+	 * @param fret The fret number of the note
+	 * @param pos The position value of the note. See {@link TabSymbol#position}
+	 */
+	public void placeQuantizedNote(TimeSignature sig, int fret, double pos){
+		TabNote n = TabFactory.modifiedFret(this, fret, pos);
+		n.quantize(sig, 8); // TODO make this a setting
+		this.add(n);
 	}
 	
 	/**
