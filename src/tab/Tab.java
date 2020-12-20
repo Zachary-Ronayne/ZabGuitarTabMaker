@@ -1,6 +1,8 @@
 package tab;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import music.Pitch;
 import music.Rhythm;
@@ -9,12 +11,13 @@ import tab.symbol.TabNote;
 import tab.symbol.TabSymbol;
 import util.Copyable;
 import util.ObjectUtils;
+import util.Saveable;
 
 /**
  * An object representing a tablature diagram for a string instrument.
  * @author zrona
  */
-public class Tab implements Copyable<Tab>{
+public class Tab implements Copyable<Tab>, Saveable{
 	
 	/**
 	 * An ordered list of all of the strings in this tab.
@@ -269,6 +272,61 @@ public class Tab implements Copyable<Tab>{
 				s.set(i, s.get(i).convertToRhythm(r));
 			}
 		}
+	}
+	
+	/***/
+	@Override
+	public boolean load(Scanner reader){
+		// Load if the tab uses rhythm
+		Boolean loadBool = Saveable.loadBool(reader);
+		if(loadBool == null) return false;
+		this.setUsesRhythm(loadBool);
+		
+		// Load the time signature
+		if(!this.getTimeSignature().load(reader)) return false;
+		
+		// Load the number of strings in the tab
+		Integer size = Saveable.loadInt(reader);
+		if(size == null) return false;
+		
+		// Advance to the next line
+		if(!Saveable.nextLine(reader)) return false;
+		
+		// Load in all of the strings
+		ArrayList<TabString> strings = new ArrayList<TabString>();
+		this.setStrings(strings);
+		for(int i = 0; i < size; i++){
+			TabString string = new TabString(new Pitch(0));
+			// If a string failed to load, return false
+			if(!Saveable.load(reader, string)) return false;
+			strings.add(string);
+		}
+		
+		// Loading was successful
+		return true;
+	}
+	
+	/***/
+	@Override
+	public boolean save(PrintWriter writer){
+		// Save if this Tab uses rhythm,
+		if(!Saveable.saveToString(writer, this.usesRhythm())) return false;
+
+		// Save the time signature
+		if(!Saveable.save(writer, this.getTimeSignature())) return false;
+		
+		// Save the number of strings of this tab
+		int size = this.getStrings().size();
+		if(!Saveable.saveToString(writer, size, true)) return false;
+
+		// Save each string
+		// Put the strings in a usable array for saving
+		for(TabString s : this.getStrings()){
+			if(!Saveable.save(writer, s)) return false;
+		}
+		
+		// Return save successful
+		return true;
 	}
 
 	/***/

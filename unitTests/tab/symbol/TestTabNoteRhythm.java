@@ -5,6 +5,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.Scanner;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +17,8 @@ import music.Pitch;
 import music.Rhythm;
 import music.TestTimeSignature;
 import music.TimeSignature;
+import util.Saveable;
+import util.testUtils.UtilsTest;
 
 public class TestTabNoteRhythm{
 	
@@ -126,6 +130,38 @@ public class TestTabNoteRhythm{
 		note.getRhythm().setUnit(64);
 		note.quantize(sig, 4);
 		TestTimeSignature.guessRhythmHelper(1, 16, note.getRhythm().getLength(), sig, false);
+	}
+	
+	@Test
+	public void getSaveObjects(){
+		Saveable[] objs = note.getSaveObjects();
+		assertEquals(pitch, objs[0], "Checking pitch obtained");
+		assertEquals(pos, objs[1], "Checking position obtained");
+		assertEquals(rhythm, objs[2], "Checking rhythm obtained");
+		assertEquals(mod, objs[3], "Checking modifier obtained");
+	}
+	
+	@Test
+	public void load(){
+		Scanner scan = new Scanner("4 \n2.3 \n3 2 \na\ns\nk");
+		assertTrue("Checking load successful", note.load(scan));
+		assertEquals(4, note.getPitch().getNote(), "Checking pitch correctly loaded");
+		assertEquals(2.3, note.getPos(), "Checking position correctly loaded");
+		assertEquals(new Rhythm(3, 2), note.getRhythm(), "Checking rhythm correctly loaded");
+		assertEquals(new TabModifier("a", "s"), note.getModifier(), "Checking modifier correctly loaded");
+		
+		assertFalse("Checking load fails without enough data", note.load(scan));
+	}
+	
+	@Test
+	public void save(){
+		assertEquals("3 \n2.0 \n1 2 \n[\n]\n", UtilsTest.testSave(note), "Checking note saved correctly");
+		
+		note.setPitch(4);
+		note.setPos(2.3);
+		note.setRhythm(new Rhythm(3, 2));
+		note.setModifier(new TabModifier("a", "s"));
+		assertEquals("4 \n2.3 \n3 2 \na\ns\n", UtilsTest.testSave(note), "Checking note saved correctly");
 	}
 	
 	@Test

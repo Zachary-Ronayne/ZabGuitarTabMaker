@@ -7,12 +7,13 @@ import tab.Tab;
 import tab.TabString;
 import util.Copyable;
 import util.ObjectUtils;
+import util.Saveable;
 
 /**
  * A symbol used in a {@link Tab} to represent anything on a tab, i.e. fret numbers and dead notes
  * @author zrona
  */
-public abstract class TabSymbol implements Comparable<TabSymbol>, Copyable<TabSymbol>{
+public abstract class TabSymbol implements Comparable<TabSymbol>, Copyable<TabSymbol>, Saveable{
 
 	/** The position {@link NotePosition} object of this {@link TabSymbol} on a {@link TabString}. Cannot be null. */
 	private NotePosition position;

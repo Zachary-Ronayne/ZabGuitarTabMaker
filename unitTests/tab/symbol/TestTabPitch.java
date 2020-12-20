@@ -5,6 +5,9 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.io.PrintWriter;
+import java.util.Scanner;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,6 +44,10 @@ public class TestTabPitch{
 		public TabSymbol removeRhythm(){return this;}
 		@Override
 		public boolean usesRhythm(){return false;}
+		@Override
+		public boolean load(Scanner reader){return false;}
+		@Override
+		public boolean save(PrintWriter writer){return false;}
 	}
 	
 	@BeforeEach

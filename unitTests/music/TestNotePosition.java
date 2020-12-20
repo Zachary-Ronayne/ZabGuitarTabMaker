@@ -4,6 +4,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.Scanner;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -97,6 +99,30 @@ public class TestNotePosition{
 		pos.setValue(1.1);
 		pos.quantize(new TimeSignature(4, 4), 4);
 		assertEquals(1, pos.getValue(), UtilsTest.DELTA, "Checking note is quantized");
+	}
+	
+	@Test
+	public void load(){
+		Scanner scan = new Scanner("1.2 \n2 \n");
+		assertTrue("Checking load successful", pos.load(scan));
+		assertEquals(1.2, pos.getValue(), "Checking correct value loaded");
+		
+		assertTrue("Checking load successful", pos.load(scan));
+		assertEquals(2.0, pos.getValue(), "Checking correct value loaded");
+		
+		assertFalse("Checking load fails with nothing left to load", pos.load(scan));
+	}
+	
+	@Test
+	public void save(){
+		pos.setValue(2.3);
+		assertEquals("2.3 \n", UtilsTest.testSave(pos), "Checking correct value saved");
+		
+		pos.setValue(2);
+		assertEquals("2.0 \n", UtilsTest.testSave(pos), "Checking correct value saved");
+		
+		pos.setValue(-1.5);
+		assertEquals("-1.5 \n", UtilsTest.testSave(pos), "Checking correct value saved");
 	}
 	
 	@Test

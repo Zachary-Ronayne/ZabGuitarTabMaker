@@ -1,13 +1,17 @@
 package music;
 
+import java.io.PrintWriter;
+import java.util.Scanner;
+
 import util.Copyable;
 import util.ObjectUtils;
+import util.Saveable;
 
 /**
  * An object representing an individual pitch in 12 tone equal temperament
  * @author zrona
  */
-public class Pitch implements Copyable<Pitch>{
+public class Pitch implements Copyable<Pitch>, Saveable{
 	
 	/**
 	 * The number of semitones this {@link Pitch} is from middle C, i.e. C4
@@ -77,6 +81,31 @@ public class Pitch implements Copyable<Pitch>{
 	 */
 	public String getPitchName(boolean useFlats){
 		return Music.intToNote(this.getNote(), useFlats);
+	}
+	
+	/***/
+	@Override
+	public boolean load(Scanner reader){
+		// Load the integer for the pitch value
+		Integer load = Saveable.loadInt(reader);
+		// If the loading failed, return false
+		if(load == null) return false;
+
+		// Advance to the next line
+		if(!Saveable.nextLine(reader)) return false;
+		
+		// Set the pitch value and return success
+		this.setNote(load);
+		return true;
+	}
+	
+	/***/
+	@Override
+	public boolean save(PrintWriter writer){
+		// Save the pitch value and nothing else
+		if(!Saveable.saveToString(writer, this.getNote()));
+		// End the line
+		return Saveable.newLine(writer);
 	}
 	
 	/***/

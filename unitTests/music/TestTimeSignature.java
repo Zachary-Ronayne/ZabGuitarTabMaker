@@ -4,6 +4,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.Scanner;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,7 +36,6 @@ public class TestTimeSignature{
 		TimeSignature copy = four4.copy();
 		assertTrue("Checking copy is equal to the source object", copy.equals(four4));
 		assertTrue("Checking copy is not the same as the source object", copy != four4);
-	
 	}
 	
 	@Test
@@ -230,6 +231,31 @@ public class TestTimeSignature{
 				+ "expected duration: " + expectDuration + " unit: " + expectUnit + ", "
 				+ " but got duration: " + guess.getDuration() + " unit: " + guess.getUnit(),
 				expectDuration == guess.getDuration() && expectUnit == guess.getUnit());
+	}
+	
+	@Test
+	public void load(){
+		Scanner scan = new Scanner("3 4 \n2 5 \n9 8 \n");
+		assertTrue("Checking load is successful", four4.load(scan));
+		assertEquals(3, four4.getUpper(), "Checking upper value loaded");
+		assertEquals(4, four4.getLower(), "Checking lower value loaded");
+		
+		assertTrue("Checking load is successful", four4.load(scan));
+		assertEquals(2, four4.getUpper(), "Checking upper value loaded");
+		assertEquals(5, four4.getLower(), "Checking lower value loaded");
+		
+		assertTrue("Checking load is successful", four4.load(scan));
+		assertEquals(9, four4.getUpper(), "Checking upper value loaded");
+		assertEquals(8, four4.getLower(), "Checking lower value loaded");
+		
+		assertFalse("Checking load fails with nothing left to load", four4.load(scan));
+		scan.close();
+	}
+	
+	@Test
+	public void save(){
+		assertEquals("4 4 \n", UtilsTest.testSave(four4), "Checking correct values are saved");
+		assertEquals("5 8 \n", UtilsTest.testSave(five8), "Checking correct values are saved");
 	}
 	
 	@Test

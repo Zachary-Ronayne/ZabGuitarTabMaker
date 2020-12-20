@@ -1,13 +1,17 @@
 package music;
 
+import java.io.PrintWriter;
+import java.util.Scanner;
+
 import util.Copyable;
 import util.ObjectUtils;
+import util.Saveable;
 
 /**
  * An object tracking the position of a musical note in a measure
  * @author zrona
  */
-public class NotePosition implements Copyable<NotePosition>{
+public class NotePosition implements Copyable<NotePosition>, Saveable{
 	
 	/**
 	 * The position held by this {@link NotePosition} representing the number of measures to this note, 
@@ -92,6 +96,32 @@ public class NotePosition implements Copyable<NotePosition>{
 	 */
 	public void quantize(TimeSignature sig, int divisor){
 		this.setValue(sig.quantize(this.getValue(), divisor));
+	}
+	
+	/***/
+	@Override
+	public boolean load(Scanner reader){
+		// Load the position value
+		Double load = Saveable.loadDouble(reader);
+		// If the load failed, return false
+		if(load == null) return false;
+
+		// Advance to the next line
+		if(!Saveable.nextLine(reader)) return false;
+		
+		// Set the value and return success
+		this.setValue(load);
+		return true;
+	}
+	
+	/***/
+	@Override
+	public boolean save(PrintWriter writer){
+		// Save the position value and nothing else
+		if(!Saveable.saveToString(writer, this.getValue())) return false;
+		
+		// End the line
+		return Saveable.newLine(writer);
 	}
 	
 	/***/

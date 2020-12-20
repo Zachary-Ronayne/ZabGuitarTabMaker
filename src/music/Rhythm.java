@@ -1,14 +1,18 @@
 package music;
 
+import java.io.PrintWriter;
+import java.util.Scanner;
+
 import util.Copyable;
 import util.MathUtils;
 import util.ObjectUtils;
+import util.Saveable;
 
 /**
  * An object representing a musical rhythm via a fraction of the duration and the number of units dividing up a whole note
  * @author zrona
  */
-public class Rhythm implements Copyable<Rhythm>{
+public class Rhythm implements Copyable<Rhythm>, Saveable{
 	
 	/** The amount of units of this {@link Rhythm} i.e. if this.units is 4, and this.duration is 1, then it is 1 quarter note */
 	private int duration;
@@ -85,6 +89,33 @@ public class Rhythm implements Copyable<Rhythm>{
 	 */
 	public double getLength(){
 		return (double)this.getDuration() / this.getUnit();
+	}
+	
+	/***/
+	@Override
+	public boolean load(Scanner reader){
+		// Load in the two values for a Rhythm
+		Integer[] load = Saveable.loadInts(reader, 2);
+		// Return false if loading caused an error
+		if(load == null) return false;
+
+		// Advance to the next line
+		if(!Saveable.nextLine(reader)) return false;
+		
+		// Set both the values and return success
+		this.setDuration(load[0]);
+		this.setUnit(load[1]);
+		return true;
+	}
+	
+	/***/
+	@Override
+	public boolean save(PrintWriter writer){
+		// Save both the duration and unit on one line
+		if(!Saveable.saveToStrings(writer, new Integer[]{this.getDuration(), this.getUnit()})) return false;
+		
+		// End the line
+		return Saveable.newLine(writer);
 	}
 
 	/***/

@@ -17,7 +17,7 @@ public final class UtilsTest{
 	
 	/**
 	 * Utility for testing {@link Saveable} objects
-	 * Using a the {@link Saveable#save(PrintWriter)} method, simulate save the given object, 
+	 * Using the {@link Saveable#save(PrintWriter)} method, simulate saving the given object, 
 	 * 	and return a string representing the saved text.<br>
 	 * Automatically removes excess \r characters
 	 * @param s The {@link Saveable} object
@@ -30,7 +30,16 @@ public final class UtilsTest{
 		boolean success = s.save(write);
 		if(!success) return null;
 		write.close();
-		return bytes.toString().replace((char)13 + "", "");
+		return removeSlashR(bytes.toString());
+	}
+	
+	/**
+	 * Utility method for removing \r characters from strings
+	 * @param s The string to remove
+	 * @return The same String as s, but with no \r characters
+	 */
+	public static String removeSlashR(String s){
+		return s.replace((char)13 + "", "");
 	}
 	
 }

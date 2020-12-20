@@ -1,6 +1,10 @@
 package tab;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.Scanner;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,24 +12,23 @@ import org.junit.jupiter.api.Test;
 
 import music.NotePosition;
 import music.TimeSignature;
-import tab.symbol.TabDeadNote;
-import tab.symbol.TabNote;
+import util.testUtils.UtilsTest;
 
 public class TestTabLabel{
 	
 	private TabLabel fullLabel;
 	private TabLabel label;
 	
-	private TabDeadNote symbol;
+	private NotePosition pos;
 	
 	private TimeSignature sig;
 	
 	@BeforeEach
 	public void setup(){
-		symbol = new TabDeadNote(new NotePosition(1));
+		pos = new NotePosition(1);
 		
-		fullLabel = new TabLabel("a label", symbol, 5, -2);
-		label = new TabLabel("label b", symbol);
+		fullLabel = new TabLabel("a label", pos, 5, -2);
+		label = new TabLabel("label b", pos);
 		
 		sig = new TimeSignature(5, 8);
 	}
@@ -43,15 +46,15 @@ public class TestTabLabel{
 	}
 	
 	@Test
-	public void getBaseSymbol(){
-		assertEquals(symbol, fullLabel.getBaseSymbol(), "Checking symbol initialized");
-		assertEquals(symbol, label.getBaseSymbol(), "Checking symbol initialized");
+	public void getPosition(){
+		assertEquals(pos, fullLabel.getPosition(), "Checking symbol initialized");
+		assertEquals(pos, label.getPosition(), "Checking symbol initialized");
 	}
 	
 	@Test
-	public void setBaseSymbol(){
-		label.setBaseSymbol(new TabNote(1, 2));
-		assertEquals(new TabNote(1, 2), label.getBaseSymbol(), "Checking symbol set");
+	public void setPosition(){
+		label.setPosition(new NotePosition(2));
+		assertEquals(2, label.getPosition().getValue(), "Checking symbol set");
 	}
 	
 	@Test
@@ -96,7 +99,7 @@ public class TestTabLabel{
 		assertEquals(1, label.getBeginningPos(), "Checking beginning position with offset zero");
 		assertEquals(-1, fullLabel.getBeginningPos(), "Checking beginning position with non zero offset");
 		
-		symbol.setPos(4);
+		pos.setValue(4);
 		assertEquals(2, fullLabel.getBeginningPos(), "Checking beginning position after changing note position");
 	}
 	
@@ -105,7 +108,7 @@ public class TestTabLabel{
 		assertEquals(1, label.getEndingPos(), "Checking end position with offset and length zero");
 		assertEquals(4, fullLabel.getEndingPos(), "Checking end position with nonzero offset and length");
 		
-		symbol.setPos(3);
+		pos.setValue(3);
 		assertEquals(6, fullLabel.getEndingPos(), "Checking end position after changing note position");
 		
 		fullLabel.setLength(3);
@@ -162,6 +165,28 @@ public class TestTabLabel{
 		assertEquals(1, fullLabel.getBeginningPos(), "Checking label shifted backwards beginning updated");
 		assertEquals(6, fullLabel.getEndingPos(), "Checking label shifted backwards ending updated");
 		assertEquals(5, fullLabel.getLength(), "Checking length unchanged on shift");
+	}
+	
+	@Test
+	public void load(){
+		Scanner scan = new Scanner("z label\n3.2\n-2.1\n2.3 \nh");
+		assertTrue("Checking load successful", label.load(scan));
+		assertEquals("z label", label.getText(), "Checking text loaded");
+		assertEquals(3.2, label.getLength(), "Checking length loaded");
+		assertEquals(-2.1, label.getOffset(), "Checking offset loaded");
+		assertEquals(2.3, label.getPosition().getValue(), "Checking position loaded");
+		assertFalse("Checking load fails without enough data", label.load(scan));
+		
+		scan.close();
+		scan = new Scanner("a\na\na\na\na");
+		assertFalse("Checking load fails with invalid numbers", label.load(scan));
+		scan.close();
+	}
+	
+	@Test
+	public void save(){
+		assertEquals("a label\n5.0\n-2.0\n1.0 \n", UtilsTest.testSave(fullLabel), "Checking save successful");
+		assertEquals("label b\n0.0\n0.0\n1.0 \n", UtilsTest.testSave(label), "Checking save successful");
 	}
 	
 	@AfterEach

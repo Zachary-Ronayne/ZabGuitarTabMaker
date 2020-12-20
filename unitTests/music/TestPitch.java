@@ -4,9 +4,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.Scanner;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import util.testUtils.UtilsTest;
 
 public class TestPitch{
 	
@@ -66,6 +70,28 @@ public class TestPitch{
 		assertEquals(Music.F_SHARP + "3", fSharp3.getPitchName(), "Checking correct note name is found");
 		assertEquals(Music.G_FLAT + "3", fSharp3.getPitchName(true), "Checking correct note name is found as flat");
 		assertEquals(Music.F_SHARP + "3", fSharp3.getPitchName(false), "Checking correct note name is found as sharp");
+	}
+	
+	@Test
+	public void load(){
+		Scanner scan = new Scanner("0 \n3 \n5 \n");
+		assertTrue("Checking loading succeeded", c5.load(scan));
+		assertEquals(0, c5.getNote(), "Checking correct note loaded");
+		
+		assertTrue("Checking loading succeeded", c5.load(scan));
+		assertEquals(3, c5.getNote(), "Checking correct note loaded");
+		
+		assertTrue("Checking loading succeeded", c5.load(scan));
+		assertEquals(5, c5.getNote(), "Checking correct note loaded");
+		
+		assertFalse("Checking loading fails with nothing more to load", c5.load(scan));
+	}
+	
+	@Test
+	public void save(){
+		assertEquals("0 \n", UtilsTest.testSave(c4), "Checking saved value is correct");
+		assertEquals("12 \n", UtilsTest.testSave(c5), "Checking saved value is correct");
+		assertEquals("-6 \n", UtilsTest.testSave(fSharp3), "Checking saved value is correct");
 	}
 	
 	@Test

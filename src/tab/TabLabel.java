@@ -1,19 +1,23 @@
 package tab;
 
+import java.io.PrintWriter;
+import java.util.Scanner;
+
+import music.NotePosition;
 import music.TimeSignature;
-import tab.symbol.TabSymbol;
+import util.Saveable;
 
 /**
  * An object representing a section of a tab with a particular label, could be a symbol or name for example
  * @author zrona
  */
-public class TabLabel{
+public class TabLabel implements Saveable{
 	
 	/** The text of the label */
 	private String text;
 	
-	/** The symbol representing the start of this label */
-	private TabSymbol baseSymbol;
+	/** The position representing the start of this label */
+	private NotePosition position;
 	
 	/**
 	 * The total length of this label in number of whole notes.<br>
@@ -27,13 +31,13 @@ public class TabLabel{
 	/**
 	 * Create a new {@link TabLabel} with all parameters
 	 * @param text See {@link #text}
-	 * @param baseSymbol See {@link #baseSymbol}
+	 * @param position See {@link #position}
 	 * @param length See {@link #length}
 	 * @param offset See {@link #offset}
 	 */
-	public TabLabel(String text, TabSymbol baseSymbol, double length, double offset){
+	public TabLabel(String text, NotePosition position, double length, double offset){
 		this.setText(text);
-		this.setBaseSymbol(baseSymbol);
+		this.setPosition(position);
 		this.setLength(length);
 		this.setOffset(offset);
 	}
@@ -41,10 +45,10 @@ public class TabLabel{
 	/**
 	 * Create a new {@link TabLabel} with no length
 	 * @param label See {@link #text}
-	 * @param baseSymbol See {@link #baseSymbol}
+	 * @param position See {@link #baseSymbol}
 	 */
-	public TabLabel(String text, TabSymbol baseSymbol){
-		this(text, baseSymbol, 0, 0);
+	public TabLabel(String text, NotePosition position){
+		this(text, position, 0, 0);
 	}
 	
 	/**
@@ -64,19 +68,19 @@ public class TabLabel{
 	}
 
 	/**
-	 * Get the {@link TabSymbol} used for the position of this {@link TabLabel}
-	 * @return See {@link #baseSymbol}
+	 * Get the {@link NotePosition} used for the position of this {@link TabLabel}
+	 * @return See {@link #position}
 	 */
-	public TabSymbol getBaseSymbol(){
-		return this.baseSymbol;
+	public NotePosition getPosition(){
+		return this.position;
 	}
 
 	/**
-	 * Set the {@link TabSymbol} used for the position of this {@link TabLabel}
+	 * Set the {@link NotePosition} used for the position of this {@link TabLabel}
 	 * @param baseSymbol See {@link #baseSymbol}
 	 */
-	public void setBaseSymbol(TabSymbol baseSymbol){
-		this.baseSymbol = baseSymbol;
+	public void setPosition(NotePosition position){
+		this.position = position;
 	}
 
 	/**
@@ -135,8 +139,8 @@ public class TabLabel{
 	 * @return The number of whole notes, in number of whole notes
 	 */
 	public double getBeginningPos(){
-		if(this.getBaseSymbol() == null) return 0;
-		return this.getBaseSymbol().getPos() + this.getOffset();
+		if(this.getPosition() == null) return 0;
+		return this.getPosition().getValue() + this.getOffset();
 	}
 
 	/**
@@ -181,6 +185,28 @@ public class TabLabel{
 	 */
 	public void shift(double length){
 		this.setOffset(this.getOffset() + length);
+	}
+	
+	/***/
+	@Override
+	public boolean load(Scanner reader){
+		String loadStr = Saveable.loadString(reader);
+		if(loadStr == null) return false;
+		this.setText(loadStr);
+		
+		Double[] loadNum = Saveable.loadDoubles(reader, 2);
+		if(loadNum == null) return false;
+		this.setLength(loadNum[0]);
+		this.setOffset(loadNum[1]);
+		
+		return Saveable.load(reader, this.getPosition());
+	}
+	
+	/***/
+	@Override
+	public boolean save(PrintWriter writer){
+		if(!Saveable.saveToStrings(writer, new Object[]{this.getText(), this.getLength(), this.getOffset()}, true)) return false;
+		return Saveable.save(writer, this.getPosition());
 	}
 	
 }

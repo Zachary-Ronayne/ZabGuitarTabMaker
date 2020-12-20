@@ -1,10 +1,14 @@
 package tab.symbol;
 
+import java.io.PrintWriter;
+import java.util.Scanner;
+
 import music.NotePosition;
 import music.Rhythm;
 import tab.Tab;
 import tab.TabString;
 import util.ObjectUtils;
+import util.Saveable;
 
 /**
  * A symbol for a {@link Tab} representing a dead note or muted note
@@ -50,6 +54,28 @@ public class TabDeadNote extends TabSymbol{
 	@Override
 	public String getSymbol(TabString string){
 		return "X";
+	}
+	
+	/**
+	 * Utility method for getting all objects which must be saved for this object
+	 * @return The array of all objects
+	 */
+	public Saveable[] getSaveObjects(){
+		return new Saveable[]{this.getPosition(), this.getModifier()};
+	}
+	
+	/***/
+	@Override
+	public boolean load(Scanner reader){
+		// Load the position and modifier
+		return Saveable.loadMultiple(reader, this.getSaveObjects());
+	}
+	
+	/***/
+	@Override
+	public boolean save(PrintWriter writer){
+		// Save the position and modifier
+		return Saveable.saveMultiple(writer, this.getSaveObjects());
 	}
 
 }

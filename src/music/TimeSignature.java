@@ -1,13 +1,17 @@
 package music;
 
+import java.io.PrintWriter;
+import java.util.Scanner;
+
 import util.Copyable;
 import util.ObjectUtils;
+import util.Saveable;
 
 /**
  * An object keeping track of a musical time signature
  * @author zrona
  */
-public class TimeSignature implements Copyable<TimeSignature>{
+public class TimeSignature implements Copyable<TimeSignature>, Saveable{
 	
 	/** The upper number of the time signature, i.e. the "how many" part, must be greater than 0 */
 	private int upper;
@@ -183,6 +187,32 @@ public class TimeSignature implements Copyable<TimeSignature>{
 		}
 		r.simplify();
 		return r;
+	}
+	
+	/***/
+	@Override
+	public boolean load(Scanner reader){
+		// Get the two integers for loading this TimeSignature
+		Integer[] load = Saveable.loadInts(reader, 2);
+		// Return false if the load fails
+		if(load == null) return false;
+		
+		// Advance to the next line
+		if(!Saveable.nextLine(reader)) return false;
+		
+		// Set the two values and return success
+		this.setUpper(load[0]);
+		this.setLower(load[1]);
+		return true;
+	}
+	
+	/***/
+	@Override
+	public boolean save(PrintWriter writer){
+		// Save the upper and lower values on one line
+		if(!Saveable.saveToStrings(writer, new Integer[]{this.getUpper(), this.getLower()})) return false;
+		// Write a new line to end the file
+		return Saveable.newLine(writer);
 	}
 	
 	/***/

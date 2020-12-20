@@ -4,6 +4,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.Scanner;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -104,6 +106,33 @@ public class TestRhythm{
 		whole.simplify();
 		assertEquals(1, whole.getDuration(), "Checking duration is unchanged with unit at zero");
 		assertEquals(0, whole.getUnit(), "Checking unit is unchanged");
+	}
+	
+	@Test
+	public void load(){
+		Scanner scan = new Scanner("1 2 \n3 4 \n5 7\n");
+		assertTrue("Checking load successful", (whole.load(scan)));
+		assertEquals(1, whole.getDuration(), "Checking duration loaded");
+		assertEquals(2, whole.getUnit(), "Checking unit loaded");
+		
+		assertTrue("Checking load successful", (whole.load(scan)));
+		assertEquals(3, whole.getDuration(), "Checking duration loaded");
+		assertEquals(4, whole.getUnit(), "Checking unit loaded");
+		
+		assertTrue("Checking load successful", (whole.load(scan)));
+		assertEquals(5, whole.getDuration(), "Checking duration loaded");
+		assertEquals(7, whole.getUnit(), "Checking unit loaded");
+		
+		assertFalse("Checking load fails with nothing more to load", (whole.load(scan)));
+		
+		scan.close();
+	}
+	
+	@Test
+	public void save(){
+		assertEquals("1 2 \n", UtilsTest.testSave(half), "Checking saved values are correct");
+		assertEquals("3 2 \n", UtilsTest.testSave(threeHalf), "Checking saved values are correct");
+		assertEquals("2 5 \n", UtilsTest.testSave(fives), "Checking saved values are correct");
 	}
 	
 	@Test

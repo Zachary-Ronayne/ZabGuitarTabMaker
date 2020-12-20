@@ -1,9 +1,13 @@
 package tab.symbol;
 
+import java.io.PrintWriter;
+import java.util.Scanner;
+
 import music.NotePosition;
 import music.Pitch;
 import music.Rhythm;
 import util.ObjectUtils;
+import util.Saveable;
 
 /**
  * An instantiation of a {@link TabPitch} with no rhythmic information
@@ -82,6 +86,28 @@ public class TabNote extends TabPitch{
 	@Override
 	public boolean usesRhythm(){
 		return false;
+	}
+	
+	/**
+	 * Utility method for getting all objects which must be saved for this object
+	 * @return The array of all objects
+	 */
+	public Saveable[] getSaveObjects(){
+		return new Saveable[]{this.getPitch(), this.getPosition(), this.getModifier()};
+	}
+	
+	/***/
+	@Override
+	public boolean load(Scanner reader){
+		// Load the pitch, position, and modifier
+		return Saveable.loadMultiple(reader, this.getSaveObjects());
+	}
+	
+	/***/
+	@Override
+	public boolean save(PrintWriter writer){
+		// Save the pitch, position, and modifier
+		return Saveable.saveMultiple(writer, this.getSaveObjects());
 	}
 
 }

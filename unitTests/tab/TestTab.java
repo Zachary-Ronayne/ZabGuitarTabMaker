@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -368,6 +369,102 @@ public class TestTab{
 		
 		t.setUsesRhythm(true);
 		assertFalse("Checking objects not equal with different rhythm usage", t.equals(tab));
+	}
+	
+	@Test
+	public void load(){
+		Scanner scan = new Scanner(""
+				+ "false 4 4 \n"
+				+ "0\n"
+				
+				+ "false 4 4 \n"
+				+ "2\n"
+				+ "-12 \n"
+				+ "0\n"
+				+ "-24 \n"
+				+ "0\n"
+				
+				+ "false 4 4 \n"
+				+ "1\n"
+				+ "-20 \n"
+				+ "3\n"
+				+ "TabNote\n"
+				+ "-20 \n"
+				+ "2.0 \n"
+				+ "\n"
+				+ "\n"
+				+ "TabNote\n"
+				+ "-20 \n"
+				+ "2.25 \n"
+				+ "\n"
+				+ "\n"
+				+ "TabNote\n"
+				+ "-20 \n"
+				+ "2.375 \n"
+				+ "\n"
+				+ "\ng\n");
+		
+		Tab t = new Tab();
+		tab.getStrings().clear();
+		assertTrue("Checking loading successful", t.load(scan));
+		assertEquals(tab, t, "Checking loaded tab equal, no strings");
+		
+		tab.getStrings().clear();
+		tab.getStrings().add(highString);
+		tab.getStrings().add(lowString);
+		assertTrue("Checking loading successful", t.load(scan));
+		assertEquals(tab, t, "Checking loaded tab equal, empty strings");
+		
+		tab.getStrings().clear();
+		tab.getStrings().add(lowRhythms);
+		assertTrue("Checking loading successful", t.load(scan));
+		assertEquals(tab, t, "Checking loaded tab equal, strings with notes");
+		
+		assertFalse("Checking load fails with invalid data", t.load(scan));
+	}
+	
+	@Test
+	public void save(){
+		tab.getStrings().clear();
+		assertEquals(""
+				+ "false 4 4 \n"
+				+ "0\n",
+				UtilsTest.testSave(tab), "Checking save with no strings");
+		
+		tab.getStrings().add(highString);
+		tab.getStrings().add(lowString);
+		assertEquals(""
+				+ "false 4 4 \n"
+				+ "2\n"
+				+ "-12 \n"
+				+ "0\n"
+				+ "-24 \n"
+				+ "0\n",
+				UtilsTest.testSave(tab), "Checking save with multiple TabStrings with no notes");
+
+		tab.getStrings().clear();
+		tab.getStrings().add(lowRhythms);
+		assertEquals(""
+				+ "false 4 4 \n"
+				+ "1\n"
+				+ "-20 \n"
+				+ "3\n"
+				+ "TabNote\n"
+				+ "-20 \n"
+				+ "2.0 \n"
+				+ "\n"
+				+ "\n"
+				+ "TabNote\n"
+				+ "-20 \n"
+				+ "2.25 \n"
+				+ "\n"
+				+ "\n"
+				+ "TabNote\n"
+				+ "-20 \n"
+				+ "2.375 \n"
+				+ "\n"
+				+ "\n",
+				UtilsTest.testSave(tab), "Checking save with multiple TabStrings with notes");
 	}
 	
 	@AfterEach
