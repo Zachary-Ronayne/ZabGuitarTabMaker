@@ -244,7 +244,8 @@ public interface Saveable{
 	
 	/**
 	 * Save a single object on one line, using its toString value, followed by whitespace<br>
-	 * Automatically checks for null values and errors and returns false on either.
+	 * Automatically checks for null values and errors and returns false on either. 
+	 * Cannot save a string with new line characters.
 	 * @param value The value to save
 	 * @param writer The {@link PrintWriter} to use to save the object
 	 * @param newLine true to put a new line after the object, false for a space
@@ -255,6 +256,9 @@ public interface Saveable{
 		try{
 			String save = "";
 			save = save.concat(String.valueOf(value));
+			
+			if(save.contains("\n")) throw new IllegalArgumentException("Cannot save a string with new line characters");
+			
 			save = save.concat(newLine ? "\n" : " ");
 			writer.print(save);
 			return true;
@@ -268,6 +272,7 @@ public interface Saveable{
 	/**
 	 * Save a single object on one line, using its toString value, followed by a space<br>
 	 * Automatically checks for null values and errors and returns false on either.
+	 * Cannot save a string with new line characters.
 	 * @param value The value to save
 	 * @param writer The {@link PrintWriter} to use to save the object
 	 * @return true if the save was successful, false otherwise.
@@ -279,6 +284,7 @@ public interface Saveable{
 	/**
 	 * Save an array of {@link Saveable} objects on one line, using their toString values, each separated by whitespace.<br>
 	 * Automatically checks for null values and errors and returns false on either.
+	 * Cannot save a string with new line characters.
 	 * @param values The values to save
 	 * @param writer The {@link PrintWriter} to use to save the object
 	 * @param newLine true to put a new line between each object, false for a space
@@ -296,6 +302,7 @@ public interface Saveable{
 	/**
 	 * Save an array of {@link Saveable} objects on one line, using their toString values, each separated by a space<br>
 	 * Automatically checks for null values and errors and returns false on either.
+	 * Cannot save a string with new line characters.
 	 * @param values The values to save
 	 * @param writer The {@link PrintWriter} to use to save the object
 	 * @return true if the save was successful, false otherwise.

@@ -3,7 +3,6 @@ package settings;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -72,7 +71,7 @@ public class TestSettings{
 	@Test
 	public void save(){
 		String saved = UtilsTest.testSave(settings);
-		assertNotEquals(null, saved, "Checking save was successful");
+		assertEquals("set a\nset a\nset b\nset b\n", saved, "Checking save was successful");
 	}
 	
 	@Test

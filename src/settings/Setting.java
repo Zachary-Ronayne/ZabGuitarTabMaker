@@ -85,11 +85,10 @@ public abstract class Setting<T> implements Saveable{
 	 * Load in the setting, handling error checking
 	 */
 	@Override
-	public boolean load(Scanner reader){
+	public final boolean load(Scanner reader){
 		if(reader == null) return false;
 		try{
-			this.loadValue(reader);
-			return true;
+			return this.loadValue(reader);
 		}catch(Exception e){
 			return false;
 		}
@@ -99,29 +98,30 @@ public abstract class Setting<T> implements Saveable{
 	 * Save in the setting, handling error checking
 	 */
 	@Override
-	public boolean save(PrintWriter writer){
+	public final boolean save(PrintWriter writer){
 		if(writer == null) return false;
 		try{
-			this.saveValue(writer);
-			return true;
+			return this.saveValue(writer);
 		}catch(Exception e){
 			return false;
 		}
 	}
 	
 	/**
-	 * Load the value of this Setting, error checking is already handled
+	 * Load the value of this Setting
 	 * @param reader The {@link Scanner} object to use loading, do not close this object.
+	 * @return True if the load was successful, false otherwise
 	 * @throws Exception Any exception which can happen in loading
 	 */
-	public abstract void loadValue(Scanner reader) throws Exception;
+	public abstract boolean loadValue(Scanner reader) throws Exception;
 	
 	/**
-	 * Save the value of this Setting, error checking is already handled
+	 * Save the value of this Setting
 	 * @param writer The {@link PrintWriter} object to use saving, do not close this object.
+	 * @return True if the save was successful, false otherwise
 	 * @throws Exception Any exception which can happen in saving
 	 */
-	public abstract void saveValue(PrintWriter writer) throws Exception;
+	public abstract boolean saveValue(PrintWriter writer) throws Exception;
 	
 	/***/
 	@Override

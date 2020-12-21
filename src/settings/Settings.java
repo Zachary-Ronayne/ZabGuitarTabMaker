@@ -67,23 +67,19 @@ public abstract class Settings implements Saveable{
 	/***/
 	@Override
 	public boolean load(Scanner reader){
-		boolean success = true;
 		for(Setting<?> s : this.getAll()){
-			success &= s.load(reader);
-			if(!success) break;
+			if(!s.load(reader)) return false;
 		}
-		return success;
+		return true;
 	}
 	
 	/***/
 	@Override
 	public boolean save(PrintWriter writer){
-		boolean success = true;
 		for(Setting<?> s : this.getAll()){
-			success &= s.save(writer);
-			if(!success) break;
+			if(!s.save(writer)) return false;
 		}
-		return success;
+		return true;
 	}
 	
 	/***/

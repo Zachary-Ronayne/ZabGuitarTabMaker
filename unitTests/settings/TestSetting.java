@@ -25,12 +25,14 @@ public class TestSetting{
 			super(value, defaultValue);
 		}
 		@Override
-		public void loadValue(Scanner reader) throws Exception{
-			if(this.getValue().equals("break")) throw new Exception();
+		public boolean loadValue(Scanner reader) throws Exception{
+			if(this.getValue().equals("error")) throw new Exception();
+			return !this.getValue().equals("break");
 		}
 		@Override
-		public void saveValue(PrintWriter writer) throws Exception{
-			if(this.getValue().equals("break")) throw new Exception();
+		public boolean saveValue(PrintWriter writer) throws Exception{
+			if(this.getValue().equals("error")) throw new Exception();
+			return !this.getValue().equals("break");
 		}
 	}
 	
@@ -78,6 +80,9 @@ public class TestSetting{
 		
 		setting.setValue("break");
 		assertFalse("Checking load detects bad loading", setting.load(new Scanner("")));
+		
+		setting.setValue("error");
+		assertFalse("Checking load detects error in loading", setting.load(new Scanner("")));
 	}
 
 	@Test
@@ -88,6 +93,9 @@ public class TestSetting{
 		
 		setting.setValue("break");
 		assertFalse("Checking save detects bad saving", setting.save(new PrintWriter(new ByteArrayOutputStream())));
+		
+		setting.setValue("error");
+		assertFalse("Checking save detects error in saving", setting.save(new PrintWriter(new ByteArrayOutputStream())));
 	}
 
 	@Test

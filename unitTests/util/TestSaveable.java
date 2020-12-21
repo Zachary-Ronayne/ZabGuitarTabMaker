@@ -280,6 +280,7 @@ public class TestSaveable{
 	public void saveToString(){
 		assertFalse(Saveable.saveToString(null, 4, false), "Checking save fails with null writer");
 		assertFalse(Saveable.saveToString(write, null, false), "Checking save fails with null object to save");
+		assertFalse(Saveable.saveToString(write, "\n", false), "Checking save fails with a new line character string");
 		
 		saveHelper(4, "4 ", false, 0);
 		saveHelper(4, "4\n", true, 0);
