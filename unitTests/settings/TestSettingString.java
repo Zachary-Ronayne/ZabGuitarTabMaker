@@ -38,6 +38,9 @@ public class TestSettingString{
 		setting.setValue("test");
 		setting.setValue("line\n");
 		assertEquals("test", setting.getValue(), "Checking value was not changed with a new line character");
+		
+		setting.setValue(null);
+		assertEquals("", setting.getValue(), "Checking value empty after setting to null");
 	}
 	
 	@Test

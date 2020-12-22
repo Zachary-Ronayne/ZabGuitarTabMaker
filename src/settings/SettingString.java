@@ -21,7 +21,9 @@ public class SettingString extends Setting<String>{
 	 */
 	@Override
 	public void setValue(String value){
-		if(value.contains("\n")) return;
+		boolean isNull = value == null;
+		if(!isNull && value.contains("\n")) return;
+		if(isNull) value = "";
 		super.setValue(value);
 	}
 
