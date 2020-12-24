@@ -48,33 +48,43 @@ public class ZabAppSettings{
 	}
 	
 	/**
-	 * Load the static instance of settings from the given {@link Scanner}, along with the given tab
+	 * Load the static instance of settings from the given {@link Scanner}, along with the given tab. 
+	 * This method does nothing and returns false if tab is null and saveSettings is false
 	 * @param reader The {@link Scanner} to use for loading
 	 * @param tab The tab to load, or null to not load a tab
+	 * @param loadSettings true if settings should also be loaded, false otherwise
 	 * @return true if the load was successful, false otherwise
 	 */
-	public static boolean load(Scanner reader, Tab tab){
+	public static boolean load(Scanner reader, Tab tab, boolean loadSettings){
+		if(tab == null && !loadSettings) return false;
+
+		boolean success = true;
+		
 		try{
-			if(!settings.load(reader)) return false;
-			if(tab != null){
-				if(!tab.load(reader)) return false;
+			if(loadSettings){
+				if(!settings.load(reader)) success = false;
 			}
-			return true;
+			if(tab != null){
+				if(!tab.load(reader)) success = false;
+			}
 		}
 		catch(Exception e){
 			if(Saveable.printErrors) e.printStackTrace();
-			return false;
+			success = false;
 		}
+		return success;
 	}
-
+	
 	/**
-	 * Load the static instance of settings from the given file path and name, along with the given tab
+	 * Load the static instance of settings from the given file path and name, along with the given tab. 
+	 * This method does nothing and returns false if tab is null and saveSettings is false
 	 * @param filePath The path to the file, not including the file itself
 	 * @param name The name of the file, not including a file extension
 	 * @param tab The tab to load, or null to not load a tab
+	 * @param loadSettings true if settings should also be loaded, false otherwise
 	 * @return true if the save was successful, false otherwise
 	 */
-	public static boolean load(String filePath, String name, Tab tab){
+	public static boolean load(String filePath, String name, Tab tab, boolean loadSettings){
 		File file = new File(makeFileName(filePath, name));
 		if(!file.exists()) return false;
 		
@@ -82,7 +92,7 @@ public class ZabAppSettings{
 		try{
 			Scanner reader = new Scanner(file);
 			try{
-				success = load(reader, tab);
+				success = load(reader, tab, loadSettings);
 			}finally{
 				reader.close();
 			}
@@ -93,6 +103,17 @@ public class ZabAppSettings{
 		}
 		return success;
 	}
+
+	/**
+	 * Load a file which is only a tab
+	 * @param filePath The path to the file, not including the file itself
+	 * @param name The name of the file, not including a file extension
+	 * @param tab The tab to load
+	 * @return true if the save was successful, false otherwise
+	 */
+	public static boolean load(String filePath, String name, Tab tab){
+		return load(filePath, name, tab, false);
+	}
 	
 	/**
 	 * Load the static instance of settings from the given file path and name
@@ -101,7 +122,34 @@ public class ZabAppSettings{
 	 * @return true if the save was successful, false otherwise
 	 */
 	public static boolean load(String filePath, String name){
-		return load(filePath, name, null);
+		return load(filePath, name, null, true);
+	}
+	
+	/**
+	 * Save the static instance of settings with the given {@link PrintWriter}, along with the given tab. 
+	 * This method does nothing and returns false if tab is null and saveSettings is false
+	 * @param writer The {@link PrintWriter} to use for saving
+	 * @param tab The tab to save, or null to not save a tab
+	 * @param saveSettings true to save the settings with the writer, false otherwise
+	 * @return true if the save was successful, false otherwise
+	 */
+	public static boolean save(PrintWriter writer, Tab tab, boolean saveSettings){
+		if(tab == null && !saveSettings) return false;
+		boolean success = true;
+		
+		try{
+			if(saveSettings){
+				if(!settings.save(writer)) success = false;
+			}
+			if(tab != null){
+				if(!tab.save(writer)) success = false;
+			}
+		}
+		catch(Exception e){
+			if(Saveable.printErrors) e.printStackTrace();
+			success = false;
+		}
+		return success;
 	}
 	
 	/**
@@ -111,34 +159,26 @@ public class ZabAppSettings{
 	 * @return true if the save was successful, false otherwise
 	 */
 	public static boolean save(PrintWriter writer, Tab tab){
-		try{
-			if(!settings.save(writer)) return false;
-			if(tab != null){
-				if(!tab.save(writer)) return false;
-			}
-			return true;
-		}
-		catch(Exception e){
-			if(Saveable.printErrors) e.printStackTrace();
-			return false;
-		}
+		return save(writer, tab, true);
 	}
 	
 	/**
-	 * Save the static instance of settings to the given file path and name, along with the given tab
+	 * Save the static instance of settings to the given file path and name, along with the given tab. 
+	 * This method does nothing and returns false if tab is null and saveSettings is false
 	 * @param filePath The path to the file, not including the file itself
 	 * @param name The name of the file, not including a file extension
 	 * @param tab The tab to save, or null to not save a tab
+	 * @param saveSettings true to save the settings with the file, false otherwise
 	 * @return true if the save was successful, false otherwise
 	 */
-	public static boolean save(String filePath, String name, Tab tab){
+	public static boolean save(String filePath, String name, Tab tab, boolean saveSettings){
 		File file = new File(makeFileName(filePath, name));
 		
 		boolean success = true;
 		try{
 			PrintWriter writer = new PrintWriter(file);
 			try{
-				success = save(writer, tab);
+				success = save(writer, tab, saveSettings);
 			}finally{
 				writer.close();
 			}
@@ -151,13 +191,24 @@ public class ZabAppSettings{
 	}
 	
 	/**
+	 * Save the given tab to a file
+	 * @param filePath The path to the file, not including the file itself
+	 * @param name The name of the file, not including a file extension
+	 * @param tab The tab to save
+	 * @return true if the save was successful, false otherwise
+	 */
+	public static boolean save(String filePath, String name, Tab tab){
+		return save(filePath, name, tab, false);
+	}
+	
+	/**
 	 * Save the static instance of settings to the given file path and name
 	 * @param filePath The path to the file, not including the file itself
 	 * @param name The name of the file, not including a file extension
 	 * @return true if the save was successful, false otherwise
 	 */
 	public static boolean save(String filePath, String name){
-		return save(filePath, name, null);
+		return save(filePath, name, null, true);
 	}
 	
 	/** Cannot instantiate {@link ZabAppSettings} */

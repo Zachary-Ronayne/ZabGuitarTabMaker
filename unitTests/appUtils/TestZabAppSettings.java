@@ -31,7 +31,6 @@ public class TestZabAppSettings{
 	private File unitFile;
 	private File unitFolder;
 	
-	private Tab nullTab;
 	private Tab guitar;
 	
 	private static ArrayList<Setting<?>> settings;
@@ -52,11 +51,6 @@ public class TestZabAppSettings{
 		unitFile = new File(ZabAppSettings.makeFileName(UNIT_PATH, UNIT_NAME));
 		unitFile.getParentFile().mkdirs();
 		
-		bytes = new ByteArrayOutputStream();
-		bs = new BufferedOutputStream(bytes);
-		write = new PrintWriter(bs);
-		
-		nullTab = null;
 		guitar = InstrumentFactory.guitarStandard();
 	}
 	
@@ -114,20 +108,62 @@ public class TestZabAppSettings{
 				+ "<\n"
 				+ "<\n"
 				+ ">\n"
-				+ ">\n");
+				+ ">\n"
+				+ "false 4 4 \n"
+				+ "6\n"
+				+ "4 \n"
+				+ "0\n"
+				+ "-1 \n"
+				+ "0\n"
+				+ "-5 \n"
+				+ "0\n"
+				+ "-10 \n"
+				+ "0\n"
+				+ "-15 \n"
+				+ "0\n"
+				+ "-20 \n"
+				+ "0\n");
 
+		assertFalse("Checking load fails with invalid scanner", ZabAppSettings.load(null, guitar, true));
+		assertFalse("Checking load fails with null tab and not saving settings", ZabAppSettings.load(scan, null, false));
+		
 		ArrayList<Setting<?>> settingsCopy = new ArrayList<>();
 		settingsCopy.addAll(settings);
 		Tab tunedGuitar = InstrumentFactory.guitarEbStandard();
-		assertTrue("Checking load successful with tab", ZabAppSettings.load(scan, tunedGuitar));
+		assertTrue("Checking load successful with tab", ZabAppSettings.load(scan, tunedGuitar, true));
 		assertEquals(guitar, tunedGuitar, "Checking correct tab loaded in");
 		assertEquals(settingsCopy, settings, "Checking correct settings loaded in");
-
-		assertTrue("Checking load successful with no tab", ZabAppSettings.load(scan, nullTab));
-		assertEquals(settingsCopy, settings, "Checking correct settings loaded in");
 		
-		assertFalse("Checking load fails with nothing left to load", ZabAppSettings.load(scan, nullTab));
-		assertFalse("Checking load fails with invalid scanner", ZabAppSettings.load(null, nullTab));
+		assertTrue("Checking load successful with no tab", ZabAppSettings.load(scan, null, true));
+		assertEquals(settingsCopy, settings, "Checking correct settings loaded in");
+
+		settingsCopy = new ArrayList<>();
+		settingsCopy.addAll(settings);
+		tunedGuitar = InstrumentFactory.guitarEbStandard();
+		assertTrue("Checking load successful with no settings", ZabAppSettings.load(scan, tunedGuitar, false));
+		assertEquals(settingsCopy, settings, "Checking settings unchanged");
+		assertEquals(guitar, tunedGuitar, "Checking correct tab loaded in");
+		
+		assertFalse("Checking load fails with nothing left to load", ZabAppSettings.load(scan, null, true));
+		scan.close();
+		
+		scan = new Scanner(""
+				+ "h\n"
+				+ "h\n"
+				+ "p\n"
+				+ "p\n"
+				+ "/\n"
+				+ "/\n"
+				+ "\\\n"
+				+ "\\\n"
+				+ "<\n"
+				+ "<\n"
+				+ ">\n"
+				+ ">\n"
+				+ "false 4 4 \n"
+				+ "6\n");
+		
+		assertFalse("Checking load fails with invalid formatted tab save file", ZabAppSettings.load(scan, new Tab(), true));
 		scan.close();
 		
 		scan = new Scanner(""
@@ -171,27 +207,33 @@ public class TestZabAppSettings{
 				+ ">\n");
 		
 		guitar.getStrings().add(null);
-		assertFalse("Checking load fails with invalid tab", ZabAppSettings.load(scan, guitar));
+		assertFalse("Checking load fails with invalid tab", ZabAppSettings.load(scan, guitar, true));
 		guitar.getStrings().remove(6);
 
 		settings.add(0, null);
-		assertFalse("Checking load fails with invalid settings", ZabAppSettings.load(scan, nullTab));
+		assertFalse("Checking load fails with invalid settings", ZabAppSettings.load(scan, null, true));
 		settings.remove(0);
 		
 		scan.close();
 		
-		assertFalse("Checking load from file fails with no file existing", ZabAppSettings.load(UNIT_PATH, UNIT_NAME, nullTab));
+		assertFalse("Checking load from file fails with no file existing", ZabAppSettings.load(UNIT_PATH, UNIT_NAME, null));
 		
-		ZabAppSettings.save(UNIT_PATH, UNIT_NAME, nullTab);
-		assertTrue("Checking load from file successful", ZabAppSettings.load(UNIT_PATH, UNIT_NAME, nullTab));
-		assertFalse("Checking save to file fails with invalid file", ZabAppSettings.load(UNIT_PATH + "/path", UNIT_NAME, nullTab));
+		ZabAppSettings.save(UNIT_PATH, UNIT_NAME, null, true);
+		assertTrue("Checking load settings from file successful", ZabAppSettings.load(UNIT_PATH, UNIT_NAME, null, true));
+		assertFalse("Checking load from file fails with invalid file", ZabAppSettings.load(UNIT_PATH + "/path", UNIT_NAME, null, true));
 
 		assertTrue("Checking load from file successful with no tab", ZabAppSettings.load(UNIT_PATH, UNIT_NAME));
 	}
 	
 	@Test
 	public void save(){
-		assertTrue("Checking save successful with a tab", ZabAppSettings.save(write, guitar));
+		bytes = new ByteArrayOutputStream();
+		bs = new BufferedOutputStream(bytes);
+		write = new PrintWriter(bs);
+		
+		assertFalse("Checking save fails with null tab and not saving settings", ZabAppSettings.save(write, null, false));
+		
+		assertTrue("Checking save successful saving settings and a tab", ZabAppSettings.save(write, guitar));
 		write.close();
 		String text = UtilsTest.removeSlashR(bytes.toString());
 		assertEquals(""
@@ -225,7 +267,7 @@ public class TestZabAppSettings{
 		bytes = new ByteArrayOutputStream();
 		bs = new BufferedOutputStream(bytes);
 		write = new PrintWriter(bs);
-		assertTrue("Checking save successful with null tab", ZabAppSettings.save(write, nullTab));
+		assertTrue("Checking save successful with null tab", ZabAppSettings.save(write, null));
 		write.close();
 		text = UtilsTest.removeSlashR(bytes.toString());
 		assertEquals(""
@@ -242,27 +284,36 @@ public class TestZabAppSettings{
 				+ ">\n"
 				+ ">\n", text, "Checking correct text saved with no tab");
 		
-		assertFalse("Checking save fails with invalid writer", ZabAppSettings.save(null, nullTab));
+		assertFalse("Checking save fails with invalid writer", ZabAppSettings.save(null, new Tab()));
 		
-		guitar.getStrings().add(null);
+		guitar.getStrings().add(0, null);
 		bytes = new ByteArrayOutputStream();
 		bs = new BufferedOutputStream(bytes);
 		write = new PrintWriter(bs);
 		assertFalse("Checking save fails with invalid tab", ZabAppSettings.save(write, guitar));
+		write.close();
+		
+		guitar.getStrings().remove(0);
+		bytes = new ByteArrayOutputStream();
+		bs = new BufferedOutputStream(bytes);
+		write = new PrintWriter(bs);
+		assertTrue("Checking save successful with tab only", ZabAppSettings.save(write, guitar, false));
 		write.close();
 
 		settings.add(0, null);
 		bytes = new ByteArrayOutputStream();
 		bs = new BufferedOutputStream(bytes);
 		write = new PrintWriter(bs);
-		assertFalse("Checking save fails with invalid settings", ZabAppSettings.save(write, nullTab));
+		assertFalse("Checking save fails with invalid settings", ZabAppSettings.save(write, null));
 		settings.remove(0);
 		write.close();
 		
-		assertTrue("Checking save to file successful", ZabAppSettings.save(UNIT_PATH, UNIT_NAME, nullTab));
-		assertFalse("Checking save to file fails with invalid file", ZabAppSettings.save(UNIT_PATH + "/path", UNIT_NAME, nullTab));
+		assertTrue("Checking save settings to file successful", ZabAppSettings.save(UNIT_PATH, UNIT_NAME));
+		assertFalse("Checking save to file fails with invalid file", ZabAppSettings.save(UNIT_PATH + "/path", UNIT_NAME));
 
 		assertTrue("Checking save to file successful with no tab", ZabAppSettings.save(UNIT_PATH, UNIT_NAME));
+		
+		assertTrue("Checking save to file successful with only tab", ZabAppSettings.save(UNIT_PATH, UNIT_NAME, guitar));
 	}
 	
 	@AfterEach

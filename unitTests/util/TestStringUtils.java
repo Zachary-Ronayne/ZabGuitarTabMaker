@@ -32,7 +32,7 @@ public class TestStringUtils{
 	}
 	
 	@Test
-	public void combineStringsWithFiller(){ // TODO
+	public void combineStringsWithFiller(){
 		StringUtils.combineStringsWithFiller(combineMain, combineAdd, "", "", ' ', true);
 		assertEquals("asd   1", combineMain[0], "Checking string list filler before");
 		assertEquals("qweasdf", combineMain[1], "Checking string list filler before");
