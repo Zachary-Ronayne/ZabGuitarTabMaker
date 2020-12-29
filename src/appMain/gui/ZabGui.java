@@ -66,12 +66,13 @@ public class ZabGui extends JFrame{
 		this.addComponentListener(lis);
 		this.addWindowStateListener(lis);
 		this.addWindowListener(lis);
-
-		// Put the GUI in the full window
-		this.maximize();
 		
 		// Show the GUI
 		this.setVisible(true);
+
+		// Put the GUI in the full window
+		this.requestFocus();
+		this.maximize();
 	}
 	
 	/**
