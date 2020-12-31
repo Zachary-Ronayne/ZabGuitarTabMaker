@@ -19,9 +19,9 @@ public class TabPainter extends ZabPanel{
 	private Camera tabCamera;
 	
 	/** The width, in pixels, of the paintable area */
-	private int width;
+	private int paintWidth;
 	/** The height, in pixels, of the paintable area */
-	private int height;
+	private int paintHeight;
 	
 	/**
 	 * Create a new {@link TabPainter} at the given size
@@ -39,7 +39,7 @@ public class TabPainter extends ZabPanel{
 	 * @return See {@link #width}
 	 */
 	public int getPaintWidth(){
-		return this.width;
+		return this.paintWidth;
 	}
 
 	/**
@@ -48,7 +48,7 @@ public class TabPainter extends ZabPanel{
 	 * @param width See {@link #width}
 	 */
 	public void setPaintWidth(int width){
-		this.setPaintSize(width, this.height);
+		this.setPaintSize(width, this.getPaintHeight());
 	}
 
 	/**
@@ -56,7 +56,7 @@ public class TabPainter extends ZabPanel{
 	 * @return See {@link #height}
 	 */
 	public int getPaintHeight(){
-		return this.height;
+		return this.paintHeight;
 	}
 
 	/**
@@ -65,7 +65,7 @@ public class TabPainter extends ZabPanel{
 	 * @param height See {@link #height}
 	 */
 	public void setPaintHeight(int height){
-		this.setPaintSize(this.width, height);
+		this.setPaintSize(this.getPaintWidth(), height);
 	}
 	
 	/**
@@ -75,13 +75,21 @@ public class TabPainter extends ZabPanel{
 	 * @param height See {@link #height}
 	 */
 	public void setPaintSize(int width, int height){
-		this.width = width;
-		this.height = height;
+		this.paintWidth = width;
+		this.paintHeight = height;
 		this.tabCamera.setWidth(width);
 		this.tabCamera.setHeight(height);
 		
 		this.setPreferredSize(new Dimension(width, height));
 		this.repaint();
+	}
+	
+	/**
+	 * Get the {@link Camera} this {@link TabPainter} uses for rendering
+	 * @return
+	 */
+	public Camera getCamera(){
+		return this.tabCamera;
 	}
 	
 	/** Draw the {@link Tab} to the screen */

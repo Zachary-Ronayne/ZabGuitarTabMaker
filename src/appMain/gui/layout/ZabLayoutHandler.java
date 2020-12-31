@@ -36,7 +36,7 @@ public class ZabLayoutHandler{
 	 * @param rows The number of rows
 	 * @param cols The number of columns
 	 */
-	public static void createGridlLayout(Container target, int rows, int cols){
+	public static void createGridLayout(Container target, int rows, int cols){
 		GridLayout layout = new GridLayout(rows, cols);
 		target.setLayout(layout);
 	}

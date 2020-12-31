@@ -1,4 +1,4 @@
-package appMain.gui.comp;
+package appMain.gui.comp.dropMenu;
 
 import javax.swing.JMenuBar;
 
@@ -37,6 +37,22 @@ public class ZabMenuBar extends JMenuBar{
 		this.editMenu.add(new ZabMenuItem("Undo"));
 		this.editMenu.add(new ZabMenuItem("Redo"));
 		this.add(this.editMenu);
+	}
+	
+	/**
+	 * Get the {@link ZabMenuBar} for file
+	 * @return See {@link #fileMenu}
+	 */
+	public ZabMenu getFileMenu(){
+		return this.fileMenu;
+	}
+
+	/**
+	 * Get the {@link ZabMenuBar} for edit
+	 * @return See {@link #editMenu}
+	 */
+	public ZabMenu getEditMenu(){
+		return this.editMenu;
 	}
 	
 }

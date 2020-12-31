@@ -77,9 +77,31 @@ public class EditorFrame extends ZabFrame{
 	 */
 	@Override
 	public void parentResized(int w, int h){
-		h -= menuHolder.getHeight();
-		
-		this.updatePaintSize(w, h);
+		this.updatePaintSize(w, h - menuHolder.getHeight());
+	}
+	
+	/**
+	 * Get the {@link TabPainter} used by this {@link EditorFrame}
+	 * @return See {@link #tabScreen}
+	 */
+	public TabPainter getTabScreen(){
+		return this.tabScreen;
+	}
+	
+	/**
+	 * Get the {@link ZabPanel} used by this {@link EditorFrame} for the menu
+	 * @return {@link #menuHolder}
+	 */
+	public ZabPanel getMenuHolder(){
+		return this.menuHolder;
+	}
+	
+	/**
+	 * Get the {@link ZabPanel} used by this {@link EditorFrame} for drawing graphics
+	 * @return {@link #paintHolder}
+	 */
+	public ZabPanel getPaintHolder(){
+		return this.paintHolder;
 	}
 	
 }

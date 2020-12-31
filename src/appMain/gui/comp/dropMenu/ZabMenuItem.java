@@ -1,11 +1,13 @@
-package appMain.gui.comp;
+package appMain.gui.comp.dropMenu;
+
+import java.awt.MenuItem;
 
 import javax.swing.JMenuItem;
 
 import appMain.gui.ZabTheme;
 
 /**
- * A particular item in the list of items in a menu used by the Zab Application drop down menu
+ * A particular {@link MenuItem} in the list of items in a menu used by the Zab Application drop down menu
  * @author zrona
  */
 public class ZabMenuItem extends JMenuItem{

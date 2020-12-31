@@ -2,8 +2,6 @@ package appMain.gui;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 import javax.swing.AbstractButton;
 
@@ -35,27 +33,7 @@ public final class ZabTheme{
 		// Set general theme
 		setToTheme((Component)b);
 		
-		// Set the hovering and clicking colors
-		b.addMouseListener(new MouseAdapter(){
-			@Override
-			public void mouseEntered(MouseEvent e){
-				b.setBackground(new Color(80, 80, 80));
-			}
-			@Override
-			public void mouseExited(MouseEvent e){
-				b.setBackground(new Color(40, 40, 40));
-			}
-		});
-		b.addMouseListener(new MouseAdapter(){
-			@Override
-			public void mousePressed(MouseEvent e){
-				b.setBackground(new Color(120, 120, 120));
-			}
-			@Override
-			public void mouseReleased(MouseEvent e){
-				b.setBackground(new Color(40, 40, 40));
-			}
-		});
+		// TODO add listeners for changing the color when button clicked / hovered
 	}
 	
 	/** Cannot instantiate a {@link ZabTheme} */

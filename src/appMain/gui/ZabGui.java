@@ -9,10 +9,11 @@ import java.awt.event.WindowStateListener;
 
 import javax.swing.JFrame;
 
-import appMain.gui.comp.ZabMenuBar;
 import appMain.gui.comp.ZabPanel;
+import appMain.gui.comp.dropMenu.ZabMenuBar;
 import appMain.gui.frames.EditorFrame;
 import appMain.gui.frames.GuiFrame;
+import appMain.gui.frames.ZabFrame;
 
 /**
  * An object representing the main GUI used by the Zab application
@@ -21,22 +22,29 @@ import appMain.gui.frames.GuiFrame;
 public class ZabGui extends JFrame{
 	private static final long serialVersionUID = 1L;
 	
+	/** True if ZabGui objects should show on creation, false otherwise, should only be false for testing purposes */
+	public static final boolean SHOW_GUI_ON_INIT = true;
+	
 	/** The {@link GuiFrame} currently displayed by this {@link ZabGui} */
-	private GuiFrame currentFrame;
+	private ZabFrame currentFrame;
 	
 	/** The ZabPanel holding everything in this {@link ZabGui} */
 	private ZabPanel primaryPanel;
 	
-	/**
-	 * The {@link ZabMenuBar} used by the Zab Application
-	 */
+	/** The {@link ZabMenuBar} used by the Zab Application */
 	private ZabMenuBar menuBar;
+	
+	/** The listener used for resizing the window by this {@link ZabGui} */
+	private GuiResizeListener resizer;
 	
 	/**
 	 * Create the default {@link ZabGui}
 	 */
 	public ZabGui(){
 		super();
+		
+		// Keep hidden initially
+		this.setVisible(false);
 		
 		// Set the Theme appropriately
 		ZabTheme.setToTheme(this);
@@ -62,13 +70,13 @@ public class ZabGui extends JFrame{
 		this.pack();
 
 		// Adding listener for changing the window size
-		GuiResizeListener lis = new GuiResizeListener(this);
-		this.addComponentListener(lis);
-		this.addWindowStateListener(lis);
-		this.addWindowListener(lis);
+		resizer = new GuiResizeListener(this);
+		this.addComponentListener(resizer);
+		this.addWindowStateListener(resizer);
+		this.addWindowListener(resizer);
 		
 		// Show the GUI
-		this.setVisible(true);
+		this.setVisible(SHOW_GUI_ON_INIT);
 
 		// Put the GUI in the full window
 		this.requestFocus();
@@ -96,20 +104,42 @@ public class ZabGui extends JFrame{
 	 * Get the currently used frame
 	 * @return See {@link #currentFrame}
 	 */
-	public GuiFrame getCurrentFrame(){
+	public ZabFrame getCurrentFrame(){
 		return this.currentFrame;
 	}
 
 	/**
-	 * Set the currently used {@link GuiFrame}. This will remove the old frame from the GUI, and will add the given frame to the GUI
+	 * Set the currently used {@link GuiFrame}. This will remove the old frame from the GUI, and will add the given frame to the GUI. 
+	 * Does nothing if currentFrame is null
 	 * @param currentFrame See {@link #currentFrame}
+	 * @return true if the frame was set, false otherwise
 	 */
-	public void setCurrentFrame(GuiFrame currentFrame){
+	public boolean setCurrentFrame(ZabFrame currentFrame){
+		if(currentFrame == null) return false;
+		
 		GuiFrame f = this.getCurrentFrame();
 		if(f != null) this.primaryPanel.remove(f);
-		if(currentFrame != null) this.primaryPanel.add(currentFrame);
+		this.primaryPanel.add(currentFrame);
 		this.currentFrame = currentFrame;
 		this.updateSize();
+		
+		return true;
+	}
+	
+	/**
+	 * Get the currently used frame holding all of the objects in the GUI
+	 * @return See {@link #primaryPanel}
+	 */
+	public ZabPanel getPrimaryPanel(){
+		return this.primaryPanel;
+	}
+	
+	/**
+	 * Get the listener responsible for handling resizing of this {@link ZabGui}
+	 * @return See {@link #resizer}
+	 */
+	public GuiResizeListener getResizer(){
+		return this.resizer;
 	}
 	
 	/**
@@ -126,6 +156,13 @@ public class ZabGui extends JFrame{
 		 */
 		public GuiResizeListener(ZabGui gui){
 			this.gui = gui;
+		}
+		
+		/**
+		 * @return See {@link #gui}
+		 */
+		public ZabGui getGui(){
+			return this.gui;
 		}
 		
 		/**

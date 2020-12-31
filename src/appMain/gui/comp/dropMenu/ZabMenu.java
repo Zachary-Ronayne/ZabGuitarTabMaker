@@ -1,4 +1,4 @@
-package appMain.gui.comp;
+package appMain.gui.comp.dropMenu;
 
 import javax.swing.JMenu;
 
