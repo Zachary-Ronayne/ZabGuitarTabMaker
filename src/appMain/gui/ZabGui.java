@@ -37,6 +37,9 @@ public class ZabGui extends JFrame{
 	/** The listener used for resizing the window by this {@link ZabGui} */
 	private GuiResizeListener resizer;
 	
+	/** The {@link EditorFrame} used by this {@link ZabGui} */
+	private EditorFrame editorFrame;
+	
 	/**
 	 * Create the default {@link ZabGui}
 	 */
@@ -60,11 +63,12 @@ public class ZabGui extends JFrame{
 		this.add(primaryPanel);
 
 		// Add the menu bar
-		this.menuBar = new ZabMenuBar();
+		this.menuBar = new ZabMenuBar(this);
 		this.setJMenuBar(this.menuBar);
 		
 		// Set the default frame state
-		this.setCurrentFrame(new EditorFrame());
+		this.editorFrame = new EditorFrame(this);
+		this.openEditor();
 		
 		// Pack the frame
 		this.pack();
@@ -124,6 +128,21 @@ public class ZabGui extends JFrame{
 		this.updateSize();
 		
 		return true;
+	}
+	
+	/**
+	 * @return See {@link #editorFrame}
+	 */
+	public EditorFrame getEditorFrame(){
+		return this.editorFrame;
+	}
+	
+	/**
+	 * Open the {@link EditorFrame} into the gui
+	 * @return true if the editor was opened, false otherwise
+	 */
+	public boolean openEditor(){
+		return this.setCurrentFrame(this.getEditorFrame());
 	}
 	
 	/**

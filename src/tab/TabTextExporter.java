@@ -1,10 +1,15 @@
 package tab;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 
 import music.Music;
 import tab.symbol.TabSymbol;
+import util.FileUtils;
+import util.Saveable;
 import util.StringUtils;
 
 /**
@@ -133,6 +138,32 @@ public final class TabTextExporter{
 		
 		// Return the final tab string
 		return result;
+	}
+	
+	/**
+	 * Export a {@link Tab} to a file
+	 * @param tab The {@link Tab} to export
+	 * @param filePath The path at which to export the file
+	 * @param name The name of the file, no extension
+	 * @return true if the export was successful, false otherwise
+	 */
+	public static boolean exportToFile(Tab tab, String filePath, String name){
+		File file = new File(FileUtils.makeFileName(filePath, name, "txt"));
+		
+		boolean success = true;
+		try{
+			PrintWriter writer = new PrintWriter(file);
+			try{
+				writer.print(export(tab));
+			}finally{
+				writer.close();
+			}
+		}
+		catch(FileNotFoundException | SecurityException e){
+			if(Saveable.printErrors) e.printStackTrace();
+			success = false;
+		}
+		return success;
 	}
 	
 	/** Cannot instantiate {@link TabTextExporter} */

@@ -86,7 +86,7 @@ public class TabString extends ArrayList<TabSymbol> implements Copyable<TabStrin
 	 */
 	@Override
 	public boolean add(TabSymbol e){
-		return ArrayUtils.insertSorted(this, e);
+		return ArrayUtils.insertSorted(this, e, false);
 	}
 	
 	/**

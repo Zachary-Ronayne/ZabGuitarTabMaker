@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 import tab.Tab;
+import util.FileUtils;
 import util.Saveable;
 
 /**
@@ -40,11 +41,7 @@ public class ZabAppSettings{
 	 * @return The file string
 	 */
 	public static String makeFileName(String filePath, String name){
-		if(filePath == null) filePath = "";
-		if(name == null) name = "";
-		if(!filePath.endsWith("/")) filePath = filePath.concat("/");
-		
-		return filePath.concat(name).concat(".zab");
+		return FileUtils.makeFileName(filePath, name, "zab");
 	}
 	
 	/**

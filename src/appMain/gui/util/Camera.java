@@ -13,7 +13,9 @@ import util.Saveable;
  * A class that handles camera movement. This allows a single object to be used to keep track of all movements of a camera, 
  * and then change the location on a component's associated graphics object based on the camera position and zoom level. 
  * All methods that have the same name as those in a Graphics object do the same thing, but take double values as parameters.<br>
- * This is recycled code from an older project
+ * Pixel space refers to the real location of rendered graphics, i.e. the location of the mouse, camera space refers to the location of rendered objects 
+ * relative to the camera, includzing transformations such as zooms and pans<br>
+ * This is recycled code from an older project.
  */
 public class Camera implements Saveable{
 	
@@ -263,23 +265,41 @@ public class Camera implements Saveable{
 	public int drawH(double value){
 		return (int)Math.round(zoom(value, yZoomFactor));
 	}
-
+	
 	/**
-	 * Based on an x pixel coordinate, get the corresponding location based on where the camera is.
-	 * @param value the pixel coordinate
-	 * @return the x pixel coordinate of the camera
+	 * Convert an x coordinate in pixel space, and convert it to camera space
+	 * @param value The pixel coordinate
+	 * @return The x coordinate of the camera
 	 */
-	public double mouseX(double value){
+	public double toCamX(double value){
 		return inverseZoom(value, xZoomFactor) + camX;
 	}
 
 	/**
-	 * Based on an y pixel coordinate, get the corresponding location based on where the camera is.
-	 * @param value the pixel coordinate
-	 * @return the y pixel coordinate of the camera
+	 * Convert an x camera coordinate, to an x coordinate in pixel space
+	 * @param value The x camera coordinate
+	 * @return The pixel space coordinate
 	 */
-	public double mouseY(double value){
+	public double toPixelX(double value){ // TODO
+		return zoom(value - camX, xZoomFactor);
+	}
+
+	/**
+	 * Convert a y coordinate in pixel space, and convert it to camera space
+	 * @param value the pixel coordinate
+	 * @return the y coordinate of the camera
+	 */
+	public double toCamY(double value){
 		return inverseZoom(value, yZoomFactor) + camY;
+	}
+
+	/**
+	 * Convert a y camera coordinate, to an x coordinate in pixel space
+	 * @param value The y camera coordinate
+	 * @return The pixel space coordinate
+	 */
+	public double toPixelY(double value){ // TODO
+		return zoom(value - camY, yZoomFactor);
 	}
 	
 	/**
@@ -337,6 +357,9 @@ public class Camera implements Saveable{
 		}
 		if(!inBounds(x, y - fontSize, g.getFontMetrics().stringWidth(s), fontSize)) return false;
 		g.drawString(s, drawX(x), drawY(y));
+		
+		// Setting the old font
+		g.setFont(f);
 		return true;
 	}
 	/**
@@ -407,7 +430,15 @@ public class Camera implements Saveable{
 	public void setX(double x){
 		this.camX = Math.max(minX, Math.min(maxX, x));
 	}
-
+	
+	/**
+	 * Add the specified amount to the x position of the camera
+	 * @param x
+	 */
+	public void addX(double x){
+		this.setX(this.getX() + x);
+	}
+	
 	/**
 	 * @return See {@link #camY}
 	 */
@@ -419,6 +450,14 @@ public class Camera implements Saveable{
 	 */
 	public void setY(double y){
 		this.camY = Math.max(minY, Math.min(maxY, y));
+	}
+	
+	/**
+	 * Add the specified amount to the y position of the camera
+	 * @param y
+	 */
+	public void addY(double y){
+		this.setY(this.getY() + y);
 	}
 
 	/**

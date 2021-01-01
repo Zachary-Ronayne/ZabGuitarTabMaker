@@ -24,7 +24,7 @@ public class TestZabMenuBar{
 	
 	@BeforeEach
 	public void setup(){
-		bar = new ZabMenuBar();
+		bar = new ZabMenuBar(null);
 	}
 	
 	@Test

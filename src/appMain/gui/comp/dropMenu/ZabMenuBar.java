@@ -1,8 +1,15 @@
 package appMain.gui.comp.dropMenu;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.JMenuBar;
 
+import appMain.gui.ZabGui;
 import appMain.gui.ZabTheme;
+import appMain.gui.frames.EditorFrame;
+import tab.Tab;
+import tab.TabTextExporter;
 
 /**
  * The bar of drop down menus used by the Zab application
@@ -17,11 +24,19 @@ public class ZabMenuBar extends JMenuBar{
 	/** The {@link ZabMenu} used for the edit options */
 	private ZabMenu editMenu;
 	
+	/** The {@link ZabMenuItem} used for exporting a tab to a file */
+	private ZabMenuItem exportItem;
+	
+	/** The {@link ZabGui} which uses this {@link ZabMenuBar} */
+	private ZabGui gui;
+	
 	/**
 	 * Create the drop down menu as a default state
 	 */
-	public ZabMenuBar(){
+	public ZabMenuBar(ZabGui gui){
 		super();
+		// Set the GUI
+		this.gui = gui;
 		
 		// Set the Theme appropriately
 		ZabTheme.setToTheme(this);
@@ -30,7 +45,10 @@ public class ZabMenuBar extends JMenuBar{
 		this.fileMenu = new ZabMenu("File");
 		this.fileMenu.add(new ZabMenuItem("Save"));
 		this.fileMenu.add(new ZabMenuItem("Load"));
-		this.fileMenu.add(new ZabMenuItem("Export"));
+		exportItem = new ZabMenuItem("Export");
+		exportItem.addActionListener(new ExportListener());
+		
+		this.fileMenu.add(exportItem);
 		this.add(this.fileMenu);
 		
 		this.editMenu = new ZabMenu("Edit");
@@ -53,6 +71,32 @@ public class ZabMenuBar extends JMenuBar{
 	 */
 	public ZabMenu getEditMenu(){
 		return this.editMenu;
+	}
+	
+	/**
+	 * @return See {@link #exportItem}
+	 */
+	public ZabMenuItem getExportItem(){
+		return this.exportItem;
+	}
+	
+	/**
+	 * @return See {@link #gui}
+	 */
+	public ZabGui getGui(){
+		return this.gui;
+	}
+	
+	/** Used by {@link ZabMenuBar#exportItem} when the item is clicked */
+	public class ExportListener implements ActionListener{
+		/** When the button is clicked, export the tab of the editor to a file */
+		@Override
+		public void actionPerformed(ActionEvent e){
+			EditorFrame frame = getGui().getEditorFrame();
+			Tab tab = frame.getOpenedTab();
+			TabTextExporter.exportToFile(tab, "./saves", "export");
+		}
+		
 	}
 	
 }

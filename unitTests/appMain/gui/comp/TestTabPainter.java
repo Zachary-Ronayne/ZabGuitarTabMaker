@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import appMain.gui.util.Camera;
 import appUtils.ZabAppSettings;
+import tab.InstrumentFactory;
 
 public class TestTabPainter{
 
@@ -25,7 +26,7 @@ public class TestTabPainter{
 	
 	@BeforeEach
 	public void setup(){
-		paint = new TabPainter(400, 340);
+		paint = new TabPainter(400, 340, InstrumentFactory.guitarStandard());
 	}
 	
 	@Test

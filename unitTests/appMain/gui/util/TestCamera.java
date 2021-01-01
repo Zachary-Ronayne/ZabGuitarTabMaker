@@ -210,30 +210,30 @@ public class TestCamera{
 	public void mouseX(){
 		cam.setX(3);
 		cam.setXZoomFactor(0);
-		assertEquals(13, cam.mouseX(10), UtilsTest.DELTA, "Checking mouse position correct");
+		assertEquals(13, cam.toCamX(10), UtilsTest.DELTA, "Checking mouse position correct");
 		
 		cam.setX(7);
 		cam.setXZoomFactor(1);
-		assertEquals(12, cam.mouseX(10), UtilsTest.DELTA, "Checking mouse position correct");
+		assertEquals(12, cam.toCamX(10), UtilsTest.DELTA, "Checking mouse position correct");
 		
 		cam.setX(7);
 		cam.setXZoomFactor(-1);
-		assertEquals(27, cam.mouseX(10), UtilsTest.DELTA, "Checking mouse position correct");
+		assertEquals(27, cam.toCamX(10), UtilsTest.DELTA, "Checking mouse position correct");
 	}
 	
 	@Test
 	public void mouseY(){
 		cam.setY(3);
 		cam.setYZoomFactor(0);
-		assertEquals(13, cam.mouseY(10), UtilsTest.DELTA, "Checking mouse position correct");
+		assertEquals(13, cam.toCamY(10), UtilsTest.DELTA, "Checking mouse position correct");
 		
 		cam.setY(7);
 		cam.setYZoomFactor(1);
-		assertEquals(12, cam.mouseY(10), UtilsTest.DELTA, "Checking mouse position correct");
+		assertEquals(12, cam.toCamY(10), UtilsTest.DELTA, "Checking mouse position correct");
 		
 		cam.setY(7);
 		cam.setYZoomFactor(-1);
-		assertEquals(27, cam.mouseY(10), UtilsTest.DELTA, "Checking mouse position correct");
+		assertEquals(27, cam.toCamY(10), UtilsTest.DELTA, "Checking mouse position correct");
 	}
 	
 	@Test

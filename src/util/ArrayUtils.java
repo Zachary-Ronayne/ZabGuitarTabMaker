@@ -9,9 +9,11 @@ public final class ArrayUtils{
 	 * @param <E> The type of the lists, must be {@link Comparable}
 	 * @param arr A sorted ArrayList
 	 * @param e The element to add
+	 * @param allowDuplicates true to allow duplicate values to be added, false to not add them. 
+	 * 	If the value to add is a duplicate and this parameter is true, nothing happens and this method returns false
 	 * @return true if the insert is successful, false otherwise
 	 */
-	public static <E extends Comparable<E>> boolean insertSorted(ArrayList<E> arr, E e){
+	public static <E extends Comparable<E>> boolean insertSorted(ArrayList<E> arr, E e, boolean allowDuplicates){
 		// Get the ends of the ArrayList
 		int low = 0;
 		int high = arr.size();
@@ -37,10 +39,14 @@ public final class ArrayUtils{
 			else if(comp > 0){
 				low = mid + 1;
 			}
-			// Otherwise, the element is the same as mid, and should be placed after mid
+			// Otherwise, the element is the same as mid, and should be placed after mid.
+			// Or if it is a duplicate and they are not allowed, then return false
 			else{
-				low = mid + 1;
-				high = low;
+				if(allowDuplicates){
+					low = mid + 1;
+					high = low;
+				}
+				else return false;
 			}
 		}
 		
@@ -52,6 +58,17 @@ public final class ArrayUtils{
 			err.printStackTrace();
 			return false;
 		}
+	}
+	
+	/**
+	 * Add the given element to the given {@link ArrayList}, inserting it into a position so that the list remains sorted.
+	 * @param <E> The type of the lists, must be {@link Comparable}
+	 * @param arr A sorted ArrayList
+	 * @param e The element to add
+	 * @return true if the insert is successful, false otherwise
+	 */
+	public static <E extends Comparable<E>> boolean insertSorted(ArrayList<E> arr, E e){
+		return insertSorted(arr, e, true);
 	}
 	
 	/** Cannot instantiate ArrayUtils */

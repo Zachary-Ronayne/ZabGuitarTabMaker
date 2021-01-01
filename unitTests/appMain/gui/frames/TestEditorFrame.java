@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import appMain.gui.ZabGui;
 import appMain.gui.comp.TabPainter;
 import appMain.gui.comp.ZabPanel;
 import appUtils.ZabAppSettings;
@@ -19,6 +20,8 @@ public class TestEditorFrame{
 
 	private EditorFrame frame;
 	
+	private ZabGui gui;
+	
 	@BeforeAll
 	public static void init(){
 		ZabAppSettings.init();
@@ -26,7 +29,9 @@ public class TestEditorFrame{
 	
 	@BeforeEach
 	public void setup(){
-		frame = new EditorFrame();
+		gui = new ZabGui();
+		gui.setVisible(false);
+		frame = new EditorFrame(gui);
 		JFrame gui = new JFrame();
 		gui.setVisible(false);
 		gui.add(frame);
