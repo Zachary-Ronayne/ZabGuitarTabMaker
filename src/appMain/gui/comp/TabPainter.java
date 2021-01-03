@@ -262,7 +262,7 @@ public class TabPainter extends ZabPanel{
 		this.tabCamera.setY(-100);
 		this.tabCamera.setXZoomFactor(0);
 		this.tabCamera.setYZoomFactor(0);
-		this.tabCamera.setDrawOnlyInBounds(false);
+		this.tabCamera.setDrawOnlyInBounds(true);
 	}
 	
 	/**

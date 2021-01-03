@@ -327,7 +327,8 @@ public class Camera implements Saveable{
 	 * @return true if the object was drawn, false otherwise
 	 */
 	public boolean drawLine(double x1, double y1, double x2, double y2){
-		if(!inBounds(Math.min(x1, x2), Math.min(y1, y2), Math.abs(x1 - x2), Math.abs(y1 - y2))) return false;
+		// Extra little bit of width and height to account for horizontal and vertical lines
+		if(!inBounds(Math.min(x1, x2), Math.min(y1, y2), Math.abs(x1 - x2) + 0.000001, Math.abs(y1 - y2) + 0.000001)) return false;
 		g.drawLine(drawX(x1), drawY(y1), drawX(x2), drawY(y2));
 		return true;
 	}

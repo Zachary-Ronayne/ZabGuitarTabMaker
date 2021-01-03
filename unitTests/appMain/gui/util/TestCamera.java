@@ -297,18 +297,23 @@ public class TestCamera{
 	
 	@Test
 	public void drawLine(){
-		assertFalse("Checking line not drawn outside of camera",
+		assertFalse("Checking line drawn outside of camera",
 				cam.drawLine(-1, -1, -5, -5));
-		assertFalse("Checking line not drawn outside of camera",
+		assertFalse("Checking line drawn outside of camera",
 				cam.drawLine(-5, -5, -1, -1));
-		assertFalse("Checking line not drawn outside of camera",
+		assertFalse("Checking line drawn outside of camera",
 				cam.drawLine(-5, -1, -1, -5));
+		
 		assertTrue("Checking line drawn inside of camera",
 				cam.drawLine(-5, 1, 1, -5));
 		assertTrue("Checking line drawn inside of camera",
 				cam.drawLine(-5, 1, 5, -1));
 		assertTrue("Checking line drawn inside of camera",
 				cam.drawLine(-1, 1, 1, -5));
+		assertTrue("Checking line drawn inside of camera",
+				cam.drawLine(1, 1, 1, 5));
+		assertTrue("Checking line drawn inside of camera",
+				cam.drawLine(1, 5, 1, 1));
 	}
 	
 	@Test
