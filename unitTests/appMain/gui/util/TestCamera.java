@@ -207,7 +207,7 @@ public class TestCamera{
 	}
 	
 	@Test
-	public void mouseX(){
+	public void toCamX(){
 		cam.setX(3);
 		cam.setXZoomFactor(0);
 		assertEquals(13, cam.toCamX(10), UtilsTest.DELTA, "Checking mouse position correct");
@@ -219,10 +219,33 @@ public class TestCamera{
 		cam.setX(7);
 		cam.setXZoomFactor(-1);
 		assertEquals(27, cam.toCamX(10), UtilsTest.DELTA, "Checking mouse position correct");
+		
+		assertEquals(0, cam.toCamX(cam.toPixelX(0)), UtilsTest.DELTA, "Checking converting to pixel and back to camera is the same value");
+		assertEquals(30, cam.toCamX(cam.toPixelX(30)), UtilsTest.DELTA, "Checking converting to pixel and back to camera is the same value");
+		assertEquals(-7, cam.toCamX(cam.toPixelX(-7)), UtilsTest.DELTA, "Checking converting to pixel and back to camera is the same value");
 	}
 	
 	@Test
-	public void mouseY(){
+	public void toPixelX(){
+		cam.setX(3);
+		cam.setXZoomFactor(0);
+		assertEquals(10, cam.toPixelX(13), UtilsTest.DELTA, "Checking pixel position correct");
+		
+		cam.setX(7);
+		cam.setXZoomFactor(1);
+		assertEquals(10, cam.toPixelX(12), UtilsTest.DELTA, "Checking pixel position correct");
+		
+		cam.setX(7);
+		cam.setXZoomFactor(-1);
+		assertEquals(10, cam.toPixelX(27), UtilsTest.DELTA, "Checking pixel position correct");
+		
+		assertEquals(0, cam.toPixelX(cam.toCamX(0)), UtilsTest.DELTA, "Checking converting to camera and back to pixel is the same value");
+		assertEquals(10, cam.toPixelX(cam.toCamX(10)), UtilsTest.DELTA, "Checking converting to camera and back to pixel is the same value");
+		assertEquals(-4, cam.toPixelX(cam.toCamX(-4)), UtilsTest.DELTA, "Checking converting to camera and back to pixel is the same value");
+	}
+	
+	@Test
+	public void toCamY(){
 		cam.setY(3);
 		cam.setYZoomFactor(0);
 		assertEquals(13, cam.toCamY(10), UtilsTest.DELTA, "Checking mouse position correct");
@@ -234,6 +257,30 @@ public class TestCamera{
 		cam.setY(7);
 		cam.setYZoomFactor(-1);
 		assertEquals(27, cam.toCamY(10), UtilsTest.DELTA, "Checking mouse position correct");
+
+		assertEquals(0, cam.toCamY(cam.toPixelY(0)), UtilsTest.DELTA, "Checking converting to pixel and back to camera is the same value");
+		assertEquals(30, cam.toCamY(cam.toPixelY(30)), UtilsTest.DELTA, "Checking converting to pixel and back to camera is the same value");
+		assertEquals(-7, cam.toCamY(cam.toPixelY(-7)), UtilsTest.DELTA, "Checking converting to pixel and back to camera is the same value");
+	}
+	
+	@Test
+	public void toPixelY(){
+		cam.setY(3);
+		cam.setYZoomFactor(0);
+		assertEquals(10, cam.toPixelY(13), UtilsTest.DELTA, "Checking pixel position correct");
+		
+		cam.setY(7);
+		cam.setYZoomFactor(1);
+		assertEquals(10, cam.toPixelY(12), UtilsTest.DELTA, "Checking pixel position correct");
+		
+		cam.setY(7);
+		cam.setYZoomFactor(-1);
+		assertEquals(10, cam.toPixelY(27), UtilsTest.DELTA, "Checking pixel position correct");
+		
+		assertEquals(0, cam.toPixelY(cam.toCamY(0)), UtilsTest.DELTA, "Checking converting to camera and back to pixel is the same value");
+		assertEquals(10, cam.toPixelY(cam.toCamY(10)), UtilsTest.DELTA, "Checking converting to camera and back to pixel is the same value");
+		assertEquals(-4, cam.toPixelY(cam.toCamY(-4)), UtilsTest.DELTA, "Checking converting to camera and back to pixel is the same value");
+	
 	}
 	
 	@Test
@@ -266,13 +313,17 @@ public class TestCamera{
 	
 	@Test
 	public void drawString(){
-		g.setFont(new Font("Courier New", Font.PLAIN, 1));
+		Font f = new Font("Courier New", Font.PLAIN, 1);
+		g.setFont(f);
 		assertTrue("Checking string drawn inside camera", cam.drawString("word", -10, 15, 10));
 		assertFalse("Checking string not drawn outside the camera", cam.drawString("word", -25, 1, 10));
-
-		g.setFont(new Font("Courier New", Font.PLAIN, 10));
+		assertEquals(f, g.getFont(), "Checking font is unchanged after drawing strings");
+		
+		f = new Font("Courier New", Font.PLAIN, 10);
+		g.setFont(f);
 		assertTrue("Checking string drawn inside camera no font given", cam.drawString("word", -10, 15));
 		assertFalse("Checking string not drawn outside the camera no font given", cam.drawString("word", -25, 1));
+		assertEquals(f, g.getFont(), "Checking font is unchanged after drawing strings");
 	}
 	
 	@Test
@@ -323,6 +374,13 @@ public class TestCamera{
 	}
 	
 	@Test
+	public void addX(){
+		cam.setX(3);
+		cam.addX(200);
+		assertEquals(203, cam.getX(), UtilsTest.DELTA, "Checking x added correctly");
+	}
+	
+	@Test
 	public void getY(){
 		assertEquals(0, cam.getY(), "Checking y initialized");
 	}
@@ -337,7 +395,13 @@ public class TestCamera{
 		
 		cam.setY(-2001);
 		assertEquals(-2000, cam.getY(), UtilsTest.DELTA, "Checking y capped at min range");
+	}
 	
+	@Test
+	public void addY(){
+		cam.setY(6);
+		cam.addY(500);
+		assertEquals(506, cam.getY(), UtilsTest.DELTA, "Checking y added correctly");
 	}
 	
 	@Test

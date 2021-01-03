@@ -1,8 +1,12 @@
 package appMain.gui.comp.dropMenu;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.io.File;
 
 import javax.swing.AbstractButton;
 
@@ -11,11 +15,15 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import appMain.gui.ZabGui;
 import appUtils.ZabAppSettings;
+import util.FileUtils;
 
 public class TestZabMenuBar{
 
 	private ZabMenuBar bar;
+	
+	private ZabGui gui;
 	
 	@BeforeAll
 	public static void init(){
@@ -24,7 +32,8 @@ public class TestZabMenuBar{
 	
 	@BeforeEach
 	public void setup(){
-		bar = new ZabMenuBar(null);
+		gui = new ZabGui();
+		bar = new ZabMenuBar(gui);
 	}
 	
 	@Test
@@ -49,7 +58,31 @@ public class TestZabMenuBar{
 		assertEquals(2, menu.getMenuComponentCount(), "Checking correct number of items");
 		assertEquals("Undo", ((AbstractButton)menu.getMenuComponent(0)).getText(), "Checking correct name of item");
 		assertEquals("Redo", ((AbstractButton)menu.getMenuComponent(1)).getText(), "Checking correct name of item");
+	}
 	
+	@Test
+	public void getExportItem(){
+		ZabMenu menu = bar.getFileMenu();
+		assertEquals(menu.getMenuComponent(2), bar.getExportItem(), "Checking export item is the correct index");
+		assertEquals("Export", bar.getExportItem().getText(), "Checking export item has the correct text");
+	}
+	
+	@Test
+	public void getExporter(){
+		assertNotEquals(null, bar.getExporter(), "Checking exporter initialized");
+	}
+	
+	@Test
+	public void getGui(){
+		assertEquals(gui, bar.getGui(), "Checking gui initialized");
+	}
+	
+	@Test
+	public void actionPerformedExportListener(){
+		File f = new File(FileUtils.makeFileName("./saves", "export", "txt"));
+		bar.getExporter().actionPerformed(new ActionEvent(bar, 0, ""));
+		assertTrue("Checking file was made", f.exists());
+		f.delete();
 	}
 	
 	@AfterEach

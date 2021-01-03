@@ -95,11 +95,13 @@ public class TabString extends ArrayList<TabSymbol> implements Copyable<TabStrin
 	 * @param sig The {@link TimeSignature} to use for quantizing the note
 	 * @param fret The fret number of the note
 	 * @param pos The position value of the note. See {@link TabSymbol#position}
+	 * @return The {@link TabNote} placed
 	 */
-	public void placeQuantizedNote(TimeSignature sig, int fret, double pos){
+	public TabNote placeQuantizedNote(TimeSignature sig, int fret, double pos){
 		TabNote n = TabFactory.modifiedFret(this, fret, pos);
 		n.quantize(sig, 8); // TODO make this a setting
 		this.add(n);
+		return n;
 	}
 	
 	/**

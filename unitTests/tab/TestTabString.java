@@ -87,15 +87,19 @@ public class TestTabString{
 	
 	@Test
 	public void add(){
-		// Adding notes in arbitrary order
+		// Adding notes in arbitrary order, including duplicates which should be ignored
 		string.add(notes[4]);
 		string.add(notes[6]);
 		string.add(notes[2]);
 		string.add(notes[0]);
+		string.add(notes[0]);
+		string.add(notes[5]);
 		string.add(notes[5]);
 		string.add(notes[1]);
 		string.add(notes[3]);
+		string.add(notes[3]);
 		
+		assertEquals(7, string.size(), "Checking correct number of notes added, no duplicates");
 		assertEquals(notes[0], string.get(0), "Checking notes are added in sorted order");
 		assertEquals(notes[1], string.get(1), "Checking notes are added in sorted order");
 		assertEquals(notes[2], string.get(2), "Checking notes are added in sorted order");
@@ -108,14 +112,17 @@ public class TestTabString{
 	@Test
 	public void placeQuantizedNote(){
 		TabNote n;
+		TabNote placed;
 		
-		string.placeQuantizedNote(sig, 0, 1.01);
+		placed = string.placeQuantizedNote(sig, 0, 1.01);
 		n = (TabNote)string.get(0);
+		assertEquals(n, placed, "Checking placed note is the one returned");
 		assertEquals(4, n.getPitch().getNote(), "Checking note has correct pitch");
 		assertEquals(1, n.getPos(), "Checking note has quantized position");
 		
-		string.placeQuantizedNote(sig, 6, 1.49);
+		placed = string.placeQuantizedNote(sig, 6, 1.49);
 		n = (TabNote)string.get(1);
+		assertEquals(n, placed, "Checking placed note is the one returned");
 		assertEquals(10, n.getPitch().getNote(), "Checking note has correct pitch");
 		assertEquals(1.5, n.getPos(), "Checking note has quantized position");
 	}

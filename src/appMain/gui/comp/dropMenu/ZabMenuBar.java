@@ -30,6 +30,9 @@ public class ZabMenuBar extends JMenuBar{
 	/** The {@link ZabGui} which uses this {@link ZabMenuBar} */
 	private ZabGui gui;
 	
+	/** The {@link ActionListener} which handles exporting to a file */
+	private ExportListener exporter;
+	
 	/**
 	 * Create the drop down menu as a default state
 	 */
@@ -45,8 +48,9 @@ public class ZabMenuBar extends JMenuBar{
 		this.fileMenu = new ZabMenu("File");
 		this.fileMenu.add(new ZabMenuItem("Save"));
 		this.fileMenu.add(new ZabMenuItem("Load"));
-		exportItem = new ZabMenuItem("Export");
-		exportItem.addActionListener(new ExportListener());
+		this.exportItem = new ZabMenuItem("Export");
+		this.exporter = new ExportListener();
+		this.exportItem.addActionListener(this.exporter);
 		
 		this.fileMenu.add(exportItem);
 		this.add(this.fileMenu);
@@ -78,6 +82,13 @@ public class ZabMenuBar extends JMenuBar{
 	 */
 	public ZabMenuItem getExportItem(){
 		return this.exportItem;
+	}
+	
+	/**
+	 * @return See {@link #exporter}
+	 */
+	public ExportListener getExporter(){
+		return this.exporter;
 	}
 	
 	/**

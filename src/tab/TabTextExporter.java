@@ -152,11 +152,23 @@ public final class TabTextExporter{
 		
 		boolean success = true;
 		try{
-			PrintWriter writer = new PrintWriter(file);
-			try{
-				writer.print(export(tab));
-			}finally{
-				writer.close();
+			// Ensure the parent path exists
+			File parent = file.getParentFile();
+			if(parent != null && !parent.exists()){
+				if(!parent.mkdirs()){
+					success = false;
+				}
+			}
+			// If the path was made, or already existed, continue saving
+			if(success){
+				PrintWriter writer = new PrintWriter(file);
+				try{
+					String s = export(tab);
+					if(s == null) success = false;
+					else writer.print(s);
+				}finally{
+					writer.close();
+				}
 			}
 		}
 		catch(FileNotFoundException | SecurityException e){

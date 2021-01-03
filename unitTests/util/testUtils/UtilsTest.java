@@ -2,6 +2,7 @@ package util.testUtils;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.PrintWriter;
 
 import util.Saveable;
@@ -14,6 +15,11 @@ public final class UtilsTest{
 	
 	/** Constant for testing approximate equality of floating point values */
 	public static final double DELTA = 0.00000001;
+
+	/** Constant for a path to a folder for testing files */
+	public static final String UNIT_PATH = "./TestZabUnitTestFolder";
+	/** Constant for a name in a file folder for testing files */
+	public static final String UNIT_NAME = "test";
 	
 	/**
 	 * Utility for testing {@link Saveable} objects
@@ -40,6 +46,24 @@ public final class UtilsTest{
 	 */
 	public static String removeSlashR(String s){
 		return s.replace((char)13 + "", "");
+	}
+	
+	/**
+	 * Delete all files in the unit test folder, this assumes all files are files, not directories, and all files can be removed
+	 */
+	public static void deleteUnitFolder(){
+		File unitFolder = getUnitFolder();
+		if(unitFolder.exists()){
+			for(File f : unitFolder.listFiles()) f.delete();
+			unitFolder.delete();
+		}
+	}
+	
+	/**
+	 * Get the {@link File} of the unit test folder
+	 */
+	public static File getUnitFolder(){
+		return new File(UNIT_PATH);
 	}
 	
 }

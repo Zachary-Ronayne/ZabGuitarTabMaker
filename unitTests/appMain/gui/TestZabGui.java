@@ -76,6 +76,26 @@ public class TestZabGui{
 	}
 	
 	@Test
+	public void getEditorFrame(){
+		assertNotEquals(null, gui.getEditorFrame(), "Checking editor frame initialized");
+	}
+	
+	@Test
+	public void openEditor(){ // TODO
+		ZabFrame frame = new ZabFrame(){
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void parentResized(int w, int h){}
+		};
+		gui.setCurrentFrame(frame);
+		
+		EditorFrame edit = gui.getEditorFrame();
+		assertNotEquals(edit, gui.getCurrentFrame(), "Checking editor frame not opened");
+		gui.openEditor();
+		assertEquals(edit, gui.getCurrentFrame(), "Checking editor frame opened");
+	}
+	
+	@Test
 	public void getPrimaryPanel(){
 		assertTrue("Checking primary panel in GUI", gui.isAncestorOf(gui.getPrimaryPanel()));
 	}

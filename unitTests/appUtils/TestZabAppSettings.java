@@ -29,14 +29,10 @@ public class TestZabAppSettings{
 	private PrintWriter write;
 	
 	private File unitFile;
-	private File unitFolder;
 	
 	private Tab guitar;
 	
 	private static ArrayList<Setting<?>> settings;
-	
-	private static final String UNIT_PATH = "./TestZabAppSettingsUnitTest";
-	private static final String UNIT_NAME = "test";
 	
 	@BeforeAll
 	public static void init(){
@@ -47,8 +43,7 @@ public class TestZabAppSettings{
 	
 	@BeforeEach
 	public void setup(){
-		unitFolder = new File(UNIT_PATH);
-		unitFile = new File(ZabAppSettings.makeFileName(UNIT_PATH, UNIT_NAME));
+		unitFile = new File(ZabAppSettings.makeFileName(UtilsTest.UNIT_PATH, UtilsTest.UNIT_NAME));
 		unitFile.getParentFile().mkdirs();
 		
 		guitar = InstrumentFactory.guitarStandard();
@@ -216,13 +211,13 @@ public class TestZabAppSettings{
 		
 		scan.close();
 		
-		assertFalse("Checking load from file fails with no file existing", ZabAppSettings.load(UNIT_PATH, UNIT_NAME, null));
+		assertFalse("Checking load from file fails with no file existing", ZabAppSettings.load(UtilsTest.UNIT_PATH, UtilsTest.UNIT_NAME, null));
 		
-		ZabAppSettings.save(UNIT_PATH, UNIT_NAME, null, true);
-		assertTrue("Checking load settings from file successful", ZabAppSettings.load(UNIT_PATH, UNIT_NAME, null, true));
-		assertFalse("Checking load from file fails with invalid file", ZabAppSettings.load(UNIT_PATH + "/path", UNIT_NAME, null, true));
+		ZabAppSettings.save(UtilsTest.UNIT_PATH, UtilsTest.UNIT_NAME, null, true);
+		assertTrue("Checking load settings from file successful", ZabAppSettings.load(UtilsTest.UNIT_PATH, UtilsTest.UNIT_NAME, null, true));
+		assertFalse("Checking load from file fails with invalid file", ZabAppSettings.load(UtilsTest.UNIT_PATH + "/path", UtilsTest.UNIT_NAME, null, true));
 
-		assertTrue("Checking load from file successful with no tab", ZabAppSettings.load(UNIT_PATH, UNIT_NAME));
+		assertTrue("Checking load from file successful with no tab", ZabAppSettings.load(UtilsTest.UNIT_PATH, UtilsTest.UNIT_NAME));
 	}
 	
 	@Test
@@ -308,18 +303,17 @@ public class TestZabAppSettings{
 		settings.remove(0);
 		write.close();
 		
-		assertTrue("Checking save settings to file successful", ZabAppSettings.save(UNIT_PATH, UNIT_NAME));
-		assertFalse("Checking save to file fails with invalid file", ZabAppSettings.save(UNIT_PATH + "/path", UNIT_NAME));
+		assertTrue("Checking save settings to file successful", ZabAppSettings.save(UtilsTest.UNIT_PATH, UtilsTest.UNIT_NAME));
+		assertFalse("Checking save to file fails with invalid file", ZabAppSettings.save(UtilsTest.UNIT_PATH + "/path", UtilsTest.UNIT_NAME));
 
-		assertTrue("Checking save to file successful with no tab", ZabAppSettings.save(UNIT_PATH, UNIT_NAME));
+		assertTrue("Checking save to file successful with no tab", ZabAppSettings.save(UtilsTest.UNIT_PATH, UtilsTest.UNIT_NAME));
 		
-		assertTrue("Checking save to file successful with only tab", ZabAppSettings.save(UNIT_PATH, UNIT_NAME, guitar));
+		assertTrue("Checking save to file successful with only tab", ZabAppSettings.save(UtilsTest.UNIT_PATH, UtilsTest.UNIT_NAME, guitar));
 	}
 	
 	@AfterEach
 	public void end(){
-		if(unitFile.exists()) unitFile.delete();
-		if(unitFolder.exists()) unitFolder.delete();
+		UtilsTest.deleteUnitFolder();
 	}
 	
 }

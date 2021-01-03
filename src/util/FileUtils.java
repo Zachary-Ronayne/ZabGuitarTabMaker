@@ -2,8 +2,12 @@ package util;
 
 import java.io.File;
 
-public class FileUtils{
-
+/**
+ * A class containing methods for operating on, and using, File objects 
+ * @author zrona
+ */
+public final class FileUtils{
+	
 	/**
 	 * Create a String which can be used to create a new {@link File}
 	 * @param path The path to the file, no name
@@ -20,5 +24,8 @@ public class FileUtils{
 		
 		return String.join("", path, name, extension);
 	}
+	
+	/** Cannot instantiate FileUtils */
+	private FileUtils(){}
 	
 }

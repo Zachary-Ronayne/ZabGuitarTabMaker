@@ -15,9 +15,7 @@ public class Main{
 		
 		// Start up the main GUI
 		ZabGui gui = new ZabGui();
-		
-		// Close the application if the GUI should not be shown, this should only occur during testing
-		if(!ZabGui.SHOW_GUI_ON_INIT) System.exit(0);
+		gui.setVisible(true);
 	}
 	
 }

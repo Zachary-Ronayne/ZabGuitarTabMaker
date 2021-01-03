@@ -14,7 +14,7 @@ import util.Saveable;
  * and then change the location on a component's associated graphics object based on the camera position and zoom level. 
  * All methods that have the same name as those in a Graphics object do the same thing, but take double values as parameters.<br>
  * Pixel space refers to the real location of rendered graphics, i.e. the location of the mouse, camera space refers to the location of rendered objects 
- * relative to the camera, includzing transformations such as zooms and pans<br>
+ * relative to the camera, including transformations such as zooms and pans<br>
  * This is recycled code from an older project.
  */
 public class Camera implements Saveable{
@@ -280,7 +280,7 @@ public class Camera implements Saveable{
 	 * @param value The x camera coordinate
 	 * @return The pixel space coordinate
 	 */
-	public double toPixelX(double value){ // TODO
+	public double toPixelX(double value){
 		return zoom(value - camX, xZoomFactor);
 	}
 
@@ -298,7 +298,7 @@ public class Camera implements Saveable{
 	 * @param value The y camera coordinate
 	 * @return The pixel space coordinate
 	 */
-	public double toPixelY(double value){ // TODO
+	public double toPixelY(double value){
 		return zoom(value - camY, yZoomFactor);
 	}
 	
@@ -355,12 +355,15 @@ public class Camera implements Saveable{
 		else{
 			g.setFont(new Font(f.getName(), f.getStyle(), (int)fontSize));
 		}
-		if(!inBounds(x, y - fontSize, g.getFontMetrics().stringWidth(s), fontSize)) return false;
-		g.drawString(s, drawX(x), drawY(y));
+		boolean success = false;
+		if(inBounds(x, y - fontSize, g.getFontMetrics().stringWidth(s), fontSize)){
+			g.drawString(s, drawX(x), drawY(y));
+			success = true;
+		}
 		
 		// Setting the old font
 		g.setFont(f);
-		return true;
+		return success;
 	}
 	/**
 	 * Draw a string that changes it's size based on the current scale of the camera.<br>

@@ -22,7 +22,10 @@ import appMain.gui.frames.ZabFrame;
 public class ZabGui extends JFrame{
 	private static final long serialVersionUID = 1L;
 	
-	/** True if ZabGui objects should show on creation, false otherwise, should only be false for testing purposes */
+	/**
+	 * True if ZabGui objects should show on creation, false otherwise,
+	 * should be false for testing purposes, true for a proper build
+	 */
 	public static final boolean SHOW_GUI_ON_INIT = true;
 	
 	/** The {@link GuiFrame} currently displayed by this {@link ZabGui} */

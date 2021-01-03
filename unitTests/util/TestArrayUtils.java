@@ -2,6 +2,7 @@ package util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.ArrayList;
 
@@ -61,7 +62,7 @@ public class TestArrayUtils{
 		assertEquals("g", arr.get(3), "Checking correct array position");
 		assertEquals("m", arr.get(4), "Checking correct array position");
 		assertEquals("z", arr.get(5), "Checking correct array position");
-
+		
 		assertTrue(ArrayUtils.insertSorted(arr, "m"), "Checking duplicate element is added");
 		assertEquals(7, arr.size(), "Checking correct array size");
 		assertEquals("a", arr.get(0), "Checking correct array position");
@@ -71,6 +72,11 @@ public class TestArrayUtils{
 		assertEquals("m", arr.get(4), "Checking correct array position");
 		assertEquals("m", arr.get(5), "Checking correct array position");
 		assertEquals("z", arr.get(6), "Checking correct array position");
+		
+		arr.clear();
+		ArrayUtils.insertSorted(arr, "a", false);
+		assertFalse(ArrayUtils.insertSorted(arr, "a", false), "Checking duplicate element is not added with disallowed duplicates");
+		assertEquals(1, arr.size(), "Checking correct array size");
 	}
 	
 	@AfterEach

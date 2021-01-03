@@ -1,5 +1,7 @@
 package tab;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.AfterEach;
@@ -8,6 +10,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import appUtils.ZabAppSettings;
+import tab.TabTextExporter.IndexAndSymbol;
+import tab.symbol.TabNote;
+import util.testUtils.UtilsTest;
 
 public class TestTabTextExporter{
 
@@ -69,7 +74,34 @@ public class TestTabTextExporter{
 				"Checking exporting guitar with default settings");
 	}
 	
+	@Test
+	public void exportToFile(){
+		assertTrue("Checking file export successful", TabTextExporter.exportToFile(guitar, UtilsTest.UNIT_PATH, "test"));
+		assertFalse("Checking file export fails with null tab", TabTextExporter.exportToFile(null, UtilsTest.UNIT_PATH, "test"));
+	}
+	
+	@Test
+	public void constructorIndexAndSymbol(){
+		TabNote note = new TabNote(1, 2);
+		IndexAndSymbol i = new IndexAndSymbol(note, 3);
+		assertEquals(note, i.symbol, "Checking symbol initialized");
+		assertEquals(3, i.index, "Checking index initialized");
+	}
+	
+	@Test
+	public void compareToIndexAndSymbol(){
+		IndexAndSymbol i1 = new IndexAndSymbol(new TabNote(0, 0), 0);
+		IndexAndSymbol i2 = new IndexAndSymbol(new TabNote(0, 0.2), 1);
+		IndexAndSymbol i3 = new IndexAndSymbol(new TabNote(0, 0.2), 2);
+		assertTrue("Checking value less than 0", i1.compareTo(i2) < 0);
+		assertTrue("Checking value greater than 0", i2.compareTo(i1) > 0);
+		assertTrue("Checking value equal to 0", i2.compareTo(i3) == 0);
+		assertTrue("Checking value equal to 0", i3.compareTo(i2) == 0);
+	}
+	
 	@AfterEach
-	public void end(){}
+	public void end(){
+		UtilsTest.deleteUnitFolder();
+	}
 	
 }

@@ -15,6 +15,8 @@ import appMain.gui.ZabGui;
 import appMain.gui.comp.TabPainter;
 import appMain.gui.comp.ZabPanel;
 import appUtils.ZabAppSettings;
+import tab.InstrumentFactory;
+import tab.Tab;
 
 public class TestEditorFrame{
 
@@ -72,6 +74,19 @@ public class TestEditorFrame{
 		ZabPanel holder = frame.getPaintHolder();
 		assertTrue("Checking graphics holder in the frame", frame.isAncestorOf(holder));
 		assertTrue("Checking graphics panel in holder", holder.isAncestorOf(frame.getTabScreen()));
+	}
+	
+	@Test
+	public void getOpenedTab(){
+		assertEquals(InstrumentFactory.guitarStandard(), frame.getOpenedTab(), "Checking tab is initialized");
+	}
+	
+	@Test
+	public void setOpenedTab(){
+		Tab guitar = InstrumentFactory.guitarEbStandard();
+		frame.setOpenedTab(guitar);
+		assertEquals(guitar, frame.getOpenedTab(), "Checking tab is set");
+		assertEquals(guitar, frame.getTabScreen().getTab(), "Checking painter tab is set");
 	}
 	
 	@AfterEach

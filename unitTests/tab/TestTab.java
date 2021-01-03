@@ -254,8 +254,9 @@ public class TestTab{
 	
 	@Test
 	public void placeQuantizedNote(){
-		tab.placeQuantizedNote(1, 3, 2.1);
+		TabNote returnNote = tab.placeQuantizedNote(1, 3, 2.1);
 		TabNote n = (TabNote)lowString.get(0);
+		assertEquals(n, returnNote, "Checking returned note was the same as the one placed");
 		assertEquals(-21, n.getPitch().getNote(), "Checking note has correct pitch");
 		assertEquals(2.125, n.getPos(), "Checking note has quantized position");
 	}

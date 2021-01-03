@@ -202,9 +202,10 @@ public class Tab implements Copyable<Tab>, Saveable{
 	 * @param string The index of the string to place the note on
 	 * @param fret The fret number of the note
 	 * @param pos The position value of the note. See {@link TabSymbol#position}
+	 * @return The {@link TabNote} which was placed
 	 */
-	public void placeQuantizedNote(int string, int fret, double pos){
-		this.getStrings().get(string).placeQuantizedNote(this.getTimeSignature(), fret, pos);
+	public TabNote placeQuantizedNote(int string, int fret, double pos){
+		return this.getStrings().get(string).placeQuantizedNote(this.getTimeSignature(), fret, pos);
 	}
 	
 	/**
