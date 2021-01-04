@@ -24,6 +24,7 @@ import appMain.gui.util.Camera;
 import appUtils.ZabAppSettings;
 import tab.InstrumentFactory;
 import tab.Tab;
+import tab.TabString;
 import tab.TabString.SymbolHolder;
 import util.testUtils.UtilsTest;
 
@@ -104,18 +105,20 @@ public class TestTabPainter{
 	
 	@Test
 	public void selectOne(){
-		SymbolHolder h = tab.getStrings().get(0).get(0);
+		TabString s = tab.getStrings().get(0);
+		SymbolHolder h = s.get(0);
 		paint.appendSelectedTabNum('0');
-		paint.selectOne(h);
-		assertEquals(h, paint.getSelected().get(0), "Checking note was selected");
+		paint.selectOne(h, s);
+		assertEquals(h, paint.selectedHolder(0), "Checking note was selected");
 		assertEquals(1, paint.getSelected().size(), "Checking only one note was selected");
 		assertEquals(null, paint.getSelectedNewTabNum(), "Checking selected new tab num set to null");
 	}
 	
 	@Test
 	public void clearSelection(){
-		SymbolHolder h = tab.getStrings().get(0).get(0);
-		paint.selectOne(h);
+		TabString s = tab.getStrings().get(0);
+		SymbolHolder h = s.get(0);
+		paint.selectOne(h, s);
 		paint.clearSelection();
 		assertTrue(paint.getSelected().isEmpty(), "Checking selected empty");
 		assertEquals(null, paint.getSelectedNewTabNum(), "Checking selected new tab num set to null");
@@ -131,8 +134,9 @@ public class TestTabPainter{
 		paint.appendSelectedTabNum('1');
 		assertEquals(null, paint.getSelectedNewTabNum(), "Checking tab num null with no selection");
 
-		SymbolHolder h = tab.getStrings().get(0).get(0);
-		paint.selectOne(h);
+		TabString s = tab.getStrings().get(0);
+		SymbolHolder h = s.get(0);
+		paint.selectOne(h, s);
 		paint.appendSelectedTabNum('j');
 		assertEquals(null, paint.getSelectedNewTabNum(), "Checking tab num null with non number");
 		
@@ -326,7 +330,8 @@ public class TestTabPainter{
 		assertTrue(paint.drawTab(g), "Checking painting occurred");
 		assertEquals(g, paint.getCamera().getG(), "Checking graphics object set and used");
 
-		paint.selectOne(tab.getStrings().get(0).get(0));
+		TabString s = tab.getStrings().get(0);
+		paint.selectOne(s.get(0), s);
 		assertTrue(paint.drawTab(g), "Checking painting occurred with drawing a selection");
 		
 		paint.setTab(null);
@@ -339,25 +344,25 @@ public class TestTabPainter{
 		
 		paint.selectNote(1151, 299);
 		assertEquals(1, paint.getSelected().size(), "Checking one note selected");
-		assertEquals(tab.getStrings().get(0).get(0), paint.getSelected().get(0), "Checking string 0 note selected");
+		assertEquals(tab.getStrings().get(0).get(0), paint.selectedHolder(0), "Checking string 0 note selected");
 		
 		paint.selectNote(940, 350);
 		assertEquals(1, paint.getSelected().size(), "Checking one note selected");
-		assertEquals(tab.getStrings().get(1).get(0), paint.getSelected().get(0), "Checking string 1 note selected");
+		assertEquals(tab.getStrings().get(1).get(0), paint.selectedHolder(0), "Checking string 1 note selected");
 		
 		paint.selectNote(940, -10350);
 		assertEquals(1, paint.getSelected().size(), "Checking one note selected, no change from not finding a note");
-		assertEquals(tab.getStrings().get(1).get(0), paint.getSelected().get(0), "Checking string 1 note still selected");
+		assertEquals(tab.getStrings().get(1).get(0), paint.selectedHolder(0), "Checking string 1 note still selected");
 		
 		paint.selectNote(-10940, 350);
 		assertEquals(1, paint.getSelected().size(), "Checking one note selected, no change from not finding a note");
-		assertEquals(tab.getStrings().get(1).get(0), paint.getSelected().get(0), "Checking string 1 note still selected");
+		assertEquals(tab.getStrings().get(1).get(0), paint.selectedHolder(0), "Checking string 1 note still selected");
 		
 		paint.clearSelection();
 		assertTrue(paint.getSelected().isEmpty(), "Checking none selected");
 		paint.selectNote(350, 500);
 		assertEquals(1, paint.getSelected().size(), "Checking one note selected");
-		assertEquals(tab.getStrings().get(5).get(1), paint.getSelected().get(0), "Checking string 5 note 1 selected");
+		assertEquals(tab.getStrings().get(5).get(1), paint.selectedHolder(0), "Checking string 5 note 1 selected");
 	}
 	
 	@Test
@@ -385,7 +390,7 @@ public class TestTabPainter{
 		
 		paint.clearSelection();
 		m.mousePressed(new MouseEvent(paint, 0, 0, 0, 1150, 300, 0, 0, 0, false, MouseEvent.BUTTON3));
-		assertEquals(tab.getStrings().get(0).get(1), paint.getSelected().get(0), "Checking a note selected on right click");
+		assertEquals(tab.getStrings().get(0).get(1), paint.selectedHolder(0), "Checking a note selected on right click");
 	}
 	
 	@Test

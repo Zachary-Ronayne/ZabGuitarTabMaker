@@ -108,6 +108,7 @@ public class TabString extends ArrayList<TabString.SymbolHolder> implements Copy
 	/**
 	 * Adds the given {@link SymbolHolder} to the list based on their symbol's {@link TabSymbol#pos} fields in increasing order.<br>
 	 * Essentially, ensures that all symbols are always sorted by the pos field
+	 * @return true if the holder was added, false otherwise
 	 */
 	@Override
 	public boolean add(SymbolHolder e){
@@ -117,6 +118,7 @@ public class TabString extends ArrayList<TabString.SymbolHolder> implements Copy
 	/**
 	 * Adds the given {@link TabSymbol} based on their {@link TabSymbol#pos} fields in increasing order.<br>
 	 * Essentially, ensures that all symbols are always sorted by the pos field
+	 * @return true if the symbol was added, false otherwise
 	 */
 	public boolean add(TabSymbol e){
 		return this.add(new SymbolHolder(e));
@@ -155,13 +157,14 @@ public class TabString extends ArrayList<TabString.SymbolHolder> implements Copy
 	 * @param fret The fret number of the note
 	 * @param pos The position value of the note. See {@link TabSymbol#position}
 	 * @return The {@link SymbolHolder} containing the placed {@link TabNote}, 
-	 * 	this method guarantees that the {@link TabSymbol} in the returned {@link SymbolHolder} is a {@link TabNote}
+	 * 	this method guarantees that the {@link TabSymbol} in the returned {@link SymbolHolder} is a {@link TabNote}, 
+	 * 	or that it is null because the note could not be placed.
 	 */
 	public SymbolHolder placeQuantizedNote(TimeSignature sig, int fret, double pos){
 		TabNote n = TabFactory.modifiedFret(this, fret, pos);
 		n.quantize(sig, 8); // TODO make this a setting
 		SymbolHolder h = new SymbolHolder(n);
-		this.add(h);
+		if(!this.add(h)) return null;
 		return h;
 	}
 	

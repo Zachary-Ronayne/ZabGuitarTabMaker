@@ -14,6 +14,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
 
+import appMain.gui.comp.TabPainter.Selection;
 import appMain.gui.util.Camera;
 import tab.Tab;
 import tab.TabString;
@@ -61,7 +62,7 @@ public class TabPainter extends ZabPanel{
 	private Tab tab;
 	
 	/** A list of every user selected {@link TabSymbol} */
-	private ArrayList<SymbolHolder> selected;
+	private ArrayList<Selection> selected;
 	
 	/** The tab number which will be applied to the selected symbols, null if not set */
 	private Integer selectedNewTabNum;
@@ -87,7 +88,7 @@ public class TabPainter extends ZabPanel{
 		this.setPaintSize(width, height);
 		
 		// Set up objects for controlling the painter
-		this.selected = new ArrayList<SymbolHolder>();
+		this.selected = new ArrayList<Selection>();
 		this.selectedNewTabNum = null;
 		
 		// Add the mouse input to the panel
@@ -160,18 +161,52 @@ public class TabPainter extends ZabPanel{
 	/**
 	 * @return See {@link #selected}
 	 */
-	public ArrayList<SymbolHolder> getSelected(){
+	public ArrayList<Selection> getSelected(){
 		return this.selected;
 	}
 	
 	/**
-	 * Unselect all but the specified {@link SymbolHolder}
-	 * @param symbol
+	 * Get the {@link TabSymbol} in {@link #selected} at the given index
+	 * @param i The index
+	 * @return The {@link TabSymbol}, or null if it is out of bounds
 	 */
-	public void selectOne(SymbolHolder h){
+	public TabSymbol selected(int i){
+		SymbolHolder h = this.selectedHolder(i);
+		if(h == null) return null;
+		return h.getSymbol();
+	}
+	
+	/**
+	 * Get the {@link SymbolHolder} in {@link #selected} at the given index
+	 * @param i The index
+	 * @return The {@link SymbolHolder}, or null if it is out of bounds
+	 */
+	public SymbolHolder selectedHolder(int i){
+		if(i < 0 || i >= this.getSelected().size()) return null;
+		return this.getSelected().get(i).getHold();
+	}
+	
+	/**
+	 * Unselect all but the specified {@link SymbolHolder}
+	 * @param h The {@link SymbolHolder} containing the {@link TabSymbol} to select
+	 * @param string The String which h is on
+	 */
+	public void selectOne(SymbolHolder h, TabString string){
 		this.clearSelection();
-		this.getSelected().add(h);
+		this.getSelected().add(new Selection(h, string));
 		this.selectedNewTabNum = null;
+	}
+	
+	/**
+	 * Select every note in the tab
+	 */
+	public void selectAllNotes(){
+		this.clearSelection();
+		for(TabString s : this.getTab().getStrings()){
+			for(SymbolHolder h : s){
+				this.getSelected().add(new Selection(h, s));
+			}
+		}
 	}
 	
 	/**
@@ -180,6 +215,37 @@ public class TabPainter extends ZabPanel{
 	public void clearSelection(){
 		this.getSelected().clear();
 		this.selectedNewTabNum = null;
+	}
+	
+	/**
+	 * Remove every selected note from the tab
+	 */
+	public void removeSelectedNotes(){
+		for(Selection s : this.getSelected()){
+			s.getString().remove(s.getHold()); // TODO this probably isn't safe
+		}
+		clearSelection();
+	}
+	
+	/**
+	 * Check if the current {@link #selected} contains the given {@link SymbolHolder}
+	 * @param h The {@link SymbolHolder}
+	 * @return true if it is contained, false otherwise
+	 */
+	public boolean isSelected(SymbolHolder h){
+		return this.isSelected(h.getSymbol());
+	}
+
+	/**
+	 * Check if the current {@link #selected} contains the given {@link TabSymbol}
+	 * @param t The {@link TabSymbol}
+	 * @return true if it is contained, false otherwise
+	 */
+	public boolean isSelected(TabSymbol t){
+		for(Selection s : this.getSelected()){
+			if(s.getHold().getSymbol().equals(t)) return true;
+		}
+		return false;
 	}
 	
 	/**
@@ -221,23 +287,25 @@ public class TabPainter extends ZabPanel{
 	}
 	
 	/**
-	 * Set every {@link #selected} TabSymbol to the current selectedTabNum. 
+	 * Set everything in {@link #selected} to the current selectedTabNum. 
 	 * Automatically resets the number to null if it goes beyond the range
 	 */
 	public void updateSelectedNewTabNum(){
 		Integer n = this.getSelectedNewTabNum();
 		if(n != null){
-			for(SymbolHolder h : selected){
+			for(Selection sel : selected){
+				// Unpack selection
+				SymbolHolder h = sel.getHold();
 				TabSymbol t = h.getSymbol();
+				TabString s = sel.getString();
+				
 				// Ensure the note stays within only 2 digits
 				if(n < -99 || n > 99){
 					n %= 10;
 					this.selectedNewTabNum = n;
 				}
-				// TODO rework this so that it works for all strings by storing the associated string with each pitch
-				//	rather than only working for the first string
+				
 				// Set the note
-				TabString s = this.getTab().getStrings().get(0);
 				h.setSymbol(new TabNote(s.createPitch(n), t.getPosition().copy(), t.getModifier().copy()));
 			}
 		}
@@ -457,7 +525,7 @@ public class TabPainter extends ZabPanel{
 				double sY = y + sH * 0.5;
 				
 				// If the symbol is selected, draw a highlight under it
-				if(this.selected.contains(h)){
+				if(this.isSelected(h)){ // TODO
 					g.setColor(HIGHLIGHT_COLOR);
 					cam.fillRect(sX, sY - sH, sW, sH);
 					g.setColor(SYMBOL_COLOR);
@@ -491,7 +559,7 @@ public class TabPainter extends ZabPanel{
 		for(SymbolHolder h : str){
 			TabSymbol t = h.getSymbol();
 			if(t.getPos() == x){
-				selectOne(h);
+				selectOne(h, str);
 				break;
 			}
 		}
@@ -508,8 +576,12 @@ public class TabPainter extends ZabPanel{
 		double x = xToTabPos(mX);
 		int y = pixelYToStringNum(mY);
 		if(x < 0 || y < 0) return;
-		this.clearSelection();
-		this.selected.add(tab.placeQuantizedNote(y, fret, x));
+		SymbolHolder h = tab.placeQuantizedNote(y, fret, x);
+		// Only add and select the note if it was placed
+		if(h != null){
+			this.clearSelection();
+			this.selected.add(new Selection(h, tab.getStrings().get(y)));
+		}
 	}
 	
 	/**
@@ -591,7 +663,52 @@ public class TabPainter extends ZabPanel{
 	public class EditorKeyboard extends KeyAdapter{
 		@Override
 		public void keyPressed(KeyEvent e){
-			appendSelectedTabNum(e.getKeyChar());
+			switch(e.getKeyCode()){
+				case KeyEvent.VK_R: getTab().clearNotes(); break;
+				case KeyEvent.VK_D: if(e.isControlDown()) removeSelectedNotes(); break;
+				case KeyEvent.VK_A: if(e.isControlDown()) selectAllNotes(); break;
+				default: appendSelectedTabNum(e.getKeyChar()); break;
+			}
+			repaint();
+		}
+	}
+	
+	/**
+	 * A helper object used to track an individually selected symbol with both its symbol holder and held string
+	 * @author zrona
+	 */
+	public static class Selection{
+		/** The {@link SymbolHolder} of this selection */
+		private SymbolHolder hold;
+		/** The {@link TabString} which {@link #hold} is on */
+		private TabString string;
+		
+		/**
+		 * Create a new selection
+		 * @param hold
+		 * @param string
+		 */
+		public Selection(SymbolHolder hold, TabString string){
+			super();
+			this.hold = hold;
+			this.string = string;
+		}
+		
+		/** @return See {@link #hold} */
+		public SymbolHolder getHold(){
+			return hold;
+		}
+		/** @param hold See {@link #hold} */
+		public void setHold(SymbolHolder hold){
+			this.hold = hold;
+		}
+		/** @return See {@link #string} */
+		public TabString getString(){
+			return string;
+		}
+		/** @param string See {@link #string} */
+		public void setString(TabString string){
+			this.string = string;
 		}
 	}
 	

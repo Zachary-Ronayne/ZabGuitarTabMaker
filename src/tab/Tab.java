@@ -205,10 +205,18 @@ public class Tab implements Copyable<Tab>, Saveable{
 	 * @param fret The fret number of the note
 	 * @param pos The position value of the note. See {@link TabSymbol#position}
 	 * @return The {@link SymbolHolder} containing the placed {@link TabNote}, 
-	 * 	this method guarantees that the {@link TabSymbol} in the returned {@link SymbolHolder} is a {@link TabNote}
+	 * 	this method guarantees that the {@link TabSymbol} in the returned {@link SymbolHolder} is a {@link TabNote}, 
+	 * 	or that it is null because the note could not be placed.
 	 */
 	public SymbolHolder placeQuantizedNote(int string, int fret, double pos){
 		return this.getStrings().get(string).placeQuantizedNote(this.getTimeSignature(), fret, pos);
+	}
+	
+	/**
+	 * Remove all notes from the tab
+	 */
+	public void clearNotes(){
+		for(TabString s : this.getStrings()) s.clear();
 	}
 	
 	/**
