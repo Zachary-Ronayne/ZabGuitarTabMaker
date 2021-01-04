@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import appMain.gui.util.Camera;
 import tab.Tab;
 import tab.TabString;
+import tab.TabString.SymbolHolder;
 import tab.symbol.TabNote;
-import tab.symbol.TabPitch;
 import tab.symbol.TabSymbol;
 
 /**
@@ -61,7 +61,7 @@ public class TabPainter extends ZabPanel{
 	private Tab tab;
 	
 	/** A list of every user selected {@link TabSymbol} */
-	private ArrayList<TabSymbol> selected;
+	private ArrayList<SymbolHolder> selected;
 	
 	/** The tab number which will be applied to the selected symbols, null if not set */
 	private Integer selectedNewTabNum;
@@ -87,7 +87,7 @@ public class TabPainter extends ZabPanel{
 		this.setPaintSize(width, height);
 		
 		// Set up objects for controlling the painter
-		this.selected = new ArrayList<TabSymbol>();
+		this.selected = new ArrayList<SymbolHolder>();
 		this.selectedNewTabNum = null;
 		
 		// Add the mouse input to the panel
@@ -160,17 +160,17 @@ public class TabPainter extends ZabPanel{
 	/**
 	 * @return See {@link #selected}
 	 */
-	public ArrayList<TabSymbol> getSelected(){
+	public ArrayList<SymbolHolder> getSelected(){
 		return this.selected;
 	}
 	
 	/**
-	 * Unselect all but the specified {@link TabSymbol}
+	 * Unselect all but the specified {@link SymbolHolder}
 	 * @param symbol
 	 */
-	public void selectOne(TabSymbol symbol){
+	public void selectOne(SymbolHolder h){
 		this.clearSelection();
-		this.getSelected().add(symbol);
+		this.getSelected().add(h);
 		this.selectedNewTabNum = null;
 	}
 	
@@ -227,20 +227,18 @@ public class TabPainter extends ZabPanel{
 	public void updateSelectedNewTabNum(){
 		Integer n = this.getSelectedNewTabNum();
 		if(n != null){
-			for(TabSymbol t : selected){
-				// TODO rework TabStrings so that a value in the list holds a TabSymbol, rather than placing them directly in the list
-				// This will allow this hacky instanceof to be sensibly removed
-				if(t instanceof TabNote){
-					TabPitch p = (TabNote)t;
-					if(n < -99 || n > 99){
-						n %= 10;
-						this.selectedNewTabNum = n;
-					}
-					// TODO rework this so that it works for all strings by storing the associated string with each pitch
-					//	rather than only working for the first string
-					TabString s = this.getTab().getStrings().get(0);
-					p.setPitch(s.createPitch(n));
+			for(SymbolHolder h : selected){
+				TabSymbol t = h.getSymbol();
+				// Ensure the note stays within only 2 digits
+				if(n < -99 || n > 99){
+					n %= 10;
+					this.selectedNewTabNum = n;
 				}
+				// TODO rework this so that it works for all strings by storing the associated string with each pitch
+				//	rather than only working for the first string
+				// Set the note
+				TabString s = this.getTab().getStrings().get(0);
+				h.setSymbol(new TabNote(s.createPitch(n), t.getPosition().copy(), t.getModifier().copy()));
 			}
 		}
 		this.repaint();
@@ -446,8 +444,9 @@ public class TabPainter extends ZabPanel{
 			cam.drawScaleString(str, labelX - g.getFontMetrics().stringWidth(str), y + 8);
 			
 			// Draw symbols
-			for(TabSymbol t : s){
+			for(SymbolHolder h : s){
 				// Get the symbol as a string
+				TabSymbol t = h.getSymbol();
 				str = t.getSymbol(s);
 				
 				// Finding the size of the space the symbol will take up
@@ -458,7 +457,7 @@ public class TabPainter extends ZabPanel{
 				double sY = y + sH * 0.5;
 				
 				// If the symbol is selected, draw a highlight under it
-				if(this.selected.contains(t)){
+				if(this.selected.contains(h)){
 					g.setColor(HIGHLIGHT_COLOR);
 					cam.fillRect(sX, sY - sH, sW, sH);
 					g.setColor(SYMBOL_COLOR);
@@ -489,9 +488,10 @@ public class TabPainter extends ZabPanel{
 		// TODO make a more efficient way of searching for a note, considering they are sorted
 		//	i.e. binary search
 		TabString str = tab.getStrings().get(y);
-		for(TabSymbol t : str){
+		for(SymbolHolder h : str){
+			TabSymbol t = h.getSymbol();
 			if(t.getPos() == x){
-				selectOne(t);
+				selectOne(h);
 				break;
 			}
 		}

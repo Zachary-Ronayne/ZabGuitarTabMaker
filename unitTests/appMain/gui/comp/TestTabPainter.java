@@ -24,7 +24,7 @@ import appMain.gui.util.Camera;
 import appUtils.ZabAppSettings;
 import tab.InstrumentFactory;
 import tab.Tab;
-import tab.symbol.TabSymbol;
+import tab.TabString.SymbolHolder;
 import util.testUtils.UtilsTest;
 
 public class TestTabPainter{
@@ -104,18 +104,18 @@ public class TestTabPainter{
 	
 	@Test
 	public void selectOne(){
-		TabSymbol s = tab.getStrings().get(0).get(0);
+		SymbolHolder h = tab.getStrings().get(0).get(0);
 		paint.appendSelectedTabNum('0');
-		paint.selectOne(s);
-		assertEquals(s, paint.getSelected().get(0), "Checking note was selected");
+		paint.selectOne(h);
+		assertEquals(h, paint.getSelected().get(0), "Checking note was selected");
 		assertEquals(1, paint.getSelected().size(), "Checking only one note was selected");
 		assertEquals(null, paint.getSelectedNewTabNum(), "Checking selected new tab num set to null");
 	}
 	
 	@Test
 	public void clearSelection(){
-		TabSymbol s = tab.getStrings().get(0).get(0);
-		paint.selectOne(s);
+		SymbolHolder h = tab.getStrings().get(0).get(0);
+		paint.selectOne(h);
 		paint.clearSelection();
 		assertTrue(paint.getSelected().isEmpty(), "Checking selected empty");
 		assertEquals(null, paint.getSelectedNewTabNum(), "Checking selected new tab num set to null");
@@ -131,8 +131,8 @@ public class TestTabPainter{
 		paint.appendSelectedTabNum('1');
 		assertEquals(null, paint.getSelectedNewTabNum(), "Checking tab num null with no selection");
 
-		TabSymbol s = tab.getStrings().get(0).get(0);
-		paint.selectOne(s);
+		SymbolHolder h = tab.getStrings().get(0).get(0);
+		paint.selectOne(h);
 		paint.appendSelectedTabNum('j');
 		assertEquals(null, paint.getSelectedNewTabNum(), "Checking tab num null with non number");
 		
@@ -189,7 +189,7 @@ public class TestTabPainter{
 		assertEquals(-100, cam.getY(), "Checking camera y reset");
 		assertEquals(0, cam.getXZoomFactor(), "Checking camera x zoom factor reset");
 		assertEquals(0, cam.getYZoomFactor(), "Checking camera y zoom factor reset");
-		assertEquals(false, cam.isDrawOnlyInBounds(), "Checking camera drawing in bounds reset");
+		assertEquals(true, cam.isDrawOnlyInBounds(), "Checking camera drawing in bounds reset");
 	}
 	
 	@Test
@@ -364,7 +364,7 @@ public class TestTabPainter{
 	public void placeNote(){
 		paint.placeNote(950, 300, 0);
 		assertEquals(2, tab.getStrings().get(0).size(), "Checking a new note added");
-		assertEquals(5, tab.getStrings().get(0).get(1).getPos(), "Checking note has correct position");
+		assertEquals(5, tab.getStrings().get(0).symbol(1).getPos(), "Checking note has correct position");
 		
 		paint.placeNote(-950, 300, 0);
 		assertEquals(2, tab.getStrings().get(0).size(), "Checking a no new note added with too low of x");

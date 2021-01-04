@@ -90,7 +90,7 @@ public final class TabTextExporter{
 		ArrayList<IndexAndSymbol> symbols = new ArrayList<IndexAndSymbol>();
 		for(int i = 0; i < numStrings; i++){
 			TabString s = tabStrings.get(i);
-			for(TabSymbol t : s){
+			for(TabSymbol t : s.getAll()){
 				symbols.add(new IndexAndSymbol(t, i));
 			}
 		}

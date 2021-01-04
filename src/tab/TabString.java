@@ -19,7 +19,7 @@ import util.Saveable;
  * A class representing one string of a tablature
  * @author zrona
  */
-public class TabString extends ArrayList<TabSymbol> implements Copyable<TabString>, Saveable{
+public class TabString extends ArrayList<TabString.SymbolHolder> implements Copyable<TabString>, Saveable{
 	private static final long serialVersionUID = 1L;
 
 	/** The {@link Pitch} which this {@link TabString} is tuned to, i.e. the note of this string when played open. */
@@ -50,8 +50,8 @@ public class TabString extends ArrayList<TabSymbol> implements Copyable<TabStrin
 		TabString string = new TabString(this.getRootPitch().copy());
 		
 		// Copy over each of the symbols
-		for(TabSymbol s: this){
-			string.add(s.copy());
+		for(SymbolHolder h : this){
+			string.add(h.getSymbol().copy());
 		}
 		return string;
 	}
@@ -79,14 +79,73 @@ public class TabString extends ArrayList<TabSymbol> implements Copyable<TabStrin
 	public int getRootNote(){
 		return this.getRootPitch().getNote();
 	}
+	
+	/**
+	 * Get the {@link TabSymbol} at the given index
+	 * @param i The index
+	 * @return The {@link TabString}
+	 */
+	public TabSymbol symbol(int i){
+		return this.get(i).getSymbol();
+	}
+	
+	/**
+	 * Replace the {@link TabSymbol} at the given index with the given symbol.<br>
+	 * Note that the position of the original note will not be changed, i.e. this only sets pitch, rhythmic, and modifier data, 
+	 * the position of the given symbol is ignored, and the given symbol's position is replaced by the position of the symbol it is replacing
+	 * @param i The index
+	 * @param symbol The new symbol
+	 * @return The symbol which was replaced
+	 */
+	public TabSymbol replace(int i, TabSymbol symbol){
+		SymbolHolder h = this.get(i);
+		TabSymbol old = h.getSymbol();
+		symbol.setPosition(old.getPosition());
+		h.setSymbol(symbol);
+		return old;
+	}
 
+	/**
+	 * Adds the given {@link SymbolHolder} to the list based on their symbol's {@link TabSymbol#pos} fields in increasing order.<br>
+	 * Essentially, ensures that all symbols are always sorted by the pos field
+	 */
+	@Override
+	public boolean add(SymbolHolder e){
+		return ArrayUtils.insertSorted(this, e, false);
+	}
+	
 	/**
 	 * Adds the given {@link TabSymbol} based on their {@link TabSymbol#pos} fields in increasing order.<br>
 	 * Essentially, ensures that all symbols are always sorted by the pos field
 	 */
-	@Override
 	public boolean add(TabSymbol e){
-		return ArrayUtils.insertSorted(this, e, false);
+		return this.add(new SymbolHolder(e));
+	}
+	
+	/**
+	 * Create a list of all of the notes in this {@link TabString}. This allocates a new array, 
+	 * and should not be used when high performance is needed
+	 * @return The list
+	 */
+	public ArrayList<TabSymbol> getAll(){
+		ArrayList<TabSymbol> all = new ArrayList<TabSymbol>();
+		for(SymbolHolder h : this) all.add(h.getSymbol());
+		return all;
+	}
+	
+	/**
+	 * Remove the {@link SymbolHolder} containing the given {@link TabSymbol}
+	 * @param s The symbol
+	 * @return True if the symbol was removed, false otherwise
+	 */
+	public boolean remove(TabSymbol s){
+		for(SymbolHolder h : this){
+			if(h.getSymbol().equals(s)){
+				this.remove(h);
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	/**
@@ -95,13 +154,15 @@ public class TabString extends ArrayList<TabSymbol> implements Copyable<TabStrin
 	 * @param sig The {@link TimeSignature} to use for quantizing the note
 	 * @param fret The fret number of the note
 	 * @param pos The position value of the note. See {@link TabSymbol#position}
-	 * @return The {@link TabNote} placed
+	 * @return The {@link SymbolHolder} containing the placed {@link TabNote}, 
+	 * 	this method guarantees that the {@link TabSymbol} in the returned {@link SymbolHolder} is a {@link TabNote}
 	 */
-	public TabNote placeQuantizedNote(TimeSignature sig, int fret, double pos){
+	public SymbolHolder placeQuantizedNote(TimeSignature sig, int fret, double pos){
 		TabNote n = TabFactory.modifiedFret(this, fret, pos);
 		n.quantize(sig, 8); // TODO make this a setting
-		this.add(n);
-		return n;
+		SymbolHolder h = new SymbolHolder(n);
+		this.add(h);
+		return h;
 	}
 	
 	/**
@@ -138,7 +199,7 @@ public class TabString extends ArrayList<TabSymbol> implements Copyable<TabStrin
 	 * 	i.e. use 4 to quantize to quarter notes, use 6 to quantize to dotted quarter notes, etc
 	 */
 	public void quantize(TimeSignature sig, int divisor){
-		for(TabSymbol s : this) s.getPosition().quantize(sig, divisor);
+		for(SymbolHolder h : this) h.getSymbol().getPosition().quantize(sig, divisor);
 	}
 	
 	/***/
@@ -185,7 +246,8 @@ public class TabString extends ArrayList<TabSymbol> implements Copyable<TabStrin
 		if(!Saveable.saveToString(writer, this.size(), true)) return false;
 		
 		// Save each symbol, first by saving its class name, then the symbol itself
-		for(TabSymbol s : this){
+		for(SymbolHolder h : this){
+			TabSymbol s = h.getSymbol();
 			if(!Saveable.saveToString(writer, s.getClass().getSimpleName(), true)) return false;
 			if(!Saveable.save(writer, s)) return false;
 		}
@@ -201,6 +263,50 @@ public class TabString extends ArrayList<TabSymbol> implements Copyable<TabStrin
 		TabString s = (TabString)obj;
 		return	super.equals(obj) &&
 				this.getRootPitch().equals(s.getRootPitch());
+	}
+	
+	/**
+	 * A class used as a buffer to hold {@link TabSymbol} objects in the string, to make replacing notes easier
+	 * @author zrona
+	 */
+	public static class SymbolHolder implements Comparable<SymbolHolder>{
+		/** The {@link TabSymbol} held by this holder */ 
+		private TabSymbol symbol;
+		
+		/**
+		 * Create a {@link SymbolHolder} with the given {@link TabSymbol}
+		 * @param symbol see {@link #symbol}
+		 */
+		public SymbolHolder(TabSymbol symbol){
+			this.setSymbol(symbol);
+		}
+		
+		/**
+		 * @return See {@link #symbol}
+		 */
+		public TabSymbol getSymbol(){
+			return this.symbol;
+		}
+		
+		/**
+		 * @param symbol See {@link #symbol}
+		 */
+		public void setSymbol(TabSymbol symbol){
+			this.symbol = symbol;
+		}
+		
+		/***/
+		@Override
+		public int compareTo(SymbolHolder h){
+			return this.getSymbol().compareTo(h.getSymbol());
+		}
+		
+		@Override
+		public boolean equals(Object obj){
+			if(!ObjectUtils.isType(obj, this.getClass())) return false;
+			TabSymbol t = ((SymbolHolder)obj).getSymbol();
+			return t.equals(this.getSymbol());
+		}
 	}
 	
 }
