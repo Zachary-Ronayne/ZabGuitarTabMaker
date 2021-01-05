@@ -87,11 +87,11 @@ public final class TabTextExporter{
 		StringUtils.combineStringsWithFiller(exportStrings, toAdd, offset, afterNoteName, noteNameFiller, noteNameFillerBefore);
 		
 		// Create a list storing each symbol and its position
-		ArrayList<IndexAndSymbol> symbols = new ArrayList<IndexAndSymbol>();
+		ArrayList<IndexAndPos> symbols = new ArrayList<IndexAndPos>();
 		for(int i = 0; i < numStrings; i++){
 			TabString s = tabStrings.get(i);
-			for(TabSymbol t : s.getAll()){
-				symbols.add(new IndexAndSymbol(t, i));
+			for(TabPosition p : s){
+				symbols.add(new IndexAndPos(p, i));
 			}
 		}
 		// Sort all of the symbols in increasing order based on position
@@ -106,20 +106,20 @@ public final class TabTextExporter{
 			}
 			
 			// For each note at the same position, add it to the symbols to add
-			IndexAndSymbol stringObj;
+			IndexAndPos stringObj;
 			double pos;
 			do{
 				// Get they symbol to add to the Text String
 				stringObj = symbols.get(s);
 				// Get the position of that to add
-				pos = stringObj.symbol.getPos();
+				pos = stringObj.pos.getPos();
 				// Set the text to that of the TabSymbol
-				toAdd[stringObj.index] = stringObj.symbol.getModifiedSymbol(tabStrings.get(stringObj.index));
+				toAdd[stringObj.index] = stringObj.pos.getSymbol().getModifiedSymbol(tabStrings.get(stringObj.index));
 				// Increment the counter to the next symbol
 				s++;
 				
 				// Continue looping only if the position of the next symbol is the same
-			}while(s < symbols.size() && pos == symbols.get(s).symbol.getPos());
+			}while(s < symbols.size() && pos == symbols.get(s).pos.getPos());
 			
 			// Go back one symbol to account for the added symbol
 			s--;
@@ -185,20 +185,20 @@ public final class TabTextExporter{
 	 * Helper object for storing both an index, and an associated {@link TabSymbol}
 	 * @author zrona
 	 */
-	public static class IndexAndSymbol implements Comparable<IndexAndSymbol>{
-		public TabSymbol symbol;
+	public static class IndexAndPos implements Comparable<IndexAndPos>{
+		public TabPosition pos;
 		public int index;
-		public IndexAndSymbol(TabSymbol symbol, int index){
-			this.symbol = symbol;
+		public IndexAndPos(TabPosition pos, int index){
+			this.pos = pos;
 			this.index = index;
 		}
 		/**
 		 * Sort the elements in increasing order of the position of the {@link TabSymbol}
 		 */
 		@Override
-		public int compareTo(IndexAndSymbol obj){
-			double p1 = this.symbol.getPos();
-			double p2 = obj.symbol.getPos();
+		public int compareTo(IndexAndPos obj){
+			double p1 = this.pos.getPos();
+			double p2 = obj.pos.getPos();
 			if(p1 < p2) return -1;
 			return (p1 == p2) ? 0 : 1;
 		}

@@ -3,11 +3,9 @@ package tab.symbol;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
-import music.NotePosition;
 import music.Rhythm;
 import tab.Tab;
 import tab.TabString;
-import util.ObjectUtils;
 import util.Saveable;
 
 /**
@@ -20,14 +18,14 @@ public class TabDeadNote extends TabSymbol{
 	 * Create a dead note for a tab
 	 * @param pos The {@link TabSymbol#pos} of this {@link TabDeadNote}
 	 */
-	public TabDeadNote(NotePosition pos){
-		super(pos, new TabModifier());
+	public TabDeadNote(){
+		super(new TabModifier());
 	}
 	
 	/***/
 	@Override
 	public TabDeadNote copy(){
-		return new TabDeadNote(ObjectUtils.copy(this.getPosition()));
+		return new TabDeadNote();
 	}
 	
 	/***/
@@ -56,26 +54,18 @@ public class TabDeadNote extends TabSymbol{
 		return "X";
 	}
 	
-	/**
-	 * Utility method for getting all objects which must be saved for this object
-	 * @return The array of all objects
-	 */
-	public Saveable[] getSaveObjects(){
-		return new Saveable[]{this.getPosition(), this.getModifier()};
-	}
-	
 	/***/
 	@Override
 	public boolean load(Scanner reader){
 		// Load the position and modifier
-		return Saveable.loadMultiple(reader, this.getSaveObjects());
+		return Saveable.load(reader, this.getModifier());
 	}
 	
 	/***/
 	@Override
 	public boolean save(PrintWriter writer){
 		// Save the position and modifier
-		return Saveable.saveMultiple(writer, this.getSaveObjects());
+		return Saveable.save(writer, this.getModifier());
 	}
 
 }

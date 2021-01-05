@@ -13,7 +13,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
-import music.NotePosition;
 import music.Pitch;
 import music.Rhythm;
 import tab.TabString;
@@ -22,19 +21,18 @@ public class TestTabPitch{
 
 	private Pitch pitch;
 	private Pitch newPitch;
-	private NotePosition pos;
 	private TabModifier mod;
 	private TabPitch note;
 	
 	private TabPitch noteNoMod;
 	private TabString string;
 	
-	private class TestT extends TabPitch{
-		public TestT(Pitch pitch, NotePosition pos, TabModifier mod){
-			super(pitch, pos, mod);
+	private class TestPitchObject extends TabPitch{
+		public TestPitchObject(Pitch pitch, TabModifier mod){
+			super(pitch, mod);
 		}
-		public TestT(Pitch pitch, NotePosition pos){
-			super(pitch, pos);
+		public TestPitchObject(Pitch pitch){
+			super(pitch);
 		}
 		@Override
 		public TabSymbol copy(){return this;}
@@ -54,26 +52,23 @@ public class TestTabPitch{
 	public void setup(){
 		pitch = new Pitch(4);
 		newPitch = new Pitch(2);
-		pos = new NotePosition(2);
 		mod = new TabModifier("{", "}");
-		note = new TestT(pitch, pos, mod);
+		note = new TestPitchObject(pitch, mod);
 		
-		noteNoMod = new TestT(pitch, pos);
+		noteNoMod = new TestPitchObject(pitch);
 		string = new TabString(new Pitch(4));
 	}
 	
 	@Test
 	public void constructor(){
-		assertEquals(pos, note.getPosition(), "Checking position initialized in full constructor");
 		assertEquals(mod, note.getModifier(), "Checking modifier initialized in full constructor");
 		
-		assertEquals(pos, noteNoMod.getPosition(), "Checking position initialized in no modifier constructor");
 		assertEquals(new TabModifier(), noteNoMod.getModifier(), "Checking modifier initialized in no modifier constructor");
 		
 		assertThrows(IllegalArgumentException.class, new Executable(){
 			@Override
 			public void execute() throws Throwable{
-				new TestT(null, pos, mod);
+				new TestPitchObject(null, mod);
 			}
 		}, "Checking exception is thrown on null pitch");
 	}
@@ -108,7 +103,7 @@ public class TestTabPitch{
 	
 	@Test
 	public void equals(){
-		TabPitch n = new TestT(pitch, pos, mod);
+		TabPitch n = new TestPitchObject(pitch, mod);
 		
 		assertFalse("Checking objects are not the same object", n == note);
 		assertTrue("Checking objects are equal", n.equals(note));

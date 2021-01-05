@@ -3,6 +3,8 @@ package tab;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -119,13 +121,13 @@ public class TestTab{
 		TabString copyL;
 		TimeSignature newTime;
 		
-		highString.add(TabFactory.modifiedFret(lowString, 0, 0));
-		highString.add(TabFactory.modifiedFret(lowString, 0, 0.75));
-		highString.add(TabFactory.modifiedFret(lowString, 0, 1));
-		highString.add(TabFactory.modifiedFret(lowString, 0, 1.25));
+		highString.add(TabFactory.modifiedFret(highString, 0, 0));
+		highString.add(TabFactory.modifiedFret(highString, 0, 0.75));
+		highString.add(TabFactory.modifiedFret(highString, 0, 1));
+		highString.add(TabFactory.modifiedFret(highString, 0, 1.25));
 		lowString.add(TabFactory.modifiedFret(lowString, 0, 2));
 		lowString.add(TabFactory.modifiedFret(lowString, 0, 2.9));
-		
+
 		copy = tab.copy();
 		copyH = copy.getStrings().get(0);
 		copyL = copy.getStrings().get(1);
@@ -134,17 +136,17 @@ public class TestTab{
 		assertEquals(newTime, copy.getTimeSignature(), "Checking retime set the time signature");
 		assertEquals(4, copyH.size(), "Checking no symbols were deleted with rescale false, deleteExtra false, converting 4/4 to 5/4");
 		assertEquals(2, copyL.size(), "Checking no symbols were deleted with rescale false, deleteExtra false, converting 4/4 to 5/4");
-		assertEquals(0, copyH.symbol(0).getPosition().getValue(), UtilsTest.DELTA,
+		assertEquals(0, copyH.get(0).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra false, converting 4/4 to 5/4");
-		assertEquals(0.6, copyH.symbol(1).getPosition().getValue(), UtilsTest.DELTA,
+		assertEquals(0.6, copyH.get(1).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra false, converting 4/4 to 5/4");
-		assertEquals(0.8, copyH.symbol(2).getPosition().getValue(), UtilsTest.DELTA,
+		assertEquals(0.8, copyH.get(2).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra false, converting 4/4 to 5/4");
-		assertEquals(1, copyH.symbol(3).getPosition().getValue(), UtilsTest.DELTA,
+		assertEquals(1, copyH.get(3).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra false, converting 4/4 to 5/4");
-		assertEquals(1.6, copyL.symbol(0).getPosition().getValue(), UtilsTest.DELTA,
+		assertEquals(1.6, copyL.get(0).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra false, converting 4/4 to 5/4");
-		assertEquals(2.32, copyL.symbol(1).getPosition().getValue(), UtilsTest.DELTA,
+		assertEquals(2.32, copyL.get(1).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra false, converting 4/4 to 5/4");
 		
 		copy = tab.copy();
@@ -154,17 +156,17 @@ public class TestTab{
 		copy.retime(newTime, false, true);
 		assertEquals(4, copyH.size(), "Checking no symbols were deleted with rescale false, deleteExtra true, converting 4/4 to 5/4");
 		assertEquals(2, copyL.size(), "Checking no symbols were deleted with rescale false, deleteExtra true, converting 4/4 to 5/4");
-		assertEquals(0, copyH.symbol(0).getPosition().getValue(), UtilsTest.DELTA,
+		assertEquals(0, copyH.get(0).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra true, converting 4/4 to 5/4");
-		assertEquals(0.6, copyH.symbol(1).getPosition().getValue(), UtilsTest.DELTA,
+		assertEquals(0.6, copyH.get(1).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra true, converting 4/4 to 5/4");
-		assertEquals(1, copyH.symbol(2).getPosition().getValue(), UtilsTest.DELTA,
+		assertEquals(1, copyH.get(2).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra true, converting 4/4 to 5/4");
-		assertEquals(1.2, copyH.symbol(3).getPosition().getValue(), UtilsTest.DELTA,
+		assertEquals(1.2, copyH.get(3).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra true, converting 4/4 to 5/4");
-		assertEquals(2, copyL.symbol(0).getPosition().getValue(), UtilsTest.DELTA,
+		assertEquals(2, copyL.get(0).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra true, converting 4/4 to 5/4");
-		assertEquals(2.72, copyL.symbol(1).getPosition().getValue(), UtilsTest.DELTA,
+		assertEquals(2.72, copyL.get(1).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra true, converting 4/4 to 5/4");
 		
 		copy = tab.copy();
@@ -174,17 +176,17 @@ public class TestTab{
 		copy.retime(newTime, false, false);
 		assertEquals(4, copyH.size(), "Checking no symbols were deleted with rescale false, deleteExtra false, converting 4/4 to 3/4");
 		assertEquals(2, copyL.size(), "Checking no symbols were deleted with rescale false, deleteExtra false, converting 4/4 to 3/4");
-		assertEquals(0, copyH.symbol(0).getPosition().getValue(), UtilsTest.DELTA,
+		assertEquals(0, copyH.get(0).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra false, converting 4/4 to 3/4");
-		assertEquals(1, copyH.symbol(1).getPosition().getValue(), UtilsTest.DELTA,
+		assertEquals(1, copyH.get(1).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra false, converting 4/4 to 3/4");
-		assertEquals(1.33333333333333, copyH.symbol(2).getPosition().getValue(), UtilsTest.DELTA,
+		assertEquals(1.33333333333333, copyH.get(2).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra false, converting 4/4 to 3/4");
-		assertEquals(1.66666666666667, copyH.symbol(3).getPosition().getValue(), UtilsTest.DELTA,
+		assertEquals(1.66666666666667, copyH.get(3).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra false, converting 4/4 to 3/4");
-		assertEquals(2.66666666666667, copyL.symbol(0).getPosition().getValue(), UtilsTest.DELTA,
+		assertEquals(2.66666666666667, copyL.get(0).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra false, converting 4/4 to 3/4");
-		assertEquals(3.86666666666667, copyL.symbol(1).getPosition().getValue(), UtilsTest.DELTA,
+		assertEquals(3.86666666666667, copyL.get(1).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra false, converting 4/4 to 3/4");
 		
 		copy = copy.copy();
@@ -195,17 +197,17 @@ public class TestTab{
 
 		assertEquals(4, copyH.size(), "Checking no symbols were deleted with rescale false, deleteExtra true, converting 3/4 to 5/4");
 		assertEquals(2, copyL.size(), "Checking no symbols were deleted with rescale false, deleteExtra true, converting 3/4 to 5/4");
-		assertEquals(0, copyH.symbol(0).getPosition().getValue(), UtilsTest.DELTA,
+		assertEquals(0, copyH.get(0).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra true, converting 3/4 to 5/4");
-		assertEquals(0.6, copyH.symbol(1).getPosition().getValue(), UtilsTest.DELTA,
+		assertEquals(0.6, copyH.get(1).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra true, converting 3/4 to 5/4");
-		assertEquals(0.8, copyH.symbol(2).getPosition().getValue(), UtilsTest.DELTA,
+		assertEquals(0.8, copyH.get(2).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra true, converting 3/4 to 5/4");
-		assertEquals(1, copyH.symbol(3).getPosition().getValue(), UtilsTest.DELTA,
+		assertEquals(1, copyH.get(3).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra true, converting 3/4 to 5/4");
-		assertEquals(1.6, copyL.symbol(0).getPosition().getValue(), UtilsTest.DELTA,
+		assertEquals(1.6, copyL.get(0).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra true, converting 3/4 to 5/4");
-		assertEquals(2.32, copyL.symbol(1).getPosition().getValue(), UtilsTest.DELTA,
+		assertEquals(2.32, copyL.get(1).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra true, converting 3/4 to 5/4");
 		
 		copy = tab.copy();
@@ -215,11 +217,11 @@ public class TestTab{
 		copy.retime(newTime, false, true);
 		assertEquals(2, copyH.size(), "Checking 2 symbols were deleted with rescale false, deleteExtra true, converting 4/4 to 3/4");
 		assertEquals(1, copyL.size(), "Checking one symbol was deleted with rescale false, deleteExtra true, converting 4/4 to 3/4");
-		assertEquals(0, copyH.symbol(0).getPosition().getValue(), UtilsTest.DELTA,
+		assertEquals(0, copyH.get(0).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra true, converting 4/4 to 3/4");
-		assertEquals(1.33333333333333, copyH.symbol(1).getPosition().getValue(), UtilsTest.DELTA,
+		assertEquals(1.33333333333333, copyH.get(1).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra true, converting 4/4 to 3/4");
-		assertEquals(2, copyL.symbol(0).getPosition().getValue(), UtilsTest.DELTA,
+		assertEquals(2, copyL.get(0).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale false, deleteExtra true, converting 4/4 to 3/4");
 		
 		copy = tab.copy();
@@ -229,36 +231,65 @@ public class TestTab{
 		copy.retime(newTime, true, true);
 		assertEquals(4, copyH.size(), "Checking no symbols were deleted with rescale true, converting 4/4 to 5/4");
 		assertEquals(2, copyL.size(), "Checking no symbols were deleted with rescale true, converting 4/4 to 5/4");
-		assertEquals(0, copyH.symbol(0).getPosition().getValue(), UtilsTest.DELTA,
+		assertEquals(0, copyH.get(0).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale true, converting 4/4 to 5/4");
-		assertEquals(0.75, copyH.symbol(1).getPosition().getValue(), UtilsTest.DELTA,
+		assertEquals(0.75, copyH.get(1).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale true, converting 4/4 to 5/4");
-		assertEquals(1, copyH.symbol(2).getPosition().getValue(), UtilsTest.DELTA,
+		assertEquals(1, copyH.get(2).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale true, converting 4/4 to 5/4");
-		assertEquals(1.25, copyH.symbol(3).getPosition().getValue(), UtilsTest.DELTA,
+		assertEquals(1.25, copyH.get(3).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale true, converting 4/4 to 5/4");
-		assertEquals(2, copyL.symbol(0).getPosition().getValue(), UtilsTest.DELTA,
+		assertEquals(2, copyL.get(0).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale true, converting 4/4 to 5/4");
-		assertEquals(2.9, copyL.symbol(1).getPosition().getValue(), UtilsTest.DELTA,
+		assertEquals(2.9, copyL.get(1).getPosition().getValue(), UtilsTest.DELTA,
 				"Checking correct retimed note rescale true, converting 4/4 to 5/4");
 	}
 	
 	@Test
 	public void quantize(){
-		lowString.add(new TabNote(0, 1.1));
-		highString.add(new TabNote(0, 2.1));
+		lowString.add(new TabPosition(new TabNote(0), 1.1));
+		highString.add(new TabPosition(new TabNote(0), 2.1));
 		tab.quantize(1);
-		assertEquals(1, lowString.symbol(0).getPosition().getValue(), UtilsTest.DELTA, "Checking string is quantized");
-		assertEquals(2, highString.symbol(0).getPosition().getValue(), UtilsTest.DELTA, "Checking string is quantized");
+		assertEquals(1, lowString.get(0).getPosition().getValue(), UtilsTest.DELTA, "Checking string is quantized");
+		assertEquals(2, highString.get(0).getPosition().getValue(), UtilsTest.DELTA, "Checking string is quantized");
 	}
 	
 	@Test
 	public void placeQuantizedNote(){
-		TabNote returnNote = (TabNote)tab.placeQuantizedNote(1, 3, 2.1).getSymbol();
-		TabNote n = (TabNote)lowString.symbol(0);
-		assertEquals(n, returnNote, "Checking returned note was the same as the one placed");
-		assertEquals(-21, n.getPitch().getNote(), "Checking note has correct pitch");
-		assertEquals(2.125, n.getPos(), "Checking note has quantized position");
+		TabPosition returnNote = tab.placeQuantizedNote(1, 3, 2.1);
+		TabPosition p = lowString.get(0);
+		assertEquals(p, returnNote, "Checking returned note was the same as the one placed");
+		assertEquals(-21, ((TabNote)p.getSymbol()).getPitch().getNote(), "Checking note has correct pitch");
+		assertEquals(2.125, p.getPos(), "Checking note has quantized position");
+		
+		assertEquals(null, tab.placeQuantizedNote(1, 3, 2.1), "Checking placing note at the same position returns null");
+	}
+	
+	@Test
+	public void clearNotes(){
+		assertFalse(highRhythms.isEmpty(), "Checking strings contain notes");
+		assertFalse(lowRhythms.isEmpty(), "Checking strings contain notes");
+		tabForRhythms.clearNotes();
+		assertTrue(highRhythms.isEmpty(), "Checking string notes removed");
+		assertTrue(lowRhythms.isEmpty(), "Checking string notes removed");
+	}
+	
+	@Test
+	public void isEmpty(){
+		assertFalse(tabForRhythms.isEmpty(), "Checking tab is not empty");
+		tabForRhythms.clearNotes();
+		assertTrue(tabForRhythms.isEmpty(), "Checking tab is empty after removing notes");
+		
+		highRhythms.clear();
+		tabForRhythms.placeQuantizedNote(1, 0, 0);
+		assertFalse(tabForRhythms.isEmpty(), "Checking tab is not empty with notes only on last string");
+		
+		tabForRhythms.placeQuantizedNote(0, 0, 0);
+		lowRhythms.clear();
+		assertFalse(tabForRhythms.isEmpty(), "Checking tab is not empty with notes only on first string");
+		
+		tabForRhythms.getStrings().clear();
+		assertTrue(tabForRhythms.isEmpty(), "Checking tab is empty with no strings");
 	}
 	
 	@Test
@@ -391,19 +422,20 @@ public class TestTab{
 				+ "3\n"
 				+ "TabNote\n"
 				+ "-20 \n"
+				+ "\n"
+				+ "\n"
 				+ "2.0 \n"
-				+ "\n"
-				+ "\n"
 				+ "TabNote\n"
 				+ "-20 \n"
+				+ "\n"
+				+ "\n"
 				+ "2.25 \n"
-				+ "\n"
-				+ "\n"
 				+ "TabNote\n"
 				+ "-20 \n"
-				+ "2.375 \n"
 				+ "\n"
-				+ "\ng\n");
+				+ "\n"
+				+ "2.375 \n"
+				+ "g\n");
 		
 		Tab t = new Tab();
 		tab.getStrings().clear();
@@ -452,19 +484,19 @@ public class TestTab{
 				+ "3\n"
 				+ "TabNote\n"
 				+ "-20 \n"
+				+ "\n"
+				+ "\n"
 				+ "2.0 \n"
-				+ "\n"
-				+ "\n"
 				+ "TabNote\n"
 				+ "-20 \n"
+				+ "\n"
+				+ "\n"
 				+ "2.25 \n"
-				+ "\n"
-				+ "\n"
 				+ "TabNote\n"
 				+ "-20 \n"
-				+ "2.375 \n"
 				+ "\n"
-				+ "\n",
+				+ "\n"
+				+ "2.375 \n",
 				UtilsTest.testSave(tab), "Checking save with multiple TabStrings with notes");
 	}
 	

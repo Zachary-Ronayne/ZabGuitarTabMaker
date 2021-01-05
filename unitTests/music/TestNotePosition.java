@@ -3,6 +3,7 @@ package music;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Scanner;
 
@@ -123,6 +124,15 @@ public class TestNotePosition{
 		
 		pos.setValue(-1.5);
 		assertEquals("-1.5 \n", UtilsTest.testSave(pos), "Checking correct value saved");
+	}
+	
+	@Test
+	public void compareTo(){
+		NotePosition comp = new NotePosition(0);
+		NotePosition same = new NotePosition(3);
+		assertTrue(comp.compareTo(pos) < 0, "Checking comparing low to high");
+		assertTrue(pos.compareTo(comp) > 0, "Checking comparing high to low");
+		assertTrue(pos.compareTo(same) == 0, "Checking comparing equal");
 	}
 	
 	@Test

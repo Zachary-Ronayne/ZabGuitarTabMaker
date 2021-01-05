@@ -1,6 +1,5 @@
 package tab.symbol;
 
-import music.NotePosition;
 import music.Pitch;
 import tab.TabString;
 import util.ObjectUtils;
@@ -17,11 +16,10 @@ public abstract class TabPitch extends TabSymbol{
 	/**
 	 * Create a new {@link TabPitch} using the given values
 	 * @param pitch Initial value for {@link #pitch}
-	 * @param pos Initial value for {@link TabSymbol#pos}
 	 * @param modifier Initial value for {@link TabSymbol#modifier}
 	 */
-	public TabPitch(Pitch pitch, NotePosition pos, TabModifier modifier){
-		super(pos, modifier);
+	public TabPitch(Pitch pitch, TabModifier modifier){
+		super(modifier);
 		if(pitch == null) throw new IllegalArgumentException("Pitch cannot be null");
 		this.setPitch(pitch);
 	}
@@ -29,10 +27,9 @@ public abstract class TabPitch extends TabSymbol{
 	/**
 	 * Create a new {@link TabPitch} using the given values and no modifier
 	 * @param pitch Initial value for {@link #pitch}
-	 * @param pos Initial value for {@link TabSymbol#pos}
 	 */
-	public TabPitch(Pitch pitch, NotePosition pos){
-		this(pitch, pos, new TabModifier());
+	public TabPitch(Pitch pitch){
+		this(pitch, new TabModifier());
 	}
 	
 	/**

@@ -11,6 +11,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.junit.jupiter.api.AfterEach;
@@ -20,12 +21,13 @@ import org.junit.jupiter.api.Test;
 
 import appMain.gui.comp.TabPainter.EditorKeyboard;
 import appMain.gui.comp.TabPainter.EditorMouse;
+import appMain.gui.comp.TabPainter.Selection;
 import appMain.gui.util.Camera;
 import appUtils.ZabAppSettings;
 import tab.InstrumentFactory;
 import tab.Tab;
+import tab.TabPosition;
 import tab.TabString;
-import tab.TabString.SymbolHolder;
 import util.testUtils.UtilsTest;
 
 public class TestTabPainter{
@@ -34,7 +36,9 @@ public class TestTabPainter{
 	private BufferedImage img;
 	private Graphics2D g;
 	private Tab tab;
+	private ArrayList<TabString> strs;
 	private Camera cam;
+	private Selection sel;
 	
 	@BeforeAll
 	public static void init(){
@@ -53,9 +57,11 @@ public class TestTabPainter{
 		tab.placeQuantizedNote(2, 0, 3);
 		tab.placeQuantizedNote(1, 0, 4);
 		tab.placeQuantizedNote(0, 0, 5);
+		strs = tab.getStrings();
 		img = new BufferedImage(100, 100, BufferedImage.TYPE_4BYTE_ABGR);
 		g = (Graphics2D)img.getGraphics();
 		cam = paint.getCamera();
+		sel = new Selection(strs.get(0).get(0), strs.get(0));
 	}
 	
 	@Test
@@ -104,24 +110,143 @@ public class TestTabPainter{
 	}
 	
 	@Test
+	public void isSelected(){
+		paint.select(0, 0);
+		assertTrue(paint.isSelected(strs.get(0).get(0)), "Checking position selected");
+		
+		paint.select(0, 1);
+		assertTrue(paint.isSelected(strs.get(0).get(0)), "Checking position still selected");
+		assertTrue(paint.isSelected(strs.get(1).get(0)), "Checking position selected");
+		assertFalse(paint.isSelected(strs.get(2).get(0)), "Checking position not selected");
+	}
+	
+	@Test
+	public void selected(){
+		paint.select(0, 0);
+		paint.select(0, 1);
+		assertEquals(strs.get(0).get(0).getSymbol(), paint.selected(0), "Checking correct symbol found");
+		assertEquals(strs.get(1).get(0).getSymbol(), paint.selected(1), "Checking correct symbol found");
+		assertEquals(null, paint.selected(-1), "Checking null returned on invalid index");
+		assertEquals(null, paint.selected(2), "Checking null returned on invalid index");
+	}
+
+	@Test
+	public void selectedPosition(){
+		paint.select(0, 0);
+		paint.select(0, 1);
+		assertEquals(strs.get(0).get(0), paint.selectedPosition(0), "Checking correct selection found");
+		assertEquals(strs.get(1).get(0), paint.selectedPosition(1), "Checking correct selection found");
+		assertEquals(null, paint.selectedPosition(-1), "Checking null returned on invalid index");
+		assertEquals(null, paint.selectedPosition(2), "Checking null returned on invalid index");
+	}
+
+	@Test
+	public void select(){
+		paint.clearSelection();
+		assertTrue(paint.select(0, 0), "Checking selection succeeds");
+		assertFalse(paint.select(0, 0), "Checking selection fails with position already selected");
+		assertTrue(paint.isSelected(strs.get(0).get(0)), "Checking position selected");
+		assertFalse(paint.isSelected(strs.get(1).get(0)), "Checking position not selected");
+		
+		paint.clearSelection();
+		assertTrue(paint.select(0, strs.get(1)), "Checking selection succeeds");
+		assertTrue(paint.isSelected(strs.get(1).get(0)), "Checking position selected");
+		assertFalse(paint.isSelected(strs.get(2).get(0)), "Checking position not selected");
+		
+		paint.clearSelection();
+		assertTrue(paint.select(strs.get(2).get(0), 2), "Checking selection succeeds");
+		assertTrue(paint.isSelected(strs.get(2).get(0)), "Checking position selected");
+		assertFalse(paint.isSelected(strs.get(3).get(0)), "Checking position not selected");
+		
+		paint.clearSelection();
+		assertTrue(paint.select(strs.get(3).get(0), strs.get(3)), "Checking selection succeeds");
+		assertTrue(paint.isSelected(strs.get(3).get(0)), "Checking position selected");
+		assertFalse(paint.isSelected(strs.get(4).get(0)), "Checking position not selected");
+		
+		paint.clearSelection();
+		assertFalse(paint.select(strs.get(3).get(0), strs.get(2)), "Checking selection fails with note not on string");
+		assertTrue(paint.getSelected().isEmpty(), "Checking no selection");
+	}
+	
+	@Test
 	public void selectOne(){
-		TabString s = tab.getStrings().get(0);
-		SymbolHolder h = s.get(0);
+		TabString s = strs.get(0);
+		TabPosition p = s.get(0);
 		paint.appendSelectedTabNum('0');
-		paint.selectOne(h, s);
-		assertEquals(h, paint.selectedHolder(0), "Checking note was selected");
+		assertFalse(paint.selectOne(p, strs.get(1)), "Checking note fails to select");
+		assertTrue(paint.selectOne(p, s), "Checking note selected");
+		assertEquals(p, paint.selectedPosition(0), "Checking note was selected");
 		assertEquals(1, paint.getSelected().size(), "Checking only one note was selected");
 		assertEquals(null, paint.getSelectedNewTabNum(), "Checking selected new tab num set to null");
 	}
 	
 	@Test
+	public void selectNote(){
+		assertTrue(paint.getSelected().isEmpty(), "Checking nothing is selected");
+		
+		assertTrue(paint.selectNote(1151, 299), "Checking note selected");
+		assertEquals(1, paint.getSelected().size(), "Checking one note selected");
+		assertEquals(tab.getStrings().get(0).get(0), paint.selectedPosition(0), "Checking string 0 note selected");
+		
+		assertTrue(paint.selectNote(940, 350), "Checking note selected");
+		assertEquals(1, paint.getSelected().size(), "Checking one note selected");
+		assertEquals(tab.getStrings().get(1).get(0), paint.selectedPosition(0), "Checking string 1 note selected");
+		
+		assertFalse(paint.selectNote(940, -10350), "Checking note not selected");
+		assertEquals(1, paint.getSelected().size(), "Checking one note selected, no change from not finding a note");
+		assertEquals(tab.getStrings().get(1).get(0), paint.selectedPosition(0), "Checking string 1 note still selected");
+		
+		assertFalse(paint.selectNote(-10940, 350), "Checking note not selected");
+		assertEquals(1, paint.getSelected().size(), "Checking one note selected, no change from not finding a note");
+		assertEquals(tab.getStrings().get(1).get(0), paint.selectedPosition(0), "Checking string 1 note still selected");
+		
+		paint.clearSelection();
+		assertTrue(paint.getSelected().isEmpty(), "Checking none selected");
+		assertTrue(paint.selectNote(350, 500), "Checking note selected");
+		assertEquals(1, paint.getSelected().size(), "Checking one note selected");
+		assertEquals(tab.getStrings().get(5).get(1), paint.selectedPosition(0), "Checking string 5 note 1 selected");
+		
+		tab.getStrings().get(0).clear();
+		paint.clearSelection();
+		assertFalse(paint.selectNote(1150, 300), "Checking no note selected with no note on the string");
+	}
+
+	@Test
+	public void selectAllNotes(){
+		paint.selectAllNotes();
+		ArrayList<Selection> sel = paint.getSelected();
+		assertEquals(7, sel.size(), "Checking correct number of notes selected");
+	}
+	
+	@Test
 	public void clearSelection(){
 		TabString s = tab.getStrings().get(0);
-		SymbolHolder h = s.get(0);
-		paint.selectOne(h, s);
+		TabPosition p = s.get(0);
+		paint.selectOne(p, s);
 		paint.clearSelection();
 		assertTrue(paint.getSelected().isEmpty(), "Checking selected empty");
 		assertEquals(null, paint.getSelectedNewTabNum(), "Checking selected new tab num set to null");
+	}
+	
+	@Test
+	public void removeSelectedNotes(){
+		paint.selectAllNotes();
+		assertFalse(paint.getSelected().isEmpty(), "Checking notes are selected");
+		
+		paint.removeSelectedNotes();
+		assertTrue(paint.getSelected().isEmpty(), "Checking no notes are selected");
+		assertTrue(tab.isEmpty(), "Checking the tab has no notes are selected");
+		
+		TabString str = tab.getStrings().get(0);
+		tab.placeQuantizedNote(0, 0, 0);
+		tab.placeQuantizedNote(0, 0, 1);
+		paint.selectOne(str.get(0), str);
+		assertEquals(1, paint.getSelected().size(), "Checking one note selected");
+		assertEquals(2, str.size(), "Checking string has 2 notes");
+		
+		paint.removeSelectedNotes();
+		assertTrue(paint.getSelected().isEmpty(), "Checking no notes selected");
+		assertEquals(1, str.size(), "Checking string has 1 note");
 	}
 	
 	@Test
@@ -135,8 +260,8 @@ public class TestTabPainter{
 		assertEquals(null, paint.getSelectedNewTabNum(), "Checking tab num null with no selection");
 
 		TabString s = tab.getStrings().get(0);
-		SymbolHolder h = s.get(0);
-		paint.selectOne(h, s);
+		TabPosition p = s.get(0);
+		paint.selectOne(p, s);
 		paint.appendSelectedTabNum('j');
 		assertEquals(null, paint.getSelectedNewTabNum(), "Checking tab num null with non number");
 		
@@ -171,10 +296,17 @@ public class TestTabPainter{
 	}
 	
 	@Test
-	public void updateSelectedNewTabNum(){ // TODO make proper test case when method finalized
+	public void placeNote(){
+		assertTrue(paint.placeNote(950, 300, 0), "Checking note was placed");
+		assertEquals(2, tab.getStrings().get(0).size(), "Checking a new note added");
+		assertEquals(5, tab.getStrings().get(0).get(1).getPos(), "Checking note has correct position");
 		
+		assertFalse(paint.placeNote(950, 300, 0), "Checking note in the same position not placed");
+
+		assertFalse(paint.placeNote(-950, 300, 0), "Checking a no new note added with too low of x");
+		assertFalse(paint.placeNote(950, -300300, 0), "Checking a no new note added with invalid y");
 	}
-	
+
 	@Test
 	public void getCamera(){
 		assertEquals(400, cam.getWidth(), "Checking camera width initialized");
@@ -339,90 +471,163 @@ public class TestTabPainter{
 	}
 	
 	@Test
-	public void selectNote(){
-		assertTrue(paint.getSelected().isEmpty(), "Checking nothing is selected");
-		
-		paint.selectNote(1151, 299);
-		assertEquals(1, paint.getSelected().size(), "Checking one note selected");
-		assertEquals(tab.getStrings().get(0).get(0), paint.selectedHolder(0), "Checking string 0 note selected");
-		
-		paint.selectNote(940, 350);
-		assertEquals(1, paint.getSelected().size(), "Checking one note selected");
-		assertEquals(tab.getStrings().get(1).get(0), paint.selectedHolder(0), "Checking string 1 note selected");
-		
-		paint.selectNote(940, -10350);
-		assertEquals(1, paint.getSelected().size(), "Checking one note selected, no change from not finding a note");
-		assertEquals(tab.getStrings().get(1).get(0), paint.selectedHolder(0), "Checking string 1 note still selected");
-		
-		paint.selectNote(-10940, 350);
-		assertEquals(1, paint.getSelected().size(), "Checking one note selected, no change from not finding a note");
-		assertEquals(tab.getStrings().get(1).get(0), paint.selectedHolder(0), "Checking string 1 note still selected");
-		
-		paint.clearSelection();
-		assertTrue(paint.getSelected().isEmpty(), "Checking none selected");
-		paint.selectNote(350, 500);
-		assertEquals(1, paint.getSelected().size(), "Checking one note selected");
-		assertEquals(tab.getStrings().get(5).get(1), paint.selectedHolder(0), "Checking string 5 note 1 selected");
-	}
-	
-	@Test
-	public void placeNote(){
-		paint.placeNote(950, 300, 0);
-		assertEquals(2, tab.getStrings().get(0).size(), "Checking a new note added");
-		assertEquals(5, tab.getStrings().get(0).symbol(1).getPos(), "Checking note has correct position");
-		
-		paint.placeNote(-950, 300, 0);
-		assertEquals(2, tab.getStrings().get(0).size(), "Checking a no new note added with too low of x");
-
-		paint.placeNote(950, -300300, 0);
-		assertEquals(2, tab.getStrings().get(0).size(), "Checking a no new note added with invalid y");
-	}
-	
-	@Test
 	public void mousePressedEditorMouse(){
 		EditorMouse m = paint.getMouseInput();
-		m.mousePressed(new MouseEvent(paint, 0, 0, 0, 950, 300, 0, 0, 0, false, MouseEvent.BUTTON1));
-		assertEquals(2, tab.getStrings().get(0).size(), "Checking a new note added on left click");
+		m.mousePressed(new MouseEvent(paint, 0, 0, 0, 950, 300, 0, 0, 0, false, MouseEvent.BUTTON3));
+		assertEquals(2, tab.getStrings().get(0).size(), "Checking a new note added on right click");
 		
 		cam.releaseAnchor();
 		m.mousePressed(new MouseEvent(paint, 0, 0, 0, 950, 300, 0, 0, 0, false, MouseEvent.BUTTON2));
 		assertTrue(cam.isAchored(), "Checking camera anchored on middle click");
 		
 		paint.clearSelection();
-		m.mousePressed(new MouseEvent(paint, 0, 0, 0, 1150, 300, 0, 0, 0, false, MouseEvent.BUTTON3));
-		assertEquals(tab.getStrings().get(0).get(1), paint.selectedHolder(0), "Checking a note selected on right click");
+		m.mousePressed(new MouseEvent(paint, 0, 0, 0, 1150, 300, 0, 0, 0, false, MouseEvent.BUTTON1));
+		assertEquals(tab.getStrings().get(0).get(1), paint.selectedPosition(0), "Checking a note selected on left click");
+		
+		paint.clearSelection();
+		
+		// Running case of invalid button number
+		m.mousePressed(new MouseEvent(paint, 0, 0, 0, 1150, 300, 0, 0, 0, false, MouseEvent.NOBUTTON));
 	}
 	
 	@Test
-	public void mouseReleasedEditorMouse(){ // TODO make proper test case when method finalized
+	public void mouseReleasedEditorMouse(){
 		EditorMouse m = paint.getMouseInput();
+		cam.setAnchor(0, 0);
 		m.mouseReleased(new MouseEvent(paint, 0, 0, 0, 950, 300, 0, 0, 0, false, MouseEvent.BUTTON1));
+		assertTrue(cam.isAchored(), "Checking left click doesn't release camera anchor");
+		
 		m.mouseReleased(new MouseEvent(paint, 0, 0, 0, 950, 300, 0, 0, 0, false, MouseEvent.BUTTON2));
+		assertFalse(cam.isAchored(), "Checking middle click releases camera anchor");
 	}
 	
 	@Test
-	public void mouseClickedEditorMouse(){ // TODO make proper test case when method finalized
+	public void mouseClickedEditorMouse(){
 		EditorMouse m = paint.getMouseInput();
-		m.mouseReleased(new MouseEvent(paint, 0, 0, 0, 950, 300, 0, 0, 0, false, MouseEvent.BUTTON1));
-		m.mouseReleased(new MouseEvent(paint, 0, 0, 0, 950, 300, 0, 0, 0, false, MouseEvent.BUTTON2));
-	}
-	
-	@Test
-	public void mouseDraggedEditorMouse(){ // TODO make proper test case when method finalized
-		EditorMouse m = paint.getMouseInput();
+		cam.setXZoomFactor(1);
+		
 		m.mouseClicked(new MouseEvent(paint, 0, 0, 0, 950, 300, 0, 0, 0, false, MouseEvent.BUTTON1));
+		assertEquals(1, cam.getXZoomFactor(), "Checking zoom factor unchanged on left click");
+		
+		m.mouseClicked(new MouseEvent(paint, 0, 0, MouseEvent.SHIFT_DOWN_MASK, 950, 300, 0, 0, 0, false, MouseEvent.BUTTON1));
+		assertEquals(1, cam.getXZoomFactor(), "Checking zoom factor unchanged on left click shift down");
+		
+		m.mouseClicked(new MouseEvent(paint, 0, 0, 0, 950, 300, 0, 0, 0, false, MouseEvent.BUTTON2));
+		assertEquals(1, cam.getXZoomFactor(), "Checking zoom factor unchanged on middle click without shift");
+		
+		m.mouseClicked(new MouseEvent(paint, 0, 0, MouseEvent.SHIFT_DOWN_MASK, 950, 300, 0, 0, 0, false, MouseEvent.BUTTON2));
+		assertEquals(0, cam.getXZoomFactor(), "Checking zoom factor reset on middle click with shift");
 	}
 	
 	@Test
-	public void mouseWheelMovedEditorMouse(){ // TODO make proper test case when method finalized
+	public void mouseDraggedEditorMouse(){
 		EditorMouse m = paint.getMouseInput();
-		m.mouseWheelMoved(new MouseWheelEvent(paint, 0, 0, 0, 950, 300, 0, false, 0, 0, MouseEvent.BUTTON1));
+		double x = cam.getX();
+		cam.setAnchor(0, 0);
+		m.mouseDragged(new MouseEvent(paint, 0, 0, 0, 950, 300, 0, 0, 0, false, MouseEvent.BUTTON2));
+		assertNotEquals(x, cam.getX(), "Checking camera was panned");
+
+		x = cam.getX();
+		cam.releaseAnchor();
+		m.mouseDragged(new MouseEvent(paint, 0, 0, 0, 950, 300, 0, 0, 0, false, MouseEvent.BUTTON2));
+		assertEquals(x, cam.getX(), "Checking camera was not panned");
 	}
 	
 	@Test
-	public void keyPressedEditorKeyboard(){ // TODO make proper test case when method finalized
+	public void mouseWheelMovedEditorMouse(){
+		EditorMouse m = paint.getMouseInput();
+		
+		paint.resetCamera();
+		m.mouseWheelMoved(new MouseWheelEvent(paint, 0, 0, 0, 950, 300, 0, false,
+				MouseWheelEvent.WHEEL_UNIT_SCROLL, 0, 1));
+		assertEquals(-0.1, cam.getXZoomFactor(), "Checking zooming in with no modifiers");
+		
+		paint.resetCamera();
+		m.mouseWheelMoved(new MouseWheelEvent(paint, 0, 0, 0, 950, 300, 0, false, 
+				MouseWheelEvent.WHEEL_UNIT_SCROLL, 0, -1));
+		assertEquals(0.1, cam.getXZoomFactor(), "Checking zooming out with no modifiers");
+
+		paint.resetCamera();
+		m.mouseWheelMoved(new MouseWheelEvent(paint, 0, 0, MouseWheelEvent.SHIFT_DOWN_MASK, 950, 300, 0, false,
+				MouseWheelEvent.WHEEL_UNIT_SCROLL, 0, 1));
+		assertEquals(-0.2, cam.getXZoomFactor(), "Checking zooming in with shift");
+		
+		paint.resetCamera();
+		m.mouseWheelMoved(new MouseWheelEvent(paint, 0, 0, MouseWheelEvent.SHIFT_DOWN_MASK, 950, 300, 0, false,
+				MouseWheelEvent.WHEEL_UNIT_SCROLL, 0, -1));
+		assertEquals(0.2, cam.getXZoomFactor(), "Checking zooming out with shift");
+
+		paint.resetCamera();
+		m.mouseWheelMoved(new MouseWheelEvent(paint, 0, 0, MouseWheelEvent.ALT_DOWN_MASK, 950, 300, 0, false,
+				MouseWheelEvent.WHEEL_UNIT_SCROLL, 0, 1));
+		assertEquals(-0.2, cam.getXZoomFactor(), "Checking zooming in with alt");
+		
+		paint.resetCamera();
+		m.mouseWheelMoved(new MouseWheelEvent(paint, 0, 0, MouseWheelEvent.CTRL_DOWN_MASK, 950, 300, 0, false,
+				MouseWheelEvent.WHEEL_UNIT_SCROLL, 0, 1));
+		assertEquals(-0.2, cam.getXZoomFactor(), "Checking zooming in with ctrl");
+
+		paint.resetCamera();
+		m.mouseWheelMoved(new MouseWheelEvent(paint, 0, 0,
+				MouseWheelEvent.CTRL_DOWN_MASK | MouseWheelEvent.SHIFT_DOWN_MASK | MouseWheelEvent.ALT_DOWN_MASK,
+				950, 300, 0, false, MouseWheelEvent.WHEEL_UNIT_SCROLL, 0, 1));
+		assertEquals(-0.8, cam.getXZoomFactor(), "Checking zooming in with all modifiers");
+	}
+	
+	@Test
+	public void keyPressedEditorKeyboard(){
 		EditorKeyboard k = paint.getKeyInput();
+		paint.select(0, 0);
+		cam.setXZoomFactor(1);
+		
 		k.keyPressed(new KeyEvent(paint, 0, 0, 0, 0, '1'));
+		assertEquals(1, paint.getSelectedNewTabNum(), "Checking tab num updated with number");
+		
+		k.keyPressed(new KeyEvent(paint, 0, 0, 0, 0, '-'));
+		assertEquals(-1, paint.getSelectedNewTabNum(), "Checking tab num updated with minus sign");
+		
+		paint.clearSelection();
+		k.keyPressed(new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_A, 'a'));
+		assertTrue(paint.getSelected().isEmpty(), "Checking no selection made on a press no ctrl");
+		
+		k.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_A, 'a'));
+		assertEquals(7, paint.getSelected().size(), "Checking all notes selected on a press with ctrl");
+		
+		k.keyPressed(new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_D, 'd'));
+		assertFalse(tab.isEmpty(), "Checking tab notes were not removed on d press no ctrl");
+		
+		k.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_D, 'd'));
+		assertTrue(tab.isEmpty(), "Checking tab notes were removed on d press with ctrl");
+
+		tab.placeQuantizedNote(0, 0, 0);
+		tab.placeQuantizedNote(1, 0, 1);
+		k.keyPressed(new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_R, 'r'));
+		assertFalse(tab.isEmpty(), "Checking tab notes were not removed on r press no ctrl");
+		
+		k.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_R, 'r'));
+		assertTrue(tab.isEmpty(), "Checking tab notes were removed on r press no ctrl");
+	}
+	
+	@Test
+	public void getPosSelection(){
+		assertEquals(strs.get(0).get(0), sel.getPos(), "Checking position initialized");
+	}
+	
+	@Test
+	public void setPosSelection(){
+		sel.setPos(strs.get(1).get(0));
+		assertEquals(strs.get(1).get(0), sel.getPos(), "Checking position set");
+	}
+	
+	@Test
+	public void getStringSelection(){
+		assertEquals(strs.get(0), sel.getString(), "Checking string initialized");
+	}
+	
+	@Test
+	public void setStringSelection(){
+		sel.setString(strs.get(1));
+		assertEquals(strs.get(1), sel.getString(), "Checking set");
 	}
 	
 	@AfterEach

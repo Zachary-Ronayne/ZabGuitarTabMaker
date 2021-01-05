@@ -11,7 +11,7 @@ import util.Saveable;
  * An object tracking the position of a musical note in a measure
  * @author zrona
  */
-public class NotePosition implements Copyable<NotePosition>, Saveable{
+public class NotePosition implements Copyable<NotePosition>, Comparable<NotePosition>, Saveable{
 	
 	/**
 	 * The position held by this {@link NotePosition} representing the number of measures to this note, 
@@ -122,6 +122,15 @@ public class NotePosition implements Copyable<NotePosition>, Saveable{
 		
 		// End the line
 		return Saveable.newLine(writer);
+	}
+	
+	/***/
+	@Override
+	public int compareTo(NotePosition p){
+		double v1 = this.getValue();
+		double v2 = p.getValue();
+		if(v1 < v2) return -1;
+		return v1 > v2 ? 1 : 0;
 	}
 	
 	/***/

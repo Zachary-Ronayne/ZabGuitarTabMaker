@@ -3,7 +3,6 @@ package tab.symbol;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
-import music.NotePosition;
 import music.Pitch;
 import music.Rhythm;
 import util.ObjectUtils;
@@ -18,38 +17,34 @@ public class TabNote extends TabPitch{
 	/**
 	 * Create a new {@link TabNote} using the given values
 	 * @param pitch Initial value for {@link TabPitch#pitch}
-	 * @param pos Initial value for {@link TabSymbol#pos}
 	 * @param modifier Initial value for {@link TabSymbol#modifier}
 	 */
-	public TabNote(Pitch pitch, NotePosition pos, TabModifier modifier){
-		super(pitch, pos, modifier);
+	public TabNote(Pitch pitch, TabModifier modifier){
+		super(pitch, modifier);
 	}
 
 	/**
 	 * Create a new {@link TabNote} using the given values and no modifier
 	 * @param pitch Initial value for {@link TabPitch#pitch}
-	 * @param pos Initial value for {@link TabSymbol#pos}
 	 */
-	public TabNote(Pitch pitch, NotePosition pos){
-		super(pitch, pos, new TabModifier());
+	public TabNote(Pitch pitch){
+		super(pitch, new TabModifier());
 	}
 	
 	/**
 	 * Create a new {@link TabNote} using specified pitch and position as values.
 	 * @param pitch The numerical value for the pitch of {@link TabPitch#pitch}
-	 * @param pos The numerical value for the position of {@link TabPitch#pos}
 	 */
-	public TabNote(int pitch, double pos){
-		this(new Pitch(pitch), new NotePosition(pos));
+	public TabNote(int pitch){
+		this(new Pitch(pitch));
 	}
 	
 	/***/
 	@Override
 	public TabNote copy(){
 		Pitch p = ObjectUtils.copy(this.getPitch());
-		NotePosition pos = ObjectUtils.copy(this.getPosition());
 		TabModifier mod = ObjectUtils.copy(this.getModifier());
-		return new TabNote(p, pos, mod);
+		return new TabNote(p, mod);
 	}
 	
 	/**
@@ -61,7 +56,6 @@ public class TabNote extends TabPitch{
 	public TabNoteRhythm convertToRhythm(Rhythm r){
 		return new TabNoteRhythm(
 				this.getPitch().copy(), r,
-				this.getPosition().copy(),
 				this.getModifier().copy()
 		);
 	}
@@ -93,7 +87,7 @@ public class TabNote extends TabPitch{
 	 * @return The array of all objects
 	 */
 	public Saveable[] getSaveObjects(){
-		return new Saveable[]{this.getPitch(), this.getPosition(), this.getModifier()};
+		return new Saveable[]{this.getPitch(), this.getModifier()};
 	}
 	
 	/***/

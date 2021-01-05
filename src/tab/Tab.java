@@ -7,7 +7,6 @@ import java.util.Scanner;
 import music.Pitch;
 import music.Rhythm;
 import music.TimeSignature;
-import tab.TabString.SymbolHolder;
 import tab.symbol.TabNote;
 import tab.symbol.TabSymbol;
 import util.Copyable;
@@ -169,13 +168,12 @@ public class Tab implements Copyable<Tab>, Saveable{
 			// Go through every note on every string
 			for(TabString s : this.getStrings()){
 				// Make a list to store all of the symbols to be removed
-				ArrayList<SymbolHolder> toDelete = new ArrayList<SymbolHolder>();
-				for(SymbolHolder h : s){
-					TabSymbol t = h.getSymbol();
+				ArrayList<TabPosition> toDelete = new ArrayList<TabPosition>();
+				for(TabPosition p : s){
 					// Retime the note
-					boolean outside = !t.retimeMeasure(newTime, oldTime);
+					boolean outside = !p.retimeMeasure(newTime, oldTime);
 					// If the position is outside the measure, remove it
-					if(outside) toDelete.add(h);
+					if(outside) toDelete.add(p);
 				}
 				// Remove all symbols which were set to be removed
 				s.removeAll(toDelete);
@@ -184,7 +182,7 @@ public class Tab implements Copyable<Tab>, Saveable{
 		else{
 			// Retime every note on every string
 			for(TabString s : this.getStrings()){
-				for(TabSymbol t : s.getAll()) t.retime(newTime, oldTime);
+				for(TabPosition p : s) p.retime(newTime, oldTime);
 			}
 		}
 	}
@@ -204,11 +202,11 @@ public class Tab implements Copyable<Tab>, Saveable{
 	 * @param string The index of the string to place the note on
 	 * @param fret The fret number of the note
 	 * @param pos The position value of the note. See {@link TabSymbol#position}
-	 * @return The {@link SymbolHolder} containing the placed {@link TabNote}, 
+	 * @return The {@link TabPosition} containing the placed {@link TabNote}, 
 	 * 	this method guarantees that the {@link TabSymbol} in the returned {@link SymbolHolder} is a {@link TabNote}, 
 	 * 	or that it is null because the note could not be placed.
 	 */
-	public SymbolHolder placeQuantizedNote(int string, int fret, double pos){
+	public TabPosition placeQuantizedNote(int string, int fret, double pos){
 		return this.getStrings().get(string).placeQuantizedNote(this.getTimeSignature(), fret, pos);
 	}
 	
@@ -217,6 +215,18 @@ public class Tab implements Copyable<Tab>, Saveable{
 	 */
 	public void clearNotes(){
 		for(TabString s : this.getStrings()) s.clear();
+	}
+	
+	/**
+	 * Determine if any of the strings in this {@link Tab} have symbols
+	 * @return true if this {@link Tab} has no strings, or all of its strings have no notes, false otherwise
+	 */
+	public boolean isEmpty(){
+		if(this.getStrings().isEmpty()) return true;
+		for(TabString s : this.getStrings()){
+			if(!s.isEmpty()) return false;
+		}
+		return true;
 	}
 	
 	/**
@@ -266,9 +276,9 @@ public class Tab implements Copyable<Tab>, Saveable{
 			// Going one less than the number of notes on the string
 			for(int i = 0; i < size - 1; i++){
 				// Guess and set the rhythm based on the space between the notes
-				TabSymbol t = s.symbol(i);
-				Rhythm r = this.getTimeSignature().guessRhythmMeasures(s.symbol(i + 1).getPos() - t.getPos());
-				s.replace(i, t.convertToRhythm(r));
+				TabPosition p = s.get(i);
+				Rhythm r = this.getTimeSignature().guessRhythmMeasures(s.get(i + 1).getPos() - p.getPos());
+				s.replace(i, p.getSymbol().convertToRhythm(r));
 			}
 			// Set the rhythm of the last note
 			s.replace(size - 1, s.symbol(size - 1).convertToRhythm(new Rhythm(1, 4))); // TODO make this a setting

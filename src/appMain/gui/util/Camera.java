@@ -356,10 +356,9 @@ public class Camera implements Saveable{
 		else{
 			g.setFont(new Font(f.getName(), f.getStyle(), (int)fontSize));
 		}
-		boolean success = false;
-		if(inBounds(x, y - fontSize, g.getFontMetrics().stringWidth(s), fontSize)){
+		boolean success = inBounds(x, y - fontSize, g.getFontMetrics().stringWidth(s), fontSize);
+		if(success){
 			g.drawString(s, drawX(x), drawY(y));
-			success = true;
 		}
 		
 		// Setting the old font

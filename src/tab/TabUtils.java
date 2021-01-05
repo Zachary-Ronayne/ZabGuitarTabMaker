@@ -1,6 +1,5 @@
 package tab;
 
-import music.NotePosition;
 import music.Rhythm;
 import tab.symbol.TabDeadNote;
 import tab.symbol.TabNote;
@@ -21,9 +20,9 @@ public class TabUtils{
 	 */
 	public static TabSymbol stringToSymbol(String type){
 		switch(type){
-			case "TabDeadNote": return new TabDeadNote(new NotePosition(0));
-			case "TabNote": return new TabNote(0, 0);
-			case "TabNoteRhythm": return new TabNoteRhythm(0, new Rhythm(1, 1), 0);
+			case "TabDeadNote": return new TabDeadNote();
+			case "TabNote": return new TabNote(0);
+			case "TabNoteRhythm": return new TabNoteRhythm(0, new Rhythm(1, 1));
 			default: return null;
 		}
 	}

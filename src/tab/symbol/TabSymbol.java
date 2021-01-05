@@ -1,8 +1,6 @@
 package tab.symbol;
 
-import music.NotePosition;
 import music.Rhythm;
-import music.TimeSignature;
 import tab.Tab;
 import tab.TabString;
 import util.Copyable;
@@ -13,11 +11,8 @@ import util.Saveable;
  * A symbol used in a {@link Tab} to represent anything on a tab, i.e. fret numbers and dead notes
  * @author zrona
  */
-public abstract class TabSymbol implements Comparable<TabSymbol>, Copyable<TabSymbol>, Saveable{
+public abstract class TabSymbol implements Copyable<TabSymbol>, Saveable{
 
-	/** The position {@link NotePosition} object of this {@link TabSymbol} on a {@link TabString}. Cannot be null. */
-	private NotePosition position;
-	
 	/**
 	 * The {@link TabModifier} used by this {@link TabSymbol} to specify how it is played on an instrument. Cannot be null.
 	 */
@@ -28,44 +23,9 @@ public abstract class TabSymbol implements Comparable<TabSymbol>, Copyable<TabSy
 	 * @param pos The {@link #position}
 	 * @param modifier The {@link #modifier}
 	 */
-	public TabSymbol(NotePosition position, TabModifier modifier){
-		if(position == null) throw new IllegalArgumentException("Pos cannot be null");
+	public TabSymbol(TabModifier modifier){
 		if(modifier == null) throw new IllegalArgumentException("Modifier cannot be null");
-		this.setPosition(position);
 		this.setModifier(modifier);
-	}
-	
-	/**
-	 * Get the {@link #position} of this {@link TabSymbol}
-	 * @return See {@link #position}
-	 */
-	public NotePosition getPosition(){
-		return this.position;
-	}
-	
-	/**
-	 * Get the value of the {@link #position} of this {@link TabSymbol}
-	 * @return The position
-	 */
-	public double getPos(){
-		return this.getPosition().getValue();
-	}
-	
-	/**
-	 * Set the {@link #position} of this {@link TabSymbol}
-	 * @param pos See {@link #position}
-	 */
-	public void setPosition(NotePosition position){
-		if(position == null) return;
-		this.position = position;
-	}
-
-	/**
-	 * Set the value for the {@link #position} of this {@link TabSymbol} creating a new {@link NotePosition} object
-	 * @param pos See {@link #position}
-	 */
-	public void setPos(double pos){
-		this.setPosition(new NotePosition(pos));
 	}
 
 	/**
@@ -103,35 +63,6 @@ public abstract class TabSymbol implements Comparable<TabSymbol>, Copyable<TabSy
 		if(this.getModifier() == null) return symbol;
 		return this.getModifier().modifySymbol(symbol);
 	}
-	
-	/**
-	 * Quantize this {@link TabSymbol} position to the nearest place in a measure
-	 * @param sig The time signature to base the quantization off of
-	 * @param divisor The amount to divide up the units of a whole note.<br>
-	 * 	i.e. use 4 to quantize to quarter notes, use 6 to quantize to dotted quarter notes, etc
-	 */
-	public void quantize(TimeSignature sig, int divisor){
-		this.getPosition().quantize(sig, divisor);
-	}
-	
-	/**
-	 * Convert this {@link TabSymbol} objects position so that it is the same number of whole notes, but in the new time signature
-	 * @param newTime The {@link TimeSignature} to convert to
-	 * @param oldTime The {@link TimeSignature} which this position was in
-	 */
-	public void retime(TimeSignature newTime, TimeSignature oldTime){
-		this.getPosition().retime(newTime, oldTime);
-	}
-	
-	/**
-	 * Convert this {@link NoteSymbol} object position so that it stays in the same measure and same relative position in the measure.<br>
-	 * @param newTime The {@link TimeSignature} to convert to
-	 * @param oldTime The {@link TimeSignature} which the position was in
-	 * @return true if the position is in the same measure, false otherwise
-	 */
-	public boolean retimeMeasure(TimeSignature newTime, TimeSignature oldTime){
-		return this.getPosition().retimeMeasure(newTime, oldTime);
-	}
 
 	/**
 	 * Create a new version of this {@link TabSymbol} as using the given {@link Rhythm}.<br>
@@ -153,15 +84,6 @@ public abstract class TabSymbol implements Comparable<TabSymbol>, Copyable<TabSy
 	 * @return true if it uses rhythmic information, false otherwise
 	 */
 	public abstract boolean usesRhythm();
-	
-	/***/
-	@Override
-	public int compareTo(TabSymbol t){
-		double p1 = this.getPosition().getValue();
-		double p2 = t.getPosition().getValue();
-		if(p1 < p2) return -1;
-		return (p1 > p2) ? 1 : 0;
-	}
 
 	/***/
 	@Override
@@ -171,7 +93,6 @@ public abstract class TabSymbol implements Comparable<TabSymbol>, Copyable<TabSy
 		TabModifier m1 = this.getModifier();
 		TabModifier m2 = s.getModifier();
 		return	super.equals(obj) ||
-				this.getPosition().equals(s.getPosition()) &&
 				(m1 == null && m2 == null || m1.equals(m2));
 	}
 	

@@ -12,7 +12,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
-import music.NotePosition;
 import music.Pitch;
 import music.Rhythm;
 import music.TestTimeSignature;
@@ -25,7 +24,6 @@ public class TestTabNoteRhythm{
 	private TabNoteRhythm note;
 	private Pitch pitch;
 	private Rhythm rhythm;
-	private NotePosition pos;
 	private TabModifier mod;
 	
 	private Rhythm newRhythm;
@@ -39,32 +37,28 @@ public class TestTabNoteRhythm{
 		
 		pitch = new Pitch(3);
 		rhythm = new Rhythm(1, 2);
-		pos = new NotePosition(2);
 		mod = new TabModifier("[", "]");
-		note = new TabNoteRhythm(pitch, rhythm, pos, mod);
+		note = new TabNoteRhythm(pitch, rhythm, mod);
 		
-		noteNoMod = new TabNoteRhythm(pitch, rhythm, pos);
-		noteValues = new TabNoteRhythm(2, rhythm, 3);
+		noteNoMod = new TabNoteRhythm(pitch, rhythm);
+		noteValues = new TabNoteRhythm(2, rhythm);
 	}
 	
 	@Test
 	public void constructor(){
 		assertEquals(pitch, note.getPitch(), "Checking pitch initialized for full constructor");
-		assertEquals(pos, note.getPosition(), "Checking pos initialized for full constructor");
 		assertEquals(mod, note.getModifier(), "Checking modifier initialized for full constructor");
 		
 		assertEquals(pitch, noteNoMod.getPitch(), "Checking pitch initialized for no modifier constructor");
-		assertEquals(pos, noteNoMod.getPosition(), "Checking pos initialized for no modifier constructor");
 		assertEquals(new TabModifier(), noteNoMod.getModifier(), "Checking modifier initialized for no modifier constructor");
 		
 		assertEquals(2, noteValues.getPitch().getNote(), "Checking pitch initialized for values constructor");
-		assertEquals(3, noteValues.getPosition().getValue(), "Checking pos initialized for values constructor");
 		assertEquals(new TabModifier(), noteValues.getModifier(), "Checking modifier initialized for values constructor");
 		
 		assertThrows(IllegalArgumentException.class, new Executable(){
 			@Override
 			public void execute() throws Throwable{
-				new TabNoteRhythm(pitch, null, pos);
+				new TabNoteRhythm(pitch, null);
 			}
 		}, "Checking exception is thrown on null rhythm");
 	}
@@ -94,11 +88,9 @@ public class TestTabNoteRhythm{
 	public void removeRhythm(){
 		TabNote n = note.removeRhythm();
 		assertTrue("Checking pitch is equal", n.getPitch().equals(note.getPitch()));
-		assertTrue("Checking pos is equal", n.getPosition().equals(note.getPosition()));
 		assertTrue("Checking modifier is equal", n.getModifier().equals(note.getModifier()));
 		
 		assertFalse("Checking pitch is not the same object", n.getPitch() == note.getPitch());
-		assertFalse("Checking pos is not the same object", n.getPosition() == note.getPosition());
 		assertFalse("Checking modifier is not the same object", n.getModifier() == note.getModifier());
 	}
 	
@@ -136,17 +128,15 @@ public class TestTabNoteRhythm{
 	public void getSaveObjects(){
 		Saveable[] objs = note.getSaveObjects();
 		assertEquals(pitch, objs[0], "Checking pitch obtained");
-		assertEquals(pos, objs[1], "Checking position obtained");
-		assertEquals(rhythm, objs[2], "Checking rhythm obtained");
-		assertEquals(mod, objs[3], "Checking modifier obtained");
+		assertEquals(rhythm, objs[1], "Checking rhythm obtained");
+		assertEquals(mod, objs[2], "Checking modifier obtained");
 	}
 	
 	@Test
 	public void load(){
-		Scanner scan = new Scanner("4 \n2.3 \n3 2 \na\ns\nk");
+		Scanner scan = new Scanner("4 \n3 2 \na\ns\nk");
 		assertTrue("Checking load successful", note.load(scan));
 		assertEquals(4, note.getPitch().getNote(), "Checking pitch correctly loaded");
-		assertEquals(2.3, note.getPos(), "Checking position correctly loaded");
 		assertEquals(new Rhythm(3, 2), note.getRhythm(), "Checking rhythm correctly loaded");
 		assertEquals(new TabModifier("a", "s"), note.getModifier(), "Checking modifier correctly loaded");
 		
@@ -155,18 +145,17 @@ public class TestTabNoteRhythm{
 	
 	@Test
 	public void save(){
-		assertEquals("3 \n2.0 \n1 2 \n[\n]\n", UtilsTest.testSave(note), "Checking note saved correctly");
+		assertEquals("3 \n1 2 \n[\n]\n", UtilsTest.testSave(note), "Checking note saved correctly");
 		
 		note.setPitch(4);
-		note.setPos(2.3);
 		note.setRhythm(new Rhythm(3, 2));
 		note.setModifier(new TabModifier("a", "s"));
-		assertEquals("4 \n2.3 \n3 2 \na\ns\n", UtilsTest.testSave(note), "Checking note saved correctly");
+		assertEquals("4 \n3 2 \na\ns\n", UtilsTest.testSave(note), "Checking note saved correctly");
 	}
 	
 	@Test
 	public void equals(){
-		TabNoteRhythm n = new TabNoteRhythm(pitch, rhythm, pos, mod);
+		TabNoteRhythm n = new TabNoteRhythm(pitch, rhythm, mod);
 		assertFalse("Checking objects are not the same object", n == note);
 		assertTrue("Checking objects are equal", n.equals(note));
 		

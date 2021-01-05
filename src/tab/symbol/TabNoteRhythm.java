@@ -3,7 +3,6 @@ package tab.symbol;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
-import music.NotePosition;
 import music.Pitch;
 import music.Rhythm;
 import music.TimeSignature;
@@ -23,11 +22,10 @@ public class TabNoteRhythm extends TabPitch{
 	 * Create a new {@link TabNoteRhythm} using the given objects
 	 * @param pitch Initial value for {@link TabPitch#pitch}
 	 * @param rhythm Initial value for {@link #rhythm}
-	 * @param pos Initial value for {@link TabSymbol#pos}
 	 * @param modifier Initial value for {@link TabSymbol#modifier}
 	 */
-	public TabNoteRhythm(Pitch pitch, Rhythm rhythm, NotePosition pos, TabModifier modifier){
-		super(pitch, pos, modifier);
+	public TabNoteRhythm(Pitch pitch, Rhythm rhythm, TabModifier modifier){
+		super(pitch, modifier);
 		if(rhythm == null) throw new IllegalArgumentException("Rhythm cannot be null");
 		this.setRhythm(rhythm);
 	}
@@ -36,20 +34,18 @@ public class TabNoteRhythm extends TabPitch{
 	 * Create a new {@link TabNoteRhythm} using the given objects and no modifier
 	 * @param pitch Initial value for {@link TabPitch#pitch}
 	 * @param rhythm Initial value for {@link #rhythm}
-	 * @param pos Initial value for {@link TabSymbol#pos}
 	 */
-	public TabNoteRhythm(Pitch pitch, Rhythm rhythm, NotePosition pos){
-		this(pitch, rhythm, pos, new TabModifier());
+	public TabNoteRhythm(Pitch pitch, Rhythm rhythm){
+		this(pitch, rhythm, new TabModifier());
 	}
 
 	/**
 	 * Create a new {@link TabNoteRhythm} using the given values and no modifier
 	 * @param pitch Initial pitch value for {@link TabPitch#pitch}
 	 * @param rhythm Initial value for {@link #rhythm}
-	 * @param pos Initial position value for {@link TabSymbol#pos}
 	 */
-	public TabNoteRhythm(int pitch, Rhythm rhythm, int pos){
-		this(new Pitch(pitch), rhythm, new NotePosition(pos));
+	public TabNoteRhythm(int pitch, Rhythm rhythm){
+		this(new Pitch(pitch), rhythm);
 	}
 	
 	/***/
@@ -57,9 +53,8 @@ public class TabNoteRhythm extends TabPitch{
 	public TabNoteRhythm copy(){
 		Pitch p = ObjectUtils.copy(this.getPitch());
 		Rhythm r = ObjectUtils.copy(this.getRhythm());
-		NotePosition pos = ObjectUtils.copy(this.getPosition());
 		TabModifier mod = ObjectUtils.copy(this.getModifier());
-		return new TabNoteRhythm(p, r, pos, mod);
+		return new TabNoteRhythm(p, r, mod);
 	}
 	
 	/**
@@ -85,7 +80,7 @@ public class TabNoteRhythm extends TabPitch{
 	 */
 	@Override
 	public TabNote removeRhythm(){
-		return new TabNote(this.getPitch().copy(), this.getPosition().copy(), this.getModifier().copy());
+		return new TabNote(this.getPitch().copy(), this.getModifier().copy());
 	}
 
 	/***/
@@ -103,9 +98,7 @@ public class TabNoteRhythm extends TabPitch{
 	/**
 	 * Quantize this note's position, and also quantize its rhythm
 	 */
-	@Override
 	public void quantize(TimeSignature sig, int divisor){
-		super.quantize(sig, divisor);
 		this.setRhythm(sig.guessRhythmWholeNotes(this.getRhythm().getLength()));
 	}
 
@@ -114,7 +107,7 @@ public class TabNoteRhythm extends TabPitch{
 	 * @return The array of all objects
 	 */
 	public Saveable[] getSaveObjects(){
-		return new Saveable[]{this.getPitch(), this.getPosition(), this.getRhythm(), this.getModifier()};
+		return new Saveable[]{this.getPitch(), this.getRhythm(), this.getModifier()};
 	}
 	
 	/***/

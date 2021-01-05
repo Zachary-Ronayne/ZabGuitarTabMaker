@@ -10,7 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import appUtils.ZabAppSettings;
-import tab.TabTextExporter.IndexAndSymbol;
+import tab.TabTextExporter.IndexAndPos;
 import tab.symbol.TabNote;
 import util.testUtils.UtilsTest;
 
@@ -82,17 +82,17 @@ public class TestTabTextExporter{
 	
 	@Test
 	public void constructorIndexAndSymbol(){
-		TabNote note = new TabNote(1, 2);
-		IndexAndSymbol i = new IndexAndSymbol(note, 3);
-		assertEquals(note, i.symbol, "Checking symbol initialized");
+		TabPosition note = new TabPosition(new TabNote(1), 2);
+		IndexAndPos i = new IndexAndPos(note, 3);
+		assertEquals(note, i.pos, "Checking symbol initialized");
 		assertEquals(3, i.index, "Checking index initialized");
 	}
 	
 	@Test
 	public void compareToIndexAndSymbol(){
-		IndexAndSymbol i1 = new IndexAndSymbol(new TabNote(0, 0), 0);
-		IndexAndSymbol i2 = new IndexAndSymbol(new TabNote(0, 0.2), 1);
-		IndexAndSymbol i3 = new IndexAndSymbol(new TabNote(0, 0.2), 2);
+		IndexAndPos i1 = new IndexAndPos(new TabPosition(new TabNote(0), 0), 0);
+		IndexAndPos i2 = new IndexAndPos(new TabPosition(new TabNote(0), 0.2), 1);
+		IndexAndPos i3 = new IndexAndPos(new TabPosition(new TabNote(0), 0.2), 2);
 		assertTrue("Checking value less than 0", i1.compareTo(i2) < 0);
 		assertTrue("Checking value greater than 0", i2.compareTo(i1) > 0);
 		assertTrue("Checking value equal to 0", i2.compareTo(i3) == 0);

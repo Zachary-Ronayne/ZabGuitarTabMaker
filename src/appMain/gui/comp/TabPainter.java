@@ -14,11 +14,10 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
 
-import appMain.gui.comp.TabPainter.Selection;
 import appMain.gui.util.Camera;
 import tab.Tab;
+import tab.TabPosition;
 import tab.TabString;
-import tab.TabString.SymbolHolder;
 import tab.symbol.TabNote;
 import tab.symbol.TabSymbol;
 
@@ -61,7 +60,7 @@ public class TabPainter extends ZabPanel{
 	/** The {@link Tab} used for painting */
 	private Tab tab;
 	
-	/** A list of every user selected {@link TabSymbol} */
+	/** A list containing {@link Selection} objects for every user selected {@link TabPositiono} */
 	private ArrayList<Selection> selected;
 	
 	/** The tab number which will be applied to the selected symbols, null if not set */
@@ -166,35 +165,121 @@ public class TabPainter extends ZabPanel{
 	}
 	
 	/**
+	 * Check if the current {@link #selected} contains the given {@link TabPosition}
+	 * @param h The {@link TabPosition}
+	 * @return true if it is contained, false otherwise
+	 */
+	public boolean isSelected(TabPosition p){
+		for(Selection s : this.getSelected()){
+			if(s.getPos().equals(p)) return true;
+		}
+		return false;
+	}
+
+	/**
 	 * Get the {@link TabSymbol} in {@link #selected} at the given index
 	 * @param i The index
 	 * @return The {@link TabSymbol}, or null if it is out of bounds
 	 */
 	public TabSymbol selected(int i){
-		SymbolHolder h = this.selectedHolder(i);
-		if(h == null) return null;
-		return h.getSymbol();
+		TabPosition p = this.selectedPosition(i);
+		if(p == null) return null;
+		return p.getSymbol();
 	}
 	
 	/**
-	 * Get the {@link SymbolHolder} in {@link #selected} at the given index
+	 * Get the {@link TabPosition} in {@link #selected} at the given index
 	 * @param i The index
-	 * @return The {@link SymbolHolder}, or null if it is out of bounds
+	 * @return The {@link TabPosition}, or null if it is out of bounds
 	 */
-	public SymbolHolder selectedHolder(int i){
+	public TabPosition selectedPosition(int i){
 		if(i < 0 || i >= this.getSelected().size()) return null;
-		return this.getSelected().get(i).getHold();
+		return this.getSelected().get(i).getPos();
 	}
 	
 	/**
-	 * Unselect all but the specified {@link SymbolHolder}
-	 * @param h The {@link SymbolHolder} containing the {@link TabSymbol} to select
-	 * @param string The String which h is on
+	 * Select the given {@link TabPosition} on the given string. This does not unselect anything else. 
+	 * The selection only occurs if the note is not already selected, and the {@link TabPosition} is on the {@link TabString}
+	 * @param index index The index on the string of the {@link TabPosition} to select
+	 * @param string The {@link TabString} which to select a note on
+	 * @return true if the note was selected, false otherwise
 	 */
-	public void selectOne(SymbolHolder h, TabString string){
+	public boolean select(TabPosition pos, TabString string){
+		if(this.isSelected(pos) || !string.contains(pos)) return false;
+		
+		this.getSelected().add(new Selection(pos, string));
+		return true;
+	}
+	
+	/**
+	 * Select the {@link TabPosition} on the given string at the given index. This does not unselect anything else. 
+	 * The selection only occurs if the note is not already selected
+	 * @param index index The index on the string of the {@link TabPosition} to select
+	 * @param string The {@link TabString} which to select a note on
+	 * @return true if the note was selected, false otherwise
+	 */
+	public boolean select(int index, TabString string){
+		TabPosition p = string.get(index);
+		return this.select(p, string);
+	}
+	
+	/**
+	 * Select the given {@link TabPosition} on the string of the given index. This does not unselect anything else. 
+	 * The selection only occurs if the note is not already selected
+	 * @param p The {@link TabPosition} to select
+	 * @param string The {@link TabString} which to select a note on
+	 * @return true if the note was selected, false otherwise
+	 */
+	public boolean select(TabPosition p, int string){
+		TabString s = this.getTab().getStrings().get(string);
+		return this.select(p, s);
+	}
+	
+	/**
+	 * Select the {@link TabPosition} on the given string index at the given index. This does not unselect anything else. 
+	 * The selection only occurs if the note is not already selected
+	 * @param index index The index on the string of the {@link TabPosition} to select
+	 * @param string The index of the string to select a note a note
+	 * @return true if the note was selected, false otherwise
+	 */
+	public boolean select(int index, int string){
+		TabString s = this.getTab().getStrings().get(string);
+		TabPosition p = s.get(index);
+		return this.select(p, s);
+	}
+	
+	/**
+	 * Unselect all but the specified {@link TabPosition}
+	 * @param h The {@link TabPosition} containing the {@link TabSymbol} to select
+	 * @param string The String which h is on
+	 * @return true if the note was selected, false otherwise. Regardless of the return value, the selection is cleared
+	 */
+	public boolean selectOne(TabPosition p, TabString string){
 		this.clearSelection();
-		this.getSelected().add(new Selection(h, string));
-		this.selectedNewTabNum = null;
+		return this.select(p, string);
+	}
+	
+	/**
+	 * Select only one note near the given position, this also unselects all other notes.<br>
+	 * Does nothing if no valid note can be found
+	 * @param mX The x coordinate, usually a mouse position
+	 * @param mY The y coordinate, usually a mouse position
+	 * @return true if the selection took place, false otherwise
+	 */
+	public boolean selectNote(double mX, double mY){
+		double x = tab.getTimeSignature().quantize(xToTabPos(mX), 8); // TODO make this a setting
+		int y = pixelYToStringNum(mY);
+		if(x < 0 || y < 0) return false;
+		
+		// TODO make a more efficient way of searching for a note, considering they are sorted
+		//	i.e. binary search
+		TabString str = tab.getStrings().get(y);
+		for(TabPosition p : str){
+			if(p.getPos() == x){
+				return selectOne(p, str);
+			}
+		}
+		return false;
 	}
 	
 	/**
@@ -203,8 +288,8 @@ public class TabPainter extends ZabPanel{
 	public void selectAllNotes(){
 		this.clearSelection();
 		for(TabString s : this.getTab().getStrings()){
-			for(SymbolHolder h : s){
-				this.getSelected().add(new Selection(h, s));
+			for(TabPosition p : s){
+				this.select(p, s);
 			}
 		}
 	}
@@ -222,30 +307,9 @@ public class TabPainter extends ZabPanel{
 	 */
 	public void removeSelectedNotes(){
 		for(Selection s : this.getSelected()){
-			s.getString().remove(s.getHold()); // TODO this probably isn't safe
+			s.getString().remove(s.getPos());
 		}
 		clearSelection();
-	}
-	
-	/**
-	 * Check if the current {@link #selected} contains the given {@link SymbolHolder}
-	 * @param h The {@link SymbolHolder}
-	 * @return true if it is contained, false otherwise
-	 */
-	public boolean isSelected(SymbolHolder h){
-		return this.isSelected(h.getSymbol());
-	}
-
-	/**
-	 * Check if the current {@link #selected} contains the given {@link TabSymbol}
-	 * @param t The {@link TabSymbol}
-	 * @return true if it is contained, false otherwise
-	 */
-	public boolean isSelected(TabSymbol t){
-		for(Selection s : this.getSelected()){
-			if(s.getHold().getSymbol().equals(t)) return true;
-		}
-		return false;
 	}
 	
 	/**
@@ -257,7 +321,8 @@ public class TabPainter extends ZabPanel{
 	
 	/**
 	 * Add the given numerical character to the selected tab number.<br>
-	 * Only contributes to the number when a selection is made
+	 * Only contributes to the number when a selection is made.<br>
+	 * Automatically resets the number to null if it goes beyond the range
 	 * @param num The number, does nothing if the character is not a minus sign or a number
 	 * @return The new value of selectedNewTabNum
 	 */
@@ -281,22 +346,12 @@ public class TabPainter extends ZabPanel{
 		}
 		this.selectedNewTabNum = n;
 		
-		updateSelectedNewTabNum();
-		
-		return this.selectedNewTabNum;
-	}
-	
-	/**
-	 * Set everything in {@link #selected} to the current selectedTabNum. 
-	 * Automatically resets the number to null if it goes beyond the range
-	 */
-	public void updateSelectedNewTabNum(){
-		Integer n = this.getSelectedNewTabNum();
+		// Update the number display
 		if(n != null){
 			for(Selection sel : selected){
 				// Unpack selection
-				SymbolHolder h = sel.getHold();
-				TabSymbol t = h.getSymbol();
+				TabPosition p = sel.getPos();
+				TabSymbol t = p.getSymbol();
 				TabString s = sel.getString();
 				
 				// Ensure the note stays within only 2 digits
@@ -306,12 +361,37 @@ public class TabPainter extends ZabPanel{
 				}
 				
 				// Set the note
-				h.setSymbol(new TabNote(s.createPitch(n), t.getPosition().copy(), t.getModifier().copy()));
+				p.setSymbol(new TabNote(s.createPitch(n), t.getModifier().copy()));
 			}
 		}
 		this.repaint();
+		
+		return this.selectedNewTabNum;
 	}
-	
+
+	/**
+	 * Place a note based on the given coordinates in pixel space.<br>
+	 * Can do nothing if the coordinates aren't near the tab, or if the note cannot be placed
+	 * @param mX The x coordinate, usually a mouse position
+	 * @param mY The y coordinate, usually a mouse position
+	 * @param fret The fret number to place
+	 * @return true if the note was placed, false otherwise
+	 */
+	public boolean placeNote(double mX, double mY, int fret){
+		double x = xToTabPos(mX);
+		int y = pixelYToStringNum(mY);
+		if(x < 0 || y < 0) return false;
+		TabPosition p = tab.placeQuantizedNote(y, fret, x);
+		// Only add and select the note if it was placed
+		
+		boolean placed = p != null;
+		if(placed){
+			this.clearSelection();
+			this.selected.add(new Selection(p, tab.getStrings().get(y)));
+		}
+		return placed;
+	}
+
 	/**
 	 * Get the {@link Camera} this {@link TabPainter} uses for rendering
 	 * @return
@@ -512,20 +592,20 @@ public class TabPainter extends ZabPanel{
 			cam.drawScaleString(str, labelX - g.getFontMetrics().stringWidth(str), y + 8);
 			
 			// Draw symbols
-			for(SymbolHolder h : s){
+			for(TabPosition p : s){
 				// Get the symbol as a string
-				TabSymbol t = h.getSymbol();
+				TabSymbol t = p.getSymbol();
 				str = t.getSymbol(s);
 				
 				// Finding the size of the space the symbol will take up
 				double sW = g.getFontMetrics().stringWidth(str);
 				double sH = g.getFont().getSize();
 				// Draw the symbol centered at the x and y position
-				double sX = this.tabPosToCamX(t.getPos()) - sW * 0.5;
+				double sX = this.tabPosToCamX(p.getPos()) - sW * 0.5;
 				double sY = y + sH * 0.5;
 				
 				// If the symbol is selected, draw a highlight under it
-				if(this.isSelected(h)){ // TODO
+				if(this.isSelected(p)){
 					g.setColor(HIGHLIGHT_COLOR);
 					cam.fillRect(sX, sY - sH, sW, sH);
 					g.setColor(SYMBOL_COLOR);
@@ -543,57 +623,15 @@ public class TabPainter extends ZabPanel{
 	}
 	
 	/**
-	 * Select only one note near the given position, this also unselects all other notes.<br>
-	 * Does nothing if no valid note can be found
-	 * @param mX The x coordinate, usually a mouse position
-	 * @param mY The y coordinate, usually a mouse position
-	 */
-	public void selectNote(double mX, double mY){
-		double x = tab.getTimeSignature().quantize(xToTabPos(mX), 8); // TODO make this a setting
-		int y = pixelYToStringNum(mY);
-		if(x < 0 || y < 0) return;
-		
-		// TODO make a more efficient way of searching for a note, considering they are sorted
-		//	i.e. binary search
-		TabString str = tab.getStrings().get(y);
-		for(SymbolHolder h : str){
-			TabSymbol t = h.getSymbol();
-			if(t.getPos() == x){
-				selectOne(h, str);
-				break;
-			}
-		}
-	}
-	
-	/**
-	 * Place a note based on the given coordinates in pixel space.<br>
-	 * Can do nothing if the coordinates aren't near the tab, or if the note cannot be placed
-	 * @param mX The x coordinate, usually a mouse position
-	 * @param mY The y coordinate, usually a mouse position
-	 * @param fret The fret number to place
-	 */
-	public void placeNote(double mX, double mY, int fret){
-		double x = xToTabPos(mX);
-		int y = pixelYToStringNum(mY);
-		if(x < 0 || y < 0) return;
-		SymbolHolder h = tab.placeQuantizedNote(y, fret, x);
-		// Only add and select the note if it was placed
-		if(h != null){
-			this.clearSelection();
-			this.selected.add(new Selection(h, tab.getStrings().get(y)));
-		}
-	}
-	
-	/**
 	 * A class used by {@link TabPainter} to handle mouse input on the graphics based editor
 	 * @author zrona
 	 */
 	public class EditorMouse extends MouseAdapter{
 		
 		/**
-		 * When the left mouse button is pressed, place a note on the tab, if the mouse is close enough.<br>
+		 * When the left mouse button is pressed, attempt to select a note, if possible.<br>
 		 * When the middle mouse button is pressed, it sets an anchor point.<br>
-		 * When the right mouse button is pressed, attempt to select a note, if possible.<br>
+		 * When the right mouse button is pressed, place a note on the tab, if the mouse is close enough.<br>
 		 * Regardless of what button is pressed, give focus to the window when the mouse clicks
 		 */
 		@Override
@@ -602,9 +640,9 @@ public class TabPainter extends ZabPanel{
 			double x = e.getX();
 			double y = e.getY();
 			switch(e.getButton()){
-				case MouseEvent.BUTTON1: placeNote(x, y, 0); break;
+				case MouseEvent.BUTTON1: selectNote(x, y); break;
 				case MouseEvent.BUTTON2: cam.setAnchor(x, y); break;
-				case MouseEvent.BUTTON3: selectNote(x, y); break;
+				case MouseEvent.BUTTON3: placeNote(x, y, 0); break;
 			}
 
 			requestFocusInWindow();
@@ -647,10 +685,10 @@ public class TabPainter extends ZabPanel{
 		@Override
 		public void mouseWheelMoved(MouseWheelEvent e){
 			Camera cam = getCamera();
-			double factor = -0.1;
-			if(e.isShiftDown()) factor *= 2;
-			if(e.isAltDown()) factor *= 2;
-			if(e.isControlDown()) factor *= 2;
+			double factor = -0.1; // TODO make this a setting, both for the value, and inverted or not
+			if(e.isShiftDown()) factor *= 2; // TODO make this a setting
+			if(e.isAltDown()) factor *= 2; // TODO make this a setting
+			if(e.isControlDown()) factor *= 2; // TODO make this a setting
 			cam.zoomIn(e.getX(), e.getY(), e.getWheelRotation() * factor);
 			repaint();
 		}
@@ -664,7 +702,7 @@ public class TabPainter extends ZabPanel{
 		@Override
 		public void keyPressed(KeyEvent e){
 			switch(e.getKeyCode()){
-				case KeyEvent.VK_R: getTab().clearNotes(); break;
+				case KeyEvent.VK_R: if(e.isControlDown()) getTab().clearNotes(); break;
 				case KeyEvent.VK_D: if(e.isControlDown()) removeSelectedNotes(); break;
 				case KeyEvent.VK_A: if(e.isControlDown()) selectAllNotes(); break;
 				default: appendSelectedTabNum(e.getKeyChar()); break;
@@ -674,12 +712,12 @@ public class TabPainter extends ZabPanel{
 	}
 	
 	/**
-	 * A helper object used to track an individually selected symbol with both its symbol holder and held string
+	 * A helper object used to track an individually selected symbol with both its {@link TabPosition} and held string
 	 * @author zrona
 	 */
 	public static class Selection{
-		/** The {@link SymbolHolder} of this selection */
-		private SymbolHolder hold;
+		/** The {@link TabPosition} of this selection */
+		private TabPosition pos;
 		/** The {@link TabString} which {@link #hold} is on */
 		private TabString string;
 		
@@ -688,19 +726,19 @@ public class TabPainter extends ZabPanel{
 		 * @param hold
 		 * @param string
 		 */
-		public Selection(SymbolHolder hold, TabString string){
+		public Selection(TabPosition pos, TabString string){
 			super();
-			this.hold = hold;
+			this.pos = pos;
 			this.string = string;
 		}
 		
-		/** @return See {@link #hold} */
-		public SymbolHolder getHold(){
-			return hold;
+		/** @return See {@link #pos} */
+		public TabPosition getPos(){
+			return pos;
 		}
-		/** @param hold See {@link #hold} */
-		public void setHold(SymbolHolder hold){
-			this.hold = hold;
+		/** @param pos See {@link #pos} */
+		public void setPos(TabPosition pos){
+			this.pos = pos;
 		}
 		/** @return See {@link #string} */
 		public TabString getString(){
