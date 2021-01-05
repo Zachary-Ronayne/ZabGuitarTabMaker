@@ -14,14 +14,14 @@ import org.junit.jupiter.api.Test;
 
 public class TestSetting{
 
-	private TestT settingNoDefault;
-	private TestT setting;
+	private TestSettingObject settingNoDefault;
+	private TestSettingObject setting;
 	
-	class TestT extends Setting<String>{
-		public TestT(String value){
+	class TestSettingObject extends Setting<String>{
+		public TestSettingObject(String value){
 			super(value);
 		}
-		public TestT(String value, String defaultValue){
+		public TestSettingObject(String value, String defaultValue){
 			super(value, defaultValue);
 		}
 		@Override
@@ -38,8 +38,8 @@ public class TestSetting{
 	
 	@BeforeEach
 	public void setup(){
-		settingNoDefault = new TestT("a");
-		setting = new TestT("b", "c");
+		settingNoDefault = new TestSettingObject("a");
+		setting = new TestSettingObject("b", "c");
 	}
 	
 	@Test
@@ -100,7 +100,7 @@ public class TestSetting{
 
 	@Test
 	public void equals(){
-		TestT newSetting = new TestT("a");
+		TestSettingObject newSetting = new TestSettingObject("a");
 		assertTrue("Checking two setting are equal", settingNoDefault.equals(newSetting));
 		assertFalse("Checking two setting are not the same object", settingNoDefault == newSetting);
 		
@@ -112,6 +112,11 @@ public class TestSetting{
 		
 		newSetting.setDefaultValue("b");
 		assertFalse("Checking two setting are not equal with different default values", settingNoDefault.equals(newSetting));
+	}
+	
+	@Test
+	public void testToString(){
+		assertEquals("[Setting, Type: String, value: b, default: c]", setting.toString(), "Checking correct string");
 	}
 	
 	@AfterEach

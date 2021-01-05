@@ -209,4 +209,17 @@ public class TabLabel implements Saveable{
 		return Saveable.save(writer, this.getPosition());
 	}
 	
+	/***/
+	@Override
+	public String toString(){
+		StringBuilder b = new StringBuilder("[TabLabel, position: ");
+		b.append(this.getPosition());
+		b.append(", length: ");
+		b.append(this.getLength());
+		b.append(", offset: ");
+		b.append(this.getOffset());
+		b.append("]");
+		return b.toString();
+	}
+	
 }

@@ -71,4 +71,14 @@ public abstract class TabPitch extends TabSymbol{
 				this.getPitch().equals(p.getPitch());
 	}
 	
+	/***/
+	@Override
+	public String toString(){
+		StringBuilder b = new StringBuilder();
+		b.append(super.toString());
+		b.append(", ");
+		b.append(this.getPitch());
+		return b.toString();
+	}
+	
 }

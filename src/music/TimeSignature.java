@@ -81,10 +81,11 @@ public class TimeSignature implements Copyable<TimeSignature>, Saveable{
 	 * @return The symbol
 	 */
 	public String symbol(){
-		String s = String.valueOf(this.getUpper());
-		s = s.concat("/");
-		s = s.concat(String.valueOf(this.getLower()));
-		return s;
+		StringBuilder b = new StringBuilder();
+		b.append(this.getUpper());
+		b.append("/");
+		b.append(this.getLower());
+		return b.toString();
 	}
 	
 	/**
@@ -223,6 +224,15 @@ public class TimeSignature implements Copyable<TimeSignature>, Saveable{
 		return	super.equals(obj) ||
 				this.getUpper() == t.getUpper() &&
 				this.getLower() == t.getLower();
+	}
+	
+	/***/
+	@Override
+	public String toString(){
+		StringBuilder b = new StringBuilder("[TimeSignature: ");
+		b.append(this.symbol());
+		b.append("]");
+		return b.toString();
 	}
 	
 }

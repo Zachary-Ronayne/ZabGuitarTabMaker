@@ -268,6 +268,11 @@ public class TestTimeSignature{
 		assertFalse("Checking time signatures with different lower are not equal", five8.equals(five4));
 	}
 	
+	@Test
+	public void testToString(){
+		assertEquals("[TimeSignature: 5/8]", five8.toString(), "Checking correct string");
+	}
+	
 	@AfterEach
 	public void end(){}
 	

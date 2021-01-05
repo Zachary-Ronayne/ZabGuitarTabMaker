@@ -145,6 +145,11 @@ public class TestNotePosition{
 		assertFalse("Checking objects are not equal", p.equals(pos));
 	}
 	
+	@Test
+	public void testToString(){
+		assertEquals("[NotePosition, position: 3.0]", pos.toString(), "Checking correct string");
+	}
+	
 	@AfterEach
 	public void end(){}
 	

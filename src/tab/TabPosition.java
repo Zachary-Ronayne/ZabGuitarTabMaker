@@ -175,5 +175,16 @@ public class TabPosition implements Comparable<TabPosition>, Copyable<TabPositio
 		// Load the symbol and position
 		return Saveable.saveMultiple(writer, getSaveObjects());
 	}
+	
+	/***/
+	@Override
+	public String toString(){
+		StringBuilder b = new StringBuilder("[TabPosition, ");
+		b.append(this.getSymbol());
+		b.append(", ");
+		b.append(this.getPosition());
+		b.append("]");
+		return b.toString();
+	}
 
 }

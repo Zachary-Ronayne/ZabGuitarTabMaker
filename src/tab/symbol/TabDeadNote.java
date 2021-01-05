@@ -67,5 +67,11 @@ public class TabDeadNote extends TabSymbol{
 		// Save the position and modifier
 		return Saveable.save(writer, this.getModifier());
 	}
+	
+	/***/
+	@Override
+	public String toString(){
+		return "[TabDeadNote, X]";
+	}
 
 }

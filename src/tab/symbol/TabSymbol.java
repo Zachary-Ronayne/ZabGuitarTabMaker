@@ -1,5 +1,6 @@
 package tab.symbol;
 
+import music.Pitch;
 import music.Rhythm;
 import tab.Tab;
 import tab.TabString;
@@ -94,6 +95,16 @@ public abstract class TabSymbol implements Copyable<TabSymbol>, Saveable{
 		TabModifier m2 = s.getModifier();
 		return	super.equals(obj) ||
 				(m1 == null && m2 == null || m1.equals(m2));
+	}
+	
+	/***/
+	@Override
+	public String toString(){
+		StringBuilder b = new StringBuilder("[On C4 string, note: \"");
+		b.append(this.getModifiedSymbol(new TabString(new Pitch(0))));
+		b.append("\"], ");
+		b.append(this.getModifier());
+		return b.toString();
 	}
 	
 }

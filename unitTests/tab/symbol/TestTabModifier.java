@@ -109,6 +109,11 @@ public class TestTabModifier{
 		assertFalse("Checking objects are not equal", m.equals(mod));
 	}
 	
+	@Test
+	public void testToString(){
+		assertEquals("[TabModifier: \"(\" \")\"]", mod.toString(), "Checking correct string");
+	}
+	
 	@AfterEach
 	public void end(){}
 	

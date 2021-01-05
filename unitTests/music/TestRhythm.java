@@ -150,6 +150,12 @@ public class TestRhythm{
 		assertFalse("Checking objects are not equal", r.equals(half));
 	}
 	
+	@Test
+	public void testToString(){
+		assertEquals("[Rhythm: 3 2 notes]", threeHalf.toString(), "Checking correct string");
+	}
+	
+	
 	@AfterEach
 	public void end(){}
 	

@@ -44,6 +44,10 @@ public class TestTabSymbol{
 		public boolean load(Scanner reader){return false;}
 		@Override
 		public boolean save(PrintWriter writer){return false;}
+		@Override
+		public String toString(){
+			return "[Test, " + super.toString() + "]";
+		}
 	}
 	
 	@BeforeEach
@@ -100,6 +104,11 @@ public class TestTabSymbol{
 		assertTrue("Checking objects are equal", s.equals(symbol));
 		s.setModifier(new TabModifier("a", "b"));
 		assertFalse("Checking objects are not equal", s.equals(symbol));
+	}
+
+	@Test
+	public void testToString(){
+		assertEquals("[Test, [On C4 string, note: \"[A]\"], [TabModifier: \"[\" \"]\"]]", symbol.toString(), "Checking correct string");
 	}
 	
 	@AfterEach

@@ -103,5 +103,14 @@ public class TabNote extends TabPitch{
 		// Save the pitch, position, and modifier
 		return Saveable.saveMultiple(writer, this.getSaveObjects());
 	}
+	
+	/***/
+	@Override
+	public String toString(){
+		StringBuilder b = new StringBuilder("[TabNote, ");
+		b.append(super.toString());
+		b.append("]");
+		return b.toString();
+	}
 
 }

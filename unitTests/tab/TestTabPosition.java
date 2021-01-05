@@ -201,6 +201,19 @@ public class TestTabPosition{
 				+ "",
 				UtilsTest.testSave(note), "Checking save successful");
 	}
+
+	@Test
+	public void testToString(){
+		assertEquals(""
+				+ "[TabPosition, "
+					+ "[TabNote, "
+						+ "[On C4 string, note: \"2\"], "
+						+ "[TabModifier: \"\" \"\"], "
+						+ "[Pitch: D4]"
+					+ "], "
+					+ "[NotePosition, position: 3.0]"
+				+ "]", note.toString(), "Checking correct string");
+	}
 	
 	@AfterEach
 	public void end(){}

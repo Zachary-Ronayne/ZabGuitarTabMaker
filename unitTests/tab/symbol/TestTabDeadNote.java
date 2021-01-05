@@ -81,6 +81,11 @@ public class TestTabDeadNote{
 		assertEquals("{ {\n} }\n", UtilsTest.testSave(note), "Checking note saved correctly");
 	}
 	
+	@Test
+	public void testToString(){
+		assertEquals("[TabDeadNote, X]", note.toString(), "Checking correct string");
+	}
+	
 	@AfterEach
 	public void end(){}
 	

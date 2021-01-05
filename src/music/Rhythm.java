@@ -127,4 +127,16 @@ public class Rhythm implements Copyable<Rhythm>, Saveable{
 				this.getDuration() == r.getDuration() &&
 				this.getUnit() == r.getUnit();
 	}
+	
+	/***/
+	@Override
+	public String toString(){
+		StringBuilder b = new StringBuilder("[Rhythm: ");
+		b.append(this.getDuration());
+		b.append(" ");
+		b.append(this.getUnit());
+		b.append(" notes]");
+		return b.toString();
+	}
+	
 }

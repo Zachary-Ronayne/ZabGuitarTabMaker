@@ -15,18 +15,18 @@ import util.testUtils.UtilsTest;
 
 public class TestSettings{
 
-	private TestT settings;
-	private TestT newSettings;
+	private TestSettingsObject settings;
+	private TestSettingsObject newSettings;
 	
-	private class TestT extends Settings{}
+	private class TestSettingsObject extends Settings{}
 	
 	@BeforeEach
 	public void setup(){
-		settings = new TestT();
+		settings = new TestSettingsObject();
 		settings.addString("set a");
 		settings.addString("set b");
 		
-		newSettings = new TestT();
+		newSettings = new TestSettingsObject();
 		newSettings.addString("set a");
 		newSettings.addString("set b");
 	}
@@ -90,6 +90,18 @@ public class TestSettings{
 		
 		newSettings.getAll().remove(0);
 		assertFalse("Checking settings with differing sizes are not equal", settings.equals(newSettings));
+	}
+
+	@Test
+	public void testToString(){
+		assertEquals(""
+				+ "[Settings, "
+					+ "values: ["
+						+ "[Setting, Type: String, value: set a, default: set a], "
+						+ "[Setting, Type: String, value: set b, default: set b]"
+					+ "]"
+				+ "]", 
+				settings.toString(), "Checking correct string");
 	}
 	
 	@AfterEach

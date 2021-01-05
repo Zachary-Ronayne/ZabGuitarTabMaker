@@ -107,4 +107,17 @@ public abstract class Settings implements Saveable{
 		return true;
 	}
 	
+	/***/
+	@Override
+	public String toString(){
+		StringBuilder b = new StringBuilder("[Settings, values: [");
+		Setting<?> last = this.getAll().get(this.getAll().size() - 1);
+		for(Setting<?> s : this.getAll()){
+			b.append(s);
+			if(last != s) b.append(", ");
+		}
+		b.append("]]");
+		return b.toString();
+	}
+	
 }

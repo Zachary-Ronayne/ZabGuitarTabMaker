@@ -364,4 +364,21 @@ public class Tab implements Copyable<Tab>, Saveable{
 				this.usesRhythm() == t.usesRhythm();
 	}
 	
+	/***/
+	@Override
+	public String toString(){
+		StringBuilder b = new StringBuilder("[Tab, ");
+		b.append(this.getTimeSignature());
+		b.append(", usesRhythm: ");
+		b.append(this.usesRhythm());
+		b.append(", [Strings: ");
+		TabString last = this.getStrings().get(this.getStrings().size() - 1);
+		for(TabString s : this.getStrings()){
+			b.append(s);
+			if(last != s) b.append(", ");
+		}
+		b.append("]]");
+		return b.toString();
+	}
+	
 }

@@ -132,4 +132,11 @@ public class TabNoteRhythm extends TabPitch{
 		return	super.equals(obj) &&
 				this.getRhythm().equals(n.getRhythm());
 	}
+	
+	/***/
+	@Override
+	public String toString(){
+		return "";
+	}
+	
 }

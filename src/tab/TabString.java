@@ -280,4 +280,19 @@ public class TabString extends ArrayList<TabPosition> implements Copyable<TabStr
 				this.getRootPitch().equals(s.getRootPitch());
 	}
 	
+	/***/
+	@Override
+	public String toString(){
+		StringBuilder b = new StringBuilder("[TabString, rootPitch: ");
+		b.append(this.getRootPitch());
+		b.append(", [Notes: ");
+		TabPosition last = this.get(this.size() - 1);
+		for(TabPosition p : this){
+			b.append(p);
+			if(last != p) b.append(", ");
+		}
+		b.append("]]");
+		return b.toString();
+	}
+
 }

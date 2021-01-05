@@ -104,6 +104,11 @@ public class TestPitch{
 		assertFalse("Checking objects are not equal", c.equals(c4));
 	}
 	
+	@Test
+	public void testToString(){
+		assertEquals("[Pitch: C4]", c4.toString(), "Checking correct string");
+	}
+	
 	@AfterEach
 	public void end(){}
 	

@@ -134,4 +134,17 @@ public abstract class Setting<T> implements Saveable{
 				this.getDefaultValue().equals(s.getDefaultValue());
 	}
 	
+	/***/
+	@Override
+	public String toString(){
+		StringBuilder b = new StringBuilder("[Setting, Type: ");
+		b.append(this.getValue().getClass().getSimpleName());
+		b.append(", value: ");
+		b.append(this.getValue());
+		b.append(", default: ");
+		b.append(this.getDefaultValue());
+		b.append("]");
+		return b.toString();
+	}
+	
 }

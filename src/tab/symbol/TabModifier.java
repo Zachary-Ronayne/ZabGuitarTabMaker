@@ -113,4 +113,16 @@ public class TabModifier implements Copyable<TabModifier>, Saveable{
 				this.getBefore().equals(m.getBefore()) &&
 				this.getAfter().equals(m.getAfter());
 	}
+	
+	/***/
+	@Override
+	public String toString(){
+		StringBuilder b = new StringBuilder("[TabModifier: \"");
+		b.append(this.getBefore());
+		b.append("\" \"");
+		b.append(this.getAfter());
+		b.append("\"]");
+		return b.toString();
+	}
+	
 }

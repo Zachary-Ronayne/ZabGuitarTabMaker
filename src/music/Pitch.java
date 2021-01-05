@@ -117,4 +117,13 @@ public class Pitch implements Copyable<Pitch>, Saveable{
 				this.getNote() == p.getNote();
 	}
 	
+	/***/
+	@Override
+	public String toString(){
+		StringBuilder b = new StringBuilder("[Pitch: ");
+		b.append(Music.intToNote(this.getNote(), false));
+		b.append("]");
+		return b.toString();
+	}
+	
 }

@@ -46,6 +46,10 @@ public class TestTabPitch{
 		public boolean load(Scanner reader){return false;}
 		@Override
 		public boolean save(PrintWriter writer){return false;}
+		@Override
+		public String toString(){
+			return "[Test, " + super.toString() + "]";
+		}
 	}
 	
 	@BeforeEach
@@ -110,6 +114,14 @@ public class TestTabPitch{
 		
 		n.setPitch(new Pitch(0));
 		assertFalse("Checking objects are not equal", n.equals(note));
+	}
+
+	@Test
+	public void testToString(){
+		assertEquals(""
+				+ "[Test, [On C4 string, note: \"{4}\"], "
+				+ "[TabModifier: \"{\" \"}\"], "
+				+ "[Pitch: E4]]", note.toString(), "Checking correct string");
 	}
 	
 	@AfterEach

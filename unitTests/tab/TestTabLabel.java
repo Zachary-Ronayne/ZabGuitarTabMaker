@@ -188,6 +188,16 @@ public class TestTabLabel{
 		assertEquals("a label\n5.0\n-2.0\n1.0 \n", UtilsTest.testSave(fullLabel), "Checking save successful");
 		assertEquals("label b\n0.0\n0.0\n1.0 \n", UtilsTest.testSave(label), "Checking save successful");
 	}
+
+	@Test
+	public void testToString(){
+		assertEquals(""
+				+ "[TabLabel, "
+					+ "position: [NotePosition, position: 1.0], "
+					+ "length: 5.0, "
+					+ "offset: -2.0"
+				+ "]", fullLabel.toString(), "Checking correct string");
+	}
 	
 	@AfterEach
 	public void end(){}

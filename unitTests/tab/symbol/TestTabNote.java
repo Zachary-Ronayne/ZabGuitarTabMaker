@@ -122,6 +122,15 @@ public class TestTabNote{
 		assertEquals("3 \nw\ne\n", UtilsTest.testSave(note), "Checking note saved correctly");
 	}
 	
+	@Test
+	public void testToString(){
+		assertEquals(""
+				+ "[TabNote, "
+				+ "[On C4 string, note: \"(2)\"], "
+				+ "[TabModifier: \"(\" \")\"], "
+				+ "[Pitch: D4]]", note.toString(), "Checking correct string");
+	}
+	
 	@AfterEach
 	public void end(){}
 	

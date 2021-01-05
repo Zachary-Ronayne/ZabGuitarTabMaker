@@ -142,4 +142,13 @@ public class NotePosition implements Copyable<NotePosition>, Comparable<NotePosi
 				this.getValue() == p.getValue();
 	}
 	
+	/***/
+	@Override
+	public String toString(){
+		StringBuilder b = new StringBuilder("[NotePosition, position: ");
+		b.append(this.getValue());
+		b.append("]");
+		return b.toString();
+	}
+	
 }

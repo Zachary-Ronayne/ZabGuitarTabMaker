@@ -499,6 +499,34 @@ public class TestTab{
 				+ "2.375 \n",
 				UtilsTest.testSave(tab), "Checking save with multiple TabStrings with notes");
 	}
+
+	@Test
+	public void testToString(){
+		assertEquals(""
+			+ "[Tab, "
+				+ "[TimeSignature: 4/4], "
+				+ "usesRhythm: false, "
+				+ "[Strings: "
+					+ "[TabString, "
+						+ "rootPitch: [Pitch: E3], "
+						+ "[Notes: "
+							+ "[TabPosition, [TabNote, [On C4 string, note: \"-8\"], [TabModifier: \"\" \"\"], [Pitch: E3]], [NotePosition, position: 0.0]], "
+							+ "[TabPosition, [TabNote, [On C4 string, note: \"-8\"], [TabModifier: \"\" \"\"], [Pitch: E3]], [NotePosition, position: 1.0]], "
+							+ "[TabPosition, [TabNote, [On C4 string, note: \"-8\"], [TabModifier: \"\" \"\"], [Pitch: E3]], [NotePosition, position: 1.5]]"
+						+ "]"
+					+ "], "
+					+ "[TabString, "
+						+ "rootPitch: [Pitch: E2], "
+						+ "[Notes: "
+							+ "[TabPosition, [TabNote, [On C4 string, note: \"-20\"], [TabModifier: \"\" \"\"], [Pitch: E2]], [NotePosition, position: 2.0]], "
+							+ "[TabPosition, [TabNote, [On C4 string, note: \"-20\"], [TabModifier: \"\" \"\"], [Pitch: E2]], [NotePosition, position: 2.25]], "
+							+ "[TabPosition, [TabNote, [On C4 string, note: \"-20\"], [TabModifier: \"\" \"\"], [Pitch: E2]], [NotePosition, position: 2.375]]"
+						+ "]"
+					+ "]"
+				+ "]"
+			+ "]",
+			tabForRhythms.toString(), "Checking correct string");
+	}
 	
 	@AfterEach
 	public void end(){}
