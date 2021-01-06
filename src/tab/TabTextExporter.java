@@ -143,13 +143,10 @@ public final class TabTextExporter{
 	/**
 	 * Export a {@link Tab} to a file
 	 * @param tab The {@link Tab} to export
-	 * @param filePath The path at which to export the file
-	 * @param name The name of the file, no extension
+	 * @param file The {@link File} to export the {@link Tab} to
 	 * @return true if the export was successful, false otherwise
 	 */
-	public static boolean exportToFile(Tab tab, String filePath, String name){
-		File file = new File(FileUtils.makeFileName(filePath, name, "txt"));
-		
+	public static boolean exportToFile(Tab tab, File file){
 		boolean success = true;
 		try{
 			// Ensure the parent path exists
@@ -176,6 +173,18 @@ public final class TabTextExporter{
 			success = false;
 		}
 		return success;
+	}
+	
+	/**
+	 * Export a {@link Tab} to a file
+	 * @param tab The {@link Tab} to export
+	 * @param filePath The path at which to export the file
+	 * @param name The name of the file, no extension
+	 * @return true if the export was successful, false otherwise
+	 */
+	public static boolean exportToFile(Tab tab, String filePath, String name){
+		File file = new File(FileUtils.makeFileName(filePath, name, "txt"));
+		return exportToFile(tab, file);
 	}
 	
 	/** Cannot instantiate {@link TabTextExporter} */

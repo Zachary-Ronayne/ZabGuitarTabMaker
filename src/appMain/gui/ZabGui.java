@@ -107,6 +107,11 @@ public class ZabGui extends JFrame{
 		this.repaint();
 	}
 	
+	/** @return See {@link #menuBar} */
+	public ZabMenuBar getZabMenuBar(){
+		return this.menuBar;
+	}
+	
 	/**
 	 * Get the currently used frame
 	 * @return See {@link #currentFrame}

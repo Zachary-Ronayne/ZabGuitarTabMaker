@@ -83,6 +83,18 @@ public class ZabAppSettings{
 	 */
 	public static boolean load(String filePath, String name, Tab tab, boolean loadSettings){
 		File file = new File(makeFileName(filePath, name));
+		return load(file, tab, loadSettings);
+	}
+	
+	/**
+	 * Load the static instance of settings from the given file path and name, along with the given tab. 
+	 * This method does nothing and returns false if tab is null and saveSettings is false
+	 * @param file The file to load the tab or settings from
+	 * @param tab The tab to load, or null to not load a tab
+	 * @param loadSettings true if settings should also be loaded, false otherwise
+	 * @return true if the save was successful, false otherwise
+	 */
+	public static boolean load(File file, Tab tab, boolean loadSettings){
 		if(!file.exists()) return false;
 		
 		boolean success = true;
@@ -170,7 +182,18 @@ public class ZabAppSettings{
 	 */
 	public static boolean save(String filePath, String name, Tab tab, boolean saveSettings){
 		File file = new File(makeFileName(filePath, name));
-		
+		return save(file, tab, saveSettings);
+	}
+	
+	/**
+	 * Save the static instance of settings to the given file path and name, along with the given tab. 
+	 * This method does nothing and returns false if tab is null and saveSettings is false
+	 * @param file The {@link File} in which to save the settings and or tab
+	 * @param tab The tab to save, or null to not save a tab
+	 * @param saveSettings true to save the settings with the file, false otherwise
+	 * @return true if the save was successful, false otherwise
+	 */
+	public static boolean save(File file, Tab tab, boolean saveSettings){
 		boolean success = true;
 		try{
 			PrintWriter writer = new PrintWriter(file);

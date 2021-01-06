@@ -119,7 +119,7 @@ public class TestZabAppSettings{
 				+ "-20 \n"
 				+ "0\n");
 
-		assertFalse("Checking load fails with invalid scanner", ZabAppSettings.load(null, guitar, true));
+		assertFalse("Checking load fails with invalid scanner", ZabAppSettings.load(new Scanner(""), guitar, true));
 		assertFalse("Checking load fails with null tab and not saving settings", ZabAppSettings.load(scan, null, false));
 		
 		ArrayList<Setting<?>> settingsCopy = new ArrayList<>();

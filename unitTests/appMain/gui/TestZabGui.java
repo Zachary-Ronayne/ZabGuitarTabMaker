@@ -63,7 +63,7 @@ public class TestZabGui{
 	
 	@Test
 	public void setCurrentFrame(){
-		ZabFrame frame = new ZabFrame(){
+		ZabFrame frame = new ZabFrame(gui){
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void parentResized(int w, int h){}
@@ -82,7 +82,7 @@ public class TestZabGui{
 	
 	@Test
 	public void openEditor(){ // TODO
-		ZabFrame frame = new ZabFrame(){
+		ZabFrame frame = new ZabFrame(gui){
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void parentResized(int w, int h){}

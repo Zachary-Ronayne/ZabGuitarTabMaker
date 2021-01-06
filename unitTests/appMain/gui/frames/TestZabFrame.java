@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import appMain.gui.ZabGui;
 import appUtils.ZabAppSettings;
 
 public class TestZabFrame{
@@ -16,6 +17,7 @@ public class TestZabFrame{
 	private ZabFrame frame;
 	
 	private class TestFrame extends ZabFrame{
+		public TestFrame(ZabGui gui){super(gui);}
 		private static final long serialVersionUID = 1L;
 		@Override
 		public void parentResized(int w, int h){}
@@ -28,7 +30,7 @@ public class TestZabFrame{
 	
 	@BeforeEach
 	public void setup(){
-		frame = new TestFrame();
+		frame = new TestFrame(null);
 	}
 
 	@Test

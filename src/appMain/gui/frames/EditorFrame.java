@@ -18,9 +18,6 @@ import tab.Tab;
 public class EditorFrame extends ZabFrame{
 	private static final long serialVersionUID = 1L;
 	
-	/** The {@link ZabGui} which is using this {@link EditorFrame} */
-	private ZabGui gui;
-	
 	/** The {@link ZabPanel} where all of the graphics for the {@link Tab} are drawn */
 	private TabPainter tabScreen;
 	
@@ -38,10 +35,7 @@ public class EditorFrame extends ZabFrame{
 	 * @param gui The {@link ZabGui} which this {@link EditorFrame} will be a part of
 	 */
 	public EditorFrame(ZabGui gui){
-		super();
-		
-		// Setup the gui reference
-		this.gui = gui;
+		super(gui);
 		
 		// Set up the tab
 		this.openedTab = InstrumentFactory.guitarStandard();
@@ -93,48 +87,26 @@ public class EditorFrame extends ZabFrame{
 		this.updatePaintSize(w, h - menuHolder.getHeight());
 	}
 	
-	/**
-	 * @return See {@link #gui}
-	 */
-	public ZabGui getGui(){
-		return this.gui;
-	}
-	
-	/**
-	 * Get the {@link TabPainter} used by this {@link EditorFrame}
-	 * @return See {@link #tabScreen}
-	 */
+	/** @return See {@link #tabScreen} */
 	public TabPainter getTabScreen(){
 		return this.tabScreen;
 	}
 	
-	/**
-	 * Get the {@link ZabPanel} used by this {@link EditorFrame} for the menu
-	 * @return {@link #menuHolder}
-	 */
+	/** @return {@link #menuHolder} */
 	public ZabPanel getMenuHolder(){
 		return this.menuHolder;
 	}
 	
-	/**
-	 * Get the {@link ZabPanel} used by this {@link EditorFrame} for drawing graphics
-	 * @return {@link #paintHolder}
-	 */
+	/** @return {@link #paintHolder} */
 	public ZabPanel getPaintHolder(){
 		return this.paintHolder;
 	}
 	
-	/**
-	 * @return See {@link #openedTab}
-	 */
+	/** @return See {@link #openedTab} */
 	public Tab getOpenedTab(){
 		return this.openedTab;
 	}
-	
-	/**
-	 * Set the tab used by this EditorFrame
-	 * @param tab See {@link #openedTab}
-	 */
+	/** @param tab See {@link #openedTab} */
 	public void setOpenedTab(Tab tab){
 		this.openedTab = tab;
 		this.getTabScreen().setTab(tab);
