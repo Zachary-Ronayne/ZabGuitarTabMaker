@@ -7,7 +7,6 @@ import java.util.Scanner;
 
 import tab.Tab;
 import util.FileUtils;
-import util.Saveable;
 
 /**
  * A class holding an instance of {@link ZabSettings}. for the application using {@link ZabSettings}<br>
@@ -66,7 +65,7 @@ public class ZabAppSettings{
 			}
 		}
 		catch(Exception e){
-			if(Saveable.PRINT_ERRORS) e.printStackTrace();
+			if(ZabConstants.PRINT_ERRORS) e.printStackTrace();
 			success = false;
 		}
 		return success;
@@ -93,7 +92,7 @@ public class ZabAppSettings{
 			}
 		}
 		catch(FileNotFoundException e){
-			if(Saveable.PRINT_ERRORS) e.printStackTrace();
+			if(ZabConstants.PRINT_ERRORS) e.printStackTrace();
 			success = false;
 		}
 		return success;
@@ -155,7 +154,7 @@ public class ZabAppSettings{
 			}
 		}
 		catch(Exception e){
-			if(Saveable.PRINT_ERRORS) e.printStackTrace();
+			if(ZabConstants.PRINT_ERRORS) e.printStackTrace();
 			success = false;
 		}
 		return success;
@@ -180,7 +179,7 @@ public class ZabAppSettings{
 			}
 		}
 		catch(FileNotFoundException | SecurityException e){
-			if(Saveable.PRINT_ERRORS) e.printStackTrace();
+			if(ZabConstants.PRINT_ERRORS) e.printStackTrace();
 			success = false;
 		}
 		return success;

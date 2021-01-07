@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import appUtils.ZabConstants;
 import music.Music;
 import tab.symbol.TabSymbol;
 import util.FileUtils;
@@ -170,7 +171,7 @@ public final class TabTextExporter{
 			}
 		}
 		catch(FileNotFoundException | SecurityException e){
-			if(Saveable.PRINT_ERRORS) e.printStackTrace();
+			if(ZabConstants.PRINT_ERRORS) e.printStackTrace();
 			success = false;
 		}
 		return success;

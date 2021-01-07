@@ -14,6 +14,7 @@ import appMain.gui.comp.dropMenu.ZabMenuBar;
 import appMain.gui.frames.EditorFrame;
 import appMain.gui.frames.GuiFrame;
 import appMain.gui.frames.ZabFrame;
+import appUtils.ZabConstants;
 
 /**
  * An object representing the main GUI used by the Zab application
@@ -21,24 +22,6 @@ import appMain.gui.frames.ZabFrame;
  */
 public class ZabGui extends JFrame{
 	private static final long serialVersionUID = 1L;
-	
-	/**
-	 * Keeping track of if the code should build as normal or as a test build. 
-	 * true for a normal build, false for a test build
-	 */
-	public static final boolean BUILD_NORMAL = false;
-	
-	/**
-	 * True if ZabGui objects should show on creation, false otherwise,
-	 * should be false for testing purposes, true for a proper build
-	 */
-	public static final boolean SHOW_GUI_ON_INIT = BUILD_NORMAL;
-	
-	/** 
-	 * true if the dialog boxes for loading, saving, and exporting should be displayed when choosing a file, false otherwise. 
-	 * Should only be false during testing, should be true in any proper build
-	 */
-	public static final boolean ENABLE_DIALOG = BUILD_NORMAL;
 	
 	/** The {@link GuiFrame} currently displayed by this {@link ZabGui} */
 	private ZabFrame currentFrame;
@@ -95,7 +78,7 @@ public class ZabGui extends JFrame{
 		this.addWindowListener(resizer);
 		
 		// Show the GUI
-		this.setVisible(SHOW_GUI_ON_INIT);
+		this.setVisible(ZabConstants.SHOW_GUI_ON_INIT);
 
 		// Put the GUI in the full window
 		this.requestFocus();

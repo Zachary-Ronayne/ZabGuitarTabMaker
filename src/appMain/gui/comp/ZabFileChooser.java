@@ -11,6 +11,7 @@ import appMain.gui.ZabTheme;
 import appMain.gui.frames.EditorFrame;
 import appMain.gui.frames.ZabFrame;
 import appUtils.ZabAppSettings;
+import appUtils.ZabConstants;
 import tab.Tab;
 import util.FileUtils;
 
@@ -86,7 +87,7 @@ public class ZabFileChooser extends JFileChooser{
 		this.setFileFilter(getAcceptAllFileFilter());
 
 		// Request the file selection
-		if(ZabGui.ENABLE_DIALOG) this.showDialog(null, "Select location");
+		if(ZabConstants.ENABLE_DIALOG) this.showDialog(null, "Select location");
 		
 		// Add the file extension and return the selected file
 		this.setSelectedFile(FileUtils.extendTo(getSelectedFile(), extension));
@@ -103,7 +104,7 @@ public class ZabFileChooser extends JFileChooser{
 		this.setFileFilter(this.getZabFileFilter());
 		
 		// Open the save window and wait for the user to pick a file name
-		if(ZabGui.ENABLE_DIALOG) this.showDialog(null, "Load tab");
+		if(ZabConstants.ENABLE_DIALOG) this.showDialog(null, "Load tab");
 
 		// Ensure a file was selected
 		File file = this.getSelectedFile();
@@ -136,7 +137,7 @@ public class ZabFileChooser extends JFileChooser{
 		this.setFileFilter(this.getZabFileFilter());
 		
 		// Open the save window and wait for the user to pick a file name
-		if(ZabGui.ENABLE_DIALOG) this.showDialog(null, "Save tab");
+		if(ZabConstants.ENABLE_DIALOG) this.showDialog(null, "Save tab");
 
 		// Ensure a file was selected
 		File file = this.getSelectedFile();
