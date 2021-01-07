@@ -147,6 +147,7 @@ public final class TabTextExporter{
 	 * @return true if the export was successful, false otherwise
 	 */
 	public static boolean exportToFile(Tab tab, File file){
+		if(file == null) return false;
 		boolean success = true;
 		try{
 			// Ensure the parent path exists
@@ -169,7 +170,7 @@ public final class TabTextExporter{
 			}
 		}
 		catch(FileNotFoundException | SecurityException e){
-			if(Saveable.printErrors) e.printStackTrace();
+			if(Saveable.PRINT_ERRORS) e.printStackTrace();
 			success = false;
 		}
 		return success;

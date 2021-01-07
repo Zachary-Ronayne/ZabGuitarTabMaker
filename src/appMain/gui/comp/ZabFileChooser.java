@@ -12,6 +12,7 @@ import appMain.gui.frames.EditorFrame;
 import appMain.gui.frames.ZabFrame;
 import appUtils.ZabAppSettings;
 import tab.Tab;
+import util.FileUtils;
 
 /**
  * A {@link JFileChooser} designed for the Zab application for selecting files
@@ -19,9 +20,6 @@ import tab.Tab;
  */
 public class ZabFileChooser extends JFileChooser{
 	private static final long serialVersionUID = 1L;
-
-	/** The file extension representing a .zab file, not including the dot */
-	public static final String ZAB_EXTENSION = "zab";
 	
 	/** The path to the default directory for saving and loading files */
 	public static final String DEFAULT_SAVCE_LOC = "./saves";
@@ -44,7 +42,7 @@ public class ZabFileChooser extends JFileChooser{
 		this.frame = frame;
 		
 		// Set up the file filter
-		this.zabFileFilter = new FileNameExtensionFilter("Zab stringed instrument tablature", ZAB_EXTENSION);
+		this.zabFileFilter = new FileNameExtensionFilter("Zab stringed instrument tablature", FileUtils.ZAB_EXTENSION);
 		
 		// Set this file chooser to only allow one file, not multiple files, and only files, not directories
 		this.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -64,18 +62,15 @@ public class ZabFileChooser extends JFileChooser{
 	}
 	
 	/**
-	 * Prepare for loading or saving a file by ensuring the path to the specified file exists, 
-	 * setting the directory of this {@link JFileChooser} to the given path, and setting the appropriate file filter
+	 * Prepare for processing a file by ensuring the path to the specified file exists  
+	 * and setting the directory of this {@link ZabFileChooser} to the given path
 	 * @param path The path to set
 	 */
 	public void filePrep(String path){
 		// Ensure the directory to the save location exists
-		File savesLoc = new File(path);
-		if(!savesLoc.exists()) savesLoc.mkdirs();
-		this.setCurrentDirectory(savesLoc);
-		
-		// Set the filter to only use .zab files
-		this.setFileFilter(this.getZabFileFilter());
+		File file = new File(path);
+		if(!file.exists()) file.mkdirs();
+		this.setCurrentDirectory(file);
 	}
 	
 	/**
@@ -86,87 +81,76 @@ public class ZabFileChooser extends JFileChooser{
 	public File exportSelect(String extension){
 		// Prep for selection
 		this.filePrep(DEFAULT_SAVCE_LOC);
-		this.setFileFilter(getAcceptAllFileFilter());
 		
+		// Set filter to all files
+		this.setFileFilter(getAcceptAllFileFilter());
+
 		// Request the file selection
-		this.showDialog(this.getGui(), "Select location");
+		if(ZabGui.ENABLE_DIALOG) this.showDialog(null, "Select location");
 		
 		// Add the file extension and return the selected file
-		this.setSelectedFile(extendTo(getSelectedFile(), extension));
+		this.setSelectedFile(FileUtils.extendTo(getSelectedFile(), extension));
 		return this.getSelectedFile();
 	}
 	
 	/**
 	 * Load the {@link Tab} of {@link #gui} from the file selected by the user
+	 * @return true if the load was successful, false otherwise
 	 */
-	public void loadTab(){
+	public boolean loadTab(){
 		this.filePrep(DEFAULT_SAVCE_LOC);
+		// Set the filter to only use .zab files
+		this.setFileFilter(this.getZabFileFilter());
 		
 		// Open the save window and wait for the user to pick a file name
-		this.setApproveButtonText("Load tab");
-		this.showOpenDialog(null);
+		if(ZabGui.ENABLE_DIALOG) this.showDialog(null, "Load tab");
 
 		// Ensure a file was selected
 		File file = this.getSelectedFile();
-		if(file == null) return;
+		if(file == null) return false;
 		
 		// Ensure a tab exists
 		EditorFrame frame = this.getGui().getEditorFrame();
 		Tab tab = frame.getOpenedTab();
-		if(tab == null) frame.setOpenedTab(new Tab());
+		if(tab == null){
+			frame.setOpenedTab(new Tab());
+			tab = frame.getOpenedTab();
+		}
 		
 		// Load the tab from the file
-		ZabAppSettings.load(file, tab, true);
+		boolean success = ZabAppSettings.load(file, tab, true);
 		
 		// Update the GUI to reflect the loaded tab
 		getGui().repaint();
+		
+		return success;
 	}
 	
 	/**
 	 * Save the {@link Tab} of {@link #gui} to the file selected by the user
+	 * @return true if the save was successful, false otherwise
 	 */
-	public void saveTab(){
+	public boolean saveTab(){
 		this.filePrep(DEFAULT_SAVCE_LOC);
+		// Set the filter to only use .zab files
+		this.setFileFilter(this.getZabFileFilter());
 		
 		// Open the save window and wait for the user to pick a file name
-		this.setApproveButtonText("Save tab");
-		this.showSaveDialog(null);
+		if(ZabGui.ENABLE_DIALOG) this.showDialog(null, "Save tab");
 
 		// Ensure a file was selected
 		File file = this.getSelectedFile();
-		if(file == null) return;
+		if(file == null) return false;
 		
 		// Ensure a tab exists
 		Tab tab = this.getGui().getEditorFrame().getOpenedTab();
-		if(tab == null) return;
+		if(tab == null) return false;
 		
 		// Ensure the file has an appropriate extension
-		file = extendToZab(file);
+		file = FileUtils.extendToZab(file);
 		
 		// Save the file
-		ZabAppSettings.save(file, tab, true);
-	}
-	
-	/**
-	 * Get a version of the given file with the extension of a .zab file
-	 * @param f The file to base the extension
-	 * @return The new file with the extension
-	 */
-	public static File extendToZab(File f){
-		return extendTo(f, ZAB_EXTENSION);
-	}
-	
-	/**
-	 * Get a version of the given file with the given extension
-	 * @param f The file to base the extension
-	 * @param ext The extension with no dot
-	 * @return The new file with the extension
-	 */
-	public static File extendTo(File file, String ext){
-		String path = file.getPath();
-		ext = ".".concat(ext);
-		if(!path.endsWith(ext)) path = path.concat(ext);
-		return new File(path);
+		return ZabAppSettings.save(file, tab, true);
 	}
 	
 }

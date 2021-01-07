@@ -23,10 +23,22 @@ public class ZabGui extends JFrame{
 	private static final long serialVersionUID = 1L;
 	
 	/**
+	 * Keeping track of if the code should build as normal or as a test build. 
+	 * true for a normal build, false for a test build
+	 */
+	public static final boolean BUILD_NORMAL = false;
+	
+	/**
 	 * True if ZabGui objects should show on creation, false otherwise,
 	 * should be false for testing purposes, true for a proper build
 	 */
-	public static final boolean SHOW_GUI_ON_INIT = true;
+	public static final boolean SHOW_GUI_ON_INIT = BUILD_NORMAL;
+	
+	/** 
+	 * true if the dialog boxes for loading, saving, and exporting should be displayed when choosing a file, false otherwise. 
+	 * Should only be false during testing, should be true in any proper build
+	 */
+	public static final boolean ENABLE_DIALOG = BUILD_NORMAL;
 	
 	/** The {@link GuiFrame} currently displayed by this {@link ZabGui} */
 	private ZabFrame currentFrame;
@@ -64,14 +76,14 @@ public class ZabGui extends JFrame{
 		// Set up the main panel holding everything
 		this.primaryPanel = new ZabPanel();
 		this.add(primaryPanel);
-
-		// Add the menu bar
-		this.menuBar = new ZabMenuBar(this);
-		this.setJMenuBar(this.menuBar);
 		
 		// Set the default frame state
 		this.editorFrame = new EditorFrame(this);
 		this.openEditor();
+
+		// Add the menu bar
+		this.menuBar = new ZabMenuBar(this);
+		this.setJMenuBar(this.menuBar);
 		
 		// Pack the frame
 		this.pack();

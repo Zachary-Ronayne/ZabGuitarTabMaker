@@ -372,10 +372,13 @@ public class Tab implements Copyable<Tab>, Saveable{
 		b.append(", usesRhythm: ");
 		b.append(this.usesRhythm());
 		b.append(", [Strings: ");
-		TabString last = this.getStrings().get(this.getStrings().size() - 1);
-		for(TabString s : this.getStrings()){
-			b.append(s);
-			if(last != s) b.append(", ");
+		ArrayList<TabString> strs = this.getStrings();
+		if(strs.size() > 0){
+			TabString last = strs.get(strs.size() - 1);
+			for(TabString s : strs){
+				b.append(s);
+				if(last != s) b.append(", ");
+			}
 		}
 		b.append("]]");
 		return b.toString();

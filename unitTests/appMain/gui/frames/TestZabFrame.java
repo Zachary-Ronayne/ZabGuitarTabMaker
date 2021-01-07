@@ -16,6 +16,8 @@ public class TestZabFrame{
 	
 	private ZabFrame frame;
 	
+	private static ZabGui gui;
+	
 	private class TestFrame extends ZabFrame{
 		public TestFrame(ZabGui gui){super(gui);}
 		private static final long serialVersionUID = 1L;
@@ -26,16 +28,22 @@ public class TestZabFrame{
 	@BeforeAll
 	public static void init(){
 		ZabAppSettings.init();
+		gui = new ZabGui();
 	}
 	
 	@BeforeEach
 	public void setup(){
-		frame = new TestFrame(null);
+		frame = new TestFrame(gui);
 	}
-
+	
 	@Test
 	public void constructor(){
 		assertEquals(new Color(40, 40, 40), frame.getBackground(), "Checking background set");
+	}
+
+	@Test
+	public void getGui(){
+		assertEquals(gui, frame.getGui(), "Checking gui set");
 	}
 	
 	@AfterEach

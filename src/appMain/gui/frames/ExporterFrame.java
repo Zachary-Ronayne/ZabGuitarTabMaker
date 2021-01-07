@@ -8,6 +8,7 @@ import appMain.gui.ZabGui;
 import appMain.gui.comp.ZabButton;
 import appMain.gui.comp.ZabExporterDialog;
 import appMain.gui.comp.ZabFileChooser;
+import appMain.gui.comp.dropMenu.ZabMenuBar;
 import appMain.gui.layout.ZabLayoutHandler;
 import tab.Tab;
 
@@ -18,15 +19,24 @@ import tab.Tab;
 public class ExporterFrame extends ZabFrame{
 	private static final long serialVersionUID = 1L;
 	
-	/** The {@link ZabButton} used for the final export */
-	private ZabButton exportButton;
+	/** The text displayed when a file has not yet been selected for exporting */
+	public static final String NO_FILE_TEXT = "no path selected";
+	/** The text displayed on {@link #exportButton} */
+	public static final String EXPORT_BUTTON_TEXT = "Export";
 	
 	/** The {@link ZabButton} used for selecting a file */
 	private ZabButton fileSelectButton;
+	/** The {@link ZabFileChooser} used to select files */
+	private ZabFileChooser fileChooser;
+	/** The {@link FileSelectListener} used by {@link #fileSelectButton} */
+	private FileSelectListener fileSelector;
+	
+	/** The {@link ZabButton} used for the final export */
+	private ZabButton exportButton;
+	/** The {@link ExportListener} used by {@link #exportButton} */
+	private ExportListener exporter;
 	/** The {@link File} which will be exported to, can be null if no file is elected */
 	private File exportFile;
-	/** The {@link ZabFileChooser} used by this {@link ExporterFrame} to select files */
-	private ZabFileChooser fileChooser;
 	
 	/**
 	 * Create an {@link ExporterFrame} in the default state
@@ -41,30 +51,45 @@ public class ExporterFrame extends ZabFrame{
 		// Set up the file select button
 		this.fileChooser = new ZabFileChooser(this);
 		this.fileSelectButton = new ZabButton();
-		this.fileSelectButton.addActionListener(new FileSelectListener());
+		this.fileSelector = new FileSelectListener();
+		this.fileSelectButton.addActionListener(this.fileSelector);
 		this.setExportFile(null);
 		this.add(this.fileSelectButton);
 		
 		// Set up the export button
 		this.exportButton = new ZabButton();
-		this.exportButton.setText("Export");
+		this.exportButton.setText(EXPORT_BUTTON_TEXT);
 		this.exportButton.setFontSize(30);
-		this.exportButton.addActionListener(new ExportListener());
+		this.exporter = new ExportListener();
+		this.exportButton.addActionListener(this.exporter);
 		this.add(this.exportButton);
-	}
-	
-	/** @return See {@link #exporter} */
-	public ZabExporterDialog getExporter(){
-		return this.getGui().getZabMenuBar().getExportDialog();
 	}
 	
 	/** @return See {@link #getFileSelectButton} */
 	public ZabButton getFileSelectButton(){
 		return this.fileSelectButton;
 	}
+	/** @return See {@link #fileSelector} */
+	public FileSelectListener getFileSelector(){
+		return this.fileSelector;
+	}
+	
 	/** @return See {@link #fileChooser} */
 	public ZabFileChooser getFileChooser(){
 		return this.fileChooser;
+	}
+	
+	/** @return The {@link ZabExporterDialog} which this {@link ExporterFrame#gui} uses from the {@link ZabMenuBar#exportDialog} */
+	public ZabExporterDialog getExportDialog(){
+		return this.getGui().getZabMenuBar().getExportDialog();
+	}
+	/** @return See {@link #exportButton} */
+	public ZabButton getExportButton(){
+		return this.exportButton;
+	}
+	/** @return See {@link #exporter} */
+	public ExportListener getExporter(){
+		return this.exporter;
 	}
 	
 	/** @return See {@link #exportFile} */
@@ -74,30 +99,13 @@ public class ExporterFrame extends ZabFrame{
 	/** @param exportFile See {@link #exportFile} */
 	public void setExportFile(File exportFile){
 		this.exportFile = exportFile;
-		String text = (exportFile == null) ? "no path selected" : exportFile.getPath();
+		String text = (exportFile == null) ? NO_FILE_TEXT : exportFile.getPath();
 		this.fileSelectButton.setText(text);
-	}
-	
-	/** @return See {@link #exportButton} */
-	public ZabButton getExportButton(){
-		return this.exportButton;
 	}
 	
 	/** Does nothing */
 	@Override
 	public void parentResized(int w, int h){}
-	
-	/**
-	 * The {@link ActionListener} used by {@link ExporterFrame#exportButton} 
-	 * @author zrona
-	 */
-	public class ExportListener implements ActionListener{
-		/***/
-		@Override
-		public void actionPerformed(ActionEvent e){
-			getExporter().export();
-		}
-	}
 	
 	/**
 	 * The {@link ActionListener} used by {@link ExporterFrame#fileSelectButton} 
@@ -109,10 +117,22 @@ public class ExporterFrame extends ZabFrame{
 		public void actionPerformed(ActionEvent e){
 			// Get the file chooser and have the user select a file
 			ZabFileChooser choose = getFileChooser();
-			ZabExporterDialog dialog = getExporter();
-			dialog.setVisible(false);
+			ZabExporterDialog dialog = getExportDialog();
+			dialog.setAlwaysOnTop(false);
 			setExportFile(choose.exportSelect("txt"));
-			dialog.setVisible(true);
+			dialog.setAlwaysOnTop(true);
+		}
+	}
+	
+	/**
+	 * The {@link ActionListener} used by {@link ExporterFrame#exportButton} 
+	 * @author zrona
+	 */
+	public class ExportListener implements ActionListener{
+		/***/
+		@Override
+		public void actionPerformed(ActionEvent e){
+			getExportDialog().export();
 		}
 	}
 	

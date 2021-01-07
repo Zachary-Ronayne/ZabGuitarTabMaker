@@ -4,7 +4,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import javax.swing.BoxLayout;
-import javax.swing.JFrame;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -22,19 +21,17 @@ public class TestEditorFrame{
 
 	private EditorFrame frame;
 	
-	private ZabGui gui;
+	private static ZabGui gui;
 	
 	@BeforeAll
 	public static void init(){
 		ZabAppSettings.init();
+		gui = new ZabGui();
 	}
 	
 	@BeforeEach
 	public void setup(){
-		gui = new ZabGui();
-		gui.setVisible(false);
 		frame = new EditorFrame(gui);
-		JFrame gui = new JFrame();
 		gui.setVisible(false);
 		gui.add(frame);
 		gui.pack();

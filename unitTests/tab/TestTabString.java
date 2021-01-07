@@ -372,17 +372,25 @@ public class TestTabString{
 		
 		assertEquals(""
 				+ "[TabString, "
+				+ "rootPitch: [Pitch: E4], "
+				+ "[Notes: "
+				+ "[TabPosition, [TabNote, [On C4 string, note: \"4\"], [TabModifier: \"\" \"\"], [Pitch: E4]], [NotePosition, position: 0.0]], "
+				+ "[TabPosition, [TabNote, [On C4 string, note: \"7\"], [TabModifier: \"\" \"\"], [Pitch: G4]], [NotePosition, position: 1.0]], "
+				+ "[TabPosition, [TabNote, [On C4 string, note: \"9\"], [TabModifier: \"\" \"\"], [Pitch: A4]], [NotePosition, position: 2.0]], "
+				+ "[TabPosition, [TabNote, [On C4 string, note: \"4\"], [TabModifier: \"\" \"\"], [Pitch: E4]], [NotePosition, position: 3.0]], "
+				+ "[TabPosition, [TabNote, [On C4 string, note: \"7\"], [TabModifier: \"\" \"\"], [Pitch: G4]], [NotePosition, position: 4.0]], "
+				+ "[TabPosition, [TabNote, [On C4 string, note: \"10\"], [TabModifier: \"\" \"\"], [Pitch: A#4]], [NotePosition, position: 5.0]], "
+				+ "[TabPosition, [TabNote, [On C4 string, note: \"9\"], [TabModifier: \"\" \"\"], [Pitch: A4]], [NotePosition, position: 6.0]]"
+				+ "]"
+				+ "]", string.toString(), "Checking correct string");
+		
+		string.clear();
+		assertEquals(""
+				+ "[TabString, "
 					+ "rootPitch: [Pitch: E4], "
 					+ "[Notes: "
-						+ "[TabPosition, [TabNote, [On C4 string, note: \"4\"], [TabModifier: \"\" \"\"], [Pitch: E4]], [NotePosition, position: 0.0]], "
-						+ "[TabPosition, [TabNote, [On C4 string, note: \"7\"], [TabModifier: \"\" \"\"], [Pitch: G4]], [NotePosition, position: 1.0]], "
-						+ "[TabPosition, [TabNote, [On C4 string, note: \"9\"], [TabModifier: \"\" \"\"], [Pitch: A4]], [NotePosition, position: 2.0]], "
-						+ "[TabPosition, [TabNote, [On C4 string, note: \"4\"], [TabModifier: \"\" \"\"], [Pitch: E4]], [NotePosition, position: 3.0]], "
-						+ "[TabPosition, [TabNote, [On C4 string, note: \"7\"], [TabModifier: \"\" \"\"], [Pitch: G4]], [NotePosition, position: 4.0]], "
-						+ "[TabPosition, [TabNote, [On C4 string, note: \"10\"], [TabModifier: \"\" \"\"], [Pitch: A#4]], [NotePosition, position: 5.0]], "
-						+ "[TabPosition, [TabNote, [On C4 string, note: \"9\"], [TabModifier: \"\" \"\"], [Pitch: A4]], [NotePosition, position: 6.0]]"
 					+ "]"
-				+ "]", string.toString(), "Checking correct string");
+				+ "]", string.toString(), "Checking correct empty string");
 	}
 	
 	

@@ -1,12 +1,12 @@
 package appMain.gui.comp.dropMenu;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
-import java.io.File;
+import java.util.Arrays;
 
 import javax.swing.AbstractButton;
 
@@ -17,23 +17,22 @@ import org.junit.jupiter.api.Test;
 
 import appMain.gui.ZabGui;
 import appUtils.ZabAppSettings;
-import util.FileUtils;
 
 public class TestZabMenuBar{
 
 	private ZabMenuBar bar;
 	
-	private ZabGui gui;
+	private static ZabGui gui;
 	
 	@BeforeAll
 	public static void init(){
 		ZabAppSettings.init();
+		gui = new ZabGui();
 	}
 	
 	@BeforeEach
 	public void setup(){
-		gui = new ZabGui();
-		bar = new ZabMenuBar(gui);
+		bar = gui.getZabMenuBar();
 	}
 	
 	@Test
@@ -42,22 +41,47 @@ public class TestZabMenuBar{
 	}
 	
 	@Test
+	public void getGui(){
+		assertEquals(gui, bar.getGui(), "Checking gui initialized");
+	}
+
+	@Test
 	public void getFileMenu(){
 		ZabMenu menu = bar.getFileMenu();
 		assertEquals("File", menu.getText(), "Checking correct name of menu");
 		assertEquals(3, menu.getMenuComponentCount(), "Checking correct number of items");
-		assertEquals("Save", ((AbstractButton)menu.getMenuComponent(0)).getText(), "Checking correct name of item");
-		assertEquals("Load", ((AbstractButton)menu.getMenuComponent(1)).getText(), "Checking correct name of item");
-		assertEquals("Export", ((AbstractButton)menu.getMenuComponent(2)).getText(), "Checking correct name of item");
+		assertEquals(bar.getSaveItem(), menu.getMenuComponent(0), "Checking correct item order");
+		assertEquals(bar.getLoadItem(), menu.getMenuComponent(1), "Checking correct item order");
+		assertEquals(bar.getExportItem(), menu.getMenuComponent(2), "Checking correct item order");
 	}
 	
 	@Test
-	public void getEditMenu(){
-		ZabMenu menu = bar.getEditMenu();
-		assertEquals("Edit", menu.getText(), "Checking correct name of menu");
-		assertEquals(2, menu.getMenuComponentCount(), "Checking correct number of items");
-		assertEquals("Undo", ((AbstractButton)menu.getMenuComponent(0)).getText(), "Checking correct name of item");
-		assertEquals("Redo", ((AbstractButton)menu.getMenuComponent(1)).getText(), "Checking correct name of item");
+	public void getFileChooser(){
+		assertNotEquals(null, bar.getFileChooser(), "Checking file chooser initialized");
+	}
+	
+	@Test
+	public void getSaveItem(){
+		assertEquals("Save", bar.getSaveItem().getText(), "Checking save item has correct name");
+	}
+	
+	@Test
+	public void getSaver(){
+		assertNotEquals(null, bar.getSaver(), "Checking saver listener initialized");
+		assertTrue(Arrays.asList(bar.getSaveItem().getActionListeners()).contains(bar.getSaver()),
+				"Checking the save button has the correct listener");
+	}
+	
+	@Test
+	public void getLoadItem(){
+		assertEquals("Load", bar.getLoadItem().getText(), "Checking load item has correct name");
+	}
+	
+	@Test
+	public void getLoader(){
+		assertNotEquals(null, bar.getLoader(), "Checking loader listener initialized");
+		assertTrue(Arrays.asList(bar.getLoadItem().getActionListeners()).contains(bar.getLoader()),
+				"Checking the load button has the correct listener");
 	}
 	
 	@Test
@@ -71,20 +95,36 @@ public class TestZabMenuBar{
 	public void getExporter(){
 		assertNotEquals(null, bar.getExporter(), "Checking exporter initialized");
 	}
+
+	@Test
+	public void getExportDialog(){
+		assertNotEquals(null, bar.getExportDialog(), "Checking export dialog initialized");
+	}
+
+	@Test
+	public void getEditMenu(){
+		ZabMenu menu = bar.getEditMenu();
+		assertEquals("Edit", menu.getText(), "Checking correct name of menu");
+		assertEquals(2, menu.getMenuComponentCount(), "Checking correct number of items");
+		assertEquals("Undo", ((AbstractButton)menu.getMenuComponent(0)).getText(), "Checking correct name of item");
+		assertEquals("Redo", ((AbstractButton)menu.getMenuComponent(1)).getText(), "Checking correct name of item");
+	}
 	
 	@Test
-	public void getGui(){
-		assertEquals(gui, bar.getGui(), "Checking gui initialized");
+	public void actionPerformedSaveListener(){
+		bar.getSaver().actionPerformed(new ActionEvent(bar, 0, null));
+	}
+
+	@Test
+	public void actionPerformedLoadListener(){
+		bar.getLoader().actionPerformed(new ActionEvent(bar, 0, null));
 	}
 	
 	@Test
 	public void actionPerformedExportListener(){
-		File f = new File(FileUtils.makeFileName("./saves", "export", "txt"));
-		bar.getExporter().actionPerformed(new ActionEvent(bar, 0, ""));
-		assertTrue("Checking file was made", f.exists());
-		f.delete();
+		bar.getExporter().actionPerformed(new ActionEvent(bar, 0, null));
 	}
-	
+		
 	@AfterEach
 	public void end(){}
 

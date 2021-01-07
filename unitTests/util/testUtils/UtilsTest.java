@@ -17,7 +17,7 @@ public final class UtilsTest{
 	public static final double DELTA = 0.00000001;
 
 	/** Constant for a path to a folder for testing files */
-	public static final String UNIT_PATH = "./TestZabUnitTestFolder";
+	public static final String UNIT_PATH = ".\\TestZabUnitTestFolder";
 	/** Constant for a name in a file folder for testing files */
 	public static final String UNIT_NAME = "test";
 	
@@ -49,13 +49,30 @@ public final class UtilsTest{
 	}
 	
 	/**
+	 * Create the unit test folder
+	 */
+	public static void createUnitFolder(){
+		File f = getUnitFolder();
+		f.mkdirs();
+	}
+	
+	/**
 	 * Delete all files in the unit test folder, this assumes all files are files, not directories, and all files can be removed
 	 */
 	public static void deleteUnitFolder(){
-		File unitFolder = getUnitFolder();
-		if(unitFolder.exists()){
-			for(File f : unitFolder.listFiles()) f.delete();
-			unitFolder.delete();
+		deleteTree(getUnitFolder());
+	}
+	
+	/**
+	 * Delete an entire tree of files
+	 * @param root The root of files to delete
+	 */
+	public static void deleteTree(File root){
+		if(!root.exists()) return;
+		if(root.isFile()) root.delete();
+		else{
+			for(File f: root.listFiles()) deleteTree(f);
+			root.delete();
 		}
 	}
 	

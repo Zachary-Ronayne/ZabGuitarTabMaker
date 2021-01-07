@@ -78,6 +78,10 @@ public class TestTabTextExporter{
 	public void exportToFile(){
 		assertTrue("Checking file export successful", TabTextExporter.exportToFile(guitar, UtilsTest.UNIT_PATH, "test"));
 		assertFalse("Checking file export fails with null tab", TabTextExporter.exportToFile(null, UtilsTest.UNIT_PATH, "test"));
+		assertFalse("Checking file export fails with null file", TabTextExporter.exportToFile(guitar, null));
+		
+		assertTrue("Checking file export successful when making directory",
+				TabTextExporter.exportToFile(guitar, UtilsTest.UNIT_PATH + "/testFolder", "test"));
 	}
 	
 	@Test

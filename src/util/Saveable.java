@@ -17,7 +17,7 @@ public interface Saveable{
 	 * Set to true to print error messages when {@link Saveable} runs into errors while running utility methods. 
 	 * Set to false to disable error messages
 	 */
-	public static boolean printErrors = false;
+	public static boolean PRINT_ERRORS = false;
 	
 	/**
 	 * Load in all values for this object from the given {@link Scanner}<br>
@@ -64,7 +64,7 @@ public interface Saveable{
 			}
 		}
 		catch(Exception e){
-			if(printErrors) e.printStackTrace();
+			if(PRINT_ERRORS) e.printStackTrace();
 			return null;
 		}
 	}
@@ -100,7 +100,7 @@ public interface Saveable{
 		try{
 			return (Boolean)loadObject(reader, 0);
 		}catch(ClassCastException e){
-			if(printErrors) e.printStackTrace();
+			if(PRINT_ERRORS) e.printStackTrace();
 			return null;
 		}
 	}
@@ -129,7 +129,7 @@ public interface Saveable{
 		try{
 			return (Integer)loadObject(reader, 1);
 		}catch(ClassCastException e){
-			if(printErrors) e.printStackTrace();
+			if(PRINT_ERRORS) e.printStackTrace();
 			return null;
 		}
 	}
@@ -158,7 +158,7 @@ public interface Saveable{
 		try{
 			return (Double)loadObject(reader, 2);
 		}catch(ClassCastException e){
-			if(printErrors) e.printStackTrace();
+			if(PRINT_ERRORS) e.printStackTrace();
 			return null;
 		}
 	}
@@ -187,7 +187,7 @@ public interface Saveable{
 		try{
 			return (String)loadObject(reader, 3);
 		}catch(ClassCastException e){
-			if(printErrors) e.printStackTrace();
+			if(PRINT_ERRORS) e.printStackTrace();
 			return null;
 		}
 	}
@@ -220,7 +220,7 @@ public interface Saveable{
 			if(!toLoad.load(reader)) return false;
 		}
 		catch(Exception e){
-			if(printErrors) e.printStackTrace();
+			if(PRINT_ERRORS) e.printStackTrace();
 			return false;
 		}
 		return true;
@@ -264,7 +264,7 @@ public interface Saveable{
 			return true;
 		}
 		catch(Exception e){
-			if(printErrors) e.printStackTrace();
+			if(PRINT_ERRORS) e.printStackTrace();
 			return false;
 		}
 	}
@@ -324,7 +324,7 @@ public interface Saveable{
 			if(!toSave.save(writer)) return false;
 		}
 		catch(Exception e){
-			if(printErrors) e.printStackTrace();
+			if(PRINT_ERRORS) e.printStackTrace();
 			return false;
 		}
 		return true;
@@ -355,7 +355,7 @@ public interface Saveable{
 			reader.nextLine();
 			return true;
 		}catch(Exception e){
-			if(printErrors) e.printStackTrace();
+			if(PRINT_ERRORS) e.printStackTrace();
 			return false;
 		}
 	}
@@ -370,7 +370,7 @@ public interface Saveable{
 			writer.println();
 			return true;
 		}catch(Exception e){
-			if(printErrors) e.printStackTrace();
+			if(PRINT_ERRORS) e.printStackTrace();
 			return false;
 		}
 	}

@@ -1,6 +1,7 @@
 package appMain.gui.comp;
 
 import java.awt.Dimension;
+import java.io.File;
 
 import javax.swing.JDialog;
 
@@ -78,10 +79,11 @@ public class ZabExporterDialog extends JDialog{
 	/**
 	 * Perform the export to a file as specified by the fields of this {@link ZabExporterDialog}
 	 */
-	public void export(){ // TODO
-		EditorFrame frame = getGui().getEditorFrame();
-		Tab tab = frame.getOpenedTab();
-		TabTextExporter.exportToFile(tab, getFrame().getExportFile());
+	public void export(){
+		EditorFrame editFrame = getGui().getEditorFrame();
+		Tab tab = editFrame.getOpenedTab();
+		File file = getFrame().getExportFile();
+		TabTextExporter.exportToFile(tab, file);
 	}
 	
 }

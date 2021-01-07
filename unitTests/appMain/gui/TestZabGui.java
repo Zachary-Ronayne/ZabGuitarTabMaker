@@ -21,7 +21,7 @@ import appUtils.ZabAppSettings;
 
 public class TestZabGui{
 
-	private ZabGui gui;
+	private static ZabGui gui;
 	
 	private ZabGui.GuiResizeListener resizer;
 	
@@ -31,12 +31,11 @@ public class TestZabGui{
 	@BeforeAll
 	public static void init(){
 		ZabAppSettings.init();
+		gui = new ZabGui();
 	}
 	
 	@BeforeEach
 	public void setup(){
-		gui = new ZabGui();
-		gui.setVisible(false);
 		
 		compEvent = new ComponentEvent(gui, 0);
 		winEvent = new WindowEvent(gui, 0);
@@ -81,7 +80,7 @@ public class TestZabGui{
 	}
 	
 	@Test
-	public void openEditor(){ // TODO
+	public void openEditor(){
 		ZabFrame frame = new ZabFrame(gui){
 			private static final long serialVersionUID = 1L;
 			@Override
