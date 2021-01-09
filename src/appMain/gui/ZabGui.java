@@ -1,20 +1,24 @@
 package appMain.gui;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.event.WindowStateListener;
+import java.util.ArrayList;
 
 import javax.swing.JFrame;
 
+import appMain.gui.comp.ZabExporterDialog;
 import appMain.gui.comp.ZabPanel;
 import appMain.gui.comp.dropMenu.ZabMenuBar;
 import appMain.gui.frames.EditorFrame;
 import appMain.gui.frames.GuiFrame;
 import appMain.gui.frames.ZabFrame;
 import appUtils.ZabConstants;
+import util.GuiUtils;
 
 /**
  * An object representing the main GUI used by the Zab application
@@ -83,6 +87,35 @@ public class ZabGui extends JFrame{
 		// Put the GUI in the full window
 		this.requestFocus();
 		this.maximize();
+	}
+	
+	/***
+	 * Update every component in this ZabGui, including all associated objects associated with this GUI, to the current theme of the Zab application
+	 */
+	public void updateTheme(){
+		ArrayList<Component> list = new ArrayList<Component>();
+		list.add(this);
+		list.addAll(GuiUtils.getAllComponents(this.getContentPane()));
+		list.add(this.getZabMenuBar());
+		list.addAll(GuiUtils.getAllComponents(this.getZabMenuBar()));
+		ZabExporterDialog export = this.getZabMenuBar().getFileMenu().getExportDialog();
+		list.add(export);
+		list.addAll(GuiUtils.getAllComponents(export));
+		
+		for(Component c : list){
+			ZabTheme.setToTheme(c);
+		}
+		
+		this.repaint();
+	}
+	
+	/**
+	 * Copy the data of this {@link ZabGui} into the given gui. 
+	 * This will copy references of the data, i.e. the opened tab will be copied as a reference, not a new object
+	 * @param gui The gui to copy into
+	 */
+	public void copyData(ZabGui gui){
+		gui.getEditorFrame().setOpenedTab(this.getEditorFrame().getOpenedTab());
 	}
 	
 	/**

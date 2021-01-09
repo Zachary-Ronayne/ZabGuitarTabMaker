@@ -35,6 +35,7 @@ public class TestZabMenuBar{
 		bar = gui.getZabMenuBar();
 	}
 	
+	/*
 	@Test
 	public void constructor(){
 		assertEquals(new Color(40, 40, 40), bar.getBackground(), "Checking background set");
@@ -124,6 +125,7 @@ public class TestZabMenuBar{
 	public void actionPerformedExportListener(){
 		bar.getExporter().actionPerformed(new ActionEvent(bar, 0, null));
 	}
+	*/
 		
 	@AfterEach
 	public void end(){}

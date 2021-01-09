@@ -1,11 +1,11 @@
 package appMain.gui.comp;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -14,7 +14,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
 
+import appMain.gui.ZabTheme;
 import appMain.gui.util.Camera;
+import appUtils.ZabAppSettings;
 import tab.Tab;
 import tab.TabPosition;
 import tab.TabString;
@@ -36,14 +38,6 @@ public class TabPainter extends ZabPanel{
 	public static final double MEASURE_WIDTH = 200;
 	/** The amount of space between strings drawn for a tab */
 	public static final double STRING_SPACE = 40;
-	/** The color of strings drawn for a tab */
-	public static final Color BACKGROUND_COLOR = new Color(30, 30, 30);
-	/** The color of strings drawn for a tab */
-	public static final Color STRING_COLOR = new Color(60, 60, 60);
-	/** The color of symbols drawn for a tab */
-	public static final Color SYMBOL_COLOR = new Color(200, 200, 200);
-	/** The color of a highlight showing a symbol is selected */
-	public static final Color HIGHLIGHT_COLOR = new Color(170, 170, 255, 100);
 	/** The font of symbols drawn for a tab */
 	public static final Font SYMBOL_FONT = new Font("Arial", Font.PLAIN, 20);
 	/** The font stroke used for strings drawn for a tab */
@@ -529,13 +523,15 @@ public class TabPainter extends ZabPanel{
 	 */
 	@Override
 	public void paint(Graphics gr){
+		ZabTheme theme = ZabAppSettings.theme();
+		
 		// Set up camera
 		Graphics2D g = (Graphics2D)gr;
 		Camera cam = this.tabCamera;
 		cam.setG(g);
 		
 		// Draw background
-		g.setColor(BACKGROUND_COLOR);
+		g.setColor(theme.background());
 		g.fillRect(0, 0, this.getPaintWidth(), this.getPaintHeight());
 		
 		// Draw the tab
@@ -552,6 +548,8 @@ public class TabPainter extends ZabPanel{
 	public boolean drawTab(Graphics2D g){
 		// Do nothing if the tab is null
 		if(this.getTab() == null) return false;
+
+		ZabTheme theme = ZabAppSettings.theme();
 		
 		// Set up camera
 		Camera cam = this.tabCamera;
@@ -560,6 +558,8 @@ public class TabPainter extends ZabPanel{
 		// Set up for drawing strings
 		g.setStroke(STRING_LINE_WEIGHT);
 		g.setFont(SYMBOL_FONT);
+		// Enable antialiasing
+		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
 		
 		// Draw strings, string note labels, and note symbols
 		ArrayList<TabString> strings = this.getTab().getStrings();
@@ -573,7 +573,7 @@ public class TabPainter extends ZabPanel{
 		double labelX = this.tabPosToCamX(-0.1);
 		
 		// Draw a vertical line at the beginning of each measure
-		g.setColor(STRING_COLOR);
+		g.setColor(theme.tabString());
 		double measureLineEnd = y + (strings.size() - 1) * STRING_SPACE;
 		for(int i = 0; i < measureLines; i++){
 			double x = this.tabPosToCamX(i);
@@ -583,11 +583,11 @@ public class TabPainter extends ZabPanel{
 		String str;
 		for(TabString s : strings){
 			// Draw the string
-			g.setColor(STRING_COLOR);
+			g.setColor(theme.tabString());
 			cam.drawLine(labelX, y, stringLength, y);
 			
 			// Draw string note labels
-			g.setColor(SYMBOL_COLOR);
+			g.setColor(theme.tabSymbolText());
 			str = s.getRootPitch().getPitchName(false);
 			cam.drawScaleString(str, labelX - g.getFontMetrics().stringWidth(str), y + 8);
 			
@@ -606,9 +606,9 @@ public class TabPainter extends ZabPanel{
 				
 				// If the symbol is selected, draw a highlight under it
 				if(this.isSelected(p)){
-					g.setColor(HIGHLIGHT_COLOR);
+					g.setColor(theme.tabSymbolHighlight());
 					cam.fillRect(sX, sY - sH, sW, sH);
-					g.setColor(SYMBOL_COLOR);
+					g.setColor(theme.tabSymbolText());
 				}
 				// Draw the symbol
 				cam.drawScaleString(str, sX, sY);

@@ -60,7 +60,7 @@ public class EditorFrame extends ZabFrame{
 		this.paintHolder = new ZabPanel();
 		this.paintHolder.add(tabScreen);
 		this.add(paintHolder);
-		
+
 		// Update the screen's display
 		repaint();
 	}

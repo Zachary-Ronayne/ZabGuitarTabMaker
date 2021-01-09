@@ -9,20 +9,25 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import appMain.gui.ZabGui;
 import appUtils.ZabAppSettings;
 
 public class TestZabMenu{
+	
+	private static ZabGui gui;
 	
 	private ZabMenu menu;
 	
 	@BeforeAll
 	public static void init(){
 		ZabAppSettings.init();
+		gui = new ZabGui();
+		gui.setVisible(false);
 	}
 	
 	@BeforeEach
 	public void setup(){
-		menu = new ZabMenu("name");
+		menu = new ZabMenu("name", gui);
 	}
 	
 	@Test

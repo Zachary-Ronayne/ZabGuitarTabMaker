@@ -81,7 +81,7 @@ public class ExporterFrame extends ZabFrame{
 	
 	/** @return The {@link ZabExporterDialog} which this {@link ExporterFrame#gui} uses from the {@link ZabMenuBar#exportDialog} */
 	public ZabExporterDialog getExportDialog(){
-		return this.getGui().getZabMenuBar().getExportDialog();
+		return this.getGui().getZabMenuBar().getFileMenu().getExportDialog();
 	}
 	/** @return See {@link #exportButton} */
 	public ZabButton getExportButton(){
