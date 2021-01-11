@@ -92,6 +92,7 @@ public class TestPitch{
 		assertEquals(5, c5.getNote(), "Checking correct note loaded");
 		
 		assertFalse("Checking loading fails with nothing more to load", c5.load(scan));
+		scan.close();
 	}
 	
 	@Test

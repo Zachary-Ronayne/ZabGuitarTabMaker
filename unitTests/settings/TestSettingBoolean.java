@@ -54,6 +54,7 @@ public class TestSettingBoolean{
 		assertFalse(settingF.getDefault(), "Checking default value loaded");
 		
 		assertFalse(settingF.load(scan), "Checking load fails without enough data");
+		scan.close();
 	}
 	
 	@Test

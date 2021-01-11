@@ -2,12 +2,13 @@ package appMain;
 
 import appMain.gui.ZabGui;
 import appUtils.ZabAppSettings;
+import appUtils.ZabConstants;
 
 /**
- * The main file used to run the primary GUI application
+ * The main file used to start up the primary Zab GUI application
  * @author zrona
  */
-public class Main{
+public final class Main{
 
 	public static void main(String[] args){
 		// Initialize settings before doing anything else
@@ -15,7 +16,10 @@ public class Main{
 
 		// Start up the main GUI
 		ZabGui gui = new ZabGui();
-		gui.setVisible(true);
+		if(ZabConstants.BUILD_NORMAL) gui.setVisible(true);
 	}
+	
+	/** Cannot instantiate {@link Main} */
+	private Main(){};
 	
 }

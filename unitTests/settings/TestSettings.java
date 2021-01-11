@@ -73,6 +73,8 @@ public class TestSettings{
 		boolean success = newSettings.load(scan);
 		assertTrue("Checking loading succeeds", success);
 		assertTrue("Checking new settings are the same as the main one after loading", newSettings.equals(settings));
+		
+		scan.close();
 	}
 	
 	@Test

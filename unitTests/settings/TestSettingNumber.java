@@ -211,6 +211,8 @@ public class TestSettingNumber{
 				+ "a 1");
 		assertTrue(setting.load(scan), "Checking normal load succeeds");
 		assertEquals("a 1", scan.nextLine(), "Checking next line in scan is the correct value");
+		
+		scan.close();
 	}
 	
 	@Test

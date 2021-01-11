@@ -62,16 +62,18 @@ public class TestSettingString{
 	
 	@Test
 	public void loadValues(){
-		Scanner read = new Scanner("word z\ndefault z\n123\nsdf\nk");
-		assertTrue("Checking load successful", setting.load(read));
+		Scanner scan = new Scanner("word z\ndefault z\n123\nsdf\nk");
+		assertTrue("Checking load successful", setting.load(scan));
 		assertEquals("word z", setting.get(), "Checking value loaded from scanner");
 		assertEquals("default z", setting.getDefault(), "Checking default value loaded from scanner");
 
-		assertTrue("Checking load successful", setting.load(read));
+		assertTrue("Checking load successful", setting.load(scan));
 		assertEquals("123", setting.get(), "Checking value loaded from scanner");
 		assertEquals("sdf", setting.getDefault(), "Checking default value loaded from scanner");
 
-		assertFalse("Checking load fails with not enough data", setting.load(read));
+		assertFalse("Checking load fails with not enough data", setting.load(scan));
+		
+		scan.close();
 	}
 	
 	@Test

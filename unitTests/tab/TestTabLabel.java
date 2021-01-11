@@ -187,6 +187,7 @@ public class TestTabLabel{
 		scan.close();
 		scan = new Scanner("a\na\na\na\na");
 		assertFalse("Checking load fails with invalid numbers", label.load(scan));
+		
 		scan.close();
 	}
 	

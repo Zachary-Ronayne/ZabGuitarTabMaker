@@ -281,8 +281,8 @@ public class TestZabAppSettings{
 		assertEquals(guitar, tunedGuitar, "Checking correct tab loaded in");
 		
 		assertFalse("Checking load fails with nothing left to load", ZabAppSettings.load(scan, null, true));
-		scan.close();
 		
+		scan.close();
 		scan = new Scanner(""
 				+ "h\n"
 				+ "h\n"
@@ -300,8 +300,8 @@ public class TestZabAppSettings{
 				+ "6\n");
 		
 		assertFalse("Checking load fails with invalid formatted tab save file", ZabAppSettings.load(scan, new Tab(), true));
-		scan.close();
 		
+		scan.close();
 		scan = new Scanner(""
 				+ "false 5 4 4 \n"
 				+ "6\n"

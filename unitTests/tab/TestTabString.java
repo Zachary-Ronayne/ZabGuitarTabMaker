@@ -350,6 +350,8 @@ public class TestTabString{
 				string.symbol(2), "Checking correct note loaded");
 		assertEquals(4.2,
 				string.get(2).getPos(), "Checking correct position loaded");
+		
+		scan.close();
 	}
 	
 	@Test

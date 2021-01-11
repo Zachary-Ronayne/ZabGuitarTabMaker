@@ -498,6 +498,8 @@ public class TestTab{
 				+ "2\n"
 				+ "a\n");
 		assertFalse(t.load(scan), "Checking load fails on invalid strings");
+		
+		scan.close();
 	}
 	
 	@Test

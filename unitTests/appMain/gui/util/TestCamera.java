@@ -562,14 +562,15 @@ public class TestCamera{
 		assertEquals(9.3, cam.getMaxX(), "Checking max x factor loaded");
 		assertEquals(0.2, cam.getMaxY(), "Checking max y factor loaded");
 		assertEquals(false, cam.isDrawOnlyInBounds(), "Checking draw in bounds factor loaded");
-		scan.close();
 		
+		scan.close();
 		scan = new Scanner("a 2.3 3.4 4.4 5.4 6.7 7.8 8.6 9.3 0.2 false\n");
 		assertFalse("Checking load fails with invalid doubles", cam.load(scan));
-		scan.close();
 		
+		scan.close();
 		scan = new Scanner("1.0 2.3 3.4 4.4 5.4 6.7 7.8 8.6 9.3 0.2 g\n");
 		assertFalse("Checking load fails with invalid boolean", cam.load(scan));
+		
 		scan.close();
 	}
 	

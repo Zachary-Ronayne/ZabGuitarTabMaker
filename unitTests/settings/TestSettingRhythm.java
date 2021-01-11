@@ -78,6 +78,8 @@ public class TestSettingRhythm{
 		assertEquals(new Rhythm(6, 7), setting.getDefault(), "Checking loaded correct default value");
 		
 		assertFalse(setting.load(scan), "Checking load fails with invalid data");
+		
+		scan.close();
 	}
 	
 	@Test

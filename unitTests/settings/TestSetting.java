@@ -82,28 +82,43 @@ public class TestSetting{
 	
 	@Test
 	public void load(){
+		Scanner scan;
 		assertFalse("Checking load detects errors on null", setting.load(null));
 		
-		assertTrue("Checking load detects good loading", setting.load(new Scanner("")));
+		scan = new Scanner("");
+		assertTrue("Checking load detects good loading", setting.load(scan));
 		
+		scan.close();
+		scan = new Scanner("");
 		setting.set("break");
-		assertFalse("Checking load detects bad loading", setting.load(new Scanner("")));
-		
+		assertFalse("Checking load detects bad loading", setting.load(scan));
+
+		scan.close();
+		scan = new Scanner("");
 		setting.set("error");
-		assertFalse("Checking load detects error in loading", setting.load(new Scanner("")));
+		assertFalse("Checking load detects error in loading", setting.load(scan));
+		
+		scan.close();
 	}
 
 	@Test
 	public void save(){
+		PrintWriter write;
 		assertFalse("Checking save detects errors on null", setting.save(null));
 		
-		assertTrue("Checking save detects good saving", setting.save(new PrintWriter(new ByteArrayOutputStream())));
-		
+		write = new PrintWriter(new ByteArrayOutputStream());
+		assertTrue("Checking save detects good saving", setting.save(write));
+		write.close();
+
+		write = new PrintWriter(new ByteArrayOutputStream());
 		setting.set("break");
-		assertFalse("Checking save detects bad saving", setting.save(new PrintWriter(new ByteArrayOutputStream())));
-		
+		assertFalse("Checking save detects bad saving", setting.save(write));
+		write.close();
+
+		write = new PrintWriter(new ByteArrayOutputStream());
 		setting.set("error");
-		assertFalse("Checking save detects error in saving", setting.save(new PrintWriter(new ByteArrayOutputStream())));
+		assertFalse("Checking save detects error in saving", setting.save(write));
+		write.close();
 	}
 
 	@Test

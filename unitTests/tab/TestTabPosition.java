@@ -188,6 +188,8 @@ public class TestTabPosition{
 		assertEquals(newNote, note, "Checking loaded note values correct");
 		assertFalse(newNote.load(scan), "Checking load fails with invalid symbol type");
 		assertFalse(newNote.load(scan), "Checking load fails with not enough data");
+		
+		scan.close();
 	}
 	
 	@Test

@@ -119,6 +119,7 @@ public class TestNotePosition{
 		assertEquals(2.0, pos.getValue(), "Checking correct value loaded");
 		
 		assertFalse("Checking load fails with nothing left to load", pos.load(scan));
+		scan.close();
 	}
 	
 	@Test
