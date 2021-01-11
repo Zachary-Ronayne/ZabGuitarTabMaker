@@ -229,7 +229,6 @@ public class TabString extends ArrayList<TabPosition> implements Copyable<TabStr
 		// Load the pitch of the string
 		if(!Saveable.load(reader, this.getRootPitch())) return false;
 
-		
 		// Load in the number of symbols
 		Integer size = Saveable.loadInt(reader);
 		if(size == null) return false;

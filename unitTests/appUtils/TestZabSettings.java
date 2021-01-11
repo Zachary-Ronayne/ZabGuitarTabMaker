@@ -3,6 +3,7 @@ package appUtils;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -11,6 +12,11 @@ import settings.SettingString;
 public class TestZabSettings{
 
 	private ZabSettings settings;
+
+	@BeforeAll
+	public static void init(){
+		ZabAppSettings.init();
+	}
 	
 	@BeforeEach
 	public void setup(){

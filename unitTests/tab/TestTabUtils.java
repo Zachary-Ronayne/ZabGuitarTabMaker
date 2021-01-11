@@ -3,9 +3,11 @@ package tab;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import appUtils.ZabAppSettings;
 import music.Rhythm;
 import tab.symbol.TabDeadNote;
 import tab.symbol.TabNote;
@@ -13,6 +15,11 @@ import tab.symbol.TabNoteRhythm;
 
 public class TestTabUtils{
 
+	@BeforeAll
+	public static void init(){
+		ZabAppSettings.init();
+	}
+	
 	@BeforeEach
 	public void setup(){}
 	

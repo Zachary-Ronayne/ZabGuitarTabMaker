@@ -11,9 +11,11 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import appUtils.ZabAppSettings;
 import util.testUtils.UtilsTest;
 
 public class TestSaveable{
@@ -76,6 +78,11 @@ public class TestSaveable{
 			writer.println(c);
 			return true;
 		}
+	}
+	
+	@BeforeAll
+	public static void init(){
+		ZabAppSettings.init();
 	}
 	
 	@BeforeEach
@@ -160,10 +167,11 @@ public class TestSaveable{
 	
 	@Test
 	public void loadInt(){
-		read = new Scanner("1 -3 1.1");
+		read = new Scanner("1 -3 1.1 a");
 		assertEquals(1, Saveable.loadInt(read), "Checking integer value loaded");
 		assertEquals(-3, Saveable.loadInt(read), "Checking integer value loaded");
 		assertEquals(null, Saveable.loadInt(read), "Checking null returned on invalid integer value");
+		assertEquals(null, Saveable.loadInt(read), "Checking null returned non number value");
 		assertEquals(null, Saveable.loadInt(read), "Checking null returned with no space left");
 	}
 	

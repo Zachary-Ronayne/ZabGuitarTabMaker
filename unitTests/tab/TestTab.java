@@ -10,9 +10,11 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import appUtils.ZabAppSettings;
 import music.Music;
 import music.Pitch;
 import music.Rhythm;
@@ -24,7 +26,7 @@ import tab.symbol.TabSymbol;
 import util.testUtils.UtilsTest;
 
 public class TestTab{
-
+			
 	private Tab tab;
 	private Tab tabDefault;
 	private Tab tabSpecific;
@@ -36,6 +38,11 @@ public class TestTab{
 	private Tab tabForRhythms;
 	private TabString highRhythms;
 	private TabString lowRhythms;
+
+	@BeforeAll
+	public static void init(){
+		ZabAppSettings.init();
+	}
 	
 	@BeforeEach
 	public void setup(){
@@ -441,7 +448,7 @@ public class TestTab{
 		tab.getStrings().clear();
 		assertTrue("Checking loading successful", t.load(scan));
 		assertEquals(tab, t, "Checking loaded tab equal, no strings");
-		
+				
 		tab.getStrings().clear();
 		tab.getStrings().add(highString);
 		tab.getStrings().add(lowString);
@@ -452,8 +459,45 @@ public class TestTab{
 		tab.getStrings().add(lowRhythms);
 		assertTrue("Checking loading successful", t.load(scan));
 		assertEquals(tab, t, "Checking loaded tab equal, strings with notes");
-		
 		assertFalse("Checking load fails with invalid data", t.load(scan));
+		
+		scan.close();
+		scan = new Scanner(""
+				+ "false a 4 \n"
+				+ "0\n");
+		assertFalse(t.load(scan), "Checking load fails on invalid time signature");
+		
+		scan.close();
+		scan = new Scanner(""
+				+ "false 4 4 \n"
+				+ "a\n");
+		assertFalse(t.load(scan), "Checking load fails on invalid number of strings");
+		
+		scan.close();
+		scan = new Scanner(""
+				+ "false 4 4 \n"
+				+ "1");
+		assertFalse(t.load(scan), "Checking load fails on not having a new line");
+		
+		scan.close();
+		scan = new Scanner(""
+				+ "false 4 4 \n"
+				+ "2\n"
+				+ "1\n"
+				+ "0\n"
+				+ "2\n"
+				+ "0\n");
+		assertTrue(t.load(scan), "Checking load succeeds loading multiple strings");
+		
+		scan.close();
+		scan = new Scanner(""
+				+ "false 4 4 \n"
+				+ "2\n"
+				+ "1\n"
+				+ "0\n"
+				+ "2\n"
+				+ "a\n");
+		assertFalse(t.load(scan), "Checking load fails on invalid strings");
 	}
 	
 	@Test

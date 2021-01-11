@@ -9,8 +9,11 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import appUtils.ZabAppSettings;
 
 public class TestSetting{
 
@@ -34,6 +37,11 @@ public class TestSetting{
 			if(this.get().equals("error")) throw new Exception();
 			return !this.get().equals("break");
 		}
+	}
+	
+	@BeforeAll
+	public static void init(){
+		ZabAppSettings.init();
 	}
 	
 	@BeforeEach

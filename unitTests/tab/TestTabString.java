@@ -10,9 +10,11 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import appUtils.ZabAppSettings;
 import music.Music;
 import music.NotePosition;
 import music.Pitch;
@@ -39,6 +41,11 @@ public class TestTabString{
 	private TabString noteAndOctave;
 	
 	private TimeSignature sig;
+
+	@BeforeAll
+	public static void init(){
+		ZabAppSettings.init();
+	}
 	
 	@BeforeEach
 	public void setup(){
@@ -290,6 +297,19 @@ public class TestTabString{
 		assertEquals(new TabNote(2), string.symbol(0), "Checking correct note loaded");
 		assertEquals(1.0, string.get(0).getPos(), "Checking correct position loaded");
 		assertFalse("Checking load failed with not enough data", string.load(scan));
+		
+		scan.close();
+		scan = new Scanner(""
+				+ "1 \n"
+				+ "a \n");
+		assertFalse(string.load(scan), "Checking load fails with invalid note count");
+		
+		scan.close();
+		scan = new Scanner("0 \n0");
+		assertFalse(string.load(scan), "Checking load fails with no new line to load");
+		
+		scan = new Scanner("0 \n1 \n a");
+		assertFalse(string.load(scan), "Checking load fails with invalid symbols");
 		
 		scan.close();
 		scan = new Scanner("4 \n"

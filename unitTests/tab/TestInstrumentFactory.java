@@ -3,13 +3,20 @@ package tab;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import appUtils.ZabAppSettings;
 import music.Music;
 
 public class TestInstrumentFactory{
 
+	@BeforeAll
+	public static void init(){
+		ZabAppSettings.init();
+	}
+	
 	@BeforeEach
 	public void setup(){}
 	

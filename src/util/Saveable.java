@@ -29,7 +29,7 @@ public interface Saveable{
 	 * Save all values for this object to the given {@link PrintWriter}<br>
 	 * Must ensure that the associated load method will load the object from the exact format which this save method used<br>
 	 * After this method is called, the {@link PrintWriter} should be ready for another {@link #save(PrintWriter)} call from any other {@link Saveable}
-	 * @param writer The {@link PrintWriter}, usually a file
+	 * @param writer The {@link PrintWriter}, usually a file.<br>
 	 * 	Do not close this object, that should be handled by the creator of the object
 	 * @return true if the save was successful, false otherwise
 	 */

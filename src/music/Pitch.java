@@ -103,7 +103,7 @@ public class Pitch implements Copyable<Pitch>, Saveable{
 	@Override
 	public boolean save(PrintWriter writer){
 		// Save the pitch value and nothing else
-		if(!Saveable.saveToString(writer, this.getNote()));
+		if(!Saveable.saveToString(writer, this.getNote())) return false;
 		// End the line
 		return Saveable.newLine(writer);
 	}
