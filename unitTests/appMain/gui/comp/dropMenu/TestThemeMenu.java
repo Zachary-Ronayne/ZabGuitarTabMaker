@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.awt.event.ActionEvent;
 import java.util.Arrays;
 
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,6 +28,7 @@ public class TestThemeMenu{
 	public static void init(){
 		ZabAppSettings.init();
 		gui = new ZabGui();
+		gui.setVisible(false);
 	}
 	
 	@BeforeEach
@@ -87,8 +88,10 @@ public class TestThemeMenu{
 		menu.getGui().setVisible(false);
 		assertTrue(ZabAppSettings.theme() instanceof ZabTheme.LightTheme, "Checking light theme set");
 	}
-	
-	@AfterEach
-	public void end(){}
+
+	@AfterAll
+	public static void endAll(){
+		gui.dispose();
+	}
 	
 }

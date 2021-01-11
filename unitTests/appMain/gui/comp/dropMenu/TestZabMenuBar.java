@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.awt.Color;
 
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,6 +23,7 @@ public class TestZabMenuBar{
 	public static void init(){
 		ZabAppSettings.init();
 		gui = new ZabGui();
+		gui.setVisible(false);
 	}
 	
 	@BeforeEach
@@ -57,8 +58,10 @@ public class TestZabMenuBar{
 		ZabMenu menu = bar.getGraphicsMenu();
 		assertNotEquals(null, menu, "Checking menu initialized");
 	}
-		
-	@AfterEach
-	public void end(){}
+	
+	@AfterAll
+	public static void endAll(){
+		gui.dispose();
+	}
 
 }

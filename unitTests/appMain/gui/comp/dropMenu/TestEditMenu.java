@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,6 +24,7 @@ public class TestEditMenu{
 	public static void init(){
 		ZabAppSettings.init();
 		gui = new ZabGui();
+		gui.setVisible(false);
 	}
 	
 	@BeforeEach
@@ -52,7 +53,9 @@ public class TestEditMenu{
 		assertTrue(Arrays.asList(menu.getMenuComponents()).contains(item), "Checking redo item in menu");
 	}
 	
-	@AfterEach
-	public void end(){}
+	@AfterAll
+	public static void endAll(){
+		gui.dispose();
+	}
 	
 }

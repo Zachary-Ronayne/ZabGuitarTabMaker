@@ -74,7 +74,7 @@ public class ZabAppSettings{
 		ZabGui newGui = new ZabGui();
 		gui.copyData(newGui);
 		newGui.updateTheme();
-		newGui.setVisible(true);
+		if(ZabConstants.SHOW_GUI_ON_INIT) newGui.setVisible(true);
 		newGui.repaint();
 		
 		// Get rid of the old gui

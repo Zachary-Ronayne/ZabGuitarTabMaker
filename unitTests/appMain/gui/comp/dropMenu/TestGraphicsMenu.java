@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,6 +24,7 @@ public class TestGraphicsMenu{
 	public static void init(){
 		ZabAppSettings.init();
 		gui = new ZabGui();
+		gui.setVisible(false);
 	}
 	
 	@BeforeEach
@@ -42,7 +43,9 @@ public class TestGraphicsMenu{
 		assertTrue(Arrays.asList(menu.getMenuComponents()).contains(menu.getThemeSubMenu()), "Checking theme menu in the graphics menu");
 	}
 	
-	@AfterEach
-	public void end(){}
+	@AfterAll
+	public static void endAll(){
+		gui.dispose();
+	}
 	
 }

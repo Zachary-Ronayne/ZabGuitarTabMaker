@@ -9,6 +9,7 @@ import appMain.gui.ZabGui;
 import appMain.gui.ZabTheme;
 import appMain.gui.frames.EditorFrame;
 import appMain.gui.frames.ExporterFrame;
+import appUtils.ZabConstants;
 import tab.Tab;
 import tab.TabTextExporter;
 
@@ -70,7 +71,7 @@ public class ZabExporterDialog extends JDialog{
 		this.setAlwaysOnTop(true);
 		
 		// Open the JDialog
-		this.setVisible(true);
+		if(ZabConstants.ENABLE_DIALOG) this.setVisible(true);
 		
 		// Center it based on the GUI
 		this.setLocationRelativeTo(this.getGui());

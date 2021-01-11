@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import javax.swing.BoxLayout;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +28,7 @@ public class TestEditorFrame{
 	public static void init(){
 		ZabAppSettings.init();
 		gui = new ZabGui();
+		gui.setVisible(false);
 	}
 	
 	@BeforeEach
@@ -88,5 +90,10 @@ public class TestEditorFrame{
 	
 	@AfterEach
 	public void end(){}
+	
+	@AfterAll
+	public static void endAll(){
+		gui.dispose();
+	}
 
 }

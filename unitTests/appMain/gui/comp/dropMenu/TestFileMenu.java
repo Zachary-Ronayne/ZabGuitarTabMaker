@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.awt.event.ActionEvent;
 import java.util.Arrays;
 
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,6 +25,7 @@ public class TestFileMenu{
 	public static void init(){
 		ZabAppSettings.init();
 		gui = new ZabGui();
+		gui.setVisible(false);
 	}
 	
 	@BeforeEach
@@ -95,12 +96,13 @@ public class TestFileMenu{
 	@Test
 	public void actionPerformedExportListener(){
 		menu.getExporter().actionPerformed(new ActionEvent(menu, 0, null));
+		menu.getExportDialog().setVisible(false);
+		menu.getExportDialog().dispose();
 	}
 	
-	@Test
-	public void test(){}
-	
-	@AfterEach
-	public void end(){}
+	@AfterAll
+	public static void endAll(){
+		gui.dispose();
+	}
 	
 }

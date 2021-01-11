@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.File;
 
 import org.junit.After;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,6 +37,7 @@ public class TestZabFileChooser{
 	public static void init(){
 		ZabAppSettings.init();
 		gui = new ZabGui();
+		gui.setVisible(false);
 		frame = new ExporterFrame(gui);
 		chooser = new ZabFileChooser(frame);
 		UtilsTest.createUnitFolder();
@@ -122,6 +124,11 @@ public class TestZabFileChooser{
 	@After
 	public void end(){
 		UtilsTest.deleteUnitFolder();
+	}
+	
+	@AfterAll
+	public static void endAll(){
+		gui.dispose();
 	}
 
 }

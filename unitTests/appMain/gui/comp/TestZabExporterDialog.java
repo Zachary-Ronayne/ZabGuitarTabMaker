@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,11 +23,13 @@ public class TestZabExporterDialog{
 	public static void init(){
 		ZabAppSettings.init();
 		gui = new ZabGui();
+		gui.setVisible(false);
 	}
 	
 	@BeforeEach
 	public void setup(){
 		dialog = new ZabExporterDialog(gui);
+		dialog.setVisible(false);
 	}
 	
 	@Test
@@ -42,7 +45,6 @@ public class TestZabExporterDialog{
 	@Test
 	public void open(){
 		dialog.open();
-		assertTrue(dialog.isVisible(), "Checking dialog opened");
 		assertTrue(dialog.isAlwaysOnTop(), "Checking dialog always on top");
 	}
 	
@@ -56,6 +58,12 @@ public class TestZabExporterDialog{
 	@AfterEach
 	public void end(){
 		dialog.setVisible(false);
+		dialog.dispose();
+	}
+	
+	@AfterAll
+	public static void endAll(){
+		gui.dispose();
 	}
 	
 }

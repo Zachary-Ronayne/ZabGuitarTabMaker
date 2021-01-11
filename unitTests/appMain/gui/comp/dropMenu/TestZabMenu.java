@@ -8,7 +8,7 @@ import java.awt.Component;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -65,8 +65,10 @@ public class TestZabMenu{
 		assertTrue(list.contains(items[3]), "Checking list contains all items");
 		assertTrue(list.contains(subMenu), "Checking list contains sub menu");
 	}
-	
-	@AfterEach
-	public void end(){}
+
+	@AfterAll
+	public static void endAll(){
+		gui.dispose();
+	}
 
 }

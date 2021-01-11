@@ -26,6 +26,7 @@ public class TestExporterFrame{
 	public static void init(){
 		ZabAppSettings.init();
 		gui = new ZabGui();
+		gui.setVisible(false);
 	}
 	
 	@BeforeEach
@@ -102,6 +103,11 @@ public class TestExporterFrame{
 	@AfterAll
 	public static void end(){
 		UtilsTest.deleteUnitFolder();
+	}
+	
+	@AfterAll
+	public static void endAll(){
+		gui.dispose();
 	}
 	
 }

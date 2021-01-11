@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.awt.Color;
 
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,6 +29,7 @@ public class TestZabFrame{
 	public static void init(){
 		ZabAppSettings.init();
 		gui = new ZabGui();
+		gui.setVisible(false);
 	}
 	
 	@BeforeEach
@@ -45,8 +46,10 @@ public class TestZabFrame{
 	public void getGui(){
 		assertEquals(gui, frame.getGui(), "Checking gui set");
 	}
-	
-	@AfterEach
-	public void end(){}
+
+	@AfterAll
+	public static void endAll(){
+		gui.dispose();
+	}
 
 }
