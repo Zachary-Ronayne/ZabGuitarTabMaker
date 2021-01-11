@@ -6,7 +6,9 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import appUtils.ZabAppSettings;
 import appUtils.ZabConstants;
+import appUtils.ZabSettings;
 import music.Music;
 import tab.symbol.TabSymbol;
 import util.FileUtils;
@@ -18,6 +20,11 @@ import util.StringUtils;
  */
 public final class TabTextExporter{
 	
+	/** The number used for representing displaying the note names of a tab as all flat notes, no sharp notes */
+	public static final int NOTE_FORMAT_ALL_FLAT = 0;
+	/** The number used for representing displaying the note names of a tab as all sharp notes, no flat notes */
+	public static final int NOTE_FORMAT_ALL_SHARP = 1;
+	
 	/**
 	 * Export a tab to a text String with no special parameters
 	 * @param tab The {@link Tab} to export
@@ -26,31 +33,31 @@ public final class TabTextExporter{
 	public static String export(Tab tab){
 		if(tab == null) return null;
 		
-		// TODO add settings for all of these values
+		ZabSettings settings = ZabAppSettings.get();
 		
 		// The text string added before each tab string
-		String offset = "";
+		String offset = settings.tabTextPreString();
 		// The text placed directly after the note name
-		String afterNoteName = "|";
+		String afterNoteName = settings.tabTextPostNoteName();
 		// The character used to fill the space between note names of differing length
-		char noteNameFiller = ' ';
+		char noteNameFiller = settings.tabTextNoteNameFiller();
 		// Whether or not the note name filler should come before or after the name
-		boolean noteNameFillerBefore = false;
+		boolean noteNameFillerBefore = settings.tabTextNoteNameAlignEnd();
 		// Whether or not to include the octave number for each number
-		boolean noteNameOctave = false;
+		boolean noteNameOctave = settings.tabTextNoteNameOctave();
 		// The way to display the text notes for flat/sharp notes, 0 for all flats, 1 for all sharps.
 		// This is an integer to keep it open to other formats, i.e. mix of flat and sharps, including double sharps, using E# instead of F
-		int noteNameFormat = 1;
+		int noteNameFormat = settings.tabTextNoteNameFormat();
 		// The text added before each symbol is added
-		String symbolBefore = "-";
+		String symbolBefore = settings.tabTextBeforeSymbol();
 		// The text added after each symbol is added
-		String symbolAfter = "-";
+		String symbolAfter = settings.tabTextAfterSymbol();
 		// The character used to fill up the tab
-		char tabFiller = '-';
+		char tabFiller = settings.tabTextFiller();
 		// Whether the tab filler should be placed before or after the symbols
-		boolean tabFillerBefore = false;
+		boolean tabFillerBefore = settings.tabTextAlignSymbolsEnd();
 		// The string to place at the end of every tabString
-		String tabEnd = "|";
+		String tabEnd = settings.tabTextEnd();
 		
 		// Get all of the TabStrings
 		ArrayList<TabString> tabStrings = tab.getStrings();
@@ -67,11 +74,11 @@ public final class TabTextExporter{
 			// Find the name of the pitch to the export string and set it as to adding it
 			String s;
 			switch(noteNameFormat){
-				case 0:
+				case NOTE_FORMAT_ALL_FLAT:
 					if(noteNameOctave) s = Music.intToNoteFlat(pitch);
 					else s = Music.intToNoteNameFlat(pitch);
 					break;
-				case 1:
+				case NOTE_FORMAT_ALL_SHARP:
 				default:
 					if(noteNameOctave) s = Music.intToNoteSharp(pitch);
 					else s = Music.intToNoteNameSharp(pitch);

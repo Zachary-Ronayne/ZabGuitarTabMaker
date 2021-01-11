@@ -45,6 +45,7 @@ public interface Saveable{
 	 * 		<li>1: int</li>
 	 * 		<li>2: double</li>
 	 * 		<li>3: string</li>
+	 * 		<li>4: item (reader.next() not the full line)</li>
 	 * 	</ul>
 	 * @return null if any error occurred with loading the value, otherwise the resulting array of values of the given size
 	 */
@@ -56,6 +57,7 @@ public interface Saveable{
 				case 1: return reader.nextInt();
 				case 2: return reader.nextDouble();
 				case 3:	return reader.nextLine();
+				case 4:	return reader.next();
 				default: return null;
 			}
 		}
@@ -75,6 +77,7 @@ public interface Saveable{
 	 * 		<li>1: int</li>
 	 * 		<li>2: double</li>
 	 * 		<li>3: string</li>
+	 * 		<li>4: item (reader.next() not the full line)</li>
 	 * 	</ul>
 	 * @return null if any error occurred with loading the values, otherwise the resulting array of values of the given size
 	 */

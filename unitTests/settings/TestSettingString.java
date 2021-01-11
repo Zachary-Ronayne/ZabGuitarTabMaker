@@ -31,43 +31,53 @@ public class TestSettingString{
 				new SettingString("\n");
 			}
 		}, "Checking that a new line character causes an error");
-	}
-	
-	@Test
-	public void setValue(){
-		setting.setValue("test");
-		setting.setValue("line\n");
-		assertEquals("test", setting.getValue(), "Checking value was not changed with a new line character");
 		
-		setting.setValue(null);
-		assertEquals("", setting.getValue(), "Checking value empty after setting to null");
+		assertEquals("q z", setting.get(), "Checking value set");
+		assertEquals("q z", setting.getDefault(), "Checking default value set");
 	}
 	
 	@Test
-	public void setDefaultValue(){
-		setting.setDefaultValue("test");
-		setting.setDefaultValue("line\n");
-		assertEquals("test", setting.getDefaultValue(), "Checking default value was not changed with a new line character");
+	public void set(){
+		setting.set("test");
+		setting.set("line\n");
+		assertEquals("test", setting.get(), "Checking value was not changed with a new line character");
+		
+		setting.set(null);
+		assertEquals("", setting.get(), "Checking value empty after setting to null");
 	}
 	
 	@Test
-	public void loadValue(){
+	public void setDefault(){
+		setting.setDefault("test");
+		setting.setDefault("line\n");
+		assertEquals("test", setting.getDefault(), "Checking default value was not changed with a new line character");
+	}
+	
+	@Test
+	public void loadValues(){
 		Scanner read = new Scanner("word z\ndefault z\n123\nsdf\nk");
 		assertTrue("Checking load successful", setting.load(read));
-		assertEquals("word z", setting.getValue(), "Checking value loaded from scanner");
-		assertEquals("default z", setting.getDefaultValue(), "Checking default value loaded from scanner");
+		assertEquals("word z", setting.get(), "Checking value loaded from scanner");
+		assertEquals("default z", setting.getDefault(), "Checking default value loaded from scanner");
 
 		assertTrue("Checking load successful", setting.load(read));
-		assertEquals("123", setting.getValue(), "Checking value loaded from scanner");
-		assertEquals("sdf", setting.getDefaultValue(), "Checking default value loaded from scanner");
+		assertEquals("123", setting.get(), "Checking value loaded from scanner");
+		assertEquals("sdf", setting.getDefault(), "Checking default value loaded from scanner");
 
 		assertFalse("Checking load fails with not enough data", setting.load(read));
 	}
 	
 	@Test
-	public void saveValue(){
-		setting.setDefaultValue("s w");
+	public void saveValues(){
+		setting.setDefault("s w");
 		assertEquals("q z\ns w\n", UtilsTest.testSave(setting), "Checking setting saved saved by writer");
+	}
+
+	@Test
+	public void cleanValue(){
+		assertEquals("a", SettingString.cleanValue("a"), "Checking cleaned returns the same value");
+		assertEquals("", SettingString.cleanValue(null), "Checking cleaned null returns empty string");
+		assertEquals(null, SettingString.cleanValue("word\n test"), "Checking cleaned null returns null with new line");
 	}
 	
 	@AfterEach

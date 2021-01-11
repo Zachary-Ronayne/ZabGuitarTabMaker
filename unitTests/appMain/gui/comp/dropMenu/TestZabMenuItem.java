@@ -27,7 +27,7 @@ public class TestZabMenuItem{
 
 	@Test
 	public void constructor(){
-		assertEquals(new Color(40, 40, 40), item.getBackground(), "Checking background set");
+		assertEquals(new Color(30, 30, 30), item.getBackground(), "Checking background set");
 		assertEquals("text", item.getText(), "Checking name set");
 	}
 	

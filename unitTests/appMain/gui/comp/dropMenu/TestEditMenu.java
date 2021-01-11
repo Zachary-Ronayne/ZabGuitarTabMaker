@@ -1,36 +1,34 @@
-package appMain.gui.comp;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.awt.Color;
+package appMain.gui.comp.dropMenu;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import appMain.gui.ZabGui;
 import appUtils.ZabAppSettings;
 
-public class TestZabPannel{
+public class TestEditMenu{
 	
-	private ZabPanel panel;
+	private static ZabGui gui;
+	
+	private EditMenu menu;
 	
 	@BeforeAll
 	public static void init(){
 		ZabAppSettings.init();
+		gui = new ZabGui();
 	}
 	
 	@BeforeEach
 	public void setup(){
-		panel = new ZabPanel();
+		menu = gui.getZabMenuBar().getEditMenu();
 	}
 	
 	@Test
-	public void constructor(){
-		assertEquals(new Color(30, 30, 30), panel.getBackground(), "Checking background set");
-	}
+	public void test(){}
 	
 	@AfterEach
 	public void end(){}
-
+	
 }

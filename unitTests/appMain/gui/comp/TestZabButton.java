@@ -27,7 +27,7 @@ public class TestZabButton{
 	
 	@Test
 	public void constructor(){
-		assertEquals(new Color(40, 40, 40), button.getBackground(), "Checking background set");
+		assertEquals(new Color(30, 30, 30), button.getBackground(), "Checking background set");
 	}
 	
 	@Test

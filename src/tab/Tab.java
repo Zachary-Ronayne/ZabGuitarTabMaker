@@ -4,6 +4,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import appUtils.ZabAppSettings;
+import appUtils.ZabSettings;
 import music.Pitch;
 import music.Rhythm;
 import music.TimeSignature;
@@ -266,6 +268,7 @@ public class Tab implements Copyable<Tab>, Saveable{
 	 * For each note on each string of this Tab, give each of them a rhythm based on the space between other notes
 	 */
 	public void guessRhythms(){
+		ZabSettings settings = ZabAppSettings.get();
 		this.usesRhythm = true;
 		for(TabString s : this.getStrings()){
 			int size = s.size();
@@ -281,7 +284,7 @@ public class Tab implements Copyable<Tab>, Saveable{
 				s.replace(i, p.getSymbol().convertToRhythm(r));
 			}
 			// Set the rhythm of the last note
-			s.replace(size - 1, s.symbol(size - 1).convertToRhythm(new Rhythm(1, 4))); // TODO make this a setting
+			s.replace(size - 1, s.symbol(size - 1).convertToRhythm(settings.rhythmConversionEndValue()));
 		}
 	}
 	

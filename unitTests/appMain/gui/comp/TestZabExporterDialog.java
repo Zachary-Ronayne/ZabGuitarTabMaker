@@ -44,7 +44,6 @@ public class TestZabExporterDialog{
 		dialog.open();
 		assertTrue(dialog.isVisible(), "Checking dialog opened");
 		assertTrue(dialog.isAlwaysOnTop(), "Checking dialog always on top");
-		dialog.setVisible(false);
 	}
 	
 	@Test
@@ -55,6 +54,8 @@ public class TestZabExporterDialog{
 	}
 	
 	@AfterEach
-	public void end(){}
+	public void end(){
+		dialog.setVisible(false);
+	}
 	
 }

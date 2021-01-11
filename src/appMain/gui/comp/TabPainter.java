@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import appMain.gui.ZabTheme;
 import appMain.gui.util.Camera;
 import appUtils.ZabAppSettings;
+import appUtils.ZabSettings;
 import tab.Tab;
 import tab.TabPosition;
 import tab.TabString;
@@ -244,7 +245,7 @@ public class TabPainter extends ZabPanel{
 	
 	/**
 	 * Unselect all but the specified {@link TabPosition}
-	 * @param h The {@link TabPosition} containing the {@link TabSymbol} to select
+	 * @param p The {@link TabPosition} containing the {@link TabSymbol} to select
 	 * @param string The String which h is on
 	 * @return true if the note was selected, false otherwise. Regardless of the return value, the selection is cleared
 	 */
@@ -261,7 +262,8 @@ public class TabPainter extends ZabPanel{
 	 * @return true if the selection took place, false otherwise
 	 */
 	public boolean selectNote(double mX, double mY){
-		double x = tab.getTimeSignature().quantize(xToTabPos(mX), 8); // TODO make this a setting
+		ZabSettings settings = ZabAppSettings.get();
+		double x = tab.getTimeSignature().quantize(xToTabPos(mX), settings.quantizeDivisor());
 		int y = pixelYToStringNum(mY);
 		if(x < 0 || y < 0) return false;
 		
@@ -684,11 +686,16 @@ public class TabPainter extends ZabPanel{
 		 */
 		@Override
 		public void mouseWheelMoved(MouseWheelEvent e){
+			ZabSettings settings = ZabAppSettings.get();
 			Camera cam = getCamera();
-			double factor = -0.1; // TODO make this a setting, both for the value, and inverted or not
-			if(e.isShiftDown()) factor *= 2; // TODO make this a setting
-			if(e.isAltDown()) factor *= 2; // TODO make this a setting
-			if(e.isControlDown()) factor *= 2; // TODO make this a setting
+			
+			double factor = settings.zoomFactor();
+			if(settings.zoomInverted()) factor *= -1;
+			
+			double zoomMult = settings.zoomModifierFactor();
+			if(e.isShiftDown()) factor *= zoomMult;
+			if(e.isAltDown()) factor *= zoomMult;
+			if(e.isControlDown()) factor *= zoomMult;
 			cam.zoomIn(e.getX(), e.getY(), e.getWheelRotation() * factor);
 			repaint();
 		}

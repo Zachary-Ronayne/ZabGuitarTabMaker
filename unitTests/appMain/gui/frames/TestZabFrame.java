@@ -38,7 +38,7 @@ public class TestZabFrame{
 	
 	@Test
 	public void constructor(){
-		assertEquals(new Color(40, 40, 40), frame.getBackground(), "Checking background set");
+		assertEquals(new Color(30, 30, 30), frame.getBackground(), "Checking background set");
 	}
 
 	@Test

@@ -94,7 +94,7 @@ public class NotePosition implements Copyable<NotePosition>, Comparable<NotePosi
 	 * @param divisor The amount to divide up the units of a whole note.<br>
 	 * 	i.e. use 4 to quantize to quarter notes, use 6 to quantize to dotted quarter notes, etc
 	 */
-	public void quantize(TimeSignature sig, int divisor){
+	public void quantize(TimeSignature sig, double divisor){
 		this.setValue(sig.quantize(this.getValue(), divisor));
 	}
 	

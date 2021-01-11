@@ -25,14 +25,14 @@ public class TestSetting{
 			super(value, defaultValue);
 		}
 		@Override
-		public boolean loadValue(Scanner reader) throws Exception{
-			if(this.getValue().equals("error")) throw new Exception();
-			return !this.getValue().equals("break");
+		public boolean loadValues(Scanner reader) throws Exception{
+			if(this.get().equals("error")) throw new Exception();
+			return !this.get().equals("break");
 		}
 		@Override
-		public boolean saveValue(PrintWriter writer) throws Exception{
-			if(this.getValue().equals("error")) throw new Exception();
-			return !this.getValue().equals("break");
+		public boolean saveValues(PrintWriter writer) throws Exception{
+			if(this.get().equals("error")) throw new Exception();
+			return !this.get().equals("break");
 		}
 	}
 	
@@ -44,32 +44,32 @@ public class TestSetting{
 	
 	@Test
 	public void getValue(){
-		assertEquals("a", settingNoDefault.getValue(), "Checking value initialized");
-		assertEquals("b", setting.getValue(), "Checking value initialized");
+		assertEquals("a", settingNoDefault.get(), "Checking value initialized");
+		assertEquals("b", setting.get(), "Checking value initialized");
 	}
 	
 	@Test
 	public void setValue(){
-		settingNoDefault.setValue("d");
-		assertEquals("d", settingNoDefault.getValue(), "Checking value set");
+		settingNoDefault.set("d");
+		assertEquals("d", settingNoDefault.get(), "Checking value set");
 	}
 	
 	@Test
 	public void getDefaultValue(){
-		assertEquals("a", settingNoDefault.getDefaultValue(), "Checking default value initialized");
-		assertEquals("c", setting.getDefaultValue(), "Checking default value initialized");
+		assertEquals("a", settingNoDefault.getDefault(), "Checking default value initialized");
+		assertEquals("c", setting.getDefault(), "Checking default value initialized");
 	}
 	
 	@Test
 	public void setDefaultValue(){
-		settingNoDefault.setDefaultValue("e");
-		assertEquals("e", settingNoDefault.getDefaultValue(), "Checking default value set");
+		settingNoDefault.setDefault("e");
+		assertEquals("e", settingNoDefault.getDefault(), "Checking default value set");
 	}
 	
 	@Test
 	public void loadDefault(){
 		setting.loadDefault();
-		assertEquals("c", setting.getDefaultValue(), "Checking value updated to default value");
+		assertEquals("c", setting.getDefault(), "Checking value updated to default value");
 	}
 	
 	@Test
@@ -78,10 +78,10 @@ public class TestSetting{
 		
 		assertTrue("Checking load detects good loading", setting.load(new Scanner("")));
 		
-		setting.setValue("break");
+		setting.set("break");
 		assertFalse("Checking load detects bad loading", setting.load(new Scanner("")));
 		
-		setting.setValue("error");
+		setting.set("error");
 		assertFalse("Checking load detects error in loading", setting.load(new Scanner("")));
 	}
 
@@ -91,10 +91,10 @@ public class TestSetting{
 		
 		assertTrue("Checking save detects good saving", setting.save(new PrintWriter(new ByteArrayOutputStream())));
 		
-		setting.setValue("break");
+		setting.set("break");
 		assertFalse("Checking save detects bad saving", setting.save(new PrintWriter(new ByteArrayOutputStream())));
 		
-		setting.setValue("error");
+		setting.set("error");
 		assertFalse("Checking save detects error in saving", setting.save(new PrintWriter(new ByteArrayOutputStream())));
 	}
 
@@ -104,13 +104,13 @@ public class TestSetting{
 		assertTrue("Checking two setting are equal", settingNoDefault.equals(newSetting));
 		assertFalse("Checking two setting are not the same object", settingNoDefault == newSetting);
 		
-		newSetting.setValue("b");
+		newSetting.set("b");
 		assertFalse("Checking two setting are not equal with different values", settingNoDefault.equals(newSetting));
 		
-		newSetting.setValue("a");
+		newSetting.set("a");
 		assertTrue("Checking two setting are still equal", settingNoDefault.equals(newSetting));
 		
-		newSetting.setDefaultValue("b");
+		newSetting.setDefault("b");
 		assertFalse("Checking two setting are not equal with different default values", settingNoDefault.equals(newSetting));
 	}
 	

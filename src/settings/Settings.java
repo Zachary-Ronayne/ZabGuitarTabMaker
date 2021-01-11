@@ -32,9 +32,49 @@ public abstract class Settings implements Saveable{
 	 * @param value The setting value to use
 	 * @return The generated settings object
 	 */
-	private SettingString add(SettingString value){
+	protected <T extends Setting<?>> T add(T value){
 		this.all.add(value);
 		return value;
+	}
+	
+	/**
+	 * A helper method used by the constructor to generate initial setting objects.
+	 * @param value The string to use
+	 * @return The generated settings object
+	 */
+	protected SettingBoolean addBoolean(Boolean value){
+		SettingBoolean b = new SettingBoolean(value);
+		return this.add(b);
+	}
+	
+	/**
+	 * A helper method used by the constructor to generate initial setting objects.
+	 * @param value The string to use
+	 * @return The generated settings object
+	 */
+	protected SettingInt addInt(Integer value){
+		SettingInt i = new SettingInt(value);
+		return this.add(i);
+	}
+	
+	/**
+	 * A helper method used by the constructor to generate initial setting objects.
+	 * @param value The string to use
+	 * @return The generated settings object
+	 */
+	protected SettingDouble addDouble(Double value){
+		SettingDouble d = new SettingDouble(value);
+		return this.add(d);
+	}
+	
+	/**
+	 * A helper method used by the constructor to generate initial setting objects.
+	 * @param value The string to use
+	 * @return The generated settings object
+	 */
+	protected SettingChar addChar(Character value){
+		SettingChar d = new SettingChar(value);
+		return this.add(d);
 	}
 	
 	/**

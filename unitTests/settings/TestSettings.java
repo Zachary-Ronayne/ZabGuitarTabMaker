@@ -36,15 +36,15 @@ public class TestSettings{
 		ArrayList<Setting<?>> s = settings.getAll();
 		assertEquals(2, s.size(), "Checking correct number of settings exist");
 		
-		assertTrue("Checking each setting exists", s.get(0).getValue().equals("set a"));
-		assertTrue("Checking each setting exists", s.get(1).getValue().equals("set b"));
+		assertTrue("Checking each setting exists", s.get(0).get().equals("set a"));
+		assertTrue("Checking each setting exists", s.get(1).get().equals("set b"));
 	}
 	
 	@Test
 	public void loadDefaults(){
 		ArrayList<Setting<?>> s = settings.getAll();
-		((SettingString)s.get(0)).setValue("set y");
-		((SettingString)s.get(1)).setValue("set z");
+		((SettingString)s.get(0)).set("set y");
+		((SettingString)s.get(1)).set("set z");
 		
 		assertFalse("Checking settings are not equal", settings.equals(newSettings));
 		
@@ -56,8 +56,8 @@ public class TestSettings{
 	public void load(){
 		// Changing settings to all different values
 		ArrayList<Setting<?>> s = settings.getAll();
-		((SettingString)s.get(0)).setValue("set y");
-		((SettingString)s.get(1)).setValue("set z");
+		((SettingString)s.get(0)).set("set y");
+		((SettingString)s.get(1)).set("set z");
 		
 		String saved = UtilsTest.testSave(settings);
 		Scanner scan = new Scanner(saved);
@@ -82,7 +82,7 @@ public class TestSettings{
 		assertFalse("Checking identical settings are not the same object", settings == newSettings);
 
 		ArrayList<Setting<?>> s = newSettings.getAll();
-		((SettingString)s.get(0)).setValue("a");
+		((SettingString)s.get(0)).set("a");
 		assertFalse("Checking settings with different values are not equal", settings.equals(newSettings));
 		
 		((SettingString)s.get(0)).loadDefault();

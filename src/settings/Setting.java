@@ -29,8 +29,8 @@ public abstract class Setting<T> implements Saveable{
 	 * @param defaultValue The default value for this setting
 	 */
 	public Setting(T value, T defaultValue){
-		this.setValue(value);
-		this.setDefaultValue(defaultValue);
+		this.set(value);
+		this.setDefault(defaultValue);
 	}
 	
 	/**
@@ -45,7 +45,7 @@ public abstract class Setting<T> implements Saveable{
 	 * Get the value of this {@link Setting}
 	 * @return See {@link #value}
 	 */
-	public T getValue(){
+	public T get(){
 		return value;
 	}
 	
@@ -53,7 +53,7 @@ public abstract class Setting<T> implements Saveable{
 	 * Set the value of this {@link Setting}
 	 * @param value See {@link #value}
 	 */
-	public void setValue(T value){
+	public void set(T value){
 		this.value = value;
 	}
 	
@@ -61,7 +61,7 @@ public abstract class Setting<T> implements Saveable{
 	 * Get the default value of this {@link Setting}
 	 * @return See {@link #defaultValue}
 	 */
-	public T getDefaultValue(){
+	public T getDefault(){
 		return defaultValue;
 	}
 	
@@ -70,7 +70,7 @@ public abstract class Setting<T> implements Saveable{
 	 * Generally should not be used outside of constructor
 	 * @param defaultValue See {@link #defaultValue}
 	 */
-	public void setDefaultValue(T defaultValue){
+	public void setDefault(T defaultValue){
 		this.defaultValue = defaultValue;
 	}
 
@@ -78,7 +78,7 @@ public abstract class Setting<T> implements Saveable{
 	 * Set the value of this {@link Setting} to its default value
 	 */
 	public void loadDefault(){
-		this.setValue(this.getDefaultValue());
+		this.set(this.getDefault());
 	}
 	
 	/**
@@ -88,7 +88,7 @@ public abstract class Setting<T> implements Saveable{
 	public final boolean load(Scanner reader){
 		if(reader == null) return false;
 		try{
-			return this.loadValue(reader);
+			return this.loadValues(reader);
 		}catch(Exception e){
 			return false;
 		}
@@ -101,27 +101,29 @@ public abstract class Setting<T> implements Saveable{
 	public final boolean save(PrintWriter writer){
 		if(writer == null) return false;
 		try{
-			return this.saveValue(writer);
+			return this.saveValues(writer);
 		}catch(Exception e){
 			return false;
 		}
 	}
 	
 	/**
-	 * Load the value of this Setting
-	 * @param reader The {@link Scanner} object to use loading, do not close this object.
+	 * Load the value and default value of this Setting
+	 * @param reader The {@link Scanner} object to use loading, do not close this object. 
+	 * 	Can assume this object is not null, all calls to this method should never send a null parameter
 	 * @return True if the load was successful, false otherwise
 	 * @throws Exception Any exception which can happen in loading
 	 */
-	public abstract boolean loadValue(Scanner reader) throws Exception;
+	public abstract boolean loadValues(Scanner reader) throws Exception;
 	
 	/**
-	 * Save the value of this Setting
+	 * Save the value and default value of this Setting
 	 * @param writer The {@link PrintWriter} object to use saving, do not close this object.
+	 * 	Can assume this object is not null, all calls to this method should never send a null parameter
 	 * @return True if the save was successful, false otherwise
 	 * @throws Exception Any exception which can happen in saving
 	 */
-	public abstract boolean saveValue(PrintWriter writer) throws Exception;
+	public abstract boolean saveValues(PrintWriter writer) throws Exception;
 	
 	/***/
 	@Override
@@ -130,19 +132,19 @@ public abstract class Setting<T> implements Saveable{
 		
 		Setting<?> s = (Setting<?>)obj;
 		return 	super.equals(obj) ||
-				this.getValue().equals(s.getValue()) &&
-				this.getDefaultValue().equals(s.getDefaultValue());
+				this.get().equals(s.get()) &&
+				this.getDefault().equals(s.getDefault());
 	}
 	
 	/***/
 	@Override
 	public String toString(){
 		StringBuilder b = new StringBuilder("[Setting, Type: ");
-		b.append(this.getValue().getClass().getSimpleName());
+		b.append(this.get().getClass().getSimpleName());
 		b.append(", value: ");
-		b.append(this.getValue());
+		b.append(this.get());
 		b.append(", default: ");
-		b.append(this.getDefaultValue());
+		b.append(this.getDefault());
 		b.append("]");
 		return b.toString();
 	}

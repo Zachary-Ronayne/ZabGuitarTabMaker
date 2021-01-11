@@ -32,7 +32,7 @@ public class TestZabMenu{
 	
 	@Test
 	public void constructor(){
-		assertEquals(new Color(40, 40, 40), menu.getBackground(), "Checking background set");
+		assertEquals(new Color(30, 30, 30), menu.getBackground(), "Checking background set");
 		assertEquals("name", menu.getText(), "Checking text initialized");
 	}
 	

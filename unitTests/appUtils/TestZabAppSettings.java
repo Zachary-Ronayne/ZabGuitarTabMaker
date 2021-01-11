@@ -65,45 +65,9 @@ public class TestZabAppSettings{
 	
 	@Test
 	public void load(){
+		init();
+		
 		Scanner scan = new Scanner(""
-				+ "h\n"
-				+ "h\n"
-				+ "p\n"
-				+ "p\n"
-				+ "/\n"
-				+ "/\n"
-				+ "\\\n"
-				+ "\\\n"
-				+ "<\n"
-				+ "<\n"
-				+ ">\n"
-				+ ">\n"
-				+ "false 4 4 \n"
-				+ "6\n"
-				+ "4 \n"
-				+ "0\n"
-				+ "-1 \n"
-				+ "0\n"
-				+ "-5 \n"
-				+ "0\n"
-				+ "-10 \n"
-				+ "0\n"
-				+ "-15 \n"
-				+ "0\n"
-				+ "-20 \n"
-				+ "0\n"
-				+ "h\n"
-				+ "h\n"
-				+ "p\n"
-				+ "p\n"
-				+ "/\n"
-				+ "/\n"
-				+ "\\\n"
-				+ "\\\n"
-				+ "<\n"
-				+ "<\n"
-				+ ">\n"
-				+ ">\n"
 				+ "false 4 4 \n"
 				+ "6\n"
 				+ "4 \n"
@@ -122,6 +86,95 @@ public class TestZabAppSettings{
 		assertFalse("Checking load fails with invalid scanner", ZabAppSettings.load(new Scanner(""), guitar, true));
 		assertFalse("Checking load fails with null tab and not saving settings", ZabAppSettings.load(scan, null, false));
 		
+		scan.close();
+		scan = new Scanner(""
+				+ "h\n"
+				+ "h\n"
+				+ "p\n"
+				+ "p\n"
+				+ "/\n"
+				+ "/\n"
+				+ "\\\n"
+				+ "\\\n"
+				+ "<\n"
+				+ "<\n"
+				+ ">\n"
+				+ ">\n"
+				+ "\n"
+				+ "\n"
+				+ "|\n"
+				+ "|\n"
+				+ " \n"
+				+ " \n"
+				+ "false false \n"
+				+ "false false \n"
+				+ "1 1 null null \n"
+				+ "-\n"
+				+ "-\n"
+				+ "-\n"
+				+ "-\n"
+				+ "-\n"
+				+ "-\n"
+				+ "false false \n"
+				+ "|\n"
+				+ "|\n"
+				+ "0.1 0.1 null null \n"
+				+ "true true \n"
+				+ "2.0 2.0 null null \n"
+				+ "8.0 8.0 null null \n"
+				+ "1 4 \n"
+				+ "1 4 \n"
+				+ "false 4 4 \n"
+				+ "6\n"
+				+ "4 \n"
+				+ "0\n"
+				+ "-1 \n"
+				+ "0\n"
+				+ "-5 \n"
+				+ "0\n"
+				+ "-10 \n"
+				+ "0\n"
+				+ "-15 \n"
+				+ "0\n"
+				+ "-20 \n"
+				+ "0\n"
+				+ "h\n"
+				+ "h\n"
+				+ "p\n"
+				+ "p\n"
+				+ "/\n"
+				+ "/\n"
+				+ "\\\n"
+				+ "\\\n"
+				+ "<\n"
+				+ "<\n"
+				+ ">\n"
+				+ ">\n"
+				+ "\n"
+				+ "\n"
+				+ "|\n"
+				+ "|\n"
+				+ " \n"
+				+ " \n"
+				+ "false false \n"
+				+ "false false \n"
+				+ "1 1 null null \n"
+				+ "-\n"
+				+ "-\n"
+				+ "-\n"
+				+ "-\n"
+				+ "-\n"
+				+ "-\n"
+				+ "false false \n"
+				+ "|\n"
+				+ "|\n"
+				+ "0.1 0.1 null null \n"
+				+ "true true \n"
+				+ "2.0 2.0 null null \n"
+				+ "8.0 8.0 null null \n"
+				+ "1 4 \n"
+				+ "1 4 \n");
+		
 		ArrayList<Setting<?>> settingsCopy = new ArrayList<>();
 		settingsCopy.addAll(settings);
 		Tab tunedGuitar = InstrumentFactory.guitarEbStandard();
@@ -132,6 +185,22 @@ public class TestZabAppSettings{
 		assertTrue("Checking load successful with no tab", ZabAppSettings.load(scan, null, true));
 		assertEquals(settingsCopy, settings, "Checking correct settings loaded in");
 
+		scan.close();
+		scan = new Scanner(""
+				+ "false 4 4 \n"
+				+ "6\n"
+				+ "4 \n"
+				+ "0\n"
+				+ "-1 \n"
+				+ "0\n"
+				+ "-5 \n"
+				+ "0\n"
+				+ "-10 \n"
+				+ "0\n"
+				+ "-15 \n"
+				+ "0\n"
+				+ "-20 \n"
+				+ "0\n");
 		settingsCopy = new ArrayList<>();
 		settingsCopy.addAll(settings);
 		tunedGuitar = InstrumentFactory.guitarEbStandard();
@@ -162,19 +231,7 @@ public class TestZabAppSettings{
 		scan.close();
 		
 		scan = new Scanner(""
-				+ "h\n"
-				+ "h\n"
-				+ "p\n"
-				+ "p\n"
-				+ "/\n"
-				+ "/\n"
-				+ "\\\n"
-				+ "\\\n"
-				+ "<\n"
-				+ "<\n"
-				+ ">\n"
-				+ ">\n"
-				+ "false 4 4 \n"
+				+ "false 5 4 4 \n"
 				+ "6\n"
 				+ "4 \n"
 				+ "0\n"
@@ -186,23 +243,10 @@ public class TestZabAppSettings{
 				+ "0\n"
 				+ "-15 \n"
 				+ "0\n"
-				+ "-20 \n"
-				+ "0\n"
-				+ "h\n"
-				+ "h\n"
-				+ "p\n"
-				+ "p\n"
-				+ "/\n"
-				+ "/\n"
-				+ "\\\n"
-				+ "\\\n"
-				+ "<\n"
-				+ "<\n"
-				+ ">\n"
-				+ ">\n");
+				+ "-20 \n");
 		
 		guitar.getStrings().add(null);
-		assertFalse("Checking load fails with invalid tab", ZabAppSettings.load(scan, guitar, true));
+		assertFalse("Checking load fails with invalid tab", ZabAppSettings.load(scan, guitar, false));
 		guitar.getStrings().remove(6);
 
 		settings.add(0, null);
@@ -222,15 +266,21 @@ public class TestZabAppSettings{
 	
 	@Test
 	public void save(){
+		ZabAppSettings.init();
+		
 		bytes = new ByteArrayOutputStream();
 		bs = new BufferedOutputStream(bytes);
 		write = new PrintWriter(bs);
-		
 		assertFalse("Checking save fails with null tab and not saving settings", ZabAppSettings.save(write, null, false));
+		write.close();
 		
+		bytes = new ByteArrayOutputStream();
+		bs = new BufferedOutputStream(bytes);
+		write = new PrintWriter(bs);
 		assertTrue("Checking save successful saving settings and a tab", ZabAppSettings.save(write, guitar));
 		write.close();
 		String text = UtilsTest.removeSlashR(bytes.toString());
+		
 		assertEquals(""
 				+ "h\n"
 				+ "h\n"
@@ -244,6 +294,30 @@ public class TestZabAppSettings{
 				+ "<\n"
 				+ ">\n"
 				+ ">\n"
+				+ "\n"
+				+ "\n"
+				+ "|\n"
+				+ "|\n"
+				+ " \n"
+				+ " \n"
+				+ "false false \n"
+				+ "false false \n"
+				+ "1 1 null null \n"
+				+ "-\n"
+				+ "-\n"
+				+ "-\n"
+				+ "-\n"
+				+ "-\n"
+				+ "-\n"
+				+ "false false \n"
+				+ "|\n"
+				+ "|\n"
+				+ "0.1 0.1 null null \n"
+				+ "true true \n"
+				+ "2.0 2.0 null null \n"
+				+ "8.0 8.0 null null \n"
+				+ "1 4 \n"
+				+ "1 4 \n"
 				+ "false 4 4 \n"
 				+ "6\n"
 				+ "4 \n"
@@ -277,7 +351,31 @@ public class TestZabAppSettings{
 				+ "<\n"
 				+ "<\n"
 				+ ">\n"
-				+ ">\n", text, "Checking correct text saved with no tab");
+				+ ">\n"
+				+ "\n"
+				+ "\n"
+				+ "|\n"
+				+ "|\n"
+				+ " \n"
+				+ " \n"
+				+ "false false \n"
+				+ "false false \n"
+				+ "1 1 null null \n"
+				+ "-\n"
+				+ "-\n"
+				+ "-\n"
+				+ "-\n"
+				+ "-\n"
+				+ "-\n"
+				+ "false false \n"
+				+ "|\n"
+				+ "|\n"
+				+ "0.1 0.1 null null \n"
+				+ "true true \n"
+				+ "2.0 2.0 null null \n"
+				+ "8.0 8.0 null null \n"
+				+ "1 4 \n"
+				+ "1 4 \n", text, "Checking correct text saved with no tab");
 		
 		assertFalse("Checking save fails with invalid writer", ZabAppSettings.save(null, new Tab()));
 		
@@ -293,14 +391,6 @@ public class TestZabAppSettings{
 		bs = new BufferedOutputStream(bytes);
 		write = new PrintWriter(bs);
 		assertTrue("Checking save successful with tab only", ZabAppSettings.save(write, guitar, false));
-		write.close();
-
-		settings.add(0, null);
-		bytes = new ByteArrayOutputStream();
-		bs = new BufferedOutputStream(bytes);
-		write = new PrintWriter(bs);
-		assertFalse("Checking save fails with invalid settings", ZabAppSettings.save(write, null));
-		settings.remove(0);
 		write.close();
 		
 		assertTrue("Checking save settings to file successful", ZabAppSettings.save(UtilsTest.UNIT_PATH, UtilsTest.UNIT_NAME));

@@ -35,10 +35,10 @@ public class TestZabTheme{
 		ZabTheme.setToTheme(panel);
 		ZabTheme.setToTheme(button);
 		
-		assertEquals(new Color(40, 40, 40), panel.getBackground(), "Checking background correct");
+		assertEquals(new Color(30, 30, 30), panel.getBackground(), "Checking background correct");
 		assertEquals(new Color(180, 180, 180), panel.getForeground(), "Checking foreground correct");
 		
-		assertEquals(new Color(40, 40, 40), button.getBackground(), "Checking background correct");
+		assertEquals(new Color(30, 30, 30), button.getBackground(), "Checking background correct");
 		assertEquals(new Color(180, 180, 180), button.getForeground(), "Checking foreground correct");
 	}
 	
