@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
+import java.awt.Color;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowEvent;
 
@@ -21,7 +22,7 @@ import appUtils.ZabAppSettings;
 
 public class TestZabGui{
 
-	private static ZabGui gui;
+	private ZabGui gui;
 	
 	private ZabGui.GuiResizeListener resizer;
 	
@@ -31,15 +32,34 @@ public class TestZabGui{
 	@BeforeAll
 	public static void init(){
 		ZabAppSettings.init();
-		gui = new ZabGui();
 	}
 	
 	@BeforeEach
 	public void setup(){
-		
+		gui = new ZabGui();
+		gui.setVisible(false);
 		compEvent = new ComponentEvent(gui, 0);
 		winEvent = new WindowEvent(gui, 0);
 		resizer = gui.getResizer();
+	}
+	
+	@Test
+	public void updateTheme(){
+		ZabAppSettings.setTheme(new ZabTheme.DarkTheme(), null, false);
+		ZabAppSettings.setTheme(new ZabTheme.LightTheme(), null, false);
+		gui.updateTheme();
+		assertEquals(new Color(240, 240, 240), gui.getBackground(), "Checking background set for theme");
+	}
+	
+	@Test
+	public void copyData(){
+		ZabGui newGui = new ZabGui();
+		newGui.setVisible(false);
+		gui.copyData(newGui);
+		assertEquals(gui.getEditorFrame().getOpenedTab(), newGui.getEditorFrame().getOpenedTab(),
+				"Checking tab copied");
+		
+		newGui.dispose();
 	}
 	
 	@Test
@@ -51,6 +71,12 @@ public class TestZabGui{
 	@Test
 	public void updateSize(){
 		gui.updateSize();
+	}
+	
+	@Test
+	public void getZabMenuBar(){
+		assertNotEquals(null, gui.getZabMenuBar(), "Checking menu bar initialized");
+		assertNotEquals(gui.getMenuBar(), gui.getZabMenuBar(), "Checking menu bar set");
 	}
 	
 	@Test
@@ -161,6 +187,8 @@ public class TestZabGui{
 	}
 	
 	@AfterEach
-	public void end(){}
+	public void end(){
+		gui.dispose();
+	}
 	
 }

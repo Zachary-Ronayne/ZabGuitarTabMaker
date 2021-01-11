@@ -1,7 +1,5 @@
 package appMain.gui.comp.dropMenu;
 
-import java.awt.Component;
-
 import javax.swing.JMenuBar;
 
 import appMain.gui.ZabGui;
@@ -50,11 +48,6 @@ public class ZabMenuBar extends JMenuBar{
 		// Graphics menu
 		this.graphicsMenu = new GraphicsMenu(this.getGui());
 		this.add(this.graphicsMenu);
-	}
-	
-	@Override
-	public Component[] getComponents(){
-		return super.getComponents();
 	}
 	
 	/** @return See {@link #gui} */

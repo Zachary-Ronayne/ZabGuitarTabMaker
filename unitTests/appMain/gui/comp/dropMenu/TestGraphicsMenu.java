@@ -1,5 +1,11 @@
 package appMain.gui.comp.dropMenu;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Arrays;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +32,15 @@ public class TestGraphicsMenu{
 	}
 	
 	@Test
-	public void test(){}
+	public void constructor(){
+		assertEquals("Graphics", menu.getText(), "Checking menu has correct text");
+	}
+	
+	@Test
+	public void getThemeSubMenu(){
+		assertNotEquals(null, menu.getThemeSubMenu(), "Checking theme menu initialized");
+		assertTrue(Arrays.asList(menu.getMenuComponents()).contains(menu.getThemeSubMenu()), "Checking theme menu in the graphics menu");
+	}
 	
 	@AfterEach
 	public void end(){}

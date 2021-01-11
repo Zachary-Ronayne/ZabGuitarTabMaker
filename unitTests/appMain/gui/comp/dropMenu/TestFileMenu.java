@@ -33,6 +33,11 @@ public class TestFileMenu{
 	}
 	
 	@Test
+	public void constructor(){
+		assertEquals("File", menu.getText(), "Checking menu has correct text");
+	}
+	
+	@Test
 	public void getFileChooser(){
 		assertNotEquals(null, menu.getFileChooser(), "Checking file chooser initialized");
 	}

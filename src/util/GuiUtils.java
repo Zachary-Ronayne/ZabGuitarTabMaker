@@ -18,9 +18,10 @@ public class GuiUtils{
 	public static ArrayList<Component> getAllComponents(Component c){
 		ArrayList<Component> list = new ArrayList<Component>();
 		if(c == null) return list;
+
+		ArrayUtils.addWithoutDuplicate(list, c);
 		
 		if(!(c instanceof Container)){
-			list.add(c);
 			return list;
 		}
 		
@@ -29,10 +30,9 @@ public class GuiUtils{
 		Component[] comps = cont.getComponents();
 		
 		for(Component comp : comps){
-			if(!list.contains(comp)){
-				list.add(comp);
-			}
-			list.addAll(getAllComponents(comp));
+			ArrayUtils.addWithoutDuplicate(list, comp);
+			ArrayList<Component> newComps = getAllComponents(comp);
+			ArrayUtils.addManyWithoutDuplicate(list, newComps);
 		}
 		
 		return list;

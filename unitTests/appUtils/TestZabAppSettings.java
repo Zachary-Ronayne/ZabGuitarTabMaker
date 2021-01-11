@@ -3,11 +3,14 @@ package appUtils;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -17,6 +20,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import appMain.gui.ZabGui;
+import appMain.gui.ZabTheme;
 import settings.Setting;
 import tab.InstrumentFactory;
 import tab.Tab;
@@ -52,6 +57,73 @@ public class TestZabAppSettings{
 	@Test
 	public void get(){
 		assertNotEquals(null, ZabAppSettings.get(), "Checking settings are initialized");
+	}
+	
+	@Test
+	public void theme(){
+		assertNotEquals(null, ZabAppSettings.theme(), "Checking theme initialized");
+	}
+	
+	@Test
+	public void setTheme(){
+		ZabGui gui = new ZabGui();
+		gui.setVisible(false);
+		ZabAppSettings.setTheme(new ZabTheme.LightTheme(), gui, false);
+		ZabAppSettings.setTheme(new ZabTheme.DarkTheme(), null, true);
+		
+		gui.dispose();
+	}
+	
+	@Test
+	public void getThemeFile(){
+		assertEquals(new File(ZabAppSettings.THEME_SAVE_LOCATION), ZabAppSettings.getThemeFile(), "Checking file correct");
+	}
+	
+	@Test
+	public void loadDefaultTheme(){
+		ZabAppSettings.setTheme(new ZabTheme.LightTheme(), null, false);
+		ZabAppSettings.loadDefaultTheme();
+		assertTrue(ZabAppSettings.theme() instanceof ZabTheme.DarkTheme, "Checking default theme set");
+	}
+	
+	@Test
+	public void loadTheme(){
+		ZabAppSettings.setTheme(new ZabTheme.LightTheme(), null, false);
+		ZabAppSettings.getThemeFile().delete();
+		assertFalse(ZabAppSettings.loadTheme(), "Checking theme failed to load from file");
+		assertTrue(ZabAppSettings.theme() instanceof ZabTheme.DarkTheme, "Checking default theme set");
+		
+		ZabAppSettings.setTheme(new ZabTheme.LightTheme(), null, true);
+		assertTrue(ZabAppSettings.loadTheme(), "Checking theme loaded");
+		assertTrue(ZabAppSettings.theme() instanceof ZabTheme.LightTheme, "Checking light theme set");
+
+		ZabAppSettings.setTheme(new ZabTheme.LightTheme(), null, true);
+		File f = ZabAppSettings.getThemeFile();
+		try{
+			PrintWriter write = new PrintWriter(f);
+			write.print("a");
+			write.close();
+		}catch(FileNotFoundException e){
+			System.err.println("Error in testing loading themes in TestZabAppSettings");
+			e.printStackTrace();
+		}
+		assertFalse(ZabAppSettings.loadTheme(), "Checking theme failed to load from file with invalid theme name");
+		assertTrue(ZabAppSettings.theme() instanceof ZabTheme.DarkTheme, "Checking default theme set");
+	}
+	
+	@Test
+	public void saveTheme(){
+		ZabAppSettings.setTheme(new ZabTheme.LightTheme(), null, false);
+		assertTrue(ZabAppSettings.saveTheme(), "Checking save successful");
+		ZabAppSettings.setTheme(new ZabTheme.DarkTheme(), null, false);
+		assertTrue(ZabAppSettings.loadTheme(), "Checking load after save successful");
+		assertTrue(ZabAppSettings.theme() instanceof ZabTheme.LightTheme, "Checking light theme loaded");
+		
+		ZabAppSettings.setTheme(new ZabTheme.DarkTheme(), null, false);
+		assertTrue(ZabAppSettings.saveTheme(), "Checking save successful");
+		ZabAppSettings.setTheme(new ZabTheme.LightTheme(), null, false);
+		assertTrue(ZabAppSettings.loadTheme(), "Checking load after save successful");
+		assertTrue(ZabAppSettings.theme() instanceof ZabTheme.DarkTheme, "Checking dark theme loaded");
 	}
 	
 	@Test

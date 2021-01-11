@@ -20,8 +20,8 @@ import appUtils.ZabAppSettings;
 import tab.TabString;
 
 /**
- * A class containing utility methods for setting the colors of components in the Zab Application.<br>
- * Instances of this class must define every color in a theme
+ * An interface containing containing utility methods for setting the colors of components in the Zab Application.<br>
+ * Implementations of this interface must define every color in a theme
  * @author zrona
  */
 public interface ZabTheme{
@@ -40,6 +40,7 @@ public interface ZabTheme{
 
 		// Set up objects for general use
 		Border normalBorder = BorderFactory.createLineBorder(t.borderColor(), 1, false);
+		Border emptyBorder = BorderFactory.createEmptyBorder();
 		
 		// Set fields for all Components
 		c.setBackground(t.background());
@@ -50,7 +51,7 @@ public interface ZabTheme{
 			JComponent j = (JComponent)c;
 			
 			// No border in general for components
-			j.setBorder(BorderFactory.createEmptyBorder());
+			j.setBorder(emptyBorder);
 		}
 		
 		// Case of a JMenuBar
@@ -232,7 +233,8 @@ public interface ZabTheme{
 	public abstract Color tabSymbolHighlight();
 	
 	/**
-	 * A {@link MouseAdapter} given to all buttons which use a {@link ZabTheme}
+	 * A {@link MouseAdapter} given to all buttons which, via {@link ZabTheme#setToTheme(Component)}, 
+	 * are set to use  a {@link ZabTheme}
 	 * @author zrona
 	 */
 	public static class ButtonHoverSensor extends MouseAdapter{

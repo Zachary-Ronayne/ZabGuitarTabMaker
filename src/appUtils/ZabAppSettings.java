@@ -108,6 +108,8 @@ public class ZabAppSettings{
 			return false;
 		}
 		
+		boolean success = true;
+		
 		try{
 			// Make the scanner
 			Scanner read = new Scanner(file);
@@ -119,7 +121,7 @@ public class ZabAppSettings{
 				switch(line){
 					case "DarkTheme": t = new ZabTheme.DarkTheme(); break;
 					case "LightTheme": t = new ZabTheme.LightTheme(); break;
-					default: t = ZabTheme.getDefaultTheme(); break;
+					default: t = ZabTheme.getDefaultTheme(); success = false; break;
 				}
 				setTheme(t, null, false);
 				
@@ -132,7 +134,7 @@ public class ZabAppSettings{
 			return false;
 		}
 		
-		return true;
+		return success;
 	}
 	
 	/**

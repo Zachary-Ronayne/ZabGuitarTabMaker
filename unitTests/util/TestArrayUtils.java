@@ -79,6 +79,43 @@ public class TestArrayUtils{
 		assertEquals(1, arr.size(), "Checking correct array size");
 	}
 	
+	@Test
+	public void addWithoutDuplicate(){
+		ArrayList<String> arr = new ArrayList<String>();
+		assertTrue(ArrayUtils.addWithoutDuplicate(arr, "a"), "Checking element added");
+		assertTrue(ArrayUtils.addWithoutDuplicate(arr, "b"), "Checking element added");
+		assertTrue(ArrayUtils.addWithoutDuplicate(arr, "c"), "Checking element added");
+		assertFalse(ArrayUtils.addWithoutDuplicate(arr, "b"), "Checking duplicate element not added");
+		
+		assertEquals(3, arr.size(), "Checking array has correct size");
+		assertTrue(arr.contains("a"), "Checking array has element");
+		assertTrue(arr.contains("b"), "Checking array has element");
+		assertTrue(arr.contains("c"), "Checking array has element");
+	}
+	
+	@Test
+	public void addManyWithoutDuplicate(){
+		ArrayList<String> arr = new ArrayList<String>();
+		ArrayList<String> dupes = new ArrayList<String>();
+		dupes.add("a");
+		dupes.add("b");
+		dupes.add("c");
+		dupes.add("b");
+		assertFalse(ArrayUtils.addManyWithoutDuplicate(arr, dupes), "Checking at least one element wasn't added");
+
+		dupes = new ArrayList<String>();
+		dupes.add("d");
+		dupes.add("e");
+		assertTrue(ArrayUtils.addManyWithoutDuplicate(arr, dupes), "Checking all elements added");
+		
+		assertEquals(5, arr.size(), "Checking array has correct size");
+		assertTrue(arr.contains("a"), "Checking array has element");
+		assertTrue(arr.contains("b"), "Checking array has element");
+		assertTrue(arr.contains("c"), "Checking array has element");
+		assertTrue(arr.contains("d"), "Checking array has element");
+		assertTrue(arr.contains("e"), "Checking array has element");
+	}
+	
 	@AfterEach
 	public void end(){}
 

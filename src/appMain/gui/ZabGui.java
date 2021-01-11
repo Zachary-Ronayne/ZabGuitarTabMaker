@@ -96,10 +96,8 @@ public class ZabGui extends JFrame{
 		ArrayList<Component> list = new ArrayList<Component>();
 		list.add(this);
 		list.addAll(GuiUtils.getAllComponents(this.getContentPane()));
-		list.add(this.getZabMenuBar());
 		list.addAll(GuiUtils.getAllComponents(this.getZabMenuBar()));
 		ZabExporterDialog export = this.getZabMenuBar().getFileMenu().getExportDialog();
-		list.add(export);
 		list.addAll(GuiUtils.getAllComponents(export));
 		
 		for(Component c : list){

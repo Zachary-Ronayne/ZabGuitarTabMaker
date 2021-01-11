@@ -1,6 +1,8 @@
 package util;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public final class ArrayUtils{
 	
@@ -69,6 +71,33 @@ public final class ArrayUtils{
 	 */
 	public static <E extends Comparable<E>> boolean insertSorted(ArrayList<E> arr, E e){
 		return insertSorted(arr, e, true);
+	}
+	
+	/**
+	 * Add the given element to the list only if the given list does not contain the given element
+	 * @param <E> The type of the elements in the list
+	 * @param list The list
+	 * @param e The element to potentially add
+	 * @return true if the item was added, false otherwise
+	 */
+	public static <E> boolean addWithoutDuplicate(List<E> list, E e){
+		if(list.contains(e)) return false;
+		return list.add(e);
+	}
+	
+	/**
+	 * Add the all of the given elements to the given list, but only the items which the given list does not contain
+	 * @param <E> The type of the elements in the list
+	 * @param list The list to add items to
+	 * @param toAdd The items to potentially add
+	 * @return true if all items were added, false otherwise
+	 */
+	public static <E> boolean addManyWithoutDuplicate(List<E> list, Collection<E> toAdd){
+		boolean success = true;
+		for(E e : toAdd){
+			if(!addWithoutDuplicate(list, e)) success = false;
+		}
+		return success;
 	}
 	
 	/** Cannot instantiate ArrayUtils */

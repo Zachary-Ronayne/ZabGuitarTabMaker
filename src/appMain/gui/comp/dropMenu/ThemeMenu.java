@@ -47,7 +47,7 @@ public class ThemeMenu extends ZabMenu{
 		return this.darkThemeItem;
 	}
 	/** @return See {@link #darkSetter} */
-	public DarkThemeListener getDarketter(){
+	public DarkThemeListener getDarkSetter(){
 		return this.darkSetter;
 	}
 	
