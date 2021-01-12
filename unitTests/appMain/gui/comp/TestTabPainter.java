@@ -536,15 +536,17 @@ public class TestTabPainter{
 	@Test
 	public void mouseWheelMovedEditorMouse(){
 		EditorMouse m = paint.getMouseInput();
+		MouseWheelEvent up = new MouseWheelEvent(paint, 0, 0, 0, 950, 300, 0, false,
+				MouseWheelEvent.WHEEL_UNIT_SCROLL, 0, 1);
+		MouseWheelEvent down = new MouseWheelEvent(paint, 0, 0, 0, 950, 300, 0, false,
+				MouseWheelEvent.WHEEL_UNIT_SCROLL, 0, -1);
 		
 		paint.resetCamera();
-		m.mouseWheelMoved(new MouseWheelEvent(paint, 0, 0, 0, 950, 300, 0, false,
-				MouseWheelEvent.WHEEL_UNIT_SCROLL, 0, 1));
+		m.mouseWheelMoved(up);
 		assertEquals(-0.1, cam.getXZoomFactor(), "Checking zooming in with no modifiers");
 		
 		paint.resetCamera();
-		m.mouseWheelMoved(new MouseWheelEvent(paint, 0, 0, 0, 950, 300, 0, false, 
-				MouseWheelEvent.WHEEL_UNIT_SCROLL, 0, -1));
+		m.mouseWheelMoved(down);
 		assertEquals(0.1, cam.getXZoomFactor(), "Checking zooming out with no modifiers");
 
 		paint.resetCamera();

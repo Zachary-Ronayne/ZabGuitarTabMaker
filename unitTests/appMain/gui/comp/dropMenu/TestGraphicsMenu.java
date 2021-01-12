@@ -2,9 +2,6 @@ package appMain.gui.comp.dropMenu;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Arrays;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -13,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import appMain.gui.ZabGui;
 import appUtils.ZabAppSettings;
+import util.testUtils.Assert;
 
 public class TestGraphicsMenu{
 	
@@ -40,7 +38,8 @@ public class TestGraphicsMenu{
 	@Test
 	public void getThemeSubMenu(){
 		assertNotEquals(null, menu.getThemeSubMenu(), "Checking theme menu initialized");
-		assertTrue(Arrays.asList(menu.getMenuComponents()).contains(menu.getThemeSubMenu()), "Checking theme menu in the graphics menu");
+		// Checking theme menu in the graphics menu
+		Assert.contains(menu.getMenuComponents(), menu.getThemeSubMenu());
 	}
 	
 	@AfterAll

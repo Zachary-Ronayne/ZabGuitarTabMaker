@@ -1,8 +1,8 @@
 package settings;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -43,8 +43,8 @@ public class TestSettings{
 		ArrayList<Setting<?>> s = settings.getAll();
 		assertEquals(2, s.size(), "Checking correct number of settings exist");
 		
-		assertTrue("Checking each setting exists", s.get(0).get().equals("set a"));
-		assertTrue("Checking each setting exists", s.get(1).get().equals("set b"));
+		assertTrue(s.get(0).get().equals("set a"), "Checking each setting exists");
+		assertTrue(s.get(1).get().equals("set b"), "Checking each setting exists");
 	}
 	
 	@Test
@@ -53,10 +53,10 @@ public class TestSettings{
 		((SettingString)s.get(0)).set("set y");
 		((SettingString)s.get(1)).set("set z");
 		
-		assertFalse("Checking settings are not equal", settings.equals(newSettings));
+		assertFalse(settings.equals(newSettings), "Checking settings are not equal");
 		
 		settings.loadDefaults();
-		assertTrue("Checking settings are equal after loading defaults", settings.equals(newSettings));
+		assertTrue(settings.equals(newSettings), "Checking settings are equal after loading defaults");
 	}
 	
 	@Test
@@ -68,11 +68,11 @@ public class TestSettings{
 		
 		String saved = UtilsTest.testSave(settings);
 		Scanner scan = new Scanner(saved);
-		assertFalse("Checking new settings is different from the main one", newSettings.equals(settings));
+		assertFalse(newSettings.equals(settings), "Checking new settings is different from the main one");
 		
 		boolean success = newSettings.load(scan);
-		assertTrue("Checking loading succeeds", success);
-		assertTrue("Checking new settings are the same as the main one after loading", newSettings.equals(settings));
+		assertTrue(success, "Checking loading succeeds");
+		assertTrue(newSettings.equals(settings), "Checking new settings are the same as the main one after loading");
 		
 		scan.close();
 	}
@@ -85,20 +85,20 @@ public class TestSettings{
 	
 	@Test
 	public void equals(){
-		assertFalse("Checking null is not equal to settings", settings.equals(null));
+		assertFalse(settings.equals(null), "Checking null is not equal to settings");
 		
-		assertTrue("Checking identical settings are equal", settings.equals(newSettings));
-		assertFalse("Checking identical settings are not the same object", settings == newSettings);
+		assertTrue(settings.equals(newSettings), "Checking identical settings are equal");
+		assertFalse(settings == newSettings, "Checking identical settings are not the same object");
 
 		ArrayList<Setting<?>> s = newSettings.getAll();
 		((SettingString)s.get(0)).set("a");
-		assertFalse("Checking settings with different values are not equal", settings.equals(newSettings));
+		assertFalse(settings.equals(newSettings), "Checking settings with different values are not equal");
 		
 		((SettingString)s.get(0)).loadDefault();
-		assertTrue("Checking identical settings are equal after using a default", settings.equals(newSettings));
+		assertTrue(settings.equals(newSettings), "Checking identical settings are equal after using a default");
 		
 		newSettings.getAll().remove(0);
-		assertFalse("Checking settings with differing sizes are not equal", settings.equals(newSettings));
+		assertFalse(settings.equals(newSettings), "Checking settings with differing sizes are not equal");
 	}
 
 	@Test

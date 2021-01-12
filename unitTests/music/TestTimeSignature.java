@@ -1,8 +1,8 @@
 package music;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Scanner;
 
@@ -41,8 +41,8 @@ public class TestTimeSignature{
 	@Test
 	public void copy(){
 		TimeSignature copy = four4.copy();
-		assertTrue("Checking copy is equal to the source object", copy.equals(four4));
-		assertTrue("Checking copy is not the same as the source object", copy != four4);
+		assertTrue(copy.equals(four4), "Checking copy is equal to the source object");
+		assertTrue(copy != four4, "Checking copy is not the same as the source object");
 	}
 	
 	@Test
@@ -233,29 +233,25 @@ public class TestTimeSignature{
 	 * @param sig The {@link TimeSignature} to use
 	 */
 	public static void guessRhythmHelper(int expectDuration, int expectUnit, double duration, TimeSignature sig, boolean measures){
-		Rhythm guess = sig.guessRhythm(duration, measures);
-		assertTrue("Checking duration guessing " + expectUnit + " unit notes in " + sig.symbol() + ", "
-				+ "expected duration: " + expectDuration + " unit: " + expectUnit + ", "
-				+ " but got duration: " + guess.getDuration() + " unit: " + guess.getUnit(),
-				expectDuration == guess.getDuration() && expectUnit == guess.getUnit());
+		assertEquals(new Rhythm(expectDuration, expectUnit), sig.guessRhythm(duration, measures), "Checking guessed rhythm is equal to the expected rhythm");
 	}
 	
 	@Test
 	public void load(){
 		Scanner scan = new Scanner("3 4 \n2 5 \n9 8 \n");
-		assertTrue("Checking load is successful", four4.load(scan));
+		assertTrue(four4.load(scan), "Checking load is successful");
 		assertEquals(3, four4.getUpper(), "Checking upper value loaded");
 		assertEquals(4, four4.getLower(), "Checking lower value loaded");
 		
-		assertTrue("Checking load is successful", four4.load(scan));
+		assertTrue(four4.load(scan), "Checking load is successful");
 		assertEquals(2, four4.getUpper(), "Checking upper value loaded");
 		assertEquals(5, four4.getLower(), "Checking lower value loaded");
 		
-		assertTrue("Checking load is successful", four4.load(scan));
+		assertTrue(four4.load(scan), "Checking load is successful");
 		assertEquals(9, four4.getUpper(), "Checking upper value loaded");
 		assertEquals(8, four4.getLower(), "Checking lower value loaded");
 		
-		assertFalse("Checking load fails with nothing left to load", four4.load(scan));
+		assertFalse(four4.load(scan), "Checking load fails with nothing left to load");
 		scan.close();
 	}
 	
@@ -268,11 +264,11 @@ public class TestTimeSignature{
 	@Test
 	public void equals(){
 		TimeSignature new4 = new TimeSignature(4, 4);
-		assertTrue("Checking identical time signatures are equal", four4.equals(new4));
-		assertFalse("Checking identical time signatures are not the same object", four4 == new4);
+		assertTrue(four4.equals(new4), "Checking identical time signatures are equal");
+		assertFalse(four4 == new4, "Checking identical time signatures are not the same object");
 		
-		assertFalse("Checking time signatures with different upper are not equal", four4.equals(five4));
-		assertFalse("Checking time signatures with different lower are not equal", five8.equals(five4));
+		assertFalse(four4.equals(five4), "Checking time signatures with different upper are not equal");
+		assertFalse(five8.equals(five4), "Checking time signatures with different lower are not equal");
 	}
 	
 	@Test

@@ -2,9 +2,6 @@ package appMain.gui.comp.dropMenu;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Arrays;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -13,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import appMain.gui.ZabGui;
 import appUtils.ZabAppSettings;
+import util.testUtils.Assert;
 
 public class TestEditMenu{
 	
@@ -42,7 +40,8 @@ public class TestEditMenu{
 		ZabMenuItem item = menu.getUndoItem();
 		assertNotEquals(null, item, "Checking item initialized");
 		assertEquals("Undo", item.getText(), "Checking item has correct text");
-		assertTrue(Arrays.asList(menu.getMenuComponents()).contains(item), "Checking undo item in menu");
+		// Checking undo item in menu
+		Assert.contains(menu.getMenuComponents(), item);
 	}
 	
 	@Test
@@ -50,7 +49,8 @@ public class TestEditMenu{
 		ZabMenuItem item = menu.getRedoItem();
 		assertNotEquals(null, item, "Checking item initialized");
 		assertEquals("Redo", item.getText(), "Checking item has correct text");
-		assertTrue(Arrays.asList(menu.getMenuComponents()).contains(item), "Checking redo item in menu");
+		// Checking redo item in menu
+		Assert.contains(menu.getMenuComponents(), item);
 	}
 	
 	@AfterAll

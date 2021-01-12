@@ -99,24 +99,18 @@ public class TestSettingNumber{
 	
 	@Test
 	public void setMin(){
+		// Checking sets the min field
 		setting.setMin(4);
-		assertEquals(4, setting.getMin(), "Checking min value updated");
-		assertEquals(4, setting.get(), "Checking value updated");
-		assertEquals(4, setting.getDefault(), "Checking default value updated");
-		assertEquals(null, setting.getMax(), "Checking max still null");
+		assertInitialized(4, 4, 4, null, setting);
 		
+		// Checking sets the max field when min is below max
 		setting.setMax(4);
 		setting.setMin(7);
-		assertEquals(7, setting.getMin(), "Checking min value updated");
-		assertEquals(7, setting.get(), "Checking value updated");
-		assertEquals(7, setting.getDefault(), "Checking default value updated");
-		assertEquals(7, setting.getMax(), "Checking max now minimum value");
+		assertInitialized(7, 7, 7, 7, setting);
 		
+		// Checking only min value is updated
 		setting.setMin(2);
-		assertEquals(2, setting.getMin(), "Checking min value updated");
-		assertEquals(7, setting.get(), "Checking value unchanged");
-		assertEquals(7, setting.getDefault(), "Checking default value unchanged");
-		assertEquals(7, setting.getMax(), "Checking max unchanged");
+		assertInitialized(7, 7, 2, 7, setting);
 	}
 	
 	@Test
@@ -127,24 +121,18 @@ public class TestSettingNumber{
 	
 	@Test
 	public void setMax(){
+		// Checking sets the max field
 		setting.setMax(1);
-		assertEquals(1, setting.getMax(), "Checking min value updated");
-		assertEquals(1, setting.get(), "Checking value updated");
-		assertEquals(1, setting.getDefault(), "Checking default value updated");
-		assertEquals(null, setting.getMin(), "Checking min still null");
+		assertInitialized(1, 1, null, 1, setting);
 
+		// Checking sets the min field when max is below min
 		setting.setMin(1);
 		setting.setMax(-2);
-		assertEquals(-2, setting.getMax(), "Checking max value updated");
-		assertEquals(-2, setting.get(), "Checking value updated");
-		assertEquals(-2, setting.getDefault(), "Checking default value updated");
-		assertEquals(-2, setting.getMin(), "Checking min now minimum value");
+		assertInitialized(-2, -2, -2, -2, setting);
 		
+		// Checking only max value is updated
 		setting.setMax(2);
-		assertEquals(2, setting.getMax(), "Checking max value updated");
-		assertEquals(-2, setting.get(), "Checking value unchanged");
-		assertEquals(-2, setting.getDefault(), "Checking default value unchanged");
-		assertEquals(-2, setting.getMin(), "Checking min unchanged");
+		assertInitialized(-2, -2, -2, 2, setting);
 	}
 	
 	@Test
@@ -158,34 +146,19 @@ public class TestSettingNumber{
 				+ "a a a a\n"); 
 		
 		assertTrue(setting.load(scan), "Checking load successful");
-		assertEquals(1, setting.get(), "Checking value loaded");
-		assertEquals(2, setting.getDefault(), "Checking default value loaded");
-		assertEquals(0, setting.getMin(), "Checking min loaded");
-		assertEquals(3, setting.getMax(), "Checking max loaded");
+		assertInitialized(1, 2, 0, 3, setting);
 		
 		assertTrue(setting.load(scan), "Checking load successful");
-		assertEquals(-1, setting.get(), "Checking value loaded");
-		assertEquals(3, setting.getDefault(), "Checking default value loaded");
-		assertEquals(-1, setting.getMin(), "Checking min loaded");
-		assertEquals(5, setting.getMax(), "Checking max loaded");
+		assertInitialized(-1, 3, -1, 5, setting);
 		
 		assertTrue(setting.load(scan), "Checking load successful");
-		assertEquals(1, setting.get(), "Checking value loaded");
-		assertEquals(2, setting.getDefault(), "Checking default value loaded");
-		assertEquals(null, setting.getMin(), "Checking min loaded");
-		assertEquals(3, setting.getMax(), "Checking max loaded");
+		assertInitialized(1, 2, null, 3, setting);
 		
 		assertTrue(setting.load(scan), "Checking load successful");
-		assertEquals(2, setting.get(), "Checking value loaded");
-		assertEquals(4, setting.getDefault(), "Checking default value loaded");
-		assertEquals(0, setting.getMin(), "Checking min loaded");
-		assertEquals(null, setting.getMax(), "Checking max loaded");
+		assertInitialized(2, 4, 0, null, setting);
 		
 		assertTrue(setting.load(scan), "Checking load successful");
-		assertEquals(1, setting.get(), "Checking value loaded");
-		assertEquals(2, setting.getDefault(), "Checking default value loaded");
-		assertEquals(null, setting.getMin(), "Checking min loaded");
-		assertEquals(null, setting.getMax(), "Checking max loaded");
+		assertInitialized(1, 2, null, null, setting);
 		
 		assertFalse(setting.load(scan), "Checking load fails with invalid value");
 		
@@ -213,6 +186,21 @@ public class TestSettingNumber{
 		assertEquals("a 1", scan.nextLine(), "Checking next line in scan is the correct value");
 		
 		scan.close();
+	}
+	
+	/**
+	 * Utility method for checking if a NumberSetting has values set
+	 * @param value The expected value
+	 * @param defaultValue The expected default value
+	 * @param min The expected min valid
+	 * @param max The expected max value
+	 * @param set The setting to check
+	 */
+	public static void assertInitialized(Number value, Number defaultValue, Number min, Number max, SettingNumber<?> set){
+		assertEquals(value, set.get(), "Checking value set");
+		assertEquals(defaultValue, set.getDefault(), "Checking default value set");
+		assertEquals(min, set.getMin(), "Checking min set");
+		assertEquals(max, set.getMax(), "Checking max set");
 	}
 	
 	@Test

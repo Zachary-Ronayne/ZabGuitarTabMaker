@@ -1,8 +1,7 @@
 package music;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Scanner;
@@ -39,8 +38,8 @@ public class TestNotePosition{
 	@Test
 	public void copy(){
 		NotePosition copy = pos.copy();
-		assertTrue("Checking copy is equal to the source object", copy.equals(pos));
-		assertTrue("Checking copy is not the same as the source object", copy != pos);
+		assertTrue(copy.equals(pos), "Checking copy is equal to the source object");
+		assertTrue(copy != pos, "Checking copy is not the same as the source object");
 	}
 	
 	@Test
@@ -98,8 +97,8 @@ public class TestNotePosition{
 		boolean result = p.retimeMeasure(newTime, oldTime);
 		assertEquals(expectPos, p.getValue(), UtilsTest.DELTA, "Checking retiming in the same measure from " 
 				+ oldTime.symbol() + " to " + newTime.symbol());
-		if(inside) assertTrue("Checking retiming is in the original measure", result);
-		else assertFalse("Checking retiming is outside the original measure", result);
+		if(inside) assertTrue(result, "Checking retiming is in the original measure");
+		else assertFalse(result, "Checking retiming is outside the original measure");
 	}
 	
 	@Test
@@ -112,13 +111,13 @@ public class TestNotePosition{
 	@Test
 	public void load(){
 		Scanner scan = new Scanner("1.2 \n2 \n");
-		assertTrue("Checking load successful", pos.load(scan));
+		assertTrue(pos.load(scan), "Checking load successful");
 		assertEquals(1.2, pos.getValue(), "Checking correct value loaded");
 		
-		assertTrue("Checking load successful", pos.load(scan));
+		assertTrue(pos.load(scan), "Checking load successful");
 		assertEquals(2.0, pos.getValue(), "Checking correct value loaded");
 		
-		assertFalse("Checking load fails with nothing left to load", pos.load(scan));
+		assertFalse(pos.load(scan), "Checking load fails with nothing left to load");
 		scan.close();
 	}
 	
@@ -146,11 +145,11 @@ public class TestNotePosition{
 	@Test
 	public void equals(){
 		NotePosition p = new NotePosition(3);
-		assertFalse("Checking objects are not the same object", p == pos);
-		assertTrue("Checking objects are equal", p.equals(pos));
+		assertFalse(p == pos, "Checking objects are not the same object");
+		assertTrue(p.equals(pos), "Checking objects are equal");
 		
 		p.setValue(4);
-		assertFalse("Checking objects are not equal", p.equals(pos));
+		assertFalse(p.equals(pos), "Checking objects are not equal");
 	}
 	
 	@Test

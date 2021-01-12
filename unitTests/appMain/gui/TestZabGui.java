@@ -1,9 +1,9 @@
 package appMain.gui;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.Color;
 import java.awt.event.ComponentEvent;
@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import appMain.gui.frames.EditorFrame;
 import appMain.gui.frames.ZabFrame;
 import appUtils.ZabAppSettings;
+import util.testUtils.Assert;
 
 public class TestZabGui{
 
@@ -82,8 +83,7 @@ public class TestZabGui{
 	@Test
 	public void getCurrentFrame(){
 		ZabFrame frame = gui.getCurrentFrame();
-		assertTrue("Checking current frame is correct type, was " + frame.getClass(),
-				frame instanceof EditorFrame);
+		Assert.isInstance(EditorFrame.class, frame, "Checking current frame is correct type, was " + frame.getClass());
 	}
 	
 	@Test
@@ -94,9 +94,9 @@ public class TestZabGui{
 			public void parentResized(int w, int h){}
 		};
 		
-		assertFalse("Checking frame was not set", gui.setCurrentFrame(null));
+		assertFalse(gui.setCurrentFrame(null), "Checking frame was not set");
 		
-		assertTrue("Checking frame was set successfully", gui.setCurrentFrame(frame));
+		assertTrue(gui.setCurrentFrame(frame), "Checking frame was set successfully");
 		assertEquals(frame, gui.getCurrentFrame(), "Checking frame was set correctly");
 	}
 	
@@ -122,7 +122,7 @@ public class TestZabGui{
 	
 	@Test
 	public void getPrimaryPanel(){
-		assertTrue("Checking primary panel in GUI", gui.isAncestorOf(gui.getPrimaryPanel()));
+		assertTrue(gui.isAncestorOf(gui.getPrimaryPanel()), "Checking primary panel in GUI");
 	}
 	
 	@Test

@@ -25,6 +25,10 @@ public class TestMathUtils{
 		assertEquals(1, MathUtils.gcd(5, 2), "Checking GCD is correctly calculated");
 		assertEquals(7, MathUtils.gcd(21, 7), "Checking GCD is correctly calculated");
 		assertEquals(0, MathUtils.gcd(0, 0), "Checking GCD is correctly calculated");
+		assertEquals(2, MathUtils.gcd(18, 8), "Checking GCD is correctly calculated");
+		assertEquals(-5, MathUtils.gcd(25, -5), "Checking GCD is correctly calculated");
+		assertEquals(5, MathUtils.gcd(-25, 5), "Checking GCD is correctly calculated");
+		assertEquals(-5, MathUtils.gcd(-25, -5), "Checking GCD is correctly calculated");
 	}
 	
 	@AfterEach

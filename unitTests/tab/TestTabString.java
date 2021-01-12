@@ -1,12 +1,11 @@
 package tab;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 import org.junit.jupiter.api.AfterEach;
@@ -26,6 +25,7 @@ import tab.symbol.TabNote;
 import tab.symbol.TabNoteRhythm;
 import tab.symbol.TabPitch;
 import tab.symbol.TabSymbol;
+import util.testUtils.Assert;
 import util.testUtils.UtilsTest;
 
 public class TestTabString{
@@ -85,8 +85,8 @@ public class TestTabString{
 		string.add(notes[1]);
 		string.add(notes[2]);
 		TabString copy = string.copy();
-		assertTrue("Checking copy is equal to the source object", copy.equals(string));
-		assertTrue("Checking copy is not the same as the source object", copy != string);
+		assertTrue(copy.equals(string), "Checking copy is equal to the source object");
+		assertTrue(copy != string, "Checking copy is not the same as the source object");
 	}
 	
 	@Test
@@ -94,8 +94,8 @@ public class TestTabString{
 		assertEquals(pitch, string.getRootPitch(), "Checking root pitch initialized");
 		
 		
-		assertTrue("Checking note and octave constructor generates correct root note",
-					noteAndOctave.getRootPitch().equals(new Pitch(-1)));
+		assertTrue(noteAndOctave.getRootPitch().equals(new Pitch(-1)),
+				"Checking note and octave constructor generates correct root note");
 	}
 	
 	@Test
@@ -144,14 +144,7 @@ public class TestTabString{
 		string.add(notes[3]);
 		string.add(notes[3]);
 		
-		assertEquals(7, string.size(), "Checking correct number of notes added, no duplicates");
-		assertEquals(notes[0], string.get(0), "Checking notes are added in sorted order");
-		assertEquals(notes[1], string.get(1), "Checking notes are added in sorted order");
-		assertEquals(notes[2], string.get(2), "Checking notes are added in sorted order");
-		assertEquals(notes[3], string.get(3), "Checking notes are added in sorted order");
-		assertEquals(notes[4], string.get(4), "Checking notes are added in sorted order");
-		assertEquals(notes[5], string.get(5), "Checking notes are added in sorted order");
-		assertEquals(notes[6], string.get(6), "Checking notes are added in sorted order");
+		Assert.listSame(string, ((Object[])notes));
 
 		// Adding notes as pitches
 		string.clear();
@@ -159,10 +152,10 @@ public class TestTabString{
 		string.add(pitches[6], new NotePosition(2));
 		string.add(pitches[2], new NotePosition(0));
 		string.add(pitches[2], 0);
-		assertEquals(3, string.size(), "Checking correct number of notes added, no duplicates");
-		assertEquals(pitches[2], string.symbol(0), "Checking notes are added in sorted order");
-		assertEquals(pitches[4], string.symbol(1), "Checking notes are added in sorted order");
-		assertEquals(pitches[6], string.symbol(2), "Checking notes are added in sorted order");
+		
+		Assert.listSame(Arrays.asList(new Object[]{
+				string.symbol(0), string.symbol(1), string.symbol(2)}), 
+				pitches[2], pitches[4], pitches[6]);
 	}
 	
 	@Test
@@ -172,10 +165,7 @@ public class TestTabString{
 		string.add(notes[4]);
 		
 		ArrayList<TabSymbol> all = string.getAll();
-		assertEquals(3, all.size(), "Checking correct number of notes obtained");
-		assertEquals(pitches[1], all.get(0), "Checking notes in correct order");
-		assertEquals(pitches[2], all.get(1), "Checking notes in correct order");
-		assertEquals(pitches[4], all.get(2), "Checking notes in correct order");
+		Assert.listSame(all, pitches[1], pitches[2], pitches[4]);
 	}
 	
 	@Test
@@ -186,13 +176,10 @@ public class TestTabString{
 		
 		assertFalse(string.remove(notes[0]), "Checking note not in string not removed");
 		assertTrue(string.remove(notes[2]), "Checking note in string removed");
-		assertEquals(2, string.size(), "Checking correct number of notes obtained");
-		assertEquals(notes[1], string.get(0), "Checking correct notes remain");
-		assertEquals(notes[4], string.get(1), "Checking correct notes remain");
+		Assert.listSame(string, notes[1], notes[4]);
 		
 		assertTrue(string.remove(pitches[4], 4), "Checking note is removed");
-		assertEquals(1, string.size(), "Checking correct number of notes obtained");
-		assertEquals(notes[1], string.get(0), "Checking correct note remains, removing via symbol");
+		Assert.listSame(string, notes[1]);
 
 		assertFalse(string.remove(pitches[4], 1.5), "Checking note not in list isn't removed");
 	}
@@ -242,7 +229,7 @@ public class TestTabString{
 		assertEquals(Music.createNote(Music.E, 5), string.createPitch(12).getNote(), "Checking high octave generates correct pitch");
 		assertEquals(Music.createNote(Music.E, 3), string.createPitch(-12).getNote(), "Checking low octave generates correct pitch");
 	}
-	
+
 	@Test
 	public void quantize(){
 		for(TabPosition p : notes){
@@ -252,13 +239,18 @@ public class TestTabString{
 		
 		string.quantize(new TimeSignature(4, 4), 1);
 		
-		assertEquals(1, string.get(0).getPosition().getValue(), UtilsTest.DELTA, "Checking note is quantized");
-		assertEquals(2, string.get(1).getPosition().getValue(), UtilsTest.DELTA, "Checking note is quantized");
-		assertEquals(3, string.get(2).getPosition().getValue(), UtilsTest.DELTA, "Checking note is quantized");
-		assertEquals(4, string.get(3).getPosition().getValue(), UtilsTest.DELTA, "Checking note is quantized");
-		assertEquals(5, string.get(4).getPosition().getValue(), UtilsTest.DELTA, "Checking note is quantized");
-		assertEquals(6, string.get(5).getPosition().getValue(), UtilsTest.DELTA, "Checking note is quantized");
-		assertEquals(7, string.get(6).getPosition().getValue(), UtilsTest.DELTA, "Checking note is quantized");
+		assertQuantized(string, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0);
+	}
+	
+	/**
+	 * Utility method for testing quantize, check all of the notes in the TabString of the same index as the given array of positions, have the same position value
+	 * @param string The string to check
+	 * @param pos The expected positions of the notes
+	 */
+	public static void assertQuantized(TabString str, double... pos){
+		for(int i = 0; i < pos.length; i++){
+			assertEquals(pos[i], str.get(i).getPos(), UtilsTest.DELTA, "Checking note is quantized");
+		}
 	}
 	
 	@SuppressWarnings("unlikely-arg-type")
@@ -288,15 +280,15 @@ public class TestTabString{
 	@Test
 	public void load(){
 		Scanner scan = new Scanner("2 \n0\n2 \n1\nTabNote\n2 \n\n\n1.0 \n");
-		assertTrue("Checking load successful", string.load(scan));
+		assertTrue(string.load(scan), "Checking load successful");
 		assertEquals(2, string.getRootNote(), "Checking root note set");
 		assertEquals(0, string.size(), "Checking no notes exist");
-		assertTrue("Checking load successful", string.load(scan));
+		assertTrue(string.load(scan), "Checking load successful");
 		assertEquals(2, string.getRootNote(), "Checking root note set");
 		assertEquals(1, string.size(), "Checking one note exists");
 		assertEquals(new TabNote(2), string.symbol(0), "Checking correct note loaded");
 		assertEquals(1.0, string.get(0).getPos(), "Checking correct position loaded");
-		assertFalse("Checking load failed with not enough data", string.load(scan));
+		assertFalse(string.load(scan), "Checking load failed with not enough data");
 		
 		scan.close();
 		scan = new Scanner(""
@@ -330,12 +322,12 @@ public class TestTabString{
 				+ "w\n"
 				+ "4.2\n");
 
-		assertTrue("Checking load successful", string.load(scan));
+		assertTrue(string.load(scan), "Checking load successful");
 		assertEquals(4, string.getRootNote(), "Checking root note set");
 		assertEquals(3, string.size(), "Checking three notes exist");
 		TabPosition p = string.get(0);
 		TabSymbol t = p.getSymbol();
-		assertTrue("Checking note is correct type", t instanceof TabNote);
+		Assert.isInstance(TabNote.class, t, "Checking note is correct type");
 		TabNote n = (TabNote)t;
 		assertEquals(1, n.getPitch().getNote(), "Checking correct pitch");
 		assertEquals(2.0, p.getPos(), "Checking correct position");

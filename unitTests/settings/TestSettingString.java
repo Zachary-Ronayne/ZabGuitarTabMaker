@@ -1,9 +1,9 @@
 package settings;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Scanner;
 
@@ -63,15 +63,15 @@ public class TestSettingString{
 	@Test
 	public void loadValues(){
 		Scanner scan = new Scanner("word z\ndefault z\n123\nsdf\nk");
-		assertTrue("Checking load successful", setting.load(scan));
+		assertTrue(setting.load(scan), "Checking load successful");
 		assertEquals("word z", setting.get(), "Checking value loaded from scanner");
 		assertEquals("default z", setting.getDefault(), "Checking default value loaded from scanner");
 
-		assertTrue("Checking load successful", setting.load(scan));
+		assertTrue(setting.load(scan), "Checking load successful");
 		assertEquals("123", setting.get(), "Checking value loaded from scanner");
 		assertEquals("sdf", setting.getDefault(), "Checking default value loaded from scanner");
 
-		assertFalse("Checking load fails with not enough data", setting.load(scan));
+		assertFalse(setting.load(scan), "Checking load fails with not enough data");
 		
 		scan.close();
 	}

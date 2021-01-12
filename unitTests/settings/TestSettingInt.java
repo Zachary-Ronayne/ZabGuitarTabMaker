@@ -27,15 +27,11 @@ public class TestSettingInt{
 
 	@Test
 	public void constructor(){
-		assertEquals(2, setting.get(), "Checking value initialized");
-		assertEquals(2, setting.getDefault(), "Checking default value initialized");
-		assertEquals(null, setting.getMin(), "Checking min initialized");
-		assertEquals(null, setting.getMax(), "Checking max initialized");
-		
-		assertEquals(3, settingFull.get(), "Checking value initialized");
-		assertEquals(3, settingFull.getDefault(), "Checking default value initialized");
-		assertEquals(1, settingFull.getMin(), "Checking min initialized");
-		assertEquals(6, settingFull.getMax(), "Checking max initialized");
+		// Checking default values initialized
+		TestSettingNumber.assertInitialized(2, 2, null, null, setting);
+
+		// Checking full constructor values initialized
+		TestSettingNumber.assertInitialized(3, 3, 1, 6, settingFull);
 	}
 	
 	@Test

@@ -1,7 +1,5 @@
 package appUtils;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -22,9 +20,12 @@ import org.junit.jupiter.api.Test;
 
 import appMain.gui.ZabGui;
 import appMain.gui.ZabTheme;
+import appMain.gui.ZabTheme.DarkTheme;
+import appMain.gui.ZabTheme.LightTheme;
 import settings.Setting;
 import tab.InstrumentFactory;
 import tab.Tab;
+import util.testUtils.Assert;
 import util.testUtils.UtilsTest;
 
 public class TestZabAppSettings{
@@ -38,6 +39,62 @@ public class TestZabAppSettings{
 	private Tab guitar;
 	
 	private static ArrayList<Setting<?>> settings;
+	
+	/** A string containing the saved version of the default settings */
+	private static final String DEFAULT_SETTINGS = ""
+			+ "h\n"
+			+ "h\n"
+			+ "p\n"
+			+ "p\n"
+			+ "/\n"
+			+ "/\n"
+			+ "\\\n"
+			+ "\\\n"
+			+ "<\n"
+			+ "<\n"
+			+ ">\n"
+			+ ">\n"
+			+ "\n"
+			+ "\n"
+			+ "|\n"
+			+ "|\n"
+			+ " \n"
+			+ " \n"
+			+ "false false \n"
+			+ "false false \n"
+			+ "1 1 null null \n"
+			+ "-\n"
+			+ "-\n"
+			+ "-\n"
+			+ "-\n"
+			+ "-\n"
+			+ "-\n"
+			+ "false false \n"
+			+ "|\n"
+			+ "|\n"
+			+ "0.1 0.1 null null \n"
+			+ "true true \n"
+			+ "2.0 2.0 null null \n"
+			+ "8.0 8.0 null null \n"
+			+ "1 4 \n"
+			+ "1 4 \n";
+	
+	/** A string containing the saved version of a standard guitar */
+	private static final String STANDARD_GUITAR = ""
+			+ "false 4 4 \n"
+			+ "6\n"
+			+ "4 \n"
+			+ "0\n"
+			+ "-1 \n"
+			+ "0\n"
+			+ "-5 \n"
+			+ "0\n"
+			+ "-10 \n"
+			+ "0\n"
+			+ "-15 \n"
+			+ "0\n"
+			+ "-20 \n"
+			+ "0\n";
 	
 	@BeforeAll
 	public static void init(){
@@ -83,7 +140,7 @@ public class TestZabAppSettings{
 	public void loadDefaultTheme(){
 		ZabAppSettings.setTheme(new ZabTheme.LightTheme(), null, false);
 		ZabAppSettings.loadDefaultTheme();
-		assertTrue(ZabAppSettings.theme() instanceof ZabTheme.DarkTheme, "Checking default theme set");
+		Assert.isInstance(DarkTheme.class, ZabAppSettings.theme(), "Checking default theme set");
 	}
 	
 	@Test
@@ -91,11 +148,11 @@ public class TestZabAppSettings{
 		ZabAppSettings.setTheme(new ZabTheme.LightTheme(), null, false);
 		ZabAppSettings.getThemeFile().delete();
 		assertFalse(ZabAppSettings.loadTheme(), "Checking theme failed to load from file");
-		assertTrue(ZabAppSettings.theme() instanceof ZabTheme.DarkTheme, "Checking default theme set");
+		Assert.isInstance(DarkTheme.class, ZabAppSettings.theme(), "Checking default theme set");
 		
 		ZabAppSettings.setTheme(new ZabTheme.LightTheme(), null, true);
 		assertTrue(ZabAppSettings.loadTheme(), "Checking theme loaded");
-		assertTrue(ZabAppSettings.theme() instanceof ZabTheme.LightTheme, "Checking light theme set");
+		Assert.isInstance(LightTheme.class, ZabAppSettings.theme(), "Checking light theme set");
 
 		ZabAppSettings.setTheme(new ZabTheme.LightTheme(), null, true);
 		File f = ZabAppSettings.getThemeFile();
@@ -108,7 +165,7 @@ public class TestZabAppSettings{
 			e.printStackTrace();
 		}
 		assertFalse(ZabAppSettings.loadTheme(), "Checking theme failed to load from file with invalid theme name");
-		assertTrue(ZabAppSettings.theme() instanceof ZabTheme.DarkTheme, "Checking default theme set");
+		Assert.isInstance(DarkTheme.class, ZabAppSettings.theme(), "Checking default theme set");
 	}
 	
 	@Test
@@ -117,13 +174,13 @@ public class TestZabAppSettings{
 		assertTrue(ZabAppSettings.saveTheme(), "Checking save successful");
 		ZabAppSettings.setTheme(new ZabTheme.DarkTheme(), null, false);
 		assertTrue(ZabAppSettings.loadTheme(), "Checking load after save successful");
-		assertTrue(ZabAppSettings.theme() instanceof ZabTheme.LightTheme, "Checking light theme loaded");
+		Assert.isInstance(LightTheme.class, ZabAppSettings.theme(), "Checking light theme loaded");
 		
 		ZabAppSettings.setTheme(new ZabTheme.DarkTheme(), null, false);
 		assertTrue(ZabAppSettings.saveTheme(), "Checking save successful");
 		ZabAppSettings.setTheme(new ZabTheme.LightTheme(), null, false);
 		assertTrue(ZabAppSettings.loadTheme(), "Checking load after save successful");
-		assertTrue(ZabAppSettings.theme() instanceof ZabTheme.DarkTheme, "Checking dark theme loaded");
+		Assert.isInstance(DarkTheme.class, ZabAppSettings.theme(), "Checking dark theme loaded");
 	}
 	
 	@Test
@@ -139,167 +196,45 @@ public class TestZabAppSettings{
 	public void load(){
 		init();
 		
-		Scanner scan = new Scanner(""
-				+ "false 4 4 \n"
-				+ "6\n"
-				+ "4 \n"
-				+ "0\n"
-				+ "-1 \n"
-				+ "0\n"
-				+ "-5 \n"
-				+ "0\n"
-				+ "-10 \n"
-				+ "0\n"
-				+ "-15 \n"
-				+ "0\n"
-				+ "-20 \n"
-				+ "0\n");
+		Scanner scan = new Scanner(STANDARD_GUITAR);
 
-		assertFalse("Checking load fails with invalid scanner", ZabAppSettings.load(new Scanner(""), guitar, true));
-		assertFalse("Checking load fails with null tab and not saving settings", ZabAppSettings.load(scan, null, false));
+		assertFalse(ZabAppSettings.load(new Scanner(""), guitar, true), "Checking load fails with invalid scanner");
+		assertFalse(ZabAppSettings.load(scan, null, false), "Checking load fails with null tab and not saving settings");
 		
 		scan.close();
 		scan = new Scanner(""
-				+ "h\n"
-				+ "h\n"
-				+ "p\n"
-				+ "p\n"
-				+ "/\n"
-				+ "/\n"
-				+ "\\\n"
-				+ "\\\n"
-				+ "<\n"
-				+ "<\n"
-				+ ">\n"
-				+ ">\n"
-				+ "\n"
-				+ "\n"
-				+ "|\n"
-				+ "|\n"
-				+ " \n"
-				+ " \n"
-				+ "false false \n"
-				+ "false false \n"
-				+ "1 1 null null \n"
-				+ "-\n"
-				+ "-\n"
-				+ "-\n"
-				+ "-\n"
-				+ "-\n"
-				+ "-\n"
-				+ "false false \n"
-				+ "|\n"
-				+ "|\n"
-				+ "0.1 0.1 null null \n"
-				+ "true true \n"
-				+ "2.0 2.0 null null \n"
-				+ "8.0 8.0 null null \n"
-				+ "1 4 \n"
-				+ "1 4 \n"
-				+ "false 4 4 \n"
-				+ "6\n"
-				+ "4 \n"
-				+ "0\n"
-				+ "-1 \n"
-				+ "0\n"
-				+ "-5 \n"
-				+ "0\n"
-				+ "-10 \n"
-				+ "0\n"
-				+ "-15 \n"
-				+ "0\n"
-				+ "-20 \n"
-				+ "0\n"
-				+ "h\n"
-				+ "h\n"
-				+ "p\n"
-				+ "p\n"
-				+ "/\n"
-				+ "/\n"
-				+ "\\\n"
-				+ "\\\n"
-				+ "<\n"
-				+ "<\n"
-				+ ">\n"
-				+ ">\n"
-				+ "\n"
-				+ "\n"
-				+ "|\n"
-				+ "|\n"
-				+ " \n"
-				+ " \n"
-				+ "false false \n"
-				+ "false false \n"
-				+ "1 1 null null \n"
-				+ "-\n"
-				+ "-\n"
-				+ "-\n"
-				+ "-\n"
-				+ "-\n"
-				+ "-\n"
-				+ "false false \n"
-				+ "|\n"
-				+ "|\n"
-				+ "0.1 0.1 null null \n"
-				+ "true true \n"
-				+ "2.0 2.0 null null \n"
-				+ "8.0 8.0 null null \n"
-				+ "1 4 \n"
-				+ "1 4 \n");
+				+ DEFAULT_SETTINGS
+				+ STANDARD_GUITAR
+				+ DEFAULT_SETTINGS);
 		
 		ArrayList<Setting<?>> settingsCopy = new ArrayList<>();
 		settingsCopy.addAll(settings);
 		Tab tunedGuitar = InstrumentFactory.guitarEbStandard();
-		assertTrue("Checking load successful with tab", ZabAppSettings.load(scan, tunedGuitar, true));
+		assertTrue(ZabAppSettings.load(scan, tunedGuitar, true), "Checking load successful with tab");
 		assertEquals(guitar, tunedGuitar, "Checking correct tab loaded in");
 		assertEquals(settingsCopy, settings, "Checking correct settings loaded in");
 		
-		assertTrue("Checking load successful with no tab", ZabAppSettings.load(scan, null, true));
+		assertTrue(ZabAppSettings.load(scan, null, true), "Checking load successful with no tab");
 		assertEquals(settingsCopy, settings, "Checking correct settings loaded in");
 
 		scan.close();
-		scan = new Scanner(""
-				+ "false 4 4 \n"
-				+ "6\n"
-				+ "4 \n"
-				+ "0\n"
-				+ "-1 \n"
-				+ "0\n"
-				+ "-5 \n"
-				+ "0\n"
-				+ "-10 \n"
-				+ "0\n"
-				+ "-15 \n"
-				+ "0\n"
-				+ "-20 \n"
-				+ "0\n");
+		scan = new Scanner(STANDARD_GUITAR);
 		settingsCopy = new ArrayList<>();
 		settingsCopy.addAll(settings);
 		tunedGuitar = InstrumentFactory.guitarEbStandard();
-		assertTrue("Checking load successful with no settings", ZabAppSettings.load(scan, tunedGuitar, false));
+		assertTrue(ZabAppSettings.load(scan, tunedGuitar, false), "Checking load successful with no settings");
 		assertEquals(settingsCopy, settings, "Checking settings unchanged");
 		assertEquals(guitar, tunedGuitar, "Checking correct tab loaded in");
 		
-		assertFalse("Checking load fails with nothing left to load", ZabAppSettings.load(scan, null, true));
+		assertFalse(ZabAppSettings.load(scan, null, true), "Checking load fails with nothing left to load");
 		
 		scan.close();
 		scan = new Scanner(""
-				+ "h\n"
-				+ "h\n"
-				+ "p\n"
-				+ "p\n"
-				+ "/\n"
-				+ "/\n"
-				+ "\\\n"
-				+ "\\\n"
-				+ "<\n"
-				+ "<\n"
-				+ ">\n"
-				+ ">\n"
+				+ STANDARD_GUITAR
 				+ "false 4 4 \n"
 				+ "6\n");
 		
-		assertFalse("Checking load fails with invalid formatted tab save file", ZabAppSettings.load(scan, new Tab(), true));
+		assertFalse(ZabAppSettings.load(scan, new Tab(), true), "Checking load fails with invalid formatted tab save file");
 		
 		scan.close();
 		scan = new Scanner(""
@@ -318,22 +253,22 @@ public class TestZabAppSettings{
 				+ "-20 \n");
 		
 		guitar.getStrings().add(null);
-		assertFalse("Checking load fails with invalid tab", ZabAppSettings.load(scan, guitar, false));
+		assertFalse(ZabAppSettings.load(scan, guitar, false), "Checking load fails with invalid tab");
 		guitar.getStrings().remove(6);
 
 		settings.add(0, null);
-		assertFalse("Checking load fails with invalid settings", ZabAppSettings.load(scan, null, true));
+		assertFalse(ZabAppSettings.load(scan, null, true), "Checking load fails with invalid settings");
 		settings.remove(0);
 		
 		scan.close();
 		
-		assertFalse("Checking load from file fails with no file existing", ZabAppSettings.load(UtilsTest.UNIT_PATH, UtilsTest.UNIT_NAME, null));
+		assertFalse(ZabAppSettings.load(UtilsTest.UNIT_PATH, UtilsTest.UNIT_NAME, null), "Checking load from file fails with no file existing");
 		
 		ZabAppSettings.save(UtilsTest.UNIT_PATH, UtilsTest.UNIT_NAME, null, true);
-		assertTrue("Checking load settings from file successful", ZabAppSettings.load(UtilsTest.UNIT_PATH, UtilsTest.UNIT_NAME, null, true));
-		assertFalse("Checking load from file fails with invalid file", ZabAppSettings.load(UtilsTest.UNIT_PATH + "/path", UtilsTest.UNIT_NAME, null, true));
+		assertTrue(ZabAppSettings.load(UtilsTest.UNIT_PATH, UtilsTest.UNIT_NAME, null, true), "Checking load settings from file successful");
+		assertFalse(ZabAppSettings.load(UtilsTest.UNIT_PATH + "/path", UtilsTest.UNIT_NAME, null, true), "Checking load from file fails with invalid file");
 
-		assertTrue("Checking load from file successful with no tab", ZabAppSettings.load(UtilsTest.UNIT_PATH, UtilsTest.UNIT_NAME));
+		assertTrue(ZabAppSettings.load(UtilsTest.UNIT_PATH, UtilsTest.UNIT_NAME), "Checking load from file successful with no tab");
 	}
 	
 	@Test
@@ -343,134 +278,50 @@ public class TestZabAppSettings{
 		bytes = new ByteArrayOutputStream();
 		bs = new BufferedOutputStream(bytes);
 		write = new PrintWriter(bs);
-		assertFalse("Checking save fails with null tab and not saving settings", ZabAppSettings.save(write, null, false));
+		assertFalse(ZabAppSettings.save(write, null, false), "Checking save fails with null tab and not saving settings");
 		write.close();
 		
 		bytes = new ByteArrayOutputStream();
 		bs = new BufferedOutputStream(bytes);
 		write = new PrintWriter(bs);
-		assertTrue("Checking save successful saving settings and a tab", ZabAppSettings.save(write, guitar));
+		assertTrue(ZabAppSettings.save(write, guitar), "Checking save successful saving settings and a tab");
 		write.close();
 		String text = UtilsTest.removeSlashR(bytes.toString());
 		
 		assertEquals(""
-				+ "h\n"
-				+ "h\n"
-				+ "p\n"
-				+ "p\n"
-				+ "/\n"
-				+ "/\n"
-				+ "\\\n"
-				+ "\\\n"
-				+ "<\n"
-				+ "<\n"
-				+ ">\n"
-				+ ">\n"
-				+ "\n"
-				+ "\n"
-				+ "|\n"
-				+ "|\n"
-				+ " \n"
-				+ " \n"
-				+ "false false \n"
-				+ "false false \n"
-				+ "1 1 null null \n"
-				+ "-\n"
-				+ "-\n"
-				+ "-\n"
-				+ "-\n"
-				+ "-\n"
-				+ "-\n"
-				+ "false false \n"
-				+ "|\n"
-				+ "|\n"
-				+ "0.1 0.1 null null \n"
-				+ "true true \n"
-				+ "2.0 2.0 null null \n"
-				+ "8.0 8.0 null null \n"
-				+ "1 4 \n"
-				+ "1 4 \n"
-				+ "false 4 4 \n"
-				+ "6\n"
-				+ "4 \n"
-				+ "0\n"
-				+ "-1 \n"
-				+ "0\n"
-				+ "-5 \n"
-				+ "0\n"
-				+ "-10 \n"
-				+ "0\n"
-				+ "-15 \n"
-				+ "0\n"
-				+ "-20 \n"
-				+ "0\n", text, "Checking correct text saved with a tab");
+				+ DEFAULT_SETTINGS
+				+ STANDARD_GUITAR, text, "Checking correct text saved with a tab");
 
 		bytes = new ByteArrayOutputStream();
 		bs = new BufferedOutputStream(bytes);
 		write = new PrintWriter(bs);
-		assertTrue("Checking save successful with null tab", ZabAppSettings.save(write, null));
+		assertTrue(ZabAppSettings.save(write, null), "Checking save successful with null tab");
 		write.close();
 		text = UtilsTest.removeSlashR(bytes.toString());
-		assertEquals(""
-				+ "h\n"
-				+ "h\n"
-				+ "p\n"
-				+ "p\n"
-				+ "/\n"
-				+ "/\n"
-				+ "\\\n"
-				+ "\\\n"
-				+ "<\n"
-				+ "<\n"
-				+ ">\n"
-				+ ">\n"
-				+ "\n"
-				+ "\n"
-				+ "|\n"
-				+ "|\n"
-				+ " \n"
-				+ " \n"
-				+ "false false \n"
-				+ "false false \n"
-				+ "1 1 null null \n"
-				+ "-\n"
-				+ "-\n"
-				+ "-\n"
-				+ "-\n"
-				+ "-\n"
-				+ "-\n"
-				+ "false false \n"
-				+ "|\n"
-				+ "|\n"
-				+ "0.1 0.1 null null \n"
-				+ "true true \n"
-				+ "2.0 2.0 null null \n"
-				+ "8.0 8.0 null null \n"
-				+ "1 4 \n"
-				+ "1 4 \n", text, "Checking correct text saved with no tab");
+		assertEquals(DEFAULT_SETTINGS, text, "Checking correct text saved with no tab");
 		
-		assertFalse("Checking save fails with invalid writer", ZabAppSettings.save(null, new Tab()));
+		assertFalse(ZabAppSettings.save(null, new Tab()), "Checking save fails with invalid writer");
 		
 		guitar.getStrings().add(0, null);
 		bytes = new ByteArrayOutputStream();
 		bs = new BufferedOutputStream(bytes);
 		write = new PrintWriter(bs);
-		assertFalse("Checking save fails with invalid tab", ZabAppSettings.save(write, guitar));
+		assertFalse(ZabAppSettings.save(write, guitar), "Checking save fails with invalid tab");
 		write.close();
 		
 		guitar.getStrings().remove(0);
 		bytes = new ByteArrayOutputStream();
 		bs = new BufferedOutputStream(bytes);
 		write = new PrintWriter(bs);
-		assertTrue("Checking save successful with tab only", ZabAppSettings.save(write, guitar, false));
+		assertTrue(ZabAppSettings.save(write, guitar, false), "Checking save successful with tab only");
 		write.close();
 		
-		assertTrue("Checking save settings to file successful", ZabAppSettings.save(UtilsTest.UNIT_PATH, UtilsTest.UNIT_NAME));
-		assertFalse("Checking save to file fails with invalid file", ZabAppSettings.save(UtilsTest.UNIT_PATH + "/path", UtilsTest.UNIT_NAME));
+		assertTrue(ZabAppSettings.save(UtilsTest.UNIT_PATH, UtilsTest.UNIT_NAME), "Checking save settings to file successful");
+		assertFalse(ZabAppSettings.save(UtilsTest.UNIT_PATH + "/path", UtilsTest.UNIT_NAME), "Checking save to file fails with invalid file");
 
-		assertTrue("Checking save to file successful with no tab", ZabAppSettings.save(UtilsTest.UNIT_PATH, UtilsTest.UNIT_NAME));
+		assertTrue(ZabAppSettings.save(UtilsTest.UNIT_PATH, UtilsTest.UNIT_NAME), "Checking save to file successful with no tab");
 		
-		assertTrue("Checking save to file successful with only tab", ZabAppSettings.save(UtilsTest.UNIT_PATH, UtilsTest.UNIT_NAME, guitar));
+		assertTrue(ZabAppSettings.save(UtilsTest.UNIT_PATH, UtilsTest.UNIT_NAME, guitar), "Checking save to file successful with only tab");
 	}
 	
 	@AfterEach

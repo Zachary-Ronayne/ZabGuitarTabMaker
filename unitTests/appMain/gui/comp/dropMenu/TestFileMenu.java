@@ -2,10 +2,8 @@ package appMain.gui.comp.dropMenu;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.event.ActionEvent;
-import java.util.Arrays;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -14,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import appMain.gui.ZabGui;
 import appUtils.ZabAppSettings;
+import util.testUtils.Assert;
 
 public class TestFileMenu{
 
@@ -51,8 +50,8 @@ public class TestFileMenu{
 	@Test
 	public void getSaver(){
 		assertNotEquals(null, menu.getSaver(), "Checking saver listener initialized");
-		assertTrue(Arrays.asList(menu.getSaveItem().getActionListeners()).contains(menu.getSaver()),
-				"Checking the save button has the correct listener");
+		// Checking the save button has the correct listener
+		Assert.contains(menu.getSaveItem().getActionListeners(), menu.getSaver());
 	}
 	
 	@Test
@@ -63,8 +62,8 @@ public class TestFileMenu{
 	@Test
 	public void getLoader(){
 		assertNotEquals(null, menu.getLoader(), "Checking loader listener initialized");
-		assertTrue(Arrays.asList(menu.getLoadItem().getActionListeners()).contains(menu.getLoader()),
-				"Checking the load button has the correct listener");
+		// Checking the load button has the correct listener
+		Assert.contains(menu.getLoadItem().getActionListeners(), menu.getLoader());
 	}
 	
 	@Test

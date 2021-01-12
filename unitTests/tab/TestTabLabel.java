@@ -1,8 +1,8 @@
 package tab;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Scanner;
 
@@ -177,16 +177,16 @@ public class TestTabLabel{
 	@Test
 	public void load(){
 		Scanner scan = new Scanner("z label\n3.2\n-2.1\n2.3 \nh");
-		assertTrue("Checking load successful", label.load(scan));
+		assertTrue(label.load(scan), "Checking load successful");
 		assertEquals("z label", label.getText(), "Checking text loaded");
 		assertEquals(3.2, label.getLength(), "Checking length loaded");
 		assertEquals(-2.1, label.getOffset(), "Checking offset loaded");
 		assertEquals(2.3, label.getPosition().getValue(), "Checking position loaded");
-		assertFalse("Checking load fails without enough data", label.load(scan));
+		assertFalse(label.load(scan), "Checking load fails without enough data");
 		
 		scan.close();
 		scan = new Scanner("a\na\na\na\na");
-		assertFalse("Checking load fails with invalid numbers", label.load(scan));
+		assertFalse(label.load(scan), "Checking load fails with invalid numbers");
 		
 		scan.close();
 	}

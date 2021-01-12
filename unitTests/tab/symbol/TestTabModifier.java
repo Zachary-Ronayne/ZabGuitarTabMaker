@@ -1,8 +1,8 @@
 package tab.symbol;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Scanner;
 
@@ -26,8 +26,8 @@ public class TestTabModifier{
 	@Test
 	public void copy(){
 		TabModifier copy = mod.copy();
-		assertTrue("Checking copy is equal to the source object", copy.equals(mod));
-		assertTrue("Checking copy is not the same as the source object", copy != mod);
+		assertTrue(copy.equals(mod), "Checking copy is equal to the source object");
+		assertTrue(copy != mod, "Checking copy is not the same as the source object");
 	}
 	
 	@Test
@@ -66,19 +66,19 @@ public class TestTabModifier{
 	@Test
 	public void load(){
 		Scanner scan = new Scanner("z\nq\n] [\n} {\n\n\n");
-		assertTrue("Checking load successful", mod.load(scan));
+		assertTrue(mod.load(scan), "Checking load successful");
 		assertEquals("z", mod.getBefore(), "Checking before value loaded");
 		assertEquals("q", mod.getAfter(), "Checking after value loaded");
 		
-		assertTrue("Checking load successful", mod.load(scan));
+		assertTrue(mod.load(scan), "Checking load successful");
 		assertEquals("] [", mod.getBefore(), "Checking before value loaded");
 		assertEquals("} {", mod.getAfter(), "Checking after value loaded");
 		
-		assertTrue("Checking load successful with empty string", mod.load(scan));
+		assertTrue(mod.load(scan), "Checking load successful with empty string");
 		assertEquals("", mod.getBefore(), "Checking before value loaded");
 		assertEquals("", mod.getAfter(), "Checking after value loaded");
 		
-		assertFalse("Checking load fails with nothing left to load", mod.load(scan));
+		assertFalse(mod.load(scan), "Checking load fails with nothing left to load");
 	}
 	
 	@Test
@@ -97,16 +97,16 @@ public class TestTabModifier{
 	@Test
 	public void equals(){
 		TabModifier m = new TabModifier("(", ")");
-		assertFalse("Checking objects are not the same object", m == mod);
-		assertTrue("Checking objects are equal", m.equals(mod));
+		assertFalse(m == mod, "Checking objects are not the same object");
+		assertTrue(m.equals(mod), "Checking objects are equal");
 		
 		m.setBefore("a");
-		assertFalse("Checking objects are not equal", m.equals(mod));
+		assertFalse(m.equals(mod), "Checking objects are not equal");
 
 		m.setBefore("(");
-		assertTrue("Checking objects are equal", m.equals(mod));
+		assertTrue(m.equals(mod), "Checking objects are equal");
 		m.setAfter("b");
-		assertFalse("Checking objects are not equal", m.equals(mod));
+		assertFalse(m.equals(mod), "Checking objects are not equal");
 	}
 	
 	@Test

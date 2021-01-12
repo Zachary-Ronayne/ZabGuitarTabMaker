@@ -8,10 +8,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import appUtils.ZabAppSettings;
-import music.Rhythm;
 import tab.symbol.TabDeadNote;
 import tab.symbol.TabNote;
 import tab.symbol.TabNoteRhythm;
+import util.testUtils.Assert;
 
 public class TestTabUtils{
 
@@ -25,17 +25,9 @@ public class TestTabUtils{
 	
 	@Test
 	public void stringToSymbol(){
-		assertEquals(new TabDeadNote().getClass().getName(),
-				TabUtils.stringToSymbol("TabDeadNote").getClass().getName(),
-				"Checking correct object type is returned for TabDeadNote");
-		
-		assertEquals(new TabNote(0).getClass().getName(),
-				TabUtils.stringToSymbol("TabNote").getClass().getName(),
-				"Checking correct object type is returned for TabNote");
-		
-		assertEquals(new TabNoteRhythm(0, new Rhythm(1, 1)).getClass().getName(),
-				TabUtils.stringToSymbol("TabNoteRhythm").getClass().getName(),
-				"Checking correct object type is returned for TabNoteRhythm");
+		Assert.isInstance(TabDeadNote.class, TabUtils.stringToSymbol("TabDeadNote"), "Checking correct object type is returned for TabDeadNote");
+		Assert.isInstance(TabNote.class, TabUtils.stringToSymbol("TabNote"), "Checking correct object type is returned for TabNote");
+		Assert.isInstance(TabNoteRhythm.class, TabUtils.stringToSymbol("TabNoteRhythm"), "Checking correct object type is returned for TabNoteRhythm");
 		
 		assertEquals(null, TabUtils.stringToSymbol("fake class"), "Checking null returned for invalid type");
 	}

@@ -1,8 +1,8 @@
 package music;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Scanner;
 
@@ -41,8 +41,8 @@ public class TestRhythm{
 	@Test
 	public void copy(){
 		Rhythm copy = half.copy();
-		assertTrue("Checking copy is equal to the source object", copy.equals(half));
-		assertTrue("Checking copy is not the same as the source object", copy != half);
+		assertTrue(copy.equals(half), "Checking copy is equal to the source object");
+		assertTrue(copy != half, "Checking copy is not the same as the source object");
 	}
 	
 	@Test
@@ -118,19 +118,19 @@ public class TestRhythm{
 	@Test
 	public void load(){
 		Scanner scan = new Scanner("1 2 \n3 4 \n5 7\n");
-		assertTrue("Checking load successful", (whole.load(scan)));
+		assertTrue(whole.load(scan), "Checking load successful");
 		assertEquals(1, whole.getDuration(), "Checking duration loaded");
 		assertEquals(2, whole.getUnit(), "Checking unit loaded");
 		
-		assertTrue("Checking load successful", (whole.load(scan)));
+		assertTrue(whole.load(scan), "Checking load successful");
 		assertEquals(3, whole.getDuration(), "Checking duration loaded");
 		assertEquals(4, whole.getUnit(), "Checking unit loaded");
 		
-		assertTrue("Checking load successful", (whole.load(scan)));
+		assertTrue(whole.load(scan), "Checking load successful");
 		assertEquals(5, whole.getDuration(), "Checking duration loaded");
 		assertEquals(7, whole.getUnit(), "Checking unit loaded");
 		
-		assertFalse("Checking load fails with nothing more to load", (whole.load(scan)));
+		assertFalse(whole.load(scan), "Checking load fails with nothing more to load");
 		
 		scan.close();
 	}
@@ -145,16 +145,16 @@ public class TestRhythm{
 	@Test
 	public void equals(){
 		Rhythm r = new Rhythm(1, 2);
-		assertFalse("Checking objects are not the same object", r == half);
-		assertTrue("Checking objects are equal", r.equals(half));
+		assertFalse(r == half, "Checking objects are not the same object");
+		assertTrue(r.equals(half), "Checking objects are equal");
 		
 		r.setDuration(10);
-		assertFalse("Checking objects are not equal", r.equals(half));
+		assertFalse(r.equals(half), "Checking objects are not equal");
 		
 		r.setDuration(1);
-		assertTrue("Checking objects are equal", r.equals(half));
+		assertTrue(r.equals(half), "Checking objects are equal");
 		r.setUnit(20);
-		assertFalse("Checking objects are not equal", r.equals(half));
+		assertFalse(r.equals(half), "Checking objects are not equal");
 	}
 	
 	@Test

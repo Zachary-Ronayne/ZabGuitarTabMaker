@@ -1,7 +1,6 @@
 package util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -15,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import appUtils.ZabAppSettings;
+import util.testUtils.Assert;
 
 public class TestGuiUtils{
 
@@ -56,21 +56,12 @@ public class TestGuiUtils{
 		layer2.add(duplicate);
 		
 		ArrayList<Component> comps = GuiUtils.getAllComponents(root);
-		assertEquals(8, comps.size(), "Checking correct number of components obtained");
-		assertTrue(comps.contains(root), "Checking component in list");
-		assertTrue(comps.contains(layer1), "Checking component in list");
-		assertTrue(comps.contains(layer2), "Checking component in list");
-		assertTrue(comps.contains(layer1Item1), "Checking component in list");
-		assertTrue(comps.contains(layer1Item2), "Checking component in list");
-		assertTrue(comps.contains(duplicate), "Checking component in list");
-		assertTrue(comps.contains(nonContainer), "Checking component in list");
-		assertTrue(comps.contains(layer2Item), "Checking component in list");
+		Assert.containsSize(comps, root, layer1, layer2, layer1Item1, layer1Item2, nonContainer, duplicate, layer2Item);
 		
 		assertEquals(0, GuiUtils.getAllComponents(null).size(), "Checking empty list returned on null");
 		
 		comps = GuiUtils.getAllComponents(nonContainer);
-		assertEquals(1, comps.size(), "Checking one component in list");
-		assertTrue(comps.contains(nonContainer), "Checking component in list");
+		Assert.containsSize(comps, nonContainer);
 	}
 	
 	@AfterEach

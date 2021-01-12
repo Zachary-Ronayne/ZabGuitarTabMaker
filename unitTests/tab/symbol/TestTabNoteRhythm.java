@@ -1,9 +1,9 @@
 package tab.symbol;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Scanner;
 
@@ -66,8 +66,8 @@ public class TestTabNoteRhythm{
 	@Test
 	public void copy(){
 		TabNoteRhythm copy = note.copy();
-		assertTrue("Checking copy is equal to the source object", copy.equals(note));
-		assertTrue("Checking copy is not the same as the source object", copy != note);
+		assertTrue(copy.equals(note), "Checking copy is equal to the source object");
+		assertTrue(copy != note, "Checking copy is not the same as the source object");
 	}
 	
 	@Test
@@ -87,11 +87,11 @@ public class TestTabNoteRhythm{
 	@Test
 	public void removeRhythm(){
 		TabNote n = note.removeRhythm();
-		assertTrue("Checking pitch is equal", n.getPitch().equals(note.getPitch()));
-		assertTrue("Checking modifier is equal", n.getModifier().equals(note.getModifier()));
+		assertTrue(n.getPitch().equals(note.getPitch()), "Checking pitch is equal");
+		assertTrue(n.getModifier().equals(note.getModifier()), "Checking modifier is equal");
 		
-		assertFalse("Checking pitch is not the same object", n.getPitch() == note.getPitch());
-		assertFalse("Checking modifier is not the same object", n.getModifier() == note.getModifier());
+		assertFalse(n.getPitch() == note.getPitch(), "Checking pitch is not the same object");
+		assertFalse(n.getModifier() == note.getModifier(), "Checking modifier is not the same object");
 	}
 	
 	@Test
@@ -101,7 +101,7 @@ public class TestTabNoteRhythm{
 	
 	@Test
 	public void usesRhythm(){
-		assertTrue("Checking note uses rhythm", note.usesRhythm());
+		assertTrue(note.usesRhythm(), "Checking note uses rhythm");
 	}
 	
 	@Test
@@ -135,12 +135,12 @@ public class TestTabNoteRhythm{
 	@Test
 	public void load(){
 		Scanner scan = new Scanner("4 \n3 2 \na\ns\nk");
-		assertTrue("Checking load successful", note.load(scan));
+		assertTrue(note.load(scan), "Checking load successful");
 		assertEquals(4, note.getPitch().getNote(), "Checking pitch correctly loaded");
 		assertEquals(new Rhythm(3, 2), note.getRhythm(), "Checking rhythm correctly loaded");
 		assertEquals(new TabModifier("a", "s"), note.getModifier(), "Checking modifier correctly loaded");
 		
-		assertFalse("Checking load fails without enough data", note.load(scan));
+		assertFalse(note.load(scan), "Checking load fails without enough data");
 	}
 	
 	@Test
@@ -156,11 +156,11 @@ public class TestTabNoteRhythm{
 	@Test
 	public void equals(){
 		TabNoteRhythm n = new TabNoteRhythm(pitch, rhythm, mod);
-		assertFalse("Checking objects are not the same object", n == note);
-		assertTrue("Checking objects are equal", n.equals(note));
+		assertFalse(n == note, "Checking objects are not the same object");
+		assertTrue(n.equals(note), "Checking objects are equal");
 		
 		n.setRhythm(new Rhythm(20, 10));
-		assertFalse("Checking objects are not equal", n.equals(note));
+		assertFalse(n.equals(note), "Checking objects are not equal");
 	}
 	
 	@AfterEach

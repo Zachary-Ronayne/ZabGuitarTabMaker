@@ -20,7 +20,7 @@ public class TestNotNullSetting{
 	private NotNullTest settingBoth;
 	
 	/** Class for testing abstract not null setting */
-	private class NotNullTest extends NotNullSetting<Integer>{
+	private static class NotNullTest extends NotNullSetting<Integer>{
 		public NotNullTest(Integer value){super(value);}
 		public NotNullTest(Integer value, Integer defaultValue){super(value, defaultValue);}
 		@Override

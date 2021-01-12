@@ -117,7 +117,7 @@ public class TestSaveable{
 		
 		assertEquals(null, Saveable.loadObject(scan, -1), "Checking null returned with invalid type");
 		
-		assertEquals(7, Saveable.loadObject(scan, 1), "Checking value loaded after a failed load");
+		assertEquals(7, Saveable.loadObject(scan, 1), "Checking value loaded after a sucessful load");
 		
 		assertEquals(null, Saveable.loadObject(scan, 1), "Checking null returned with nothing left to load");
 	}
@@ -392,7 +392,7 @@ public class TestSaveable{
 	 * 		<li>5: saveMultiple</li>
 	 * 	</ul>
 	 */
-	public void saveHelper(Object obj, String expected, boolean newLine, int method){
+	public static void saveHelper(Object obj, String expected, boolean newLine, int method){
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 		BufferedOutputStream bs = new BufferedOutputStream(bytes);
 		PrintWriter write = new PrintWriter(bs);
@@ -429,7 +429,7 @@ public class TestSaveable{
 	 * 		<li>5: saveMultiple</li>
 	 * 	</ul>
 	 */
-	public void saveHelper(Object obj, String expected, int method){
+	public static void saveHelper(Object obj, String expected, int method){
 		saveHelper(obj, expected, false, method);
 	}
 	

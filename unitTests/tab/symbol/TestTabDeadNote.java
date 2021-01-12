@@ -1,8 +1,8 @@
 package tab.symbol;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Scanner;
 
@@ -30,8 +30,8 @@ public class TestTabDeadNote{
 	@Test
 	public void copy(){
 		TabDeadNote copy = note.copy();
-		assertTrue("Checking copy is equal to the source object", copy.equals(note));
-		assertTrue("Checking copy is not the same as the source object", copy != note);
+		assertTrue(copy.equals(note), "Checking copy is equal to the source object");
+		assertTrue(copy != note, "Checking copy is not the same as the source object");
 	}
 	
 	@Test
@@ -46,7 +46,7 @@ public class TestTabDeadNote{
 	
 	@Test
 	public void usesRhythm(){
-		assertFalse("Checking note doesn't use rhythm", note.usesRhythm());
+		assertFalse(note.usesRhythm(), "Checking note doesn't use rhythm");
 	}
 	
 	@Test
@@ -57,11 +57,11 @@ public class TestTabDeadNote{
 	@Test
 	public void load(){
 		Scanner scan = new Scanner("<\n>\ng");
-		assertTrue("Checking load successful", note.load(scan));
+		assertTrue(note.load(scan), "Checking load successful");
 		assertEquals("<", note.getModifier().getBefore(), "Checking modifier before loaded correctly");
 		assertEquals(">", note.getModifier().getAfter(), "Checking modifier after loaded correctly");
 
-		assertFalse("Checking load fails without enough data", note.load(scan));
+		assertFalse(note.load(scan), "Checking load fails without enough data");
 	}
 	
 	@Test

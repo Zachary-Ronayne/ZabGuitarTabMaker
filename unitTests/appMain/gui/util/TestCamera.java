@@ -1,8 +1,8 @@
 package appMain.gui.util;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import appUtils.ZabAppSettings;
+import util.testUtils.Assert;
 import util.testUtils.UtilsTest;
 
 public class TestCamera{
@@ -42,7 +43,7 @@ public class TestCamera{
 	
 	@Test
 	public void isAchored(){
-		assertFalse("Checking anchored initialized", cam.isAchored());
+		assertFalse(cam.isAchored(), "Checking anchored initialized");
 	}
 	
 	@Test
@@ -58,12 +59,12 @@ public class TestCamera{
 	@Test
 	public void setAnchor(){
 		cam.setAnchor(5, 17);
-		assertTrue("Checking anchored set", cam.isAchored());
+		assertTrue(cam.isAchored(), "Checking anchored set");
 		assertEquals(5, cam.getAnchorX(), UtilsTest.DELTA, "Checking anchoredX set");
 		assertEquals(17, cam.getAnchorY(), UtilsTest.DELTA, "Checking anchoredX set");
 		
 		cam.setAnchor(2, 3);
-		assertTrue("Checking anchored still set", cam.isAchored());
+		assertTrue(cam.isAchored(), "Checking anchored still set");
 		assertEquals(5, cam.getAnchorX(), UtilsTest.DELTA, "Checking anchoredX not changed without removing anchor");
 		assertEquals(17, cam.getAnchorY(), UtilsTest.DELTA, "Checking anchoredX not changed without removing anchor");
 	}
@@ -71,10 +72,10 @@ public class TestCamera{
 	@Test
 	public void releaseAnchor(){
 		cam.setAnchor(5, 17);
-		assertTrue("Checking anchored set", cam.isAchored());
+		assertTrue(cam.isAchored(), "Checking anchored set");
 		
 		cam.releaseAnchor();
-		assertFalse("Checking anchored removed", cam.isAchored());
+		assertFalse(cam.isAchored(), "Checking anchored removed");
 	}
 	
 	@Test
@@ -107,9 +108,9 @@ public class TestCamera{
 		cam.setX(10);
 		cam.setY(10);
 		cam.zoomIn(5, 4, 1);
-		assertTrue("Checking x zoomed in", cam.getX() > 10);
+		Assert.greaterThan(cam.getX(), 10, "Checking x zoomed in");
 		assertEquals(1, cam.getXZoomFactor(), UtilsTest.DELTA, "Checking x zoom factor changed");
-		assertTrue("Checking y zoomed in", cam.getY() > 10);
+		Assert.greaterThan(cam.getY(), 10, "Checking y zoomed in");
 		assertEquals(1, cam.getYZoomFactor(), UtilsTest.DELTA, "Checking y zoom factor changed");
 		
 	}
@@ -119,13 +120,13 @@ public class TestCamera{
 		cam.setX(10);
 		cam.setXZoomFactor(0);
 		cam.zoomInX(5, 1);
-		assertTrue("Checking x zoomed in", cam.getX() > 10);
+		Assert.greaterThan(cam.getX(), 10, "Checking x zoomed in");
 		assertEquals(1, cam.getXZoomFactor(), UtilsTest.DELTA, "Checking x zoom factor changed");
 		
 		cam.setX(10);
 		cam.setXZoomFactor(0);
 		cam.zoomInX(5, -2);
-		assertTrue("Checking x zoomed out", cam.getX() < 10);
+		Assert.lessThan(cam.getX(), 10, "Checking x zoomed out");
 		assertEquals(-2, cam.getXZoomFactor(), UtilsTest.DELTA, "Checking x zoom factor changed");
 	}
 	
@@ -134,13 +135,13 @@ public class TestCamera{
 		cam.setY(10);
 		cam.setYZoomFactor(0);
 		cam.zoomInY(5, 1);
-		assertTrue("Checking y zoomed in", cam.getY() > 10);
+		Assert.greaterThan(cam.getY(), 10, "Checking y zoomed in");
 		assertEquals(1, cam.getYZoomFactor(), UtilsTest.DELTA, "Checking y zoom factor changed");
 		
 		cam.setY(10);
 		cam.setYZoomFactor(0);
 		cam.zoomInY(5, -2);
-		assertTrue("Checking y zoomed out", cam.getY() < 10);
+		Assert.lessThan(cam.getY(), 10, "Checking y zoomed out");
 		assertEquals(-2, cam.getYZoomFactor(), UtilsTest.DELTA, "Checking y zoom factor changed");
 	}
 	
@@ -285,49 +286,41 @@ public class TestCamera{
 	
 	@Test
 	public void fillRect(){
-		assertFalse("Checking rectangle not drawn outside of camera", cam.fillRect(-100, -100, 10, 10));
-		assertTrue("Checking rectangle drawn inside of camera", cam.fillRect(-9, -9, 10, 10));
+		assertFalse(cam.fillRect(-100, -100, 10, 10), "Checking rectangle not drawn outside of camera");
+		assertTrue(cam.fillRect(-9, -9, 10, 10), "Checking rectangle drawn inside of camera");
 	}
 	
 	@Test
 	public void fillOval(){
-		assertFalse("Checking oval not drawn outside of camera", cam.fillOval(-100, -100, 10, 10));
-		assertTrue("Checking oval drawn inside of camera", cam.fillOval(-9, -9, 10, 10));
+		assertFalse(cam.fillOval(-100, -100, 10, 10), "Checking oval not drawn outside of camera");
+		assertTrue(cam.fillOval(-9, -9, 10, 10), "Checking oval drawn inside of camera");
 	}
 	
 	@Test
 	public void drawLine(){
-		assertFalse("Checking line drawn outside of camera",
-				cam.drawLine(-1, -1, -5, -5));
-		assertFalse("Checking line drawn outside of camera",
-				cam.drawLine(-5, -5, -1, -1));
-		assertFalse("Checking line drawn outside of camera",
-				cam.drawLine(-5, -1, -1, -5));
+		assertFalse(cam.drawLine(-1, -1, -5, -5), "Checking line drawn outside of camera");
+		assertFalse(cam.drawLine(-5, -5, -1, -1), "Checking line drawn outside of camera");
+		assertFalse(cam.drawLine(-5, -1, -1, -5), "Checking line drawn outside of camera");
 		
-		assertTrue("Checking line drawn inside of camera",
-				cam.drawLine(-5, 1, 1, -5));
-		assertTrue("Checking line drawn inside of camera",
-				cam.drawLine(-5, 1, 5, -1));
-		assertTrue("Checking line drawn inside of camera",
-				cam.drawLine(-1, 1, 1, -5));
-		assertTrue("Checking line drawn inside of camera",
-				cam.drawLine(1, 1, 1, 5));
-		assertTrue("Checking line drawn inside of camera",
-				cam.drawLine(1, 5, 1, 1));
+		assertTrue(cam.drawLine(-5, 1, 1, -5), "Checking line drawn inside of camera");
+		assertTrue(cam.drawLine(-5, 1, 5, -1), "Checking line drawn inside of camera");
+		assertTrue(cam.drawLine(-1, 1, 1, -5), "Checking line drawn inside of camera");
+		assertTrue(cam.drawLine(1, 1, 1, 5), "Checking line drawn inside of camera");
+		assertTrue(cam.drawLine(1, 5, 1, 1), "Checking line drawn inside of camera");
 	}
 	
 	@Test
 	public void drawString(){
 		Font f = new Font("Courier New", Font.PLAIN, 1);
 		g.setFont(f);
-		assertTrue("Checking string drawn inside camera", cam.drawString("word", -10, 15, 10));
-		assertFalse("Checking string not drawn outside the camera", cam.drawString("word", -25, 1, 10));
+		assertTrue(cam.drawString("word", -10, 15, 10), "Checking string drawn inside camera");
+		assertFalse(cam.drawString("word", -25, 1, 10), "Checking string not drawn outside the camera");
 		assertEquals(f, g.getFont(), "Checking font is unchanged after drawing strings");
 		
 		f = new Font("Courier New", Font.PLAIN, 10);
 		g.setFont(f);
-		assertTrue("Checking string drawn inside camera no font given", cam.drawString("word", -10, 15));
-		assertFalse("Checking string not drawn outside the camera no font given", cam.drawString("word", -25, 1));
+		assertTrue(cam.drawString("word", -10, 15), "Checking string drawn inside camera no font given");
+		assertFalse(cam.drawString("word", -25, 1), "Checking string not drawn outside the camera no font given");
 		assertEquals(f, g.getFont(), "Checking font is unchanged after drawing strings");
 	}
 	
@@ -335,30 +328,30 @@ public class TestCamera{
 	public void drawScaleString(){
 		g.setFont(new Font("Courier New", Font.PLAIN, 10));
 		cam.setXZoomFactor(1);
-		assertTrue("Checking string drawn inside camera", cam.drawString("word", -20, 15));
-		assertFalse("Checking string not drawn outside the camera", cam.drawString("word", -49, 1));
+		assertTrue(cam.drawString("word", -20, 15), "Checking string drawn inside camera");
+		assertFalse(cam.drawString("word", -49, 1), "Checking string not drawn outside the camera");
 	}
 	
 	@Test
 	public void drawImage(){
-		assertFalse("Checking image not drawn out of bounds", cam.drawImage(img, -10, -10, 5, 5));
-		assertTrue("Checking image drawn in bounds", cam.drawImage(img, -10, -10, 11, 11));
+		assertFalse(cam.drawImage(img, -10, -10, 5, 5), "Checking image not drawn out of bounds");
+		assertTrue(cam.drawImage(img, -10, -10, 11, 11), "Checking image drawn in bounds");
 		
-		assertFalse("Checking image not drawn out of bounds, no width height params", cam.drawImage(img, -601, 0));
-		assertTrue("Checking image drawn in bounds, no width height params", cam.drawImage(img, -599, 0));
+		assertFalse(cam.drawImage(img, -601, 0), "Checking image not drawn out of bounds, no width height params");
+		assertTrue(cam.drawImage(img, -599, 0), "Checking image drawn in bounds, no width height params");
 	}
 	
 	@Test
 	public void inBounds(){
 		cam.setDrawOnlyInBounds(false);
-		assertTrue("Checking out of bounds, but true with disabled drawing only in bounds", cam.inBounds(-2, -2, 1, 1));
+		assertTrue(cam.inBounds(-2, -2, 1, 1), "Checking out of bounds, but true with disabled drawing only in bounds");
 
 		cam.setDrawOnlyInBounds(true);
-		assertFalse("Checking out of bounds", cam.inBounds(-2, -2, 1, 1));
-		assertFalse("Checking out bounds touching corner", cam.inBounds(-2, -2, 2, 2));
-		assertFalse("Checking out bounds touching side", cam.inBounds(-2, -2, 2, 20));
-		assertTrue("Checking out bounds in corner", cam.inBounds(-2, -2, 2.01, 2.01));
-		assertTrue("Checking out bounds in side", cam.inBounds(-2, -2, 2.01, 20));
+		assertFalse(cam.inBounds(-2, -2, 1, 1), "Checking out of bounds");
+		assertFalse(cam.inBounds(-2, -2, 2, 2), "Checking out bounds touching corner");
+		assertFalse(cam.inBounds(-2, -2, 2, 20), "Checking out bounds touching side");
+		assertTrue(cam.inBounds(-2, -2, 2.01, 2.01), "Checking out bounds in corner");
+		assertTrue(cam.inBounds(-2, -2, 2.01, 20), "Checking out bounds in side");
 	}
 	
 	@Test
@@ -512,13 +505,13 @@ public class TestCamera{
 	
 	@Test
 	public void isDrawOnlyInBounds(){
-		assertTrue("Checking draw in bounds initialized", cam.isDrawOnlyInBounds());
+		assertTrue(cam.isDrawOnlyInBounds(), "Checking draw in bounds initialized");
 	}
 	
 	@Test
 	public void setDrawOnlyInBounds(){
 		cam.setDrawOnlyInBounds(false);
-		assertFalse("Checking draw in bounds set", cam.isDrawOnlyInBounds());
+		assertFalse(cam.isDrawOnlyInBounds(), "Checking draw in bounds set");
 	}
 	
 	@Test
@@ -550,7 +543,7 @@ public class TestCamera{
 	@Test
 	public void load(){
 		Scanner scan = new Scanner("1.0 2.3 3.4 4.4 5.4 6.7 7.8 8.6 9.3 0.2 false\n");
-		assertTrue("Checking load succeeds", cam.load(scan));
+		assertTrue(cam.load(scan), "Checking load succeeds");
 		assertEquals(1.0, cam.getX(), "Checking x loaded");
 		assertEquals(2.3, cam.getY(), "Checking y loaded");
 		assertEquals(3.4, cam.getWidth(), "Checking width loaded");
@@ -565,11 +558,11 @@ public class TestCamera{
 		
 		scan.close();
 		scan = new Scanner("a 2.3 3.4 4.4 5.4 6.7 7.8 8.6 9.3 0.2 false\n");
-		assertFalse("Checking load fails with invalid doubles", cam.load(scan));
+		assertFalse(cam.load(scan), "Checking load fails with invalid doubles");
 		
 		scan.close();
 		scan = new Scanner("1.0 2.3 3.4 4.4 5.4 6.7 7.8 8.6 9.3 0.2 g\n");
-		assertFalse("Checking load fails with invalid boolean", cam.load(scan));
+		assertFalse(cam.load(scan), "Checking load fails with invalid boolean");
 		
 		scan.close();
 	}

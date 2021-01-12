@@ -1,8 +1,8 @@
 package util;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -32,17 +32,17 @@ public class TestObjectUtils{
 		B b = new B();
 		A c = new C();
 		
-		assertTrue("Checking objects with the same class type", ObjectUtils.isType(a1, A.class));
-		assertTrue("Checking objects with the same class type", ObjectUtils.isType(a1, a1.getClass()));
-		assertTrue("Checking objects with the same class type", ObjectUtils.isType(b, B.class));
-		assertFalse("Checking objects with different class types", ObjectUtils.isType(a1, B.class));
-		assertFalse("Checking objects with different class types", ObjectUtils.isType(b, A.class));
-		assertFalse("Checking null objects with the same class type", ObjectUtils.isType(a2, A.class));
-		assertFalse("Checking null objects with different class types", ObjectUtils.isType(a2, B.class));
+		assertTrue(ObjectUtils.isType(a1, A.class), "Checking objects with the same class type");
+		assertTrue(ObjectUtils.isType(a1, a1.getClass()), "Checking objects with the same class type");
+		assertTrue(ObjectUtils.isType(b, B.class), "Checking objects with the same class type");
+		assertFalse(ObjectUtils.isType(a1, B.class), "Checking objects with different class types");
+		assertFalse(ObjectUtils.isType(b, A.class), "Checking objects with different class types");
+		assertFalse(ObjectUtils.isType(a2, A.class), "Checking null objects with the same class type");
+		assertFalse(ObjectUtils.isType(a2, B.class), "Checking null objects with different class types");
 		
-		assertTrue("Checking objects extending each other are the same type", ObjectUtils.isType(c, A.class));
-		assertTrue("Checking objects extending each other are the same type", ObjectUtils.isType(c, C.class));
-		assertFalse("Checking objects extending each other are not a different type", ObjectUtils.isType(c, B.class));
+		assertTrue(ObjectUtils.isType(c, A.class), "Checking objects extending each other are the same type");
+		assertTrue(ObjectUtils.isType(c, C.class), "Checking objects extending each other are the same type");
+		assertFalse(ObjectUtils.isType(c, B.class), "Checking objects extending each other are not a different type");
 	}
 	
 	@Test
@@ -65,7 +65,7 @@ public class TestObjectUtils{
 		a = new A(1);
 		A copy = a.copy();
 		assertEquals(1, copy.x, "Checking copy has the same value");
-		assertFalse("Checking copy is not the same object", a == copy);
+		assertFalse(a == copy, "Checking copy is not the same object");
 	}
 	
 	@AfterEach

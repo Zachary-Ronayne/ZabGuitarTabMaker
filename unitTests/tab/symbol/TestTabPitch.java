@@ -1,9 +1,9 @@
 package tab.symbol;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.PrintWriter;
 import java.util.Scanner;
@@ -109,11 +109,11 @@ public class TestTabPitch{
 	public void equals(){
 		TabPitch n = new TestPitchObject(pitch, mod);
 		
-		assertFalse("Checking objects are not the same object", n == note);
-		assertTrue("Checking objects are equal", n.equals(note));
+		assertFalse(n == note, "Checking objects are not the same object");
+		assertTrue(n.equals(note), "Checking objects are equal");
 		
 		n.setPitch(new Pitch(0));
-		assertFalse("Checking objects are not equal", n.equals(note));
+		assertFalse(n.equals(note), "Checking objects are not equal");
 	}
 
 	@Test

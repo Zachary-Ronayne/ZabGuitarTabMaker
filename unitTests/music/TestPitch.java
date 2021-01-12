@@ -1,8 +1,8 @@
 package music;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Scanner;
 
@@ -35,8 +35,8 @@ public class TestPitch{
 	@Test
 	public void copy(){
 		Pitch copy = c4.copy();
-		assertTrue("Checking copy is equal to the source object", copy.equals(c4));
-		assertTrue("Checking copy is not the same as the source object", copy != c4);
+		assertTrue(copy.equals(c4), "Checking copy is equal to the source object");
+		assertTrue(copy != c4, "Checking copy is not the same as the source object");
 	}
 	
 	@Test
@@ -82,16 +82,16 @@ public class TestPitch{
 	@Test
 	public void load(){
 		Scanner scan = new Scanner("0 \n3 \n5 \n");
-		assertTrue("Checking loading succeeded", c5.load(scan));
+		assertTrue(c5.load(scan), "Checking loading succeeded");
 		assertEquals(0, c5.getNote(), "Checking correct note loaded");
 		
-		assertTrue("Checking loading succeeded", c5.load(scan));
+		assertTrue(c5.load(scan), "Checking loading succeeded");
 		assertEquals(3, c5.getNote(), "Checking correct note loaded");
 		
-		assertTrue("Checking loading succeeded", c5.load(scan));
+		assertTrue(c5.load(scan), "Checking loading succeeded");
 		assertEquals(5, c5.getNote(), "Checking correct note loaded");
 		
-		assertFalse("Checking loading fails with nothing more to load", c5.load(scan));
+		assertFalse(c5.load(scan), "Checking loading fails with nothing more to load");
 		scan.close();
 	}
 	
@@ -105,11 +105,11 @@ public class TestPitch{
 	@Test
 	public void equals(){
 		Pitch c = new Pitch(0);
-		assertFalse("Checking objects are not the same object", c == c4);
-		assertTrue("Checking objects are equal", c.equals(c4));
+		assertFalse(c == c4, "Checking objects are not the same object");
+		assertTrue(c.equals(c4), "Checking objects are equal");
 		
 		c.setNote(-1);
-		assertFalse("Checking objects are not equal", c.equals(c4));
+		assertFalse(c.equals(c4), "Checking objects are not equal");
 	}
 	
 	@Test

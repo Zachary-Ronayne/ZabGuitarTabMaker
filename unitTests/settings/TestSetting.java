@@ -1,8 +1,8 @@
 package settings;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
@@ -83,20 +83,20 @@ public class TestSetting{
 	@Test
 	public void load(){
 		Scanner scan;
-		assertFalse("Checking load detects errors on null", setting.load(null));
+		assertFalse(setting.load(null), "Checking load detects errors on null");
 		
 		scan = new Scanner("");
-		assertTrue("Checking load detects good loading", setting.load(scan));
+		assertTrue(setting.load(scan), "Checking load detects good loading");
 		
 		scan.close();
 		scan = new Scanner("");
 		setting.set("break");
-		assertFalse("Checking load detects bad loading", setting.load(scan));
+		assertFalse(setting.load(scan), "Checking load detects bad loading");
 
 		scan.close();
 		scan = new Scanner("");
 		setting.set("error");
-		assertFalse("Checking load detects error in loading", setting.load(scan));
+		assertFalse(setting.load(scan), "Checking load detects error in loading");
 		
 		scan.close();
 	}
@@ -104,37 +104,37 @@ public class TestSetting{
 	@Test
 	public void save(){
 		PrintWriter write;
-		assertFalse("Checking save detects errors on null", setting.save(null));
+		assertFalse(setting.save(null), "Checking save detects errors on null");
 		
 		write = new PrintWriter(new ByteArrayOutputStream());
-		assertTrue("Checking save detects good saving", setting.save(write));
+		assertTrue(setting.save(write), "Checking save detects good saving");
 		write.close();
 
 		write = new PrintWriter(new ByteArrayOutputStream());
 		setting.set("break");
-		assertFalse("Checking save detects bad saving", setting.save(write));
+		assertFalse(setting.save(write), "Checking save detects bad saving");
 		write.close();
 
 		write = new PrintWriter(new ByteArrayOutputStream());
 		setting.set("error");
-		assertFalse("Checking save detects error in saving", setting.save(write));
+		assertFalse(setting.save(write), "Checking save detects error in saving");
 		write.close();
 	}
 
 	@Test
 	public void equals(){
 		TestSettingObject newSetting = new TestSettingObject("a");
-		assertTrue("Checking two setting are equal", settingNoDefault.equals(newSetting));
-		assertFalse("Checking two setting are not the same object", settingNoDefault == newSetting);
+		assertTrue(settingNoDefault.equals(newSetting), "Checking two setting are equal");
+		assertFalse(settingNoDefault == newSetting, "Checking two setting are not the same object");
 		
 		newSetting.set("b");
-		assertFalse("Checking two setting are not equal with different values", settingNoDefault.equals(newSetting));
+		assertFalse(settingNoDefault.equals(newSetting), "Checking two setting are not equal with different values");
 		
 		newSetting.set("a");
-		assertTrue("Checking two setting are still equal", settingNoDefault.equals(newSetting));
+		assertTrue(settingNoDefault.equals(newSetting), "Checking two setting are still equal");
 		
 		newSetting.setDefault("b");
-		assertFalse("Checking two setting are not equal with different default values", settingNoDefault.equals(newSetting));
+		assertFalse(settingNoDefault.equals(newSetting), "Checking two setting are not equal with different default values");
 	}
 	
 	@Test

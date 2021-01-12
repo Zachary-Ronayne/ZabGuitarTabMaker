@@ -1,9 +1,9 @@
 package tab.symbol;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.PrintWriter;
 import java.util.Scanner;
@@ -94,16 +94,16 @@ public class TestTabSymbol{
 	@Test
 	public void equals(){
 		TabSymbol s = new TestSymbolObject(mod);
-		assertFalse("Checking objects are not the same object", s == symbol);
-		assertTrue("Checking objects are equal", s.equals(symbol));
+		assertFalse(s == symbol, "Checking objects are not the same object");
+		assertTrue(s.equals(symbol), "Checking objects are equal");
 		
 		s.setModifier(new TabModifier("ab", "bc"));
-		assertFalse("Checking objects are not equal", s.equals(symbol));
+		assertFalse(s.equals(symbol), "Checking objects are not equal");
 
 		s.setModifier(new TabModifier("[", "]"));
-		assertTrue("Checking objects are equal", s.equals(symbol));
+		assertTrue(s.equals(symbol), "Checking objects are equal");
 		s.setModifier(new TabModifier("a", "b"));
-		assertFalse("Checking objects are not equal", s.equals(symbol));
+		assertFalse(s.equals(symbol), "Checking objects are not equal");
 	}
 
 	@Test

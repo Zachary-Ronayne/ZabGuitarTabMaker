@@ -1,12 +1,8 @@
 package appMain.gui.comp.dropMenu;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.Color;
-import java.awt.Component;
-import java.util.Arrays;
-import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -15,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import appMain.gui.ZabGui;
 import appUtils.ZabAppSettings;
+import util.testUtils.Assert;
 
 public class TestZabMenu{
 	
@@ -56,14 +53,7 @@ public class TestZabMenu{
 		menu.add(items[2]);
 		menu.add(items[3]);
 		
-		Component[] comps = menu.getComponents();
-		List<Component> list = Arrays.asList(comps);
-		assertEquals(5, list.size(), "Checking correct number of components obtained");
-		assertTrue(list.contains(items[0]), "Checking list contains all items");
-		assertTrue(list.contains(items[1]), "Checking list contains all items");
-		assertTrue(list.contains(items[2]), "Checking list contains all items");
-		assertTrue(list.contains(items[3]), "Checking list contains all items");
-		assertTrue(list.contains(subMenu), "Checking list contains sub menu");
+		Assert.containsSize(menu.getComponents(), items[0], items[1], items[2], items[3], subMenu);
 	}
 
 	@AfterAll

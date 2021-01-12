@@ -1,6 +1,5 @@
 package appMain.gui.layout;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.awt.GridLayout;
@@ -15,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import appUtils.ZabAppSettings;
+import util.testUtils.Assert;
 
 public class TestZabLayoutHandler{
 	
@@ -34,8 +34,7 @@ public class TestZabLayoutHandler{
 	public void createVerticalLayout(){
 		ZabLayoutHandler.createVerticalLayout(panel);
 		LayoutManager lay = panel.getLayout();
-		assertTrue("Checking layout is correct type, should be BoxLayout, was " + lay.getClass(),
-				lay instanceof BoxLayout);
+		Assert.isInstance(BoxLayout.class, lay, "Checking layout is correct type, should be BoxLayout, was " + lay.getClass());
 		BoxLayout b = (BoxLayout)lay;
 		assertEquals(BoxLayout.Y_AXIS, b.getAxis(), "Checking correct axis");
 	}
@@ -44,8 +43,7 @@ public class TestZabLayoutHandler{
 	public void createHorizontalLayout(){
 		ZabLayoutHandler.createHorizontalLayout(panel);
 		LayoutManager lay = panel.getLayout();
-		assertTrue("Checking layout is correct type, should be BoxLayout, was " + lay.getClass(),
-				lay instanceof BoxLayout);
+		Assert.isInstance(BoxLayout.class, lay, "Checking layout is correct type, should be BoxLayout, was " + lay.getClass());
 		BoxLayout b = (BoxLayout)lay;
 		assertEquals(BoxLayout.X_AXIS, b.getAxis(), "Checking correct axis");
 	}
@@ -54,8 +52,7 @@ public class TestZabLayoutHandler{
 	public void createGridlLayout(){
 		ZabLayoutHandler.createGridLayout(panel, 2, 3);
 		LayoutManager lay = panel.getLayout();
-		assertTrue("Checking layout is correct type, should be GridLayout, was " + lay.getClass(),
-				lay instanceof GridLayout);
+		Assert.isInstance(GridLayout.class, lay, "Checking layout is correct type, should be GridLayout, was " + lay.getClass());
 		GridLayout g = (GridLayout)lay;
 		assertEquals(2, g.getRows(), "Checking correct rows");
 		assertEquals(3, g.getColumns(), "Checking correct columns");

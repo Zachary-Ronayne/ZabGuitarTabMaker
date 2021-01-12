@@ -1,8 +1,8 @@
 package tab;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import appUtils.ZabAppSettings;
 import tab.TabTextExporter.IndexAndPos;
 import tab.symbol.TabNote;
+import util.testUtils.Assert;
 import util.testUtils.UtilsTest;
 
 public class TestTabTextExporter{
@@ -76,12 +77,12 @@ public class TestTabTextExporter{
 	
 	@Test
 	public void exportToFile(){
-		assertTrue("Checking file export successful", TabTextExporter.exportToFile(guitar, UtilsTest.UNIT_PATH, "test"));
-		assertFalse("Checking file export fails with null tab", TabTextExporter.exportToFile(null, UtilsTest.UNIT_PATH, "test"));
-		assertFalse("Checking file export fails with null file", TabTextExporter.exportToFile(guitar, null));
+		assertTrue(TabTextExporter.exportToFile(guitar, UtilsTest.UNIT_PATH, "test"), "Checking file export successful");
+		assertFalse(TabTextExporter.exportToFile(null, UtilsTest.UNIT_PATH, "test"), "Checking file export fails with null tab");
+		assertFalse(TabTextExporter.exportToFile(guitar, null), "Checking file export fails with null file");
 		
-		assertTrue("Checking file export successful when making directory",
-				TabTextExporter.exportToFile(guitar, UtilsTest.UNIT_PATH + "/testFolder", "test"));
+		assertTrue(TabTextExporter.exportToFile(guitar, UtilsTest.UNIT_PATH + "/testFolder", "test"),
+				"Checking file export successful when making directory");
 	}
 	
 	@Test
@@ -97,10 +98,10 @@ public class TestTabTextExporter{
 		IndexAndPos i1 = new IndexAndPos(new TabPosition(new TabNote(0), 0), 0);
 		IndexAndPos i2 = new IndexAndPos(new TabPosition(new TabNote(0), 0.2), 1);
 		IndexAndPos i3 = new IndexAndPos(new TabPosition(new TabNote(0), 0.2), 2);
-		assertTrue("Checking value less than 0", i1.compareTo(i2) < 0);
-		assertTrue("Checking value greater than 0", i2.compareTo(i1) > 0);
-		assertTrue("Checking value equal to 0", i2.compareTo(i3) == 0);
-		assertTrue("Checking value equal to 0", i3.compareTo(i2) == 0);
+		Assert.lessThan(i1.compareTo(i2), 0);
+		Assert.greaterThan(i2.compareTo(i1), 0);
+		assertEquals(0, i2.compareTo(i3), "Checking value equal to 0");
+		assertEquals(0, i3.compareTo(i2), "Checking value equal to 0");
 	}
 	
 	@AfterEach

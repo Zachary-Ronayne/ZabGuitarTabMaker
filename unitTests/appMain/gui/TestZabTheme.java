@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 import javax.swing.JButton;
 import javax.swing.JMenu;
@@ -23,6 +22,7 @@ import org.junit.jupiter.api.Test;
 
 import appMain.gui.ZabTheme.ButtonHoverSensor;
 import appUtils.ZabAppSettings;
+import util.testUtils.Assert;
 
 public class TestZabTheme{
 
@@ -64,29 +64,19 @@ public class TestZabTheme{
 		ZabTheme.setToTheme(null);
 		
 		assertEquals(new Color(30, 30, 30), panel.getBackground(), "Checking background correct");
-		assertTrue(panel.getBorder() instanceof EmptyBorder, "Checking border correct");
+		Assert.isInstance(EmptyBorder.class, panel.getBorder(), "Checking border correct");
 		
 		assertEquals(new Color(50, 50, 50), bar.getBackground(), "Checking background correct");
 		
-		assertTrue(menu.getPopupMenu().getBorder() instanceof LineBorder, "Checking border correct");
+		Assert.isInstance(LineBorder.class, menu.getPopupMenu().getBorder(), "Checking border correct");
 
 		ZabTheme.setToTheme(button);
 		assertEquals(new Color(30, 30, 30), button.getBackground(), "Checking background correct");
 		assertTrue(button.isOpaque(), "Checking button is set to opaque");
-		boolean found = false;
-		MouseListener[] m = button.getMouseListeners();
-		for(int i = 0; i < m.length; i++){
-			if(m[i] instanceof ButtonHoverSensor) found = true;
-		}
-		assertTrue(found, "Checking a ButtonHoverSensor was added");
+		Assert.containsInstance(ButtonHoverSensor.class, button.getMouseListeners(), "Checking a ButtonHoverSensor was added");
 		ZabTheme.setToTheme(button);
 		
-		found = false;
-		m = button.getMouseListeners();
-		for(int i = 0; i < m.length; i++){
-			if(m[i] instanceof ButtonHoverSensor) found = true;
-		}
-		assertTrue(found, "Checking a ButtonHoverSensor is still there");
+		Assert.containsInstance(ButtonHoverSensor.class, button.getMouseListeners(), "Checking a ButtonHoverSensor is still there");
 		ZabTheme.setToTheme(button);
 	}
 	

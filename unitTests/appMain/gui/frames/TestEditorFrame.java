@@ -1,7 +1,7 @@
 package appMain.gui.frames;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import javax.swing.BoxLayout;
 
@@ -45,7 +45,7 @@ public class TestEditorFrame{
 		TabPainter paint = frame.getTabScreen();
 		assertEquals(550, paint.getPaintWidth(), "Checking width updated");
 		assertEquals(350, paint.getPaintHeight(), "Checking height updated");
-		assertTrue("Checking graphics panel still in the frame", frame.isAncestorOf(paint));
+		assertTrue(frame.isAncestorOf(paint), "Checking graphics panel still in the frame");
 	}
 	
 	@Test
@@ -58,21 +58,21 @@ public class TestEditorFrame{
 	
 	@Test
 	public void getTabScreen(){
-		assertTrue("Checking graphics panel in the frame", frame.isAncestorOf(frame.getTabScreen()));
+		assertTrue(frame.isAncestorOf(frame.getTabScreen()), "Checking graphics panel in the frame");
 	}
 	
 	@Test
 	public void getMenuHolder(){
 		ZabPanel menu = frame.getMenuHolder();
-		assertTrue("Checking menu holder in the frame", frame.isAncestorOf(menu));
+		assertTrue(frame.isAncestorOf(menu), "Checking menu holder in the frame");
 		assertEquals(BoxLayout.X_AXIS, ((BoxLayout)menu.getLayout()).getAxis(), "Checking menu has correct layout");
 	}
 	
 	@Test
 	public void getPaintHolder(){
 		ZabPanel holder = frame.getPaintHolder();
-		assertTrue("Checking graphics holder in the frame", frame.isAncestorOf(holder));
-		assertTrue("Checking graphics panel in holder", holder.isAncestorOf(frame.getTabScreen()));
+		assertTrue(frame.isAncestorOf(holder), "Checking graphics holder in the frame");
+		assertTrue(holder.isAncestorOf(frame.getTabScreen()), "Checking graphics panel in holder");
 	}
 	
 	@Test
