@@ -112,6 +112,14 @@ public class TestZabAppSettings{
 	}
 	
 	@Test
+	public void reset(){
+		ZabAppSettings.reset();
+		assertEquals(null, ZabAppSettings.get(), "Checking settings set to null");
+		assertEquals(null, ZabAppSettings.theme(), "Checking theme set to null");
+		ZabAppSettings.init();
+	}
+	
+	@Test
 	public void get(){
 		assertNotEquals(null, ZabAppSettings.get(), "Checking settings are initialized");
 	}
@@ -144,7 +152,7 @@ public class TestZabAppSettings{
 	}
 	
 	@Test
-	public void loadTheme(){
+	public void loadTheme() throws FileNotFoundException{
 		ZabAppSettings.setTheme(new ZabTheme.LightTheme(), null, false);
 		ZabAppSettings.getThemeFile().delete();
 		assertFalse(ZabAppSettings.loadTheme(), "Checking theme failed to load from file");
@@ -156,15 +164,15 @@ public class TestZabAppSettings{
 
 		ZabAppSettings.setTheme(new ZabTheme.LightTheme(), null, true);
 		File f = ZabAppSettings.getThemeFile();
-		try{
-			PrintWriter write = new PrintWriter(f);
-			write.print("a");
-			write.close();
-		}catch(FileNotFoundException e){
-			System.err.println("Error in testing loading themes in TestZabAppSettings");
-			e.printStackTrace();
-		}
+		PrintWriter write = new PrintWriter(f);
+		write.print("a");
+		write.close();
 		assertFalse(ZabAppSettings.loadTheme(), "Checking theme failed to load from file with invalid theme name");
+		Assert.isInstance(DarkTheme.class, ZabAppSettings.theme(), "Checking default theme set");
+
+		ZabAppSettings.setTheme(new LightTheme(), null, false);
+		ZabAppSettings.getThemeFile().delete();
+		assertFalse(ZabAppSettings.loadTheme(), "Checking theme failed to load from file with missing file");
 		Assert.isInstance(DarkTheme.class, ZabAppSettings.theme(), "Checking default theme set");
 	}
 	
@@ -181,6 +189,10 @@ public class TestZabAppSettings{
 		ZabAppSettings.setTheme(new ZabTheme.LightTheme(), null, false);
 		assertTrue(ZabAppSettings.loadTheme(), "Checking load after save successful");
 		Assert.isInstance(DarkTheme.class, ZabAppSettings.theme(), "Checking dark theme loaded");
+		
+		ZabAppSettings.reset();
+		assertFalse(ZabAppSettings.saveTheme(), "Checking reset theme fails to save");
+		ZabAppSettings.init();
 	}
 	
 	@Test
@@ -269,6 +281,9 @@ public class TestZabAppSettings{
 		assertFalse(ZabAppSettings.load(UtilsTest.UNIT_PATH + "/path", UtilsTest.UNIT_NAME, null, true), "Checking load from file fails with invalid file");
 
 		assertTrue(ZabAppSettings.load(UtilsTest.UNIT_PATH, UtilsTest.UNIT_NAME), "Checking load from file successful with no tab");
+		
+		assertFalse(ZabAppSettings.load((File)null, guitar, false), "Checking load fails with null file");
+		assertFalse(ZabAppSettings.load(new File(UtilsTest.UNIT_PATH), guitar, false), "Checking load fails with file not found");
 	}
 	
 	@Test

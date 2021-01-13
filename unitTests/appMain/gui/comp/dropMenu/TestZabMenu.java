@@ -3,6 +3,7 @@ package appMain.gui.comp.dropMenu;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.awt.Color;
+import java.awt.Component;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -42,6 +43,7 @@ public class TestZabMenu{
 		assertEquals(gui, menu.getGui(), "Checking gui initialized");
 	}
 	
+	@SuppressWarnings("serial")
 	@Test
 	public void getComponents(){
 		ZabMenuItem[] items = new ZabMenuItem[4];
@@ -52,6 +54,8 @@ public class TestZabMenu{
 		menu.add(subMenu);
 		menu.add(items[2]);
 		menu.add(items[3]);
+		// Adding component which will not be found
+		menu.add(new Component(){});
 		
 		Assert.containsSize(menu.getComponents(), items[0], items[1], items[2], items[3], subMenu);
 	}

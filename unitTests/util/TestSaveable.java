@@ -98,7 +98,13 @@ public class TestSaveable{
 	
 	@Test
 	public void loadObject(){
-		scan = new Scanner("true false 3 -2 2.1 0\nword\nspace word\n7");
+		scan = new Scanner(""
+				+ "true false 3 -2 3 387246587654 3.5345 -7.2345 2.1436543764765476 0\n"
+				+ "word\n"
+				+ "space word\n"
+				+ "big b-/102\n"
+				+ "h\n"
+				+ "7");
 		
 		assertEquals(true, Saveable.loadObject(scan, 0), "Checking boolean value loaded");
 		assertEquals(false, Saveable.loadObject(scan, 0), "Checking boolean value loaded");
@@ -106,18 +112,29 @@ public class TestSaveable{
 		assertEquals(3, Saveable.loadObject(scan, 1), "Checking int value loaded");
 		assertEquals(-2, Saveable.loadObject(scan, 1), "Checking int value loaded");
 		
-		assertEquals(2.1, Saveable.loadObject(scan, 2), "Checking double value loaded");
-		assertEquals(0.0, Saveable.loadObject(scan, 2), "Checking double value loaded");
+		assertEquals(3L, Saveable.loadObject(scan, 2), "Checking long value loaded");
+		assertEquals(387246587654L, Saveable.loadObject(scan, 2), "Checking long value loaded");
+		
+		assertEquals(3.5345F, Saveable.loadObject(scan, 3), "Checking float value loaded");
+		assertEquals(-7.2345F, Saveable.loadObject(scan, 3), "Checking float value loaded");
+		
+		assertEquals(2.1436543764765476, Saveable.loadObject(scan, 4), "Checking double value loaded");
+		assertEquals(0.0, Saveable.loadObject(scan, 4), "Checking double value loaded");
 		
 		scan.nextLine();
-		assertEquals("word", Saveable.loadObject(scan, 3), "Checking string value loaded");
-		assertEquals("space word", Saveable.loadObject(scan, 3), "Checking string value with space loaded");
+		assertEquals("word", Saveable.loadObject(scan, 5), "Checking string value loaded");
+		assertEquals("space word", Saveable.loadObject(scan, 5), "Checking string value with space loaded");
+		
+		assertEquals("big", Saveable.loadObject(scan, 6), "Checking next element value loaded");
+		assertEquals("b-/102", Saveable.loadObject(scan, 6), "Checking next element loaded after a space");
+		assertEquals("h", Saveable.loadObject(scan, 6), "Checking next element loaded after a new line");
+		scan.nextLine();
 		
 		assertEquals(null, Saveable.loadObject(null, 0), "Checking null returned with null reader");
 		
 		assertEquals(null, Saveable.loadObject(scan, -1), "Checking null returned with invalid type");
 		
-		assertEquals(7, Saveable.loadObject(scan, 1), "Checking value loaded after a sucessful load");
+		assertEquals(7, Saveable.loadObject(scan, 1), "Checking value loaded after a successful load");
 		
 		assertEquals(null, Saveable.loadObject(scan, 1), "Checking null returned with nothing left to load");
 	}
@@ -125,7 +142,7 @@ public class TestSaveable{
 	@Test
 	public void loadObjects(){
 		scan = new Scanner("test\na big\nfinal line");
-		Object[] load = Saveable.loadObjects(scan, 3, 3);
+		Object[] load = Saveable.loadObjects(scan, 3, 5);
 		assertNotEquals(null, load, "Checking returned value is not null");
 		assertEquals("test", load[0], "Checking value loaded from list");
 		assertEquals("a big", load[1], "Checking value loaded from list");
@@ -192,6 +209,63 @@ public class TestSaveable{
 		scan = new Scanner("1 s");
 		load = Saveable.loadInts(scan, 2);
 		assertEquals(null, load, "Checking null returned with invalid integer value");
+	}
+	
+	@Test
+	public void loadLong(){
+		scan = new Scanner("1 -3 1.1 a");
+		assertEquals(1L, Saveable.loadLong(scan), "Checking long value loaded");
+		assertEquals(-3L, Saveable.loadLong(scan), "Checking long value loaded");
+		assertEquals(null, Saveable.loadLong(scan), "Checking null returned on invalid long value");
+		assertEquals(null, Saveable.loadLong(scan), "Checking null returned non number value");
+		assertEquals(null, Saveable.loadLong(scan), "Checking null returned with no space left");
+	}
+	
+	@Test
+	public void loadLongs(){
+		scan = new Scanner("1 2");
+		Object[] load = Saveable.loadLongs(scan, 2);
+		assertNotEquals(null, load, "Checking returned value not null");
+		assertEquals(1L, load[0], "Checking integer value loaded");
+		assertEquals(2L, load[1], "Checking integer value loaded");
+		
+		scan.close();
+		scan = new Scanner("3");
+		load = Saveable.loadLongs(scan, 2);
+		assertEquals(null, load, "Checking null returned with size too big");
+		
+		scan.close();
+		scan = new Scanner("1 s");
+		load = Saveable.loadLongs(scan, 2);
+		assertEquals(null, load, "Checking null returned with invalid integer value");
+	}
+	
+	@Test
+	public void loadFloat(){
+		scan = new Scanner("1.1 -3.43 a");
+		assertEquals(1.1F, Saveable.loadFloat(scan), "Checking float value loaded");
+		assertEquals(-3.43F, Saveable.loadFloat(scan), "Checking float value loaded");
+		assertEquals(null, Saveable.loadFloat(scan), "Checking null returned non number value");
+		assertEquals(null, Saveable.loadFloat(scan), "Checking null returned with no space left");
+	}
+	
+	@Test
+	public void loadFloats(){
+		scan = new Scanner("1.6 2.2");
+		Object[] load = Saveable.loadFloats(scan, 2);
+		assertNotEquals(null, load, "Checking returned value not null");
+		assertEquals(1.6F, load[0], "Checking float value loaded");
+		assertEquals(2.2F, load[1], "Checking float value loaded");
+		
+		scan.close();
+		scan = new Scanner("-2.5");
+		load = Saveable.loadFloats(scan, 2);
+		assertEquals(null, load, "Checking null returned with size too big");
+		
+		scan.close();
+		scan = new Scanner("1.7 s");
+		load = Saveable.loadFloats(scan, 2);
+		assertEquals(null, load, "Checking null returned with invalid float value");
 	}
 	
 	@Test
@@ -307,7 +381,8 @@ public class TestSaveable{
 		assertFalse(Saveable.saveToStrings(null, new Object[]{}, false), "Checking save fails with null writer");
 		assertFalse(Saveable.saveToStrings(write, new Object[]{null}, false), "Checking save fails with null object in list to save");
 		assertFalse(Saveable.saveToStrings(write, null, false), "Checking save fails with null object to save");
-		
+		assertFalse(Saveable.saveToStrings(write, new Object[]{"\n"}, false), "Checking save fails with new line string in list to save");
+
 		saveHelper(new Object[]{}, "", false, 2);
 		saveHelper(new Object[]{2, 3}, "2 3 ", false, 2);
 		saveHelper(new Object[]{"test", 3, false}, "test\n3\nfalse\n", true, 2);

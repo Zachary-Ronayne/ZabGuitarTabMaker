@@ -81,7 +81,7 @@ public class TestPitch{
 	
 	@Test
 	public void load(){
-		Scanner scan = new Scanner("0 \n3 \n5 \n");
+		Scanner scan = new Scanner("0 \n3 \n5 \n1");
 		assertTrue(c5.load(scan), "Checking loading succeeded");
 		assertEquals(0, c5.getNote(), "Checking correct note loaded");
 		
@@ -91,12 +91,15 @@ public class TestPitch{
 		assertTrue(c5.load(scan), "Checking loading succeeded");
 		assertEquals(5, c5.getNote(), "Checking correct note loaded");
 		
+		assertFalse(c5.load(scan), "Checking loading fails with not enough to load");
 		assertFalse(c5.load(scan), "Checking loading fails with nothing more to load");
 		scan.close();
 	}
 	
 	@Test
 	public void save(){
+		assertFalse(c4.save(null), "Checking save fails with invalid writer");
+		
 		assertEquals("0 \n", UtilsTest.testSave(c4), "Checking saved value is correct");
 		assertEquals("12 \n", UtilsTest.testSave(c5), "Checking saved value is correct");
 		assertEquals("-6 \n", UtilsTest.testSave(fSharp3), "Checking saved value is correct");
@@ -104,6 +107,9 @@ public class TestPitch{
 	
 	@Test
 	public void equals(){
+		assertTrue(c4.equals(c4), "Checking pitch equal to itself");
+		assertFalse(c4.equals(null), "Checking pitch not equal to null");
+		
 		Pitch c = new Pitch(0);
 		assertFalse(c == c4, "Checking objects are not the same object");
 		assertTrue(c.equals(c4), "Checking objects are equal");

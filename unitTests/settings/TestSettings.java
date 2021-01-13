@@ -19,6 +19,7 @@ public class TestSettings{
 
 	private TestSettingsObject settings;
 	private TestSettingsObject newSettings;
+	private TestSettingsObject intSettings;
 	
 	private class TestSettingsObject extends Settings{}
 
@@ -36,6 +37,9 @@ public class TestSettings{
 		newSettings = new TestSettingsObject();
 		newSettings.addString("set a");
 		newSettings.addString("set b");
+		
+		intSettings = new TestSettingsObject();
+		intSettings.addInt(2);
 	}
 	
 	@Test
@@ -75,16 +79,23 @@ public class TestSettings{
 		assertTrue(newSettings.equals(settings), "Checking new settings are the same as the main one after loading");
 		
 		scan.close();
+		scan = new Scanner("a");
+		assertFalse(intSettings.load(scan), "Checking load fails with invalid data for the setting");
+		
+		scan.close();
 	}
 	
 	@Test
 	public void save(){
 		String saved = UtilsTest.testSave(settings);
 		assertEquals("set a\nset a\nset b\nset b\n", saved, "Checking save was successful");
+		
+		assertFalse(settings.save(null), "Checking save fails with invalid writer");
 	}
 	
 	@Test
 	public void equals(){
+		assertTrue(settings.equals(settings), "Checking the settings object is equal to itself");
 		assertFalse(settings.equals(null), "Checking null is not equal to settings");
 		
 		assertTrue(settings.equals(newSettings), "Checking identical settings are equal");

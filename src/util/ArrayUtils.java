@@ -51,15 +51,9 @@ public final class ArrayUtils{
 				else return false;
 			}
 		}
-		
-		// Add the value, if it encountered an error while being added, return false
-		try{
-			arr.add(low, e);
-			return true;
-		}catch(IndexOutOfBoundsException err){
-			err.printStackTrace();
-			return false;
-		}
+
+		arr.add(low, e);
+		return true;
 	}
 	
 	/**

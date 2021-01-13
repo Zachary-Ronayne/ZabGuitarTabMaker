@@ -76,6 +76,11 @@ public class TestMusic{
 	
 	@Test
 	public void intToNote(){
+		assertEquals(Music.C_SHARP, Music.intToNote(13, false, false), "Checking sharp is found without octave");
+		assertEquals(Music.C_SHARP + "5", Music.intToNote(13, false, true), "Checking sharp is found with octave");
+		assertEquals(Music.D_FLAT, Music.intToNote(13, true, false), "Checking flat is found without octave");
+		assertEquals(Music.D_FLAT + "5", Music.intToNote(13, true, true), "Checking flat is found with octave");
+		
 		assertEquals(Music.C + "4", Music.intToNote(0, false), "Checking flat is found");
 		assertEquals(Music.C + "5", Music.intToNote(12, false), "Checking flat is found");
 		assertEquals(Music.C + "3", Music.intToNote(-12, false), "Checking flat is found");
@@ -184,6 +189,7 @@ public class TestMusic{
 		assertEquals(18, Music.createNote(Music.F_SHARP, 5), "Checking correct note is found with high octave");
 	}
 	
+	@Test
 	public void createPitch(){
 		assertTrue("Checking pitch is generated with no octave", Music.createPitch(Music.C).equals(new Pitch(0)));
 		assertTrue("Checking pitch is generated with no octave", Music.createPitch(Music.E).equals(new Pitch(4)));

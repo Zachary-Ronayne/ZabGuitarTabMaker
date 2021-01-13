@@ -61,7 +61,6 @@ public abstract class TabSymbol implements Copyable<TabSymbol>, Saveable{
 	 */
 	public String getModifiedSymbol(TabString string){
 		String symbol = this.getSymbol(string);
-		if(this.getModifier() == null) return symbol;
 		return this.getModifier().modifySymbol(symbol);
 	}
 
@@ -94,7 +93,7 @@ public abstract class TabSymbol implements Copyable<TabSymbol>, Saveable{
 		TabModifier m1 = this.getModifier();
 		TabModifier m2 = s.getModifier();
 		return	super.equals(obj) ||
-				(m1 == null && m2 == null || m1.equals(m2));
+				m1.equals(m2);
 	}
 	
 	/***/

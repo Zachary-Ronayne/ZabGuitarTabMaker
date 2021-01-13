@@ -40,4 +40,8 @@ public class ZabLayoutHandler{
 		GridLayout layout = new GridLayout(rows, cols);
 		target.setLayout(layout);
 	}
+	
+	/** Cannot instantiate {@link ZabLayoutHandler} */
+	private ZabLayoutHandler(){}
+	
 }

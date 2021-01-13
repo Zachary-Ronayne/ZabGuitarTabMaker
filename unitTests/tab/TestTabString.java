@@ -253,30 +253,6 @@ public class TestTabString{
 		}
 	}
 	
-	@SuppressWarnings("unlikely-arg-type")
-	@Test
-	public void equals(){
-		TabString s = new TabString(pitch);
-		s.add(notes[0]);
-		s.add(notes[1]);
-		string.add(notes[0]);
-		string.add(notes[1]);
-		assertFalse(s == string, "Checking objects are not the same object");
-		assertTrue(s.equals(string), "Checking objects are equal");
-		
-		assertFalse(s.equals(pitch), "Checking objects are not equal when not a string");
-		
-		s.setRootPitch(newPitch);
-		assertFalse(s.equals(string), "Checking objects are not equal");
-		
-		s.setRootPitch(pitch);
-		assertTrue(s.equals(string), "Checking objects are equal");
-		s.remove(notes[0]);
-		assertFalse(s.equals(string), "Checking objects are not equal");
-		s.add(notes[0]);
-		assertTrue(s.equals(string), "Checking objects are equal");
-	}
-	
 	@Test
 	public void load(){
 		Scanner scan = new Scanner("2 \n0\n2 \n1\nTabNote\n2 \n\n\n1.0 \n");
@@ -348,6 +324,8 @@ public class TestTabString{
 	
 	@Test
 	public void save(){
+		assertFalse(string.save(null), "Checking save fails with invalid writer");
+		
 		assertEquals("4 \n0\n", UtilsTest.testSave(string), "Checking save successful, no notes");
 		
 		string.setRootPitch(new Pitch(2));
@@ -378,8 +356,35 @@ public class TestTabString{
 				+ "w\n"
 				+ "5.4 \n",
 				UtilsTest.testSave(string), "Checking save successful, many notes");
+		
+		string.add(0, null);
+		assertEquals(null, UtilsTest.testSave(string), "Checking save fails with invalid string symbols");
 	}
 	
+	@SuppressWarnings("unlikely-arg-type")
+	@Test
+	public void equals(){
+		TabString s = new TabString(pitch);
+		s.add(notes[0]);
+		s.add(notes[1]);
+		string.add(notes[0]);
+		string.add(notes[1]);
+		assertFalse(s == string, "Checking objects are not the same object");
+		assertTrue(s.equals(string), "Checking objects are equal");
+		
+		assertFalse(s.equals(pitch), "Checking objects are not equal when not a string");
+		
+		s.setRootPitch(newPitch);
+		assertFalse(s.equals(string), "Checking objects are not equal");
+		
+		s.setRootPitch(pitch);
+		assertTrue(s.equals(string), "Checking objects are equal");
+		s.remove(notes[0]);
+		assertFalse(s.equals(string), "Checking objects are not equal");
+		s.add(notes[0]);
+		assertTrue(s.equals(string), "Checking objects are equal");
+	}
+
 	@Test
 	public void testToString(){
 		for(TabPosition p : notes) string.add(p);

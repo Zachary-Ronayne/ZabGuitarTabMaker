@@ -3,6 +3,7 @@ package settings;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
+import appUtils.ZabConstants;
 import appUtils.ZabSettings;
 import util.ObjectUtils;
 import util.Saveable;
@@ -90,6 +91,7 @@ public abstract class Setting<T> implements Saveable{
 		try{
 			return this.loadValues(reader);
 		}catch(Exception e){
+			if(ZabConstants.PRINT_ERRORS) e.printStackTrace();
 			return false;
 		}
 	}
@@ -103,6 +105,7 @@ public abstract class Setting<T> implements Saveable{
 		try{
 			return this.saveValues(writer);
 		}catch(Exception e){
+			if(ZabConstants.PRINT_ERRORS) e.printStackTrace();
 			return false;
 		}
 	}

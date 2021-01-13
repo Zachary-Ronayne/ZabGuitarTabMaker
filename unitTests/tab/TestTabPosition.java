@@ -190,10 +190,14 @@ public class TestTabPosition{
 		assertFalse(newNote.load(scan), "Checking load fails with not enough data");
 		
 		scan.close();
+		
+		assertFalse(newNote.load(null), "Checking load fails with invalid reader");
 	}
 	
 	@Test
 	public void save(){
+		assertFalse(note.save(null), "Checking save fails with invalid writer");
+		
 		assertEquals(""
 				+ "TabNote\n"
 				+ "2 \n"

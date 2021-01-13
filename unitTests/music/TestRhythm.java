@@ -117,7 +117,7 @@ public class TestRhythm{
 	
 	@Test
 	public void load(){
-		Scanner scan = new Scanner("1 2 \n3 4 \n5 7\n");
+		Scanner scan = new Scanner("1 2 \n3 4 \n5 7\n1 2");
 		assertTrue(whole.load(scan), "Checking load successful");
 		assertEquals(1, whole.getDuration(), "Checking duration loaded");
 		assertEquals(2, whole.getUnit(), "Checking unit loaded");
@@ -130,6 +130,7 @@ public class TestRhythm{
 		assertEquals(5, whole.getDuration(), "Checking duration loaded");
 		assertEquals(7, whole.getUnit(), "Checking unit loaded");
 		
+		assertFalse(whole.load(scan), "Checking load fails with not enough to load");
 		assertFalse(whole.load(scan), "Checking load fails with nothing more to load");
 		
 		scan.close();
@@ -137,6 +138,8 @@ public class TestRhythm{
 	
 	@Test
 	public void save(){
+		assertFalse(half.save(null), "Checking save fails with invalid writer");
+		
 		assertEquals("1 2 \n", UtilsTest.testSave(half), "Checking saved values are correct");
 		assertEquals("3 2 \n", UtilsTest.testSave(threeHalf), "Checking saved values are correct");
 		assertEquals("2 5 \n", UtilsTest.testSave(fives), "Checking saved values are correct");
@@ -144,6 +147,9 @@ public class TestRhythm{
 	
 	@Test
 	public void equals(){
+		assertTrue(half.equals(half), "Checking rhythm equals itself");
+		assertFalse(half.equals(null), "Checking rhythm does not equal null");
+		
 		Rhythm r = new Rhythm(1, 2);
 		assertFalse(r == half, "Checking objects are not the same object");
 		assertTrue(r.equals(half), "Checking objects are equal");

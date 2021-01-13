@@ -155,12 +155,25 @@ public class TestTabNoteRhythm{
 	
 	@Test
 	public void equals(){
+		assertTrue(note.equals(note), "Checking note equals itself");
+		assertFalse(note.equals(null), "Checking note nodes not equal null");
+		
 		TabNoteRhythm n = new TabNoteRhythm(pitch, rhythm, mod);
 		assertFalse(n == note, "Checking objects are not the same object");
 		assertTrue(n.equals(note), "Checking objects are equal");
 		
 		n.setRhythm(new Rhythm(20, 10));
 		assertFalse(n.equals(note), "Checking objects are not equal");
+	}
+	
+	@Test
+	public void testToString(){
+		assertEquals(""
+				+ "[TabNoteRhyhtm, "
+					+ "[On C4 string, note: \"[3]\"], "
+					+ "[TabModifier: \"[\" \"]\"], [Pitch: D#4], "
+					+ "[Rhythm: 1 2 notes"
+				+ "]", note.toString(), "Checking correct string");
 	}
 	
 	@AfterEach

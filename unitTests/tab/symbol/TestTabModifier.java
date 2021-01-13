@@ -96,6 +96,9 @@ public class TestTabModifier{
 	
 	@Test
 	public void equals(){
+		assertTrue(mod.equals(mod), "Checking modifier equals itself");
+		assertFalse(mod.equals(null), "Checking modifier does not equal null"); 
+		
 		TabModifier m = new TabModifier("(", ")");
 		assertFalse(m == mod, "Checking objects are not the same object");
 		assertTrue(m.equals(mod), "Checking objects are equal");

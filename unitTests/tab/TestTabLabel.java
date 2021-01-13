@@ -74,6 +74,9 @@ public class TestTabLabel{
 	public void setLength(){
 		label.setLength(2);
 		assertEquals(2, label.getLength(), "Checking length set");
+		
+		label.setLength(-1);
+		assertEquals(0, label.getLength(), "Checking length set to 0 when trying to set to negative");
 	}
 	
 	@Test
@@ -108,6 +111,9 @@ public class TestTabLabel{
 		
 		pos.setValue(4);
 		assertEquals(2, fullLabel.getBeginningPos(), "Checking beginning position after changing note position");
+		
+		fullLabel.setPosition(null);
+		assertEquals(0, fullLabel.getBeginningPos(), "Checking beginning position found as 0 with invalid position");
 	}
 	
 	@Test
@@ -155,7 +161,7 @@ public class TestTabLabel{
 		assertEquals(-1, fullLabel.getBeginningPos(), "Checking beginning position unchanged");
 		assertEquals(9, fullLabel.getEndingPos(), "Checking end position updated");
 
-		fullLabel.expandBackwards(-5);
+		fullLabel.expandForwards(-5);
 		assertEquals(10, fullLabel.getLength(), "Checking total length unchanged with negative parameter");
 		assertEquals(-1, fullLabel.getBeginningPos(), "Checking beginning position unchanged");
 		assertEquals(9, fullLabel.getEndingPos(), "Checking end position unchanged");
@@ -176,6 +182,8 @@ public class TestTabLabel{
 	
 	@Test
 	public void load(){
+		assertFalse(label.load(null), "Checking load fails with invalid reader");
+		
 		Scanner scan = new Scanner("z label\n3.2\n-2.1\n2.3 \nh");
 		assertTrue(label.load(scan), "Checking load successful");
 		assertEquals("z label", label.getText(), "Checking text loaded");
@@ -193,6 +201,7 @@ public class TestTabLabel{
 	
 	@Test
 	public void save(){
+		assertFalse(label.save(null), "Checking save fails with invalid writer");
 		assertEquals("a label\n5.0\n-2.0\n1.0 \n", UtilsTest.testSave(fullLabel), "Checking save successful");
 		assertEquals("label b\n0.0\n0.0\n1.0 \n", UtilsTest.testSave(label), "Checking save successful");
 	}

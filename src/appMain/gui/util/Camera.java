@@ -671,12 +671,13 @@ public class Camera implements Saveable{
 	/***/
 	@Override
 	public boolean save(PrintWriter write){
-		if(!Saveable.saveToStrings(
+		Saveable.saveToStrings(
 				write, new Object[]{this.getX(), this.getY(), this.getWidth(), this.getHeight(),
 				                    this.getXZoomFactor(), this.getYZoomFactor(),
 				                    this.getMinX(), this.getMinY(), this.getMaxX(), this.getMaxY(),
-				                    this.isDrawOnlyInBounds()}))
-			return false;
+				                    this.isDrawOnlyInBounds()
+				                   }
+				);
 		
 		return Saveable.newLine(write);
 	}

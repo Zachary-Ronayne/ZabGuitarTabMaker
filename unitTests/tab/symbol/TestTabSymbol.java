@@ -93,6 +93,9 @@ public class TestTabSymbol{
 
 	@Test
 	public void equals(){
+		assertTrue(symbol.equals(symbol), "Checking symbol equals itself");
+		assertFalse(symbol.equals(null), "Checking symbol does not equal null");
+		
 		TabSymbol s = new TestSymbolObject(mod);
 		assertFalse(s == symbol, "Checking objects are not the same object");
 		assertTrue(s.equals(symbol), "Checking objects are equal");

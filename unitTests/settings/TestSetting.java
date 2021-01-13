@@ -123,6 +123,9 @@ public class TestSetting{
 
 	@Test
 	public void equals(){
+		assertTrue(setting.equals(setting), "Checking object is equal to itself");
+		assertFalse(setting.equals(null), "Checking object is not equal to null");
+		
 		TestSettingObject newSetting = new TestSettingObject("a");
 		assertTrue(settingNoDefault.equals(newSetting), "Checking two setting are equal");
 		assertFalse(settingNoDefault == newSetting, "Checking two setting are not the same object");

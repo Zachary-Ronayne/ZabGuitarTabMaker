@@ -10,6 +10,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import appMain.gui.ZabGui;
 import appMain.gui.comp.ZabExporterDialog;
 import appMain.gui.comp.ZabFileChooser;
+import appUtils.ZabConstants;
 
 /**
  * The {@link ZabMenu} in {@link ZabMenuBar} handling file related items
@@ -85,7 +86,7 @@ public class FileMenu extends ZabMenu{
 			// Restore the old look and feel
 			UIManager.setLookAndFeel(old);
 		}catch(ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e){
-			e.printStackTrace();
+			if(ZabConstants.PRINT_ERRORS) e.printStackTrace();
 		}
 	}
 	

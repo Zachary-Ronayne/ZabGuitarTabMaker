@@ -137,13 +137,12 @@ public abstract class SettingNumber<T extends Number> extends NotNullSetting<T>{
 	@Override
 	public boolean loadValues(Scanner reader) throws Exception{
 		// Load the 4 values, if an issue happened, return false
-		Object[] load = Saveable.loadObjects(reader, 4, 4);
+		Object[] load = Saveable.loadObjects(reader, 4, 6);
 		if(load == null) return false;
 
 		// Set the minimum and maximum values directly, these values are permitted to be null
 		this.minValue = this.parseType(load[2].toString());
 		this.maxValue = this.parseType(load[3].toString());
-		
 		// Set the value and default value, if either is null, return false
 		T v = this.parseType(load[0].toString());
 		if(v == null) return false;

@@ -127,7 +127,6 @@ public class TabNoteRhythm extends TabPitch{
 	/***/
 	@Override
 	public boolean equals(Object obj){
-		if(!ObjectUtils.isType(obj, this.getClass())) return false;
 		TabNoteRhythm n = (TabNoteRhythm)obj;
 		return	super.equals(obj) &&
 				this.getRhythm().equals(n.getRhythm());
@@ -136,7 +135,11 @@ public class TabNoteRhythm extends TabPitch{
 	/***/
 	@Override
 	public String toString(){
-		return "";
+		StringBuilder b = new StringBuilder("[TabNoteRhyhtm, ");
+		b.append(super.toString());
+		b.append(", ");
+		b.append(this.getRhythm());
+		return b.toString();
 	}
 	
 }

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import appUtils.ZabAppSettings;
+import appUtils.ZabSettings;
 import tab.TabTextExporter.IndexAndPos;
 import tab.symbol.TabNote;
 import util.testUtils.Assert;
@@ -73,16 +74,40 @@ public class TestTabTextExporter{
 				+ "F |----------------------0--0--12--p10-|\n",
 				TabTextExporter.export(guitar),
 				"Checking exporting guitar with default settings");
+		
+		ZabSettings settings = ZabAppSettings.get();
+		settings.getTabTextNoteNameOctave().set(true);
+		settings.getTabTextNoteNameFormat().set(TabTextExporter.NOTE_FORMAT_ALL_FLAT);
+		settings.getTabTextNoteNameAlignEnd().set(true);
+		settings.getTabTextAlignSymbolsEnd().set(true);
+		settings.getTabTextEnd().set("|]");
+		settings.getTabTextPreString().set("[");;
+		
+		assertEquals(""
+				+ "[ F4|-0--3--5--0--3--6--5--0-------------|]\n"
+				+ "[ C4|-------------------0--0-------------|]\n"
+				+ "[Ab3|----------------------0-------------|]\n"
+				+ "[Eb3|----------------------2-------------|]\n"
+				+ "[Bb2|----------------------2--2--14---p8-|]\n"
+				+ "[ F2|----------------------0--0--12--p10-|]\n",
+				TabTextExporter.export(guitar),
+				"Checking exporting guitar with modified settings");
 	}
 	
 	@Test
 	public void exportToFile(){
 		assertTrue(TabTextExporter.exportToFile(guitar, UtilsTest.UNIT_PATH, "test"), "Checking file export successful");
+
 		assertFalse(TabTextExporter.exportToFile(null, UtilsTest.UNIT_PATH, "test"), "Checking file export fails with null tab");
+		
 		assertFalse(TabTextExporter.exportToFile(guitar, null), "Checking file export fails with null file");
 		
 		assertTrue(TabTextExporter.exportToFile(guitar, UtilsTest.UNIT_PATH + "/testFolder", "test"),
 				"Checking file export successful when making directory");
+		
+		assertTrue(TabTextExporter.exportToFile(guitar, UtilsTest.UNIT_PATH + "/testFolder/subFolder", "test"),
+				"Checking file export successful when making sub directory");
+		
 	}
 	
 	@Test

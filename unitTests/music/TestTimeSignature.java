@@ -2,6 +2,7 @@ package music;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Scanner;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 import appUtils.ZabAppSettings;
 import util.testUtils.UtilsTest;
@@ -57,6 +59,13 @@ public class TestTimeSignature{
 	public void setUpper(){
 		four4.setUpper(2);
 		assertEquals(2, four4.getUpper(), "Checking upper set");
+		
+		assertThrows(IllegalArgumentException.class, new Executable(){
+			@Override
+			public void execute() throws Throwable{
+				four4.setUpper(0);
+			}
+		}, "Checking error thrown on invalid upper value");
 	}
 	
 	@Test
@@ -71,6 +80,13 @@ public class TestTimeSignature{
 	public void setLower(){
 		four4.setLower(2);
 		assertEquals(2, four4.getLower(), "Checking lower set");
+		
+		assertThrows(IllegalArgumentException.class, new Executable(){
+			@Override
+			public void execute() throws Throwable{
+				four4.setLower(0);
+			}
+		}, "Checking error thrown on invalid lower value");
 	}
 	
 	@Test
@@ -233,12 +249,15 @@ public class TestTimeSignature{
 	 * @param sig The {@link TimeSignature} to use
 	 */
 	public static void guessRhythmHelper(int expectDuration, int expectUnit, double duration, TimeSignature sig, boolean measures){
-		assertEquals(new Rhythm(expectDuration, expectUnit), sig.guessRhythm(duration, measures), "Checking guessed rhythm is equal to the expected rhythm");
+		Rhythm guess;
+		if(measures) guess = sig.guessRhythmMeasures(duration);
+		else guess = sig.guessRhythmWholeNotes(duration);
+		assertEquals(new Rhythm(expectDuration, expectUnit), guess, "Checking guessed rhythm is equal to the expected rhythm");
 	}
 	
 	@Test
 	public void load(){
-		Scanner scan = new Scanner("3 4 \n2 5 \n9 8 \n");
+		Scanner scan = new Scanner("3 4 \n2 5 \n9 8 \n1 2");
 		assertTrue(four4.load(scan), "Checking load is successful");
 		assertEquals(3, four4.getUpper(), "Checking upper value loaded");
 		assertEquals(4, four4.getLower(), "Checking lower value loaded");
@@ -251,18 +270,25 @@ public class TestTimeSignature{
 		assertEquals(9, four4.getUpper(), "Checking upper value loaded");
 		assertEquals(8, four4.getLower(), "Checking lower value loaded");
 		
+		assertFalse(four4.load(scan), "Checking load fails with not enough to load");
+		
 		assertFalse(four4.load(scan), "Checking load fails with nothing left to load");
 		scan.close();
 	}
 	
 	@Test
 	public void save(){
+		assertFalse(four4.save(null), "Checking save fails with invalid writer");
+		
 		assertEquals("4 4 \n", UtilsTest.testSave(four4), "Checking correct values are saved");
 		assertEquals("5 8 \n", UtilsTest.testSave(five8), "Checking correct values are saved");
 	}
 	
 	@Test
 	public void equals(){
+		assertTrue(four4.equals(four4), "Checking time signature equals itself");
+		assertFalse(four4.equals(null), "Checking time signature not equal to null");
+		
 		TimeSignature new4 = new TimeSignature(4, 4);
 		assertTrue(four4.equals(new4), "Checking identical time signatures are equal");
 		assertFalse(four4 == new4, "Checking identical time signatures are not the same object");

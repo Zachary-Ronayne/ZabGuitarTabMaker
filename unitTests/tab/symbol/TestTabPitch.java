@@ -107,6 +107,9 @@ public class TestTabPitch{
 	
 	@Test
 	public void equals(){
+		assertTrue(note.equals(note), "Checking note equals itself");
+		assertFalse(note.equals(null), "Checking note does not equal null");
+		
 		TabPitch n = new TestPitchObject(pitch, mod);
 		
 		assertFalse(n == note, "Checking objects are not the same object");
@@ -114,6 +117,9 @@ public class TestTabPitch{
 		
 		n.setPitch(new Pitch(0));
 		assertFalse(n.equals(note), "Checking objects are not equal");
+		
+		n = new TestPitchObject(newPitch, mod);
+		assertFalse(note.equals(n), "Checking note not equal with different modifiers");
 	}
 
 	@Test

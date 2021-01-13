@@ -367,29 +367,6 @@ public class TestTab{
 	}
 	
 	@Test
-	public void equals(){
-		ArrayList<TabString> s = new ArrayList<TabString>();
-		s.add(highString);
-		s.add(lowString);
-		Tab t = new Tab(s);
-		assertFalse(t == tab, "Checking objects are not the same object");
-		assertTrue(t.equals(tab), "Checking objects are equal");
-		
-		s.remove(lowString);
-		assertFalse(t.equals(tab), "Checking objects are not equal after changing strings");
-		s.add(lowString);
-		assertTrue(t.equals(tab), "Checking objects equal");
-		
-		t.setTimeSignature(new TimeSignature(1, 8));
-		assertFalse(t.equals(tab), "Checking objects not equal with different time signatures");
-		t.setTimeSignature(new TimeSignature(4, 4));
-		assertTrue(t.equals(tab), "Checking objects equal");
-		
-		t.setUsesRhythm(true);
-		assertFalse(t.equals(tab), "Checking objects not equal with different rhythm usage");
-	}
-	
-	@Test
 	public void load(){
 		Scanner scan = new Scanner(""
 				+ "false 4 4 \n"
@@ -523,6 +500,41 @@ public class TestTab{
 				+ "\n"
 				+ "2.375 \n",
 				UtilsTest.testSave(tab), "Checking save with multiple TabStrings with notes");
+		
+		assertFalse(tab.save(null), "Checking save fails with invalid writer");
+		
+		tab.setTimeSignature(null);
+		assertEquals(null, UtilsTest.testSave(tab), "Checking save fails with invalid time signature");
+		
+		tab.setTimeSignature(four4);
+		tab.getStrings().add(null);
+		assertEquals(null, UtilsTest.testSave(tab), "Checking save fails with invalid tab strings");
+	}
+
+	@Test
+	public void equals(){
+		assertFalse(tab.equals(null), "Checking tab is not equal to null");
+		assertTrue(tab.equals(tab), "Checking tab is equal to itself");
+		
+		ArrayList<TabString> s = new ArrayList<TabString>();
+		s.add(highString);
+		s.add(lowString);
+		Tab t = new Tab(s);
+		assertFalse(t == tab, "Checking objects are not the same object");
+		assertTrue(t.equals(tab), "Checking objects are equal");
+		
+		s.remove(lowString);
+		assertFalse(t.equals(tab), "Checking objects are not equal after changing strings");
+		s.add(lowString);
+		assertTrue(t.equals(tab), "Checking objects equal");
+		
+		t.setTimeSignature(new TimeSignature(1, 8));
+		assertFalse(t.equals(tab), "Checking objects not equal with different time signatures");
+		t.setTimeSignature(new TimeSignature(4, 4));
+		assertTrue(t.equals(tab), "Checking objects equal");
+		
+		t.setUsesRhythm(true);
+		assertFalse(t.equals(tab), "Checking objects not equal with different rhythm usage");
 	}
 
 	@Test

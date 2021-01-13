@@ -35,6 +35,14 @@ public class ZabAppSettings{
 		loadTheme();
 	}
 	
+	/**
+	 * Remove references to the static settings and theme objects held by this class
+	 */
+	public static void reset(){
+		settings = null;
+		theme = null;
+	}
+	
 	/** @return See {@link #settings} */
 	public static ZabSettings get(){
 		return settings;
@@ -101,15 +109,9 @@ public class ZabAppSettings{
 	 * @return true if the theme was loaded, false otherwise
 	 */
 	public static boolean loadTheme(){
-		// If the file can't be found, return false
-		File file = getThemeFile();
-		if(!file.exists()){
-			loadDefaultTheme();
-			return false;
-		}
-		
 		boolean success = true;
-		
+
+		File file = getThemeFile();
 		try{
 			// Make the scanner
 			Scanner read = new Scanner(file);
@@ -129,6 +131,7 @@ public class ZabAppSettings{
 				read.close();
 			}
 		}catch(Exception e){
+			// Accounting for if the file is not found, load the default theme
 			if(ZabConstants.PRINT_ERRORS) e.printStackTrace();
 			loadDefaultTheme();
 			return false;
@@ -149,9 +152,7 @@ public class ZabAppSettings{
 		try{
 			PrintWriter write = new PrintWriter(file);
 			try{
-				String s = "";
-				if(theme() != null) s = theme().getClass().getSimpleName();
-				write.println(s);
+				write.println(theme().getClass().getSimpleName());
 			}finally{
 				write.close();
 			}
@@ -210,7 +211,7 @@ public class ZabAppSettings{
 	 * @return true if the save was successful, false otherwise
 	 */
 	public static boolean load(File file, Tab tab, boolean loadSettings){
-		if(!file.exists()) return false;
+		if(file == null || !file.exists()) return false;
 		
 		boolean success = true;
 		try{
@@ -275,18 +276,13 @@ public class ZabAppSettings{
 		if(tab == null && !saveSettings) return false;
 		boolean success = true;
 		
-		try{
-			if(saveSettings){
-				if(!settings.save(writer)) success = false;
-			}
-			if(tab != null){
-				if(!tab.save(writer)) success = false;
-			}
+		if(saveSettings){
+			if(!settings.save(writer)) success = false;
 		}
-		catch(Exception e){
-			if(ZabConstants.PRINT_ERRORS) e.printStackTrace();
-			success = false;
+		if(success && tab != null){
+			if(!tab.save(writer)) success = false;
 		}
+		
 		return success;
 	}
 	

@@ -204,7 +204,9 @@ public class TestSettingNumber{
 	}
 	
 	@Test
-	public void saveValues(){
+	public void saveValues() throws Exception{
+		assertFalse(setting.saveValues(null), "Checking save fails with invalid writer");
+		
 		assertEquals("3 3 null null \n", UtilsTest.testSave(setting), "Checking setting saved correctly");
 		assertEquals("2 2 -1 5 \n", UtilsTest.testSave(settingFull), "Checking setting saved correctly");
 		

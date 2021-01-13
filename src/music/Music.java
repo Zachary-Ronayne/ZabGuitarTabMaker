@@ -60,6 +60,19 @@ public final class Music{
 	public static final String[] FLATS = new String[]{C, D_FLAT, D, E_FLAT, E, F, G_FLAT, G, A_FLAT, A, B_FLAT, B};
 	/** The 12 equal temperament notes, beginning with C, of an octave, represented as sharps */
 	public static final String[] SHARPS = new String[]{C, C_SHARP, D, D_SHARP, E, F, F_SHARP, G, G_SHARP, A, A_SHARP, B};
+
+
+	/**
+	 * Convert the given integer into its corresponding note.
+	 * @param note The integer representing the note, defined the same as {@link Pitch#note}
+	 * @param useFlats true to use only flats for representing notes which can be represented as a sharp or flat, false to use only sharps
+	 * @param octave true to include the octave number in the name, false otherwise
+	 * @return The note as a string with the note name followed by the octave number, if applicable
+	 */
+	public static String intToNote(int note, boolean useFlats, boolean octave){
+		if(octave) return intToNote(note, useFlats);
+		else return intToNoteName(note, useFlats);
+	}
 	
 	/**
 	 * Convert the given integer into its corresponding note name.

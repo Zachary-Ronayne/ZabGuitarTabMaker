@@ -278,8 +278,7 @@ public class TabString extends ArrayList<TabPosition> implements Copyable<TabStr
 		if(this.size() != s.size()) return false;
 		
 		// Check if the root pitches are equal and if each element on the string is equal
-		return	super.equals(obj) &&
-				this.getRootPitch().equals(s.getRootPitch());
+		return this.getRootPitch().equals(s.getRootPitch());
 	}
 	
 	/***/

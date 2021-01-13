@@ -58,7 +58,8 @@ public class TestSettingBoolean{
 	}
 	
 	@Test
-	public void saveValues(){
+	public void saveValues() throws Exception{
+		assertFalse(settingF.saveValues(null), "Checking false returned on invalid writer");
 		assertEquals("false false \n", UtilsTest.testSave(settingF), "Checking save value correct");
 		
 		settingF.setDefault(true);

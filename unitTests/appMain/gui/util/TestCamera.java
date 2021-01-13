@@ -570,6 +570,11 @@ public class TestCamera{
 	@Test
 	public void save(){
 		assertEquals("0.0 0.0 600.0 400.0 0.0 0.0 -1000.0 -2000.0 1000.0 2000.0 true \n", UtilsTest.testSave(cam), "Checking save successful");
+		
+		cam.setX(100);
+		cam.setY(200);
+		cam.setDrawOnlyInBounds(false);
+		assertEquals("100.0 200.0 600.0 400.0 0.0 0.0 -1000.0 -2000.0 1000.0 2000.0 false \n", UtilsTest.testSave(cam), "Checking save successful");
 	}
 	
 	@AfterEach

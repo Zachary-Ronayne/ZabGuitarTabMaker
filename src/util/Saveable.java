@@ -37,17 +37,21 @@ public interface Saveable{
 	
 	/**
 	 * Load a single primitive values, the entire line for a string, into an object array.
-	 * When loading a string, automatically advances to the next line, when loading any other value, remains on the same line 
+	 * When loading a string, automatically advances to the next line, when loading any other value, remains on the same line<br>
+	 * In general, should use the utility methods with similar names, i.e. loadBool, rather than using this method directly 
 	 * @param writer The {@link PrintWriter} to use to save the object
 	 * @param type The type to load:
 	 * 	<ul>
 	 * 		<li>0: boolean</li>
 	 * 		<li>1: int</li>
-	 * 		<li>2: double</li>
-	 * 		<li>3: string</li>
-	 * 		<li>4: item (reader.next() not the full line)</li>
+	 * 		<li>2: long</li>
+	 * 		<li>3: float</li>
+	 * 		<li>4: double</li>
+	 * 		<li>5: string</li>
+	 * 		<li>6: item (reader.next() not the full line), returns a string</li>
 	 * 	</ul>
-	 * @return null if any error occurred with loading the value, otherwise the resulting array of values of the given size
+	 * @return null if any error occurred with loading the value, otherwise the resulting array of values of the given size. 
+	 * 	This method guarantees that the returned object will be of the type specified
 	 */
 	public static Object loadObject(Scanner reader, int type){
 		if(reader == null) return null;
@@ -55,9 +59,11 @@ public interface Saveable{
 			switch(type){
 				case 0: return reader.nextBoolean();
 				case 1: return reader.nextInt();
-				case 2: return reader.nextDouble();
-				case 3:	return reader.nextLine();
-				case 4:	return reader.next();
+				case 2: return reader.nextLong();
+				case 3: return reader.nextFloat();
+				case 4: return reader.nextDouble();
+				case 5:	return reader.nextLine();
+				case 6:	return reader.next();
 				default: return null;
 			}
 		}
@@ -68,16 +74,19 @@ public interface Saveable{
 	}
 	/**
 	 * Load all of the primitive values, each separated by a space, or a new line in the case of strings, into an object array. 
-	 * All objects loaded must be of the same type
+	 * All objects loaded must be of the same type.<br>
+	 * In general, should use the utility methods with similar names, i.e. loadBools, rather than using this method directly
 	 * @param writer The {@link PrintWriter} to use to save the object
 	 * @param size The number of values to be loaded
 	 * @param type The type to load:
 	 * 	<ul>
 	 * 		<li>0: boolean</li>
 	 * 		<li>1: int</li>
-	 * 		<li>2: double</li>
-	 * 		<li>3: string</li>
-	 * 		<li>4: item (reader.next() not the full line)</li>
+	 * 		<li>2: long</li>
+	 * 		<li>3: float</li>
+	 * 		<li>4: double</li>
+	 * 		<li>5: string</li>
+	 * 		<li>6: item (reader.next() not the full line), returns a string</li>
 	 * 	</ul>
 	 * @return null if any error occurred with loading the values, otherwise the resulting array of values of the given size
 	 */
@@ -96,12 +105,7 @@ public interface Saveable{
 	 * @return null if any error occurred with loading the values, otherwise the value
 	 */
 	public static Boolean loadBool(Scanner reader){
-		try{
-			return (Boolean)loadObject(reader, 0);
-		}catch(ClassCastException e){
-			if(ZabConstants.PRINT_ERRORS) e.printStackTrace();
-			return null;
-		}
+		return (Boolean)loadObject(reader, 0);
 	}
 	
 	/**
@@ -125,12 +129,7 @@ public interface Saveable{
 	 * @return null if any error occurred with loading the values, otherwise the resulting value
 	 */
 	public static Integer loadInt(Scanner reader){
-		try{
-			return (Integer)loadObject(reader, 1);
-		}catch(ClassCastException e){
-			if(ZabConstants.PRINT_ERRORS) e.printStackTrace();
-			return null;
-		}
+		return (Integer)loadObject(reader, 1);
 	}
 	
 	/**
@@ -149,17 +148,60 @@ public interface Saveable{
 	}
 	
 	/**
+	 * Load a single long value
+	 * @param writer The {@link PrintWriter} to use to save the object
+	 * @return null if any error occurred with loading the values, otherwise the resulting value
+	 */
+	public static Long loadLong(Scanner reader){
+		return (Long)loadObject(reader, 2);
+	}
+	
+	/**
+	 * Load all of the long values from one line, each separated by a space, into an int array
+	 * @param writer The {@link PrintWriter} to use to save the object
+	 * @param size The number of values to be loaded
+	 * @return null if any error occurred with loading the values, otherwise the resulting array of values of the given size
+	 */
+	public static Long[] loadLongs(Scanner reader, int size){
+		Long[] longs = new Long[size];
+		for(int i = 0; i < size; i++){
+			longs[i] = loadLong(reader);
+			if(longs[i] == null) return null;
+		}
+		return longs;
+	}
+	
+	/**
+	 * Load a single float value
+	 * @param writer The {@link PrintWriter} to use to save the object
+	 * @return null if any error occurred with loading the values, otherwise the resulting value
+	 */
+	public static Float loadFloat(Scanner reader){
+		return (Float)loadObject(reader, 3);
+	}
+	
+	/**
+	 * Load all of the float values from one line, each separated by a space, into an double array
+	 * @param writer The {@link PrintWriter} to use to save the object
+	 * @param size The number of values to be loaded
+	 * @return null if any error occurred with loading the values, otherwise the resulting array of values of the given size
+	 */
+	public static Float[] loadFloats(Scanner reader, int size){
+		Float[] floats = new Float[size];
+		for(int i = 0; i < size; i++){
+			floats[i] = loadFloat(reader);
+			if(floats[i] == null) return null;
+		}
+		return floats;
+	}
+	
+	/**
 	 * Load a single double value
 	 * @param writer The {@link PrintWriter} to use to save the object
 	 * @return null if any error occurred with loading the values, otherwise the resulting value
 	 */
 	public static Double loadDouble(Scanner reader){
-		try{
-			return (Double)loadObject(reader, 2);
-		}catch(ClassCastException e){
-			if(ZabConstants.PRINT_ERRORS) e.printStackTrace();
-			return null;
-		}
+		return (Double)loadObject(reader, 4);
 	}
 	
 	/**
@@ -183,12 +225,7 @@ public interface Saveable{
 	 * @return null if any error occurred with loading the values, otherwise the resulting value
 	 */
 	public static String loadString(Scanner reader){
-		try{
-			return (String)loadObject(reader, 3);
-		}catch(ClassCastException e){
-			if(ZabConstants.PRINT_ERRORS) e.printStackTrace();
-			return null;
-		}
+		return (String)loadObject(reader, 5);
 	}
 	
 	/**

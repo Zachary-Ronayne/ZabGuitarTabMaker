@@ -75,14 +75,10 @@ public final class TabTextExporter{
 			String s;
 			switch(noteNameFormat){
 				case NOTE_FORMAT_ALL_FLAT:
-					if(noteNameOctave) s = Music.intToNoteFlat(pitch);
-					else s = Music.intToNoteNameFlat(pitch);
-					break;
 				case NOTE_FORMAT_ALL_SHARP:
 				default:
-					if(noteNameOctave) s = Music.intToNoteSharp(pitch);
-					else s = Music.intToNoteNameSharp(pitch);
-					 break;
+					s = Music.intToNote(pitch, noteNameFormat == NOTE_FORMAT_ALL_FLAT, noteNameOctave);
+					break;
 			}
 			toAdd[i] = s;
 			
@@ -159,7 +155,7 @@ public final class TabTextExporter{
 		try{
 			// Ensure the parent path exists
 			File parent = file.getParentFile();
-			if(parent != null && !parent.exists()){
+			if(parent != null){
 				if(!parent.mkdirs()){
 					success = false;
 				}

@@ -110,12 +110,14 @@ public class TestNotePosition{
 	
 	@Test
 	public void load(){
-		Scanner scan = new Scanner("1.2 \n2 \n");
+		Scanner scan = new Scanner("1.2 \n2 \n1");
 		assertTrue(pos.load(scan), "Checking load successful");
 		assertEquals(1.2, pos.getValue(), "Checking correct value loaded");
 		
 		assertTrue(pos.load(scan), "Checking load successful");
 		assertEquals(2.0, pos.getValue(), "Checking correct value loaded");
+		
+		assertFalse(pos.load(scan), "Checking load fails with not enough to load");
 		
 		assertFalse(pos.load(scan), "Checking load fails with nothing left to load");
 		scan.close();
@@ -123,6 +125,8 @@ public class TestNotePosition{
 	
 	@Test
 	public void save(){
+		assertFalse(pos.save(null), "Checking save fails with invalid writer");
+		
 		pos.setValue(2.3);
 		assertEquals("2.3 \n", UtilsTest.testSave(pos), "Checking correct value saved");
 		
@@ -144,6 +148,9 @@ public class TestNotePosition{
 	
 	@Test
 	public void equals(){
+		assertTrue(pos.equals(pos), "Checking pos equal to itself");
+		assertFalse(pos.equals(null), "Checking pos not equal to null");
+		
 		NotePosition p = new NotePosition(3);
 		assertFalse(p == pos, "Checking objects are not the same object");
 		assertTrue(p.equals(pos), "Checking objects are equal");
