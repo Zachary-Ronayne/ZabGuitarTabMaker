@@ -56,11 +56,20 @@ public abstract class TabPitch extends TabSymbol{
 		this.setPitch(new Pitch(pitch));
 	}
 	
+	/**
+	 * Get the text representing this pitch as a note, i.e. E4, C#2, etc.
+	 * @param useFlats true to represent all applicable notes as flat, i.e. Db4, false to represent them as sharps, i.e. C#4
+	 * @return The text
+	 */
+	public String getPitchName(boolean useFlats){
+		return this.getPitch().getPitchName(useFlats);
+	}
+	
 	/***/
 	public String getSymbol(TabString string){
 		return String.valueOf(string.getTabNumber(this.getPitch()));
 	}
-
+	
 	/***/
 	@Override
 	public boolean equals(Object obj){

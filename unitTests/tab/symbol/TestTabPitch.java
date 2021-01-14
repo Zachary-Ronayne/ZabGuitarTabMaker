@@ -102,6 +102,13 @@ public class TestTabPitch{
 	}
 	
 	@Test
+	public void getPitchName(){
+		note.setPitch(1);
+		assertEquals("C#4", note.getPitchName(false), "Checking note is found sharp");
+		assertEquals("Db4", note.getPitchName(true), "Checking note is found flat");
+	}
+	
+	@Test
 	public void getSymbol(){
 		assertEquals("0", note.getSymbol(string), "Checking correct symbol is found");
 		
