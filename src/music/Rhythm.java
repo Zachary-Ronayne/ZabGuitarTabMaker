@@ -14,12 +14,16 @@ import util.Saveable;
  */
 public class Rhythm implements Copyable<Rhythm>, Saveable{
 	
-	/** The amount of units of this {@link Rhythm} i.e. if this.units is 4, and this.duration is 1, then it is 1 quarter note */
+	/** 
+	 * The amount of units of this {@link Rhythm} i.e. if this.units is 4, and this.duration is 1, then it is 1 quarter note. 
+	 * Cannot be less than zero, if it is set to less than zero, it will be set to zero 
+	 */
 	private int duration;
 	
 	/**
 	 * The unit dividing up a whole note. If this value is 1, then this.duration represents a number of whole notes, 
-	 * 	if this number is a 2, then this.duration represents a number of half notes
+	 * 	if this number is a 2, then this.duration represents a number of half notes. 
+	 * Cannot be less than 1, if it is less than 1, it will be set to 1
 	 */
 	private int unit;
 	
@@ -41,35 +45,25 @@ public class Rhythm implements Copyable<Rhythm>, Saveable{
 		return new Rhythm(this.getDuration(), this.getUnit());
 	}
 	
-	/**
-	 * Get the duration of this {@link Rhythm}
-	 * @return The duration, see {@link #duration}
-	 */
+	/** @return See {@link #duration} */
 	public int getDuration(){
 		return duration;
 	}
 	
-	/**
-	 * Set the duration of this {@link Rhythm}
-	 * @param duration The duration, see {@link #duration}
-	 */
+	/** @param duration See {@link #duration} */
 	public void setDuration(int duration){
+		if(duration < 0) duration = 0;
 		this.duration = duration;
 	}
 
-	/**
-	 * Get the unit of this {@link Rhythm}
-	 * @return The unit, see {@link #unit}
-	 */
+	/** @return The See {@link #unit} */
 	public int getUnit(){
 		return unit;
 	}
 
-	/**
-	 * Set the unit of this {@link Rhythm}
-	 * @param unit The unit, see {@link #unit}
-	 */
+	/** @param unit See {@link #unit} */
 	public void setUnit(int unit){
+		if(unit < 1) unit = 1;
 		this.unit = unit;
 	}
 	
@@ -77,7 +71,6 @@ public class Rhythm implements Copyable<Rhythm>, Saveable{
 	 * Bring the {@link #duration} and {@link #unit} to their most simple form
 	 */
 	public void simplify(){
-		if(this.getUnit() == 0) return;
 		int divisor = MathUtils.gcd(this.getDuration(), this.getUnit());
 		this.setDuration(this.getDuration() / divisor);
 		this.setUnit(this.getUnit() / divisor);

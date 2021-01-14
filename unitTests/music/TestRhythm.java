@@ -60,6 +60,9 @@ public class TestRhythm{
 	public void setDuration(){
 		fives.setDuration(4);
 		assertEquals(4, fives.getDuration(), "Checking correct set duration");
+		
+		fives.setDuration(-1);
+		assertEquals(0, fives.getDuration(), "Checking duration set to 0 on negative value");
 	}
 	
 	@Test
@@ -77,6 +80,13 @@ public class TestRhythm{
 	public void setUnit(){
 		fives.setUnit(3);
 		assertEquals(3, fives.getUnit(), "Checking correct set unit");
+		
+		fives.setUnit(-1);
+		assertEquals(1, fives.getUnit(), "Checking unit set to 1 on negative value");
+
+		fives.setUnit(2);
+		fives.setUnit(0);
+		assertEquals(1, fives.getUnit(), "Checking unit set to 1 on zero value");
 	}
 	
 	@Test
@@ -111,8 +121,8 @@ public class TestRhythm{
 		whole.setDuration(1);
 		whole.setUnit(0);
 		whole.simplify();
-		assertEquals(1, whole.getDuration(), "Checking duration is unchanged with unit at zero");
-		assertEquals(0, whole.getUnit(), "Checking unit is unchanged");
+		assertEquals(1, whole.getDuration(), "Checking duration is unchanged with unit set to zero");
+		assertEquals(1, whole.getUnit(), "Checking unit is unchanged");
 	}
 	
 	@Test
