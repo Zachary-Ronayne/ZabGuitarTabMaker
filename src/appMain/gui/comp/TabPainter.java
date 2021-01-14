@@ -52,7 +52,7 @@ public class TabPainter extends ZabPanel{
 	/** The height, in pixels, of the paintable area */
 	private int paintHeight;
 	
-	/** The {@link Tab} used for painting */
+	/** The {@link Tab} used for painting, can be null */
 	private Tab tab;
 	
 	/** A list containing {@link Selection} objects for every user selected {@link TabPositiono} */
@@ -226,7 +226,9 @@ public class TabPainter extends ZabPanel{
 	 * @return true if the note was selected, false otherwise
 	 */
 	public boolean select(TabPosition p, int string){
-		TabString s = this.getTab().getStrings().get(string);
+		Tab t = this.getTab();
+		if(t == null) return false;
+		TabString s = t.getStrings().get(string);
 		return this.select(p, s);
 	}
 	
@@ -238,7 +240,9 @@ public class TabPainter extends ZabPanel{
 	 * @return true if the note was selected, false otherwise
 	 */
 	public boolean select(int index, int string){
-		TabString s = this.getTab().getStrings().get(string);
+		Tab t = this.getTab();
+		if(t == null) return false;
+		TabString s = t.getStrings().get(string);
 		TabPosition p = s.get(index);
 		return this.select(p, s);
 	}
@@ -263,14 +267,15 @@ public class TabPainter extends ZabPanel{
 	 */
 	public boolean selectNote(double mX, double mY){
 		ZabSettings settings = ZabAppSettings.get();
-		double x = tab.getTimeSignature().quantize(xToTabPos(mX), settings.quantizeDivisor());
+		Tab t = this.getTab();
+		// Ensure the tab exists
+		if(t == null) return false;
+		double x = t.getTimeSignature().quantize(xToTabPos(mX), settings.quantizeDivisor());
 		int y = pixelYToStringNum(mY);
 		if(x < 0 || y < 0) return false;
 		
-		//	i.e. binary search
-		TabString str = tab.getStrings().get(y);
-		
 		// Only look for a note if the string has notes
+		TabString str = t.getStrings().get(y);
 		if(str.size() <= 0) return false;
 		
 		// Find the note of the note
@@ -283,8 +288,10 @@ public class TabPainter extends ZabPanel{
 	 * Select every note in the tab
 	 */
 	public void selectAllNotes(){
+		Tab t = this.getTab();
+		if(t == null) return;
 		this.clearSelection();
-		for(TabString s : this.getTab().getStrings()){
+		for(TabString s : t.getStrings()){
 			for(TabPosition p : s){
 				this.select(p, s);
 			}
@@ -307,6 +314,14 @@ public class TabPainter extends ZabPanel{
 			s.getString().remove(s.getPos());
 		}
 		clearSelection();
+	}
+	
+	/**
+	 * Remove every note from the tab
+	 */
+	public void removeAllNotes(){
+		Tab t = this.getTab();
+		if(t != null) t.clearNotes();
 	}
 	
 	/**
@@ -377,14 +392,16 @@ public class TabPainter extends ZabPanel{
 	public boolean placeNote(double mX, double mY, int fret){
 		double x = xToTabPos(mX);
 		int y = pixelYToStringNum(mY);
+		Tab t = this.getTab();
+		// No need to check if tab is not null, y will be -1 when tab is null
 		if(x < 0 || y < 0) return false;
-		TabPosition p = tab.placeQuantizedNote(y, fret, x);
+		TabPosition p = t.placeQuantizedNote(y, fret, x);
 		// Only add and select the note if it was placed
 		
 		boolean placed = p != null;
 		if(placed){
 			this.clearSelection();
-			this.selected.add(new Selection(p, tab.getStrings().get(y)));
+			this.selected.add(new Selection(p, t.getStrings().get(y)));
 		}
 		return placed;
 	}
@@ -412,7 +429,7 @@ public class TabPainter extends ZabPanel{
 	 * @return See {@link #tab}
 	 */
 	public Tab getTab(){
-		return tab;
+		return this.tab;
 	}
 	/**
 	 * Set the {@link Tab} used by this {@link TabPainter}
@@ -516,7 +533,8 @@ public class TabPainter extends ZabPanel{
 	 */
 	public int pixelYToStringNum(double pos){
 		int s = (int)Math.round(yToTabPos(pos));
-		if(s < 0 || s >= this.getTab().getStrings().size()) return -1;
+		Tab t = this.getTab();
+		if(tab == null || s < 0 || s >= t.getStrings().size()) return -1;
 		return s;
 	}
 
@@ -710,7 +728,7 @@ public class TabPainter extends ZabPanel{
 		@Override
 		public void keyPressed(KeyEvent e){
 			switch(e.getKeyCode()){
-				case KeyEvent.VK_R: if(e.isControlDown()) getTab().clearNotes(); break;
+				case KeyEvent.VK_R: if(e.isControlDown()) removeAllNotes(); break;
 				case KeyEvent.VK_D: if(e.isControlDown()) removeSelectedNotes(); break;
 				case KeyEvent.VK_A: if(e.isControlDown()) selectAllNotes(); break;
 				default: appendSelectedTabNum(e.getKeyChar()); break;

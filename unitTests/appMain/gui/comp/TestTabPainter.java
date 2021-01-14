@@ -166,6 +166,10 @@ public class TestTabPainter{
 		paint.clearSelection();
 		assertFalse(paint.select(strs.get(3).get(0), strs.get(2)), "Checking selection fails with note not on string");
 		assertTrue(paint.getSelected().isEmpty(), "Checking no selection");
+		
+		paint.setTab(null);
+		assertFalse(paint.select(strs.get(3).get(0), 3), "Checking selection fails with null tab");
+		assertFalse(paint.select(0, 3), "Checking selection fails with null tab");
 	}
 	
 	@Test
@@ -217,6 +221,9 @@ public class TestTabPainter{
 		tab.getStrings().get(0).clear();
 		paint.clearSelection();
 		assertFalse(paint.selectNote(1150, 300), "Checking no note selected with no note on the string");
+		
+		paint.setTab(null);
+		assertFalse(paint.selectNote(350, 500), "checking selection fails with null tab");
 	}
 
 	@Test
@@ -224,6 +231,11 @@ public class TestTabPainter{
 		paint.selectAllNotes();
 		ArrayList<Selection> sel = paint.getSelected();
 		assertEquals(7, sel.size(), "Checking correct number of notes selected");
+		
+		paint.clearSelection();
+		paint.setTab(null);
+		paint.selectAllNotes();
+		assertEquals(0, sel.size(), "Checking no notes selected with null tab");
 	}
 	
 	@Test
@@ -255,6 +267,17 @@ public class TestTabPainter{
 		paint.removeSelectedNotes();
 		assertTrue(paint.getSelected().isEmpty(), "Checking no notes selected");
 		assertEquals(1, str.size(), "Checking string has 1 note");
+	}
+	
+	@Test
+	public void removeAllNotes(){ // TODO
+		paint.setTab(null);
+		paint.removeAllNotes();
+		assertFalse(tab.isEmpty(), "Checking no notes removed with null tab in painter");
+
+		paint.setTab(tab);
+		paint.removeAllNotes();
+		assertTrue(tab.isEmpty(), "Checking all notes removed");
 	}
 	
 	@Test
@@ -313,6 +336,9 @@ public class TestTabPainter{
 
 		assertFalse(paint.placeNote(-950, 300, 0), "Checking a no new note added with too low of x");
 		assertFalse(paint.placeNote(950, -300300, 0), "Checking a no new note added with invalid y");
+		
+		paint.setTab(null);
+		assertFalse(paint.placeNote(950, 300, 0), "Checking note fails to place with null tab");
 	}
 
 	@Test
