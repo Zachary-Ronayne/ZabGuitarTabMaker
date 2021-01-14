@@ -1,7 +1,5 @@
 package tab;
 
-import appUtils.ZabAppSettings;
-import appUtils.ZabSettings;
 import music.Music;
 import music.Pitch;
 import music.Rhythm;
@@ -90,8 +88,7 @@ public final class TabFactory{
 	 * @return The {@link TabPosition}
 	 */
 	public static TabPosition hammerOn(TabString string, int fret, double pos){
-		ZabSettings s = ZabAppSettings.get();
-		return modifiedFret(string, fret, pos, new TabModifier(s.hammerOn(), ""));
+		return modifiedFret(string, fret, pos, ModifierFactory.hammerOn());
 	}
 	
 	/**
@@ -102,8 +99,7 @@ public final class TabFactory{
 	 * @return The {@link TabPosition}
 	 */
 	public static TabPosition pullOff(TabString string, int fret, double pos){
-		ZabSettings s = ZabAppSettings.get();
-		return modifiedFret(string, fret, pos, new TabModifier(s.pullOff(), ""));
+		return modifiedFret(string, fret, pos, ModifierFactory.pullOff());
 	}
 	
 	/**
@@ -114,8 +110,7 @@ public final class TabFactory{
 	 * @return The note
 	 */
 	public static TabPosition harmonic(TabString string, int fret, double pos){
-		ZabSettings s = ZabAppSettings.get();
-		return modifiedFret(string, fret, pos, new TabModifier(s.harmonicBefore(), s.harmonicAfter()));
+		return modifiedFret(string, fret, pos, ModifierFactory.harmonic());
 	}
 	
 	/** Cannot instantiate {@link TabFactory} */
