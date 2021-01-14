@@ -9,6 +9,7 @@ import appMain.gui.ZabTheme;
 import appMain.gui.comp.TabPainter;
 import appMain.gui.comp.ZabPanel;
 import appMain.gui.layout.ZabLayoutHandler;
+import lang.Language;
 import tab.InstrumentFactory;
 import tab.Tab;
 
@@ -51,7 +52,7 @@ public class EditorFrame extends ZabFrame{
 		// Temporary title placeholder
 		JLabel lab = new JLabel();
 		ZabTheme.setToTheme(lab);
-		lab.setText("Editor");
+		lab.setText(Language.get().edit());
 		lab.setFont(new Font("Arial", Font.PLAIN, 20));
 		menuHolder.add(lab);
 		

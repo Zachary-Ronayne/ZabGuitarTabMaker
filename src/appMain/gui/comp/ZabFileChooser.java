@@ -12,6 +12,8 @@ import appMain.gui.frames.EditorFrame;
 import appMain.gui.frames.ZabFrame;
 import appUtils.ZabAppSettings;
 import appUtils.ZabConstants;
+import lang.AbstractLanguage;
+import lang.Language;
 import tab.Tab;
 import util.FileUtils;
 
@@ -43,7 +45,8 @@ public class ZabFileChooser extends JFileChooser{
 		this.frame = frame;
 		
 		// Set up the file filter
-		this.zabFileFilter = new FileNameExtensionFilter("Zab stringed instrument tablature", FileUtils.ZAB_EXTENSION);
+		AbstractLanguage lang = Language.get();
+		this.zabFileFilter = new FileNameExtensionFilter(lang.zabExtensionDescription(), FileUtils.ZAB_EXTENSION);
 		
 		// Set this file chooser to only allow one file, not multiple files, and only files, not directories
 		this.setFileSelectionMode(JFileChooser.FILES_ONLY);

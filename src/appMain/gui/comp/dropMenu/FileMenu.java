@@ -11,6 +11,8 @@ import appMain.gui.ZabGui;
 import appMain.gui.comp.ZabExporterDialog;
 import appMain.gui.comp.ZabFileChooser;
 import appUtils.ZabConstants;
+import lang.AbstractLanguage;
+import lang.Language;
 
 /**
  * The {@link ZabMenu} in {@link ZabMenuBar} handling file related items
@@ -44,25 +46,27 @@ public class FileMenu extends ZabMenu{
 	 * @param gui See {@link ZabMenu#gui}
 	 */
 	public FileMenu(ZabGui gui){
-		super("File", gui);
+		super("", gui);
+		AbstractLanguage lang = Language.get();
+		this.setText(lang.file());
 		
 		// File related items
 		this.createFileChooser();
 		
 		// save
-		this.saveItem = new ZabMenuItem("Save");
+		this.saveItem = new ZabMenuItem(lang.save());
 		this.saver = new SaveListener();
 		this.saveItem.addActionListener(this.saver);
 		this.add(saveItem);
 		
 		// load
-		this.loadItem = new ZabMenuItem("Load");
+		this.loadItem = new ZabMenuItem(lang.load());
 		this.loader = new LoadListener();
 		this.loadItem.addActionListener(loader);
 		this.add(loadItem);
 		
 		// export
-		this.exportItem = new ZabMenuItem("Export");
+		this.exportItem = new ZabMenuItem(lang.export());
 		this.exporter = new ExportListener();
 		this.exportItem.addActionListener(this.exporter);
 		this.exportDialog = new ZabExporterDialog(this.getGui());

@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import appMain.gui.ZabGui;
 import appMain.gui.comp.ZabButton;
 import appUtils.ZabAppSettings;
+import lang.Language;
 import util.testUtils.UtilsTest;
 
 public class TestExporterFrame{
@@ -37,7 +38,7 @@ public class TestExporterFrame{
 	@Test
 	public void getFileSelectButton(){
 		ZabButton b = frame.getFileSelectButton();
-		assertEquals(ExporterFrame.NO_FILE_TEXT, b.getText(), "Checking text set on export button");
+		assertEquals(Language.get().noPathSelected(), b.getText(), "Checking text set on export button");
 	}
 	
 	@Test
@@ -58,7 +59,7 @@ public class TestExporterFrame{
 	@Test
 	public void getExportButton(){
 		ZabButton b = frame.getExportButton();
-		assertEquals(ExporterFrame.EXPORT_BUTTON_TEXT, b.getText(), "Checking button has correct text");
+		assertEquals(Language.get().export(), b.getText(), "Checking button has correct text");
 	}
 
 	@Test
@@ -82,7 +83,7 @@ public class TestExporterFrame{
 
 		frame.setExportFile(null);
 		assertEquals(null, frame.getExportFile(), "Checking export file set to null");
-		assertEquals(ExporterFrame.NO_FILE_TEXT, b.getText(), "Checking text set on export button");
+		assertEquals(Language.get().noPathSelected(), b.getText(), "Checking text set on export button");
 	}
 	
 	@Test

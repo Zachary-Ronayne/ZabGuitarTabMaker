@@ -1,6 +1,8 @@
 package appMain.gui.comp.dropMenu;
 
 import appMain.gui.ZabGui;
+import lang.AbstractLanguage;
+import lang.Language;
 
 /**
  * The {@link ZabMenu} in {@link ZabMenuBar} handling editing related items
@@ -20,14 +22,16 @@ public class EditMenu extends ZabMenu{
 	 * @param gui See {@link ZabMenu#gui}
 	 */
 	public EditMenu(ZabGui gui){
-		super("Edit", gui);
+		super("", gui);
+		AbstractLanguage lang = Language.get();
+		this.setText(lang.edit());
 		
 		// Edit undo
-		this.undoItem = new ZabMenuItem("Undo");
+		this.undoItem = new ZabMenuItem(lang.undo());
 		this.add(this.undoItem);
 		
 		// Edit redo
-		this.redoItem = new ZabMenuItem("Redo");
+		this.redoItem = new ZabMenuItem(lang.redo());
 		this.add(this.redoItem);
 	}
 	

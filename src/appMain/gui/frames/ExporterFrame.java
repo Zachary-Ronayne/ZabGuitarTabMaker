@@ -10,6 +10,8 @@ import appMain.gui.comp.ZabExporterDialog;
 import appMain.gui.comp.ZabFileChooser;
 import appMain.gui.comp.dropMenu.ZabMenuBar;
 import appMain.gui.layout.ZabLayoutHandler;
+import lang.AbstractLanguage;
+import lang.Language;
 import tab.Tab;
 
 /**
@@ -18,11 +20,6 @@ import tab.Tab;
  */
 public class ExporterFrame extends ZabFrame{
 	private static final long serialVersionUID = 1L;
-	
-	/** The text displayed when a file has not yet been selected for exporting */
-	public static final String NO_FILE_TEXT = "no path selected";
-	/** The text displayed on {@link #exportButton} */
-	public static final String EXPORT_BUTTON_TEXT = "Export";
 	
 	/** The {@link ZabButton} used for selecting a file */
 	private ZabButton fileSelectButton;
@@ -44,6 +41,7 @@ public class ExporterFrame extends ZabFrame{
 	 */
 	public ExporterFrame(ZabGui gui){
 		super(gui);
+		AbstractLanguage lang = Language.get();
 
 		// Set up the layout
 		ZabLayoutHandler.createVerticalLayout(this);
@@ -58,7 +56,7 @@ public class ExporterFrame extends ZabFrame{
 		
 		// Set up the export button
 		this.exportButton = new ZabButton();
-		this.exportButton.setText(EXPORT_BUTTON_TEXT);
+		this.exportButton.setText(lang.export());
 		this.exportButton.setFontSize(30);
 		this.exporter = new ExportListener();
 		this.exportButton.addActionListener(this.exporter);
@@ -99,7 +97,7 @@ public class ExporterFrame extends ZabFrame{
 	/** @param exportFile See {@link #exportFile} */
 	public void setExportFile(File exportFile){
 		this.exportFile = exportFile;
-		String text = (exportFile == null) ? NO_FILE_TEXT : exportFile.getPath();
+		String text = (exportFile == null) ? Language.get().noPathSelected() : exportFile.getPath();
 		this.fileSelectButton.setText(text);
 	}
 	

@@ -6,6 +6,8 @@ import java.awt.event.ActionListener;
 import appMain.gui.ZabGui;
 import appMain.gui.ZabTheme;
 import appUtils.ZabAppSettings;
+import lang.AbstractLanguage;
+import lang.Language;
 
 /**
  * The {@link ZabMenu} in {@link ZabMenuBar} handling theme related items. This is designed as a sub menu of {@link GraphicsMenu}
@@ -29,14 +31,16 @@ public class ThemeMenu extends ZabMenu{
 	 * @param gui See {@link ZabMenu#gui}
 	 */
 	public ThemeMenu(ZabGui gui){
-		super("Theme", gui);
+		super("", gui);
+		AbstractLanguage lang = Language.get();
+		this.setText(lang.theme());
 		
-		this.darkThemeItem = new ZabMenuItem("Dark Theme");
+		this.darkThemeItem = new ZabMenuItem(lang.darkTheme());
 		this.darkSetter = new DarkThemeListener();
 		this.darkThemeItem.addActionListener(this.darkSetter);
 		this.add(this.darkThemeItem);
 		
-		this.lightThemeItem = new ZabMenuItem("Light Theme");
+		this.lightThemeItem = new ZabMenuItem(lang.lightTheme());
 		this.lightSetter = new LightThemeListener();
 		this.lightThemeItem.addActionListener(this.lightSetter);
 		this.add(this.lightThemeItem);

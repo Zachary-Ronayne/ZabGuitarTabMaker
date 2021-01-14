@@ -7,6 +7,7 @@ import java.util.Scanner;
 
 import appMain.gui.ZabGui;
 import appMain.gui.ZabTheme;
+import lang.Language;
 import tab.Tab;
 import util.FileUtils;
 
@@ -28,9 +29,10 @@ public class ZabAppSettings{
 	private static ZabTheme theme;
 	
 	/**
-	 * Initialize the settings to a default state
+	 * Initialize the settings to a default state, also initializes the language and theme
 	 */
 	public static void init(){
+		Language.init();
 		settings = new ZabSettings();
 		loadTheme();
 	}

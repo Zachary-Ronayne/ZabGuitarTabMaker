@@ -1,6 +1,7 @@
 package appMain.gui.comp.dropMenu;
 
 import appMain.gui.ZabGui;
+import lang.Language;
 
 /**
  * The {@link ZabMenu} in {@link ZabMenuBar} handling graphical related items
@@ -17,7 +18,7 @@ public class GraphicsMenu extends ZabMenu{
 	 * @param gui See {@link ZabMenu#gui}
 	 */
 	public GraphicsMenu(ZabGui gui){
-		super("Graphics", gui);
+		super(Language.get().graphics(), gui);
 		
 		this.themeSubMenu = new ThemeMenu(this.getGui());
 		this.add(themeSubMenu);
