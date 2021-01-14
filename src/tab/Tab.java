@@ -74,7 +74,7 @@ public class Tab implements Copyable<Tab>, Saveable{
 	public Tab(){
 		this(new ArrayList<TabString>());
 	}
-
+	
 	/***/
 	@Override
 	public Tab copy(){
@@ -90,6 +90,21 @@ public class Tab implements Copyable<Tab>, Saveable{
 		tab.setTimeSignature(ObjectUtils.copy(this.getTimeSignature()));
 		tab.setUsesRhythm(this.usesRhythm());
 		
+		return tab;
+	}
+
+	/**
+	 * Make a copy of this tab, but without any of its notes, i.e. only copy the strings, time signature, and if it uses rhythm
+	 * @return
+	 */
+	public Tab copyWithoutSymbols(){
+		// Make a copy of the tab
+		Tab tab = this.copy();
+		
+		// Remove the notes
+		tab.clearNotes();
+		
+		// Return the final tab
 		return tab;
 	}
 	
