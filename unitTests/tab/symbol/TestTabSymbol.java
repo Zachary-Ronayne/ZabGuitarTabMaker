@@ -9,10 +9,12 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
+import appUtils.ZabAppSettings;
 import music.Pitch;
 import music.Rhythm;
 import tab.TabString;
@@ -48,6 +50,11 @@ public class TestTabSymbol{
 		public String toString(){
 			return "[Test, " + super.toString() + "]";
 		}
+	}
+
+	@BeforeAll
+	public static void init(){
+		ZabAppSettings.init();
 	}
 	
 	@BeforeEach

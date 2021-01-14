@@ -166,7 +166,7 @@ public class TimeSignature implements Copyable<TimeSignature>, Saveable{
 		
 		// Go through each note type which can be guessed, and find the one which best approximates the distance
 		for(int n = 1; n <= loopEnd; n *= 2){
-			// The number of the current number of notes, mean number of whole notes, half notes, etc
+			// The current number of notes, meaning number of whole notes, half notes, etc
 			double amount = duration * n;
 			
 			// The closest integer amount of notes of that type which can be made

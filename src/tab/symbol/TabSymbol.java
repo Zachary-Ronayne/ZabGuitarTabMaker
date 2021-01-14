@@ -66,7 +66,7 @@ public abstract class TabSymbol implements Copyable<TabSymbol>, Saveable{
 
 	/**
 	 * Create a new version of this {@link TabSymbol} as using the given {@link Rhythm}.<br>
-	 * This method should just return this object if this object cannot use rhythmic information
+	 * This method should just return a copy of this object if this object cannot use rhythmic information
 	 * @param r The rhythm, uses the object itself, not a copy. 
 	 * @return The new {@link TabSymbol} using the rhythmic information.
 	 */
@@ -74,7 +74,7 @@ public abstract class TabSymbol implements Copyable<TabSymbol>, Saveable{
 	
 	/**
 	 * Create a new version of this {@link TabSymbol} using not rhythmic information.<br>
-	 * This method should just return this object if this object already uses no rhythmic information
+	 * This method should just return a copy of this object if this object already uses no rhythmic information
 	 * @return The new {@link TabSymbol} not using the rhythmic information.
 	 */
 	public abstract TabSymbol removeRhythm();

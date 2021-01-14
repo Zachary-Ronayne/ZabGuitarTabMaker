@@ -7,15 +7,22 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Scanner;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import appUtils.ZabAppSettings;
 import util.testUtils.UtilsTest;
 
 public class TestTabModifier{
 
 	private TabModifier mod;
 	private TabModifier empty;
+
+	@BeforeAll
+	public static void init(){
+		ZabAppSettings.init();
+	}
 	
 	@BeforeEach
 	public void setup(){

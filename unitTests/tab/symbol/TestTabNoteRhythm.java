@@ -8,10 +8,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Scanner;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
+import appUtils.ZabAppSettings;
 import music.Pitch;
 import music.Rhythm;
 import music.TestTimeSignature;
@@ -30,6 +32,11 @@ public class TestTabNoteRhythm{
 
 	private TabNoteRhythm noteNoMod;
 	private TabNoteRhythm noteValues;
+
+	@BeforeAll
+	public static void init(){
+		ZabAppSettings.init();
+	}
 	
 	@BeforeEach
 	public void setup(){

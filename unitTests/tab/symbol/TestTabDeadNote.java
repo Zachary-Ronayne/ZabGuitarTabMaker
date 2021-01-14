@@ -7,15 +7,22 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Scanner;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import appUtils.ZabAppSettings;
 import music.Rhythm;
 import util.testUtils.UtilsTest;
 
 public class TestTabDeadNote{
 	
 	private TabDeadNote note;
+
+	@BeforeAll
+	public static void init(){
+		ZabAppSettings.init();
+	}
 	
 	@BeforeEach
 	public void setup(){
@@ -83,7 +90,10 @@ public class TestTabDeadNote{
 	
 	@Test
 	public void testToString(){
-		assertEquals("[TabDeadNote, X]", note.toString(), "Checking correct string");
+		assertEquals("[TabDeadNote, X, [TabModifier: \"\" \"\"]]", note.toString(), "Checking correct string");
+		
+		note.setModifier(new TabModifier("a", "b"));
+		assertEquals("[TabDeadNote, X, [TabModifier: \"a\" \"b\"]]", note.toString(), "Checking correct string");
 	}
 	
 	@AfterEach

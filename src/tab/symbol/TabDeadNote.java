@@ -3,6 +3,7 @@ package tab.symbol;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
+import appUtils.ZabAppSettings;
 import music.Rhythm;
 import tab.Tab;
 import tab.TabString;
@@ -31,13 +32,13 @@ public class TabDeadNote extends TabSymbol{
 	/***/
 	@Override
 	public TabDeadNote convertToRhythm(Rhythm r){
-		return this;
+		return this.copy();
 	}
 
 	/***/
 	@Override
 	public TabDeadNote removeRhythm(){
-		return this;
+		return this.copy();
 	}
 	
 	@Override
@@ -47,31 +48,35 @@ public class TabDeadNote extends TabSymbol{
 
 	/**
 	 * Get the text representing this dead note
-	 * @return Always returns an X
 	 */
 	@Override
 	public String getSymbol(TabString string){
-		return "X";
+		return ZabAppSettings.get().deadNote();
 	}
 	
 	/***/
 	@Override
 	public boolean load(Scanner reader){
-		// Load the position and modifier
+		// Load the modifier
 		return Saveable.load(reader, this.getModifier());
 	}
 	
 	/***/
 	@Override
 	public boolean save(PrintWriter writer){
-		// Save the position and modifier
+		// Save the modifier
 		return Saveable.save(writer, this.getModifier());
 	}
 	
 	/***/
 	@Override
 	public String toString(){
-		return "[TabDeadNote, X]";
+		StringBuilder b = new StringBuilder("[TabDeadNote, ");
+		b.append(this.getSymbol(null));
+		b.append(", ");
+		b.append(this.getModifier());
+		b.append("]");
+		return b.toString();
 	}
 
 }

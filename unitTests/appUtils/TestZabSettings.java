@@ -71,6 +71,12 @@ public class TestZabSettings{
 	}
 	
 	@Test
+	public void deadNote(){
+		assertSettingInitialized(settings.getDeadNote(), ZabSettings.DEAD_NOTE);
+		assertEquals(ZabSettings.DEAD_NOTE, settings.deadNote(), "Checking value getter correct");
+	}
+	
+	@Test
 	public void tabTextPreString(){
 		assertSettingInitialized(settings.getTabTextPreString(), ZabSettings.TAB_TEXT_PRE_STRING);
 		assertEquals(ZabSettings.TAB_TEXT_PRE_STRING, settings.tabTextPreString(), "Checking value getter correct");

@@ -54,6 +54,8 @@ public class TestZabAppSettings{
 			+ "<\n"
 			+ ">\n"
 			+ ">\n"
+			+ "X\n"
+			+ "X\n"
 			+ "\n"
 			+ "\n"
 			+ "|\n"

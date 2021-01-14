@@ -34,6 +34,8 @@ public class ZabSettings extends Settings{
 	public static final String HARMONIC_BEFORE = "<";
 	/** Default for {@link #harmonicAfter} */
 	public static final String HARMONIC_AFTER = ">";
+	/** Default for {@link #deadNote} */
+	public static final String DEAD_NOTE = "X";
 
 	/** Default for {@link #tabTextPreString} */
 	public static final String TAB_TEXT_PRE_STRING = "";
@@ -84,7 +86,9 @@ public class ZabSettings extends Settings{
 	private SettingString harmonicBefore;
 	/** The symbol used to represent the after part of a natural harmonic note */
 	private SettingString harmonicAfter;
-
+	/** The symbol used to represent a dead note, i.e. putting the fretting hand on a fret, but not holding the string to the fretboard */
+	private SettingString deadNote;
+	
 	/** In text output of a tab, the text that goes before each string line in a line of tab */
 	private SettingString tabTextPreString;
 	/** In text output of a tab, the text that goes after the note name of the string */
@@ -138,6 +142,7 @@ public class ZabSettings extends Settings{
 		this.slideDown = this.addString(SLIDE_DOWN);
 		this.harmonicBefore = this.addString(HARMONIC_BEFORE);
 		this.harmonicAfter = this.addString(HARMONIC_AFTER);
+		this.deadNote = this.addString(DEAD_NOTE);
 		
 		this.tabTextPreString = this.addString(TAB_TEXT_PRE_STRING);
 		this.tabTextPostNoteName = this.addString(TAB_TEXT_POST_NOTE_NAME);
@@ -171,6 +176,8 @@ public class ZabSettings extends Settings{
 	public SettingString getHarmonicBefore(){ return this.harmonicBefore; }
 	/** @return See {@link #harmonicAfter} */
 	public SettingString getHarmonicAfter(){ return this.harmonicAfter; }
+	/** @return See {@link #deadNote} */
+	public SettingString getDeadNote(){ return this.deadNote; }
 	
 	/** @return See {@link #tabTextPreString} */
 	public SettingString getTabTextPreString(){ return this.tabTextPreString; }
@@ -220,6 +227,8 @@ public class ZabSettings extends Settings{
 	public String harmonicBefore(){ return this.getHarmonicBefore().get(); }
 	/** @return See {@link #harmonicAfter} */
 	public String harmonicAfter(){ return this.getHarmonicAfter().get(); }
+	/** @return See {@link #deadNote} */
+	public String deadNote(){ return this.getDeadNote().get(); }
 	
 	/** @return See {@link #tabTextPreString} */
 	public String tabTextPreString(){ return this.getTabTextPreString().get(); }
