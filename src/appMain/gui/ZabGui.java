@@ -54,8 +54,8 @@ public class ZabGui extends JFrame{
 		// Set the Theme appropriately
 		ZabTheme.setToTheme(this);
 		
-		// Set the minimum size to not be too small
-		this.setMinimumSize(new Dimension(300, 300));
+		// Set the minimum size to the constant minimum size
+		this.setMinimumSize(new Dimension(ZabConstants.MIN_APP_WIDTH, ZabConstants.MIN_APP_HEIGHT));
 		
 		// Set the default size of the window
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);

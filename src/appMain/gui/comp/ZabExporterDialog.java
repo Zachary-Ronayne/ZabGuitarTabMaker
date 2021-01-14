@@ -47,7 +47,7 @@ public class ZabExporterDialog extends JDialog{
 		this.add(this.frame);
 		
 		// Set up the preferred size
-		this.setPreferredSize(new Dimension(500, 300));
+		this.setMinimumSize(new Dimension(ZabConstants.MIN_APP_EXPORT_WIDTH, ZabConstants.MIN_APP_EXPORT_HEIGHT));
 		
 		// Finalize the dialog box
 		this.pack();

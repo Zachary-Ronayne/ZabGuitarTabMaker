@@ -21,12 +21,21 @@ public final class ZabConstants{
 	 */
 	public static final boolean ENABLE_DIALOG = BUILD_NORMAL;
 
-	
 	/**
 	 * Set to true to print error messages when the app runs into errors while running utility methods. 
 	 * Set to false to disable error messages
 	 */
 	public static final boolean PRINT_ERRORS = false;
+	
+	/** The minimum total width of the Zab application in pixels */
+	public static final int MIN_APP_WIDTH = 600;
+	/** The minimum total height of the Zab application in pixels */
+	public static final int MIN_APP_HEIGHT = 400;
+	
+	/** The minimum total width of the export dialog box in the Zab application in pixels */
+	public static final int MIN_APP_EXPORT_WIDTH = 500;
+	/** The minimum total height of the export dialog box in the Zab application in pixels */
+	public static final int MIN_APP_EXPORT_HEIGHT = 300;
 	
 	/** Cannot instantiate {@link ZabConstants} */
 	private ZabConstants(){};
