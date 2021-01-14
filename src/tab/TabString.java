@@ -10,6 +10,7 @@ import music.Music;
 import music.NotePosition;
 import music.Pitch;
 import music.TimeSignature;
+import tab.symbol.TabDeadNote;
 import tab.symbol.TabNote;
 import tab.symbol.TabPitch;
 import tab.symbol.TabSymbol;
@@ -159,13 +160,36 @@ public class TabString extends ArrayList<TabPosition> implements Copyable<TabStr
 	 * @return True if the position was removed, false otherwise
 	 */
 	public boolean remove(TabSymbol s, double pos){
-		for(TabPosition p : this){
-			if(p.equals(new TabPosition(s, pos))){
-				this.remove(p);
-				return true;
-			}
+		TabPosition p = findPosition(pos);
+		if(p == null) return false;
+		else return this.remove(p);
+	}
+	
+	/**
+	 * Find the index of the symbol at the exact given position
+	 * @param pos The position of the symbol to find, if the floating point positions do not match exactly, the position will not be found 
+	 * @return The index found, or the index to insert a note to insert it in a sorted order
+	 */
+	public int findIndex(double pos){
+		// The TabDeadNote is used as a simple placeholder for the position, because TabPositions compare based on their NotePosition value
+		return ArrayUtils.binarySearch(this, new TabPosition(new TabDeadNote(), pos), true);
+	}
+
+	/**
+	 * Find the {@link TabPosition} at the exact given position
+	 * @param pos The position of the symbol to find, if the floating point positions do not match exactly, the position will not be found
+	 * @return The found {@link TabPosition} or null if one was not found
+	 */
+	public TabPosition findPosition(double pos){
+		int index = this.findIndex(pos);
+		if(index < this.size()){
+			// If the same position at the index is found, return it
+			TabPosition p = this.get(index);
+			if(p.getPos() == pos) return p;
 		}
-		return false;
+		
+		// Otherwise the exact position was not found, return null
+		return null;
 	}
 	
 	/**

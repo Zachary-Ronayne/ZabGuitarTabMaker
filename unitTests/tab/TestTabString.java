@@ -185,6 +185,34 @@ public class TestTabString{
 	}
 	
 	@Test
+	public void findIndex(){
+		string.add(notes[1]);
+		string.add(notes[2]);
+		string.add(notes[4]);
+		
+		assertEquals(0, string.findIndex(-1), "Checking correct index found for inserting note at the beginning");
+		assertEquals(0, string.findIndex(notes[1].getPos()), "Checking correct index found for existing note");
+		assertEquals(1, string.findIndex(notes[2].getPos()), "Checking correct index found for existing note");
+		assertEquals(2, string.findIndex(2.5), "Checking correct index found for after a note between 2 notes");
+		assertEquals(2, string.findIndex(notes[4].getPos()), "Checking correct index found for existing note");
+		assertEquals(3, string.findIndex(100), "Checking correct index found for inserting note at the end");
+	}
+	
+	@Test
+	public void findPosition(){
+		string.add(notes[1]);
+		string.add(notes[2]);
+		string.add(notes[4]);
+		
+		assertEquals(null, string.findPosition(-1), "Checking null found for invalid note before the first note");
+		assertEquals(notes[1], string.findPosition(notes[1].getPos()), "Checking correct position found for existing note");
+		assertEquals(notes[2], string.findPosition(notes[2].getPos()), "Checking correct position found for existing note");
+		assertEquals(null, string.findPosition(2.5), "Checking null found for invalid note between 2 notes");
+		assertEquals(notes[4], string.findPosition(notes[4].getPos()), "Checking correct position found for existing note");
+		assertEquals(null, string.findPosition(100), "Checking null found for invalid note after the last note");
+	}
+	
+	@Test
 	public void placeQuantizedNote(){
 		TabNote n;
 		TabNote placed;

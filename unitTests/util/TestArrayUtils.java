@@ -57,6 +57,56 @@ public class TestArrayUtils{
 		ArrayUtils.insertSorted(arr, "a", false);
 		assertFalse(ArrayUtils.insertSorted(arr, "a", false), "Checking duplicate element is not added with disallowed duplicates");
 		assertEquals(1, arr.size(), "Checking correct array size");
+		
+		ArrayUtils.insertSorted(arr, "b", false);
+		ArrayUtils.insertSorted(arr, "c", false);
+		ArrayUtils.insertSorted(arr, "e", false);
+		assertFalse(ArrayUtils.insertSorted(arr, "a", false), "Checking duplicate element is not added with disallowed duplicates");
+		assertFalse(ArrayUtils.insertSorted(arr, "b", false), "Checking duplicate element is not added with disallowed duplicates");
+		assertFalse(ArrayUtils.insertSorted(arr, "c", false), "Checking duplicate element is not added with disallowed duplicates");
+		assertFalse(ArrayUtils.insertSorted(arr, "e", false), "Checking duplicate element is not added with disallowed duplicates");
+		assertEquals(4, arr.size(), "Checking correct array size");
+		
+		assertTrue(ArrayUtils.insertSorted(arr, "d", false), "Checking non duplicate element added");
+		Assert.listSame(arr, "a", "b", "c", "d", "e");
+
+		assertTrue(ArrayUtils.insertSorted(arr, "f", false), "Checking non duplicate element added at the end");
+		Assert.listSame(arr, "a", "b", "c", "d", "e", "f");
+	}
+	
+	@Test
+	public void binarySearch(){
+		ArrayList<String> arr = new ArrayList<>();
+		assertEquals(0, ArrayUtils.binarySearch(arr, "a", true), "Checking binary search places lower value at zero in empty list");
+		assertEquals(-1, ArrayUtils.binarySearch(arr, "a"), "Checking binary search returns -1 on value not found");
+		assertEquals(0, ArrayUtils.binarySearch(arr, "z", true), "Checking binary search places higher value at zero in empty list");
+		assertEquals(-1, ArrayUtils.binarySearch(arr, "z"), "Checking binary search returns -1 on value not found");
+		
+		arr.add("m");
+		assertEquals(0, ArrayUtils.binarySearch(arr, "a", true), "Checking binary search places lower value earlier");
+		assertEquals(-1, ArrayUtils.binarySearch(arr, "a"), "Checking binary search returns -1 on value not found");
+		assertEquals(0, ArrayUtils.binarySearch(arr, "m", true), "Checking binary search finds value");
+		assertEquals(1, ArrayUtils.binarySearch(arr, "z", true), "Checking binary search places higher value later");
+		assertEquals(-1, ArrayUtils.binarySearch(arr, "z"), "Checking binary search returns -1 on value not found");
+		
+		arr.add(0, "d");
+		arr.add(1, "g");
+		arr.add("p");
+		arr.add("s");
+		assertEquals(0, ArrayUtils.binarySearch(arr, "a", true), "Checking binary search places lower value earlier");
+		assertEquals(0, ArrayUtils.binarySearch(arr, "d", true), "Checking binary search finds value");
+		assertEquals(1, ArrayUtils.binarySearch(arr, "g", true), "Checking binary search finds value");
+		assertEquals(2, ArrayUtils.binarySearch(arr, "m", true), "Checking binary search finds value");
+		assertEquals(3, ArrayUtils.binarySearch(arr, "o", true), "Checking binary search places lower value earlier");
+		assertEquals(3, ArrayUtils.binarySearch(arr, "p", true), "Checking binary search finds value");
+		assertEquals(4, ArrayUtils.binarySearch(arr, "q", true), "Checking binary search places higher value later");
+		assertEquals(4, ArrayUtils.binarySearch(arr, "s", true), "Checking binary search finds value");
+		assertEquals(5, ArrayUtils.binarySearch(arr, "z", true), "Checking binary search places higher value later");
+		
+		assertEquals(-1, ArrayUtils.binarySearch(arr, "a"), "Checking binary search returns -1 on value not found");
+		assertEquals(-1, ArrayUtils.binarySearch(arr, "o"), "Checking binary search returns -1 on value not found");
+		assertEquals(-1, ArrayUtils.binarySearch(arr, "q"), "Checking binary search returns -1 on value not found");
+		assertEquals(-1, ArrayUtils.binarySearch(arr, "z"), "Checking binary search returns -1 on value not found");
 	}
 	
 	@Test

@@ -63,7 +63,7 @@ public class TestObjectUtils{
 		assertEquals(null, ObjectUtils.copy(a), "Checking null returned on null parameter");
 		
 		a = new A(1);
-		A copy = a.copy();
+		A copy = ObjectUtils.copy(a);
 		assertEquals(1, copy.x, "Checking copy has the same value");
 		assertFalse(a == copy, "Checking copy is not the same object");
 	}

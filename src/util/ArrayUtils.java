@@ -7,51 +7,21 @@ import java.util.List;
 public final class ArrayUtils{
 	
 	/**
-	 * Add the given element to the given {@link ArrayList}, inserting it into a position so that the list remains sorted.
+	 * Add the given element to the given {@link List}, inserting it into a position so that the list remains sorted.
 	 * @param <E> The type of the lists, must be {@link Comparable}
-	 * @param arr A sorted ArrayList
+	 * @param arr A sorted List
 	 * @param e The element to add
 	 * @param allowDuplicates true to allow duplicate values to be added, false to not add them. 
 	 * 	If the value to add is a duplicate and this parameter is true, nothing happens and this method returns false
 	 * @return true if the insert is successful, false otherwise
 	 */
-	public static <E extends Comparable<E>> boolean insertSorted(ArrayList<E> arr, E e, boolean allowDuplicates){
-		// Get the ends of the ArrayList
-		int low = 0;
-		int high = arr.size();
-		int mid;
+	public static <E extends Comparable<E>> boolean insertSorted(List<E> arr, E e, boolean allowDuplicates){
+		// Find the index to place
+		int low = binarySearch(arr, e, true);
 		
-		// Track the middle element
-		E midO;
+		// If duplicates are not allowed, and that index contains the given value, return false
+		if(!allowDuplicates && (low < arr.size() && arr.get(low).compareTo(e) == 0)) return false;
 		
-		// Loop until low and high converge on one value
-		while(low < high){
-			// Get the middle index and middle element
-			mid = (low + high) >> 1;
-			midO = arr.get(mid);
-			
-			// Compare the to add element to the middle element
-			int comp = e.compareTo(midO);
-			
-			// If the element is after mid, one before mid becomes the new high
-			if(comp < 0){
-				high = mid;
-			}
-			// If the element is before mid, one after mid becomes the new low
-			else if(comp > 0){
-				low = mid + 1;
-			}
-			// Otherwise, the element is the same as mid, and should be placed after mid.
-			// Or if it is a duplicate and they are not allowed, then return false
-			else{
-				if(allowDuplicates){
-					low = mid + 1;
-					high = low;
-				}
-				else return false;
-			}
-		}
-
 		arr.add(low, e);
 		return true;
 	}
@@ -65,6 +35,60 @@ public final class ArrayUtils{
 	 */
 	public static <E extends Comparable<E>> boolean insertSorted(ArrayList<E> arr, E e){
 		return insertSorted(arr, e, true);
+	}
+	
+	/**
+	 * Search through a sorted list with comparable values via binary search for the specified element 
+	 * @param <E> The type of elements
+	 * @param arr The List to search, must be sorted. If arr is unsorted, this method has undefined behavior
+	 * @param e The value to look for
+	 * @param findInsert true to return the location of where the element should be inserted to remain sorted if the element is not found, false to return -1 if the value isn't found 
+	 * @return The index of the value, or if the value is not found, then if findInsert is true the index of where that element
+	 * 	would lie if it were to be inserted into the list in a sorted manor, or -1 if findInsert is false
+	 */
+	public static <E extends Comparable<E>> int binarySearch(List<E> arr, E e, boolean findInsert){
+		int low = 0;
+		int high = arr.size();
+		int mid = 0;
+		
+		// Track the middle element
+		E midO;
+		
+		// Loop until low and high converge on one value
+		while(low < high){
+			// Get the middle index and middle element
+			mid = (low + high) >> 1;
+			midO = arr.get(mid);
+			
+			// Compare the to add element to the middle element
+			int comp = e.compareTo(midO);
+			
+			// If the element is before mid, mid becomes the new high
+			if(comp < 0){
+				high = mid;
+			}
+			// If the element is after mid, one after mid becomes the new low
+			else if(comp > 0){
+				low = mid + 1;
+			}
+			// Otherwise, the element is the same as mid, the index is found
+			else return mid;
+		}
+		
+		// The element was not found, the insert index is the low point of the two ends, or return -1 as an error
+		if(findInsert) return low;
+		else return -1;
+	}
+	
+	/**
+	 * Search through a sorted list with comparable values via binary search for the specified element 
+	 * @param <E> The type of elements
+	 * @param arr The List to search, must be sorted. If arr is unsorted, this method has undefined behavior
+	 * @param e The value to look for
+	 * @return The index of the value, or -1 if the element is not found
+	 */
+	public static <E extends Comparable<E>> int binarySearch(List<E> arr, E e){
+		return binarySearch(arr, e, false);
 	}
 	
 	/**

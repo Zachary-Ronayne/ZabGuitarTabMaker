@@ -196,6 +196,14 @@ public class TestTabPainter{
 		assertEquals(1, paint.getSelected().size(), "Checking one note selected, no change from not finding a note");
 		assertEquals(tab.getStrings().get(1).get(0), paint.selectedPosition(0), "Checking string 1 note still selected");
 		
+		assertFalse(paint.selectNote(10940, 350), "Checking note not selected selecting after the string");
+		assertEquals(1, paint.getSelected().size(), "Checking one note selected, no change from not finding a note");
+		assertEquals(tab.getStrings().get(1).get(0), paint.selectedPosition(0), "Checking string 1 note still selected");
+		
+		assertFalse(paint.selectNote(325, 500), "Checking note not selected selecting between 2 notes");
+		assertEquals(1, paint.getSelected().size(), "Checking one note selected, no change from not finding a note");
+		assertEquals(tab.getStrings().get(1).get(0), paint.selectedPosition(0), "Checking string 1 note still selected");
+		
 		assertFalse(paint.selectNote(-10940, 350), "Checking note not selected");
 		assertEquals(1, paint.getSelected().size(), "Checking one note selected, no change from not finding a note");
 		assertEquals(tab.getStrings().get(1).get(0), paint.selectedPosition(0), "Checking string 1 note still selected");
@@ -556,9 +564,16 @@ public class TestTabPainter{
 		
 		paint.resetCamera();
 		m.mouseWheelMoved(new MouseWheelEvent(paint, 0, 0, MouseWheelEvent.SHIFT_DOWN_MASK, 950, 300, 0, false,
-				MouseWheelEvent.WHEEL_UNIT_SCROLL, 0, -1));
+				MouseWheelEvent.WHEEL_UNIT_SCROLL, -1, -1));
 		assertEquals(0.2, cam.getXZoomFactor(), "Checking zooming out with shift");
-
+		
+		ZabAppSettings.get().getZoomInverted().set(false);
+		paint.resetCamera();
+		m.mouseWheelMoved(new MouseWheelEvent(paint, 0, 0, MouseWheelEvent.SHIFT_DOWN_MASK, 950, 300, 0, false,
+				MouseWheelEvent.WHEEL_UNIT_SCROLL, -2, -2));
+		assertEquals(-0.4, cam.getXZoomFactor(), "Checking zooming out with shift with opposite setting");
+		ZabAppSettings.get().getZoomInverted().set(true);
+		
 		paint.resetCamera();
 		m.mouseWheelMoved(new MouseWheelEvent(paint, 0, 0, MouseWheelEvent.ALT_DOWN_MASK, 950, 300, 0, false,
 				MouseWheelEvent.WHEEL_UNIT_SCROLL, 0, 1));

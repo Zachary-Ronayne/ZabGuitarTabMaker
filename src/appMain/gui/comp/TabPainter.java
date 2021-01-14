@@ -267,14 +267,15 @@ public class TabPainter extends ZabPanel{
 		int y = pixelYToStringNum(mY);
 		if(x < 0 || y < 0) return false;
 		
-		// TODO make a more efficient way of searching for a note, considering they are sorted
 		//	i.e. binary search
 		TabString str = tab.getStrings().get(y);
-		for(TabPosition p : str){
-			if(p.getPos() == x){
-				return selectOne(p, str);
-			}
-		}
+		
+		// Only look for a note if the string has notes
+		if(str.size() <= 0) return false;
+		
+		// Find the note of the note
+		TabPosition p = str.findPosition(x);
+		if(p != null) return selectOne(p, str);
 		return false;
 	}
 	
