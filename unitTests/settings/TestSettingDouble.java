@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import appUtils.ZabAppSettings;
+import util.testUtils.UtilsTest;
 
 public class TestSettingDouble{
 
@@ -39,6 +40,15 @@ public class TestSettingDouble{
 		assertEquals(3.3, setting.parseType("3.3"), "Checking parsing number works");
 		assertEquals(null, setting.parseType("h"), "Checking parsing invalid returns null");
 		assertEquals(null, setting.parseType("null"), "Checking parsing invalid returns null");
+	}
+	
+	@Test
+	public void add(){
+		setting.add(0.1);
+		assertEquals(2.2, setting.get(), UtilsTest.DELTA, "Checking value added");
+		
+		setting.add(-0.3);
+		assertEquals(1.9, setting.get(), UtilsTest.DELTA, "Checking value subtracted");
 	}
 	
 	@AfterEach

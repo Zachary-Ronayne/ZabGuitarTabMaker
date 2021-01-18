@@ -31,5 +31,10 @@ public class SettingLong extends SettingNumber<Long>{
 			return Long.parseLong(n);
 		}catch(NumberFormatException e){return null;}
 	}
+	
+	@Override
+	public void add(Long toAdd){
+		this.set(this.get() + toAdd);
+	}
 
 }

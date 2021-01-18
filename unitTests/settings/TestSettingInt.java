@@ -42,6 +42,15 @@ public class TestSettingInt{
 		assertEquals(null, setting.parseType("null"), "Checking parsing invalid returns null");
 	}
 	
+	@Test
+	public void add(){
+		setting.add(1);
+		assertEquals(3, setting.get(), "Checking value added");
+		
+		setting.add(-3);
+		assertEquals(0, setting.get(), "Checking value subtracted");
+	}
+	
 	@AfterEach
 	public void end(){}
 	

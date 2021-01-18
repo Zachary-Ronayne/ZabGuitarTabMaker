@@ -15,6 +15,9 @@ public final class UtilsTest{
 	
 	/** Constant for testing approximate equality of floating point values */
 	public static final double DELTA = 0.00000001;
+	
+	/** Constant for testing approximate equality of floating point values to a lower precision */
+	public static final double DELTA_SMALL = 0.00001;
 
 	/** Constant for a path to a folder for testing files */
 	public static final String UNIT_PATH = ".\\TestZabUnitTestFolder";

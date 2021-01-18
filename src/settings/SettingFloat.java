@@ -31,5 +31,10 @@ public class SettingFloat extends SettingNumber<Float>{
 			return Float.parseFloat(n);
 		}catch(NumberFormatException e){return null;}
 	}
+	
+	@Override
+	public void add(Float toAdd){
+		this.set(this.get() + toAdd);
+	}
 
 }

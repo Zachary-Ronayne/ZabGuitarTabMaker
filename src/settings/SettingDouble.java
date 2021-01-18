@@ -31,5 +31,10 @@ public class SettingDouble extends SettingNumber<Double>{
 			return Double.parseDouble(n);
 		}catch(NumberFormatException e){return null;}
 	}
+	
+	@Override
+	public void add(Double toAdd){
+		this.set(this.get() + toAdd);
+	}
 
 }

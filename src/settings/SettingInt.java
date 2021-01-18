@@ -31,5 +31,10 @@ public class SettingInt extends SettingNumber<Integer>{
 			return Integer.parseInt(n);
 		}catch(NumberFormatException e){return null;}
 	}
+	
+	@Override
+	public void add(Integer toAdd){
+		this.set(this.get() + toAdd);
+	}
 
 }

@@ -133,7 +133,13 @@ public abstract class SettingNumber<T extends Number> extends NotNullSetting<T>{
 	 * @return The valid value for this {@link Setting}, should return null if n cannot be converted into the type
 	 */
 	public abstract T parseType(String n);
-
+	
+	/**
+	 * Add the given {@link Number} to the value of this {@link SettingNumber}
+	 * @param toAdd The number to add, can be a negative number to subtract
+	 */
+	public abstract void add(T toAdd);
+	
 	@Override
 	public boolean loadValues(Scanner reader) throws Exception{
 		// Load the 4 values, if an issue happened, return false
