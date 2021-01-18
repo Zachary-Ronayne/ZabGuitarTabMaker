@@ -60,6 +60,8 @@ public class ZabSettings extends Settings{
 	public static final boolean TAB_TEXT_ALIGN_SYMBOLS_END = false;
 	/** Default for {@link #tabTextEnd} */
 	public static final String TAB_TEXT_END = "|";
+	/** Default for {@link #tabTextEnd} */
+	public static final int TAB_TEXT_MEASURES_PER_LINE = 8;
 
 	/** Default for {@link #tabPaintBaseX} */
 	public static final double TAB_PAINT_BASE_X = 100;
@@ -128,6 +130,8 @@ public class ZabSettings extends Settings{
 	private SettingBoolean tabTextAlignSymbolsEnd;
 	/** In text output of a tab, the text printed at the end of every string line */
 	private SettingString tabTextEnd;
+	/** In text output of a tab, the number of measures before going to a new line */
+	private SettingInt tabTextMeasuresPerLine;
 	
 	/** The base x coordinate at which the painted {@link Tab} of a {@link TabPainter} is rendered */
 	private SettingDouble tabPaintBaseX;
@@ -189,6 +193,7 @@ public class ZabSettings extends Settings{
 		this.tabTextFiller = this.addChar(TAB_TEXT_FILLER);
 		this.tabTextAlignSymbolsEnd = this.addBoolean(TAB_TEXT_ALIGN_SYMBOLS_END);
 		this.tabTextEnd = this.addString(TAB_TEXT_END);
+		this.tabTextMeasuresPerLine = this.addInt(TAB_TEXT_MEASURES_PER_LINE);
 		
 		this.tabPaintBaseX = this.addDouble(TAB_PAINT_BASE_X);
 		this.tabPaintBaseY = this.addDouble(TAB_PAINT_BASE_Y);
@@ -244,6 +249,8 @@ public class ZabSettings extends Settings{
 	public SettingBoolean getTabTextAlignSymbolsEnd(){ return this.tabTextAlignSymbolsEnd; }
 	/** @return See {@link #tabTextEnd} */
 	public SettingString getTabTextEnd(){ return this.tabTextEnd; }
+	/** @return See {@link #tabTextMeasuresPerLine} */
+	public SettingInt getTabTextMeasuresPerLine(){ return this.tabTextMeasuresPerLine; }
 
 	/** @return See {@link #tabPaintBaseX} */
 	public SettingDouble getTabPaintBaseX(){ return this.tabPaintBaseX; }
@@ -313,6 +320,8 @@ public class ZabSettings extends Settings{
 	public Boolean tabTextAlignSymbolsEnd(){ return this.getTabTextAlignSymbolsEnd().get(); }
 	/** @return See {@link #tabTextEnd} */
 	public String tabTextEnd(){ return this.getTabTextEnd().get(); }
+	/** @return See {@link #tabTextMeasuresPerLine} */
+	public Integer tabTextMeasuresPerLine(){ return this.getTabTextMeasuresPerLine().get(); }
 	
 	/** @return See {@link #tabPaintBaseX} */
 	public Double tabPaintBaseX(){ return this.getTabPaintBaseX().get(); }

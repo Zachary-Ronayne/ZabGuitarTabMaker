@@ -27,6 +27,7 @@ public class TestTabTextExporter{
 	
 	@BeforeEach
 	public void setup(){
+		init();
 		guitar = InstrumentFactory.guitarTuned(1);
 		TabString highE = guitar.getStrings().get(0);
 		TabString b = guitar.getStrings().get(1);
@@ -59,6 +60,38 @@ public class TestTabTextExporter{
 		
 		a.add(TabFactory.pullOff(a, 8, 7));
 		lowE.add(TabFactory.pullOff(lowE, 10, 7));
+		
+		guitar.placeQuantizedNote(0, 0, 8);
+		guitar.placeQuantizedNote(0, 1, 8.5);
+		guitar.placeQuantizedNote(0, 2, 9);
+		guitar.placeQuantizedNote(0, 3, 9.25);
+		guitar.placeQuantizedNote(0, 4, 10);
+		guitar.placeQuantizedNote(0, 5, 13);
+	}
+	
+	@Test
+	public void exportLine(){
+		assertEquals(null, TabTextExporter.exportLine(null, 0, 1, false), "Checking null returned on null tab");
+		
+		assertEquals(""
+				+ "F |-0-|\n"
+				+ "C |---|\n"
+				+ "G#|---|\n"
+				+ "D#|---|\n"
+				+ "A#|---|\n"
+				+ "F |---|\n",
+				TabTextExporter.exportLine(guitar, 0, 1, false),
+				"Checking exporting only the first measure with default settings");
+		
+		assertEquals(""
+				+ "F |-0--3--6--5-|\n"
+				+ "C |----------0-|\n"
+				+ "G#|------------|\n"
+				+ "D#|------------|\n"
+				+ "A#|------------|\n"
+				+ "F |------------|\n",
+				TabTextExporter.exportLine(guitar, 2.5, 3.2, true),
+				"Checking exporting regions between measures with a specified hard ending point, with default settings");
 	}
 	
 	@Test
@@ -71,7 +104,14 @@ public class TestTabTextExporter{
 				+ "G#|----------------------0-------------|\n"
 				+ "D#|----------------------2-------------|\n"
 				+ "A#|----------------------2--2--14--8p--|\n"
-				+ "F |----------------------0--0--12--10p-|\n",
+				+ "F |----------------------0--0--12--10p-|\n"
+				+ "\n"
+				+ "F |-0--1--2--3--4--5-|\n"
+				+ "C |------------------|\n"
+				+ "G#|------------------|\n"
+				+ "D#|------------------|\n"
+				+ "A#|------------------|\n"
+				+ "F |------------------|\n",
 				TabTextExporter.export(guitar),
 				"Checking exporting guitar with default settings");
 		
@@ -81,15 +121,44 @@ public class TestTabTextExporter{
 		settings.getTabTextNoteNameAlignEnd().set(true);
 		settings.getTabTextAlignSymbolsEnd().set(true);
 		settings.getTabTextEnd().set("|]");
-		settings.getTabTextPreString().set("[");;
+		settings.getTabTextPreString().set("[");
+		settings.getTabTextMeasuresPerLine().set(3);
 		
 		assertEquals(""
-				+ "[ F4|-0--3--5--0--3--6--5--0-------------|]\n"
-				+ "[ C4|-------------------0--0-------------|]\n"
-				+ "[Ab3|----------------------0-------------|]\n"
-				+ "[Eb3|----------------------2-------------|]\n"
-				+ "[Bb2|----------------------2--2--14---8p-|]\n"
-				+ "[ F2|----------------------0--0--12--10p-|]\n",
+				+ "[ F4|-0--3--5--0-|]\n"
+				+ "[ C4|------------|]\n"
+				+ "[Ab3|------------|]\n"
+				+ "[Eb3|------------|]\n"
+				+ "[Bb2|------------|]\n"
+				+ "[ F2|------------|]\n"
+				+ "\n"
+				+ "[ F4|-3--6--5--0----|]\n"
+				+ "[ C4|-------0--0----|]\n"
+				+ "[Ab3|----------0----|]\n"
+				+ "[Eb3|----------2----|]\n"
+				+ "[Bb2|----------2--2-|]\n"
+				+ "[ F2|----------0--0-|]\n"
+				+ "\n"
+				+ "[ F4|----------0--1-|]\n"
+				+ "[ C4|---------------|]\n"
+				+ "[Ab3|---------------|]\n"
+				+ "[Eb3|---------------|]\n"
+				+ "[Bb2|-14---8p-------|]\n"
+				+ "[ F2|-12--10p-------|]\n"
+				+ "\n"
+				+ "[ F4|-2--3--4-|]\n"
+				+ "[ C4|---------|]\n"
+				+ "[Ab3|---------|]\n"
+				+ "[Eb3|---------|]\n"
+				+ "[Bb2|---------|]\n"
+				+ "[ F2|---------|]\n"
+				+ "\n"
+				+ "[ F4|-5-|]\n"
+				+ "[ C4|---|]\n"
+				+ "[Ab3|---|]\n"
+				+ "[Eb3|---|]\n"
+				+ "[Bb2|---|]\n"
+				+ "[ F2|---|]\n",
 				TabTextExporter.export(guitar),
 				"Checking exporting guitar with modified settings");
 	}

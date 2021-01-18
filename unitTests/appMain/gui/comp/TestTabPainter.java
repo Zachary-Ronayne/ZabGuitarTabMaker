@@ -549,11 +549,19 @@ public class TestTabPainter{
 	
 	@Test
 	public void lineNumber(){
-		assertEquals(0, paint.lineNumber(775), UtilsTest.DELTA, "Checking halfway between the first and second lines");
-		assertEquals(0, paint.lineNumber(150), UtilsTest.DELTA, "Checking at the first line");
-		assertEquals(-1, paint.lineNumber(-475), UtilsTest.DELTA, "Checking halfway between the first and line before the first");
-		assertEquals(0, paint.lineNumber(1334.9264115375704), UtilsTest.DELTA, "Checking between the first and second lines");
-		assertEquals(2, paint.lineNumber(2875.258855076271), UtilsTest.DELTA, "Checking between the second and third lines");
+		assertEquals(0, paint.lineNumber(775), "Checking halfway between the first and second lines");
+		assertEquals(0, paint.lineNumber(150), "Checking at the first line");
+		assertEquals(-1, paint.lineNumber(-475), "Checking halfway between the first and line before the first");
+		assertEquals(0, paint.lineNumber(1334.9264115375704), "Checking between the first and second lines");
+		assertEquals(2, paint.lineNumber(2875.258855076271), "Checking between the second and third lines");
+	}
+	
+	@Test
+	public void lineNumberFromPos(){
+		assertEquals(0, paint.lineNumberFromPos(0), "Checking at the first line");
+		assertEquals(-1, paint.lineNumberFromPos(-1), "Checking a negative line");
+		assertEquals(1, paint.lineNumberFromPos(4), "Checking the start of the second line");
+		assertEquals(1, paint.lineNumberFromPos(7), "Checking the middle of the of the second line");
 	}
 	
 	@Test

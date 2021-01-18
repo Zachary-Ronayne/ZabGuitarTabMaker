@@ -34,6 +34,37 @@ public final class TabTextExporter{
 		if(tab == null) return null;
 		
 		ZabSettings settings = ZabAppSettings.get();
+		int measuresPerLine = settings.tabTextMeasuresPerLine();
+		
+		// String for the final result of the tab
+		String result = "";
+		
+		// Generate each line of tab
+		double length = tab.length();
+		double checkLength = length;
+		for(int i = 0; i <= checkLength; i += measuresPerLine){
+			// Add the line
+			result = result.concat(exportLine(tab, i, i + measuresPerLine, false));
+			// Add an extra new line if this is not the last line
+			if(i + measuresPerLine < checkLength) result = result.concat("\n");
+		}
+		
+		// Return the final tab string
+		return result;
+	}
+	
+	/**
+	 * Export, to a String, all of the symbols in the specified area to a line of tab
+	 * @param tab The tab to export
+	 * @param start The position, in measures, to begin the region of export
+	 * @param end The position, in measures, to end the region of export
+	 * @param hardEnd true to include notes lining up with the exact end of the range, false otherwise
+	 * @return The exported line of tab, or null if tab is null
+	 */
+	public static String exportLine(Tab tab, double start, double end, boolean hardEnd){
+		if(tab == null) return null;
+		
+		ZabSettings settings = ZabAppSettings.get();
 		
 		// The text string added before each tab string
 		String offset = settings.tabTextPreString();
@@ -89,12 +120,23 @@ public final class TabTextExporter{
 		// Combine the strings, placing exportStrings after the toAdd strings
 		StringUtils.combineStringsWithFiller(exportStrings, toAdd, offset, afterNoteName, noteNameFiller, noteNameFillerBefore);
 		
-		// Create a list storing each symbol and its position
+		// Create a list storing each symbol and its position in the region
 		ArrayList<IndexAndPos> symbols = new ArrayList<IndexAndPos>();
 		for(int i = 0; i < numStrings; i++){
 			TabString s = tabStrings.get(i);
-			for(TabPosition p : s){
-				symbols.add(new IndexAndPos(p, i));
+			
+			// Find the indexes of the positions
+			int startI = s.findIndex(start);
+			int endI = s.findIndex(end);
+			
+			for(int j = startI; j <= endI; j++){
+				// If the index would insert a note outside of the string, don't add it, 
+				//	otherwise this is needed to keep notes in the middle of a line being added, if it is at the exact edge of the bounds
+				if(j >= s.size()) continue;
+				// If an index is reached which is greater than the end point, then the end of the string has been reached
+				double p = s.get(j).getPos();
+				if(hardEnd && p > end || !hardEnd && p >= end) break;
+				symbols.add(new IndexAndPos(s.get(j), i));
 			}
 		}
 		// Sort all of the symbols in increasing order based on position

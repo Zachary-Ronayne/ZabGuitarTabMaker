@@ -213,6 +213,23 @@ public class TestTabString{
 	}
 	
 	@Test
+	public void tabLength(){
+		assertEquals(0, string.tabLength(), "Checking length is zero with no symbols");
+		
+		string.add(notes[1]);
+		assertEquals(1, string.tabLength(), "Checking length with an added symbol");
+		
+		string.add(notes[2]);
+		assertEquals(2, string.tabLength(), "Checking length with an added symbol");
+		
+		string.placeQuantizedNote(sig, 0, 2.5);
+		assertEquals(2.5, string.tabLength(), "Checking length with an added symbol in the middle of a measure");
+		
+		string.placeQuantizedNote(sig, 0, 1.5);
+		assertEquals(2.5, string.tabLength(), "Checking length unchanged with an added symbol not at the end");
+	}
+	
+	@Test
 	public void placeQuantizedNote(){
 		TabNote n;
 		TabNote placed;

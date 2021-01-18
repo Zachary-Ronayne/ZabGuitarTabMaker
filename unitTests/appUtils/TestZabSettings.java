@@ -125,6 +125,11 @@ public class TestZabSettings{
 		assertSettingInitialized(settings.getTabTextEnd(), ZabSettings.TAB_TEXT_END);
 		assertEquals(ZabSettings.TAB_TEXT_END, settings.tabTextEnd(), "Checking value getter correct");
 	}
+	@Test
+	public void tabTextMeasuresPerLine(){
+		assertSettingInitialized(settings.getTabTextMeasuresPerLine(), ZabSettings.TAB_TEXT_MEASURES_PER_LINE);
+		assertEquals(ZabSettings.TAB_TEXT_MEASURES_PER_LINE, settings.tabTextMeasuresPerLine(), "Checking value getter correct");
+	}
 	
 	@Test
 	public void tabPaintBaseX(){

@@ -128,6 +128,35 @@ public class TestTab{
 	}
 	
 	@Test
+	public void lastPosition(){
+		assertEquals(null, tab.lastPosition(), "Checking a tab with no notes finds null position");
+		
+		tab.placeQuantizedNote(0, 0, 0);
+		assertEquals(tab.getStrings().get(0).get(0), tab.lastPosition(), "Checking last position is the only placed note");
+		
+		tab.placeQuantizedNote(1, 0, 1);
+		assertEquals(tab.getStrings().get(1).get(0), tab.lastPosition(), "Checking last position is the farthest on a different string");
+		
+		tab.placeQuantizedNote(0, 0, 2);
+		assertEquals(tab.getStrings().get(0).get(1), tab.lastPosition(), "Checking last position is on the first string again");
+	}
+	
+	@Test
+	public void length(){
+		assertEquals(-1, tab.length(), "Checking a tab with no notes finds -1 length");
+		
+		tab.placeQuantizedNote(0, 0, 0.25);
+		assertEquals(0.25, tab.length(), UtilsTest.DELTA, "Checking last position length");
+		
+		tab.placeQuantizedNote(1, 0, 1);
+		assertEquals(1, tab.length(), UtilsTest.DELTA, "Checking last position length on a different string");
+		
+		tab.placeQuantizedNote(0, 0, 2);
+		assertEquals(2, tab.length(), UtilsTest.DELTA, "Checking last position length on the first string again");
+	
+	}
+	
+	@Test
 	public void setUsesRhythm(){
 		lowString.add(TabFactory.modifiedFret(lowString, 0, 0));
 		tab.setUsesRhythm(true);

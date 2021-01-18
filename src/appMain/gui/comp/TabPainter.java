@@ -344,30 +344,15 @@ public class TabPainter extends ZabPanel{
 		this.tabLineCount = 0;
 		// If there are no strings, or tab is null, leave the line count at 1
 		if(this.numStrings() == 0) return;
-		
-		// Get the list of strings
-		ArrayList<TabString> strs = this.getTab().getStrings();
-		
-		// Find the farthest out note on the strings
-		double farPos = -1;
-		double strNum = 0;
-		for(int i = 0; i < this.numStrings(); i++){
-			TabString s = strs.get(i);
-			// If the current string has no notes, don't check it
-			if(s.size() <= 0) continue;
-			
-			// If the last note in the string, which is the farthest note, is farther than the current farthest, it is the new farthest
-			if(s.get(s.size() - 1).getPos() > farPos){
-				TabString farStr = strs.get(i);
-				farPos = farStr.get(farStr.size() - 1).getPos();
-				strNum = i;
-			}
-		}
+
+		// Find the line number to use
 		int lineNum;
-		// If farPos is negative, then no note was found, default to zero lines
-		if(farPos < 0) lineNum = 0;
-		// Otherwise, find the position on the painter, then use that position to find the line number
-		else lineNum = this.lineNumber(this.tabPosToCamY(Math.max(0, farPos), strNum));
+		TabPosition p = this.getTab().lastPosition();
+		// If the position could not be found, then no note was found, default to zero lines
+		if(p == null) lineNum = 0;
+		// Otherwise, use the position value to find the line number
+		// The string position doesn't matter, because any string index will give the same line number, so just use zero
+		else lineNum = this.lineNumberFromPos(p.getPos());
 		
 		// One after the proper line number is the minimum line amount, meaning a minimum of 2
 		// The 1 inside Math.max is because lineNum is an index, so one must be added to make it a proper number
@@ -631,6 +616,17 @@ public class TabPainter extends ZabPanel{
 		double num = this.lineNumberValue(y);
 		if(num < 0) num--;
 		return (int)num;
+	}
+	
+	/**
+	 * Find the line number of the tab, meaning how many lines of tab down is the given measure distance. 
+	 * @param pos The position on the tab to find the line number, in measures.
+	 * @return The line number, or -1 if pos is negative
+	 */
+	public int lineNumberFromPos(double pos){
+		if(pos < 0 ) return -1;
+		// The string position doesn't matter, because any string index will give the same line number, so just use zero
+		return this.lineNumber(this.tabPosToCamY(pos, 0));
 	}
 
 	/**

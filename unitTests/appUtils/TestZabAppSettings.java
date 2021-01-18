@@ -74,6 +74,7 @@ public class TestZabAppSettings{
 			+ "false false \n"
 			+ "|\n"
 			+ "|\n"
+			+ "8 8 null null \n"
 			+ "100.0 100.0 null null \n"
 			+ "-100.0 -100.0 null null \n"
 			+ "200.0 200.0 null null \n"

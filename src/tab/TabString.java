@@ -193,6 +193,15 @@ public class TabString extends ArrayList<TabPosition> implements Copyable<TabStr
 	}
 	
 	/**
+	 * Find the position of the symbol with the highest value
+	 * @return The farthest out this tab goes, in measures, or zero if this string is empty
+	 */
+	public double tabLength(){
+		if(this.isEmpty()) return 0;
+		return this.get(this.size() - 1).getPos();
+	}
+	
+	/**
 	 * Put a single {@link TabNote} on this string with the given pitch at the given position.<br>
 	 * The position value is also automatically quantized
 	 * @param sig The {@link TimeSignature} to use for quantizing the note

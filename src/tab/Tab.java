@@ -160,6 +160,40 @@ public class Tab implements Copyable<Tab>, Saveable{
 	}
 
 	/**
+	 * Find the {@link TabPosition} on this {@link Tab} with the greatest position value
+	 * @return The {@link TabPosition}, or null if this tab is empty
+	 */
+	public TabPosition lastPosition(){
+		double farPos = -1;
+		TabPosition p = null;
+		ArrayList<TabString> strs = this.getStrings();
+		
+		for(int i = 0; i < strs.size(); i++){
+			TabString s = strs.get(i);
+			double pos = s.tabLength();
+			// If the current string has no notes, don't check it
+			if(s.size() <= 0) continue;
+			
+			// If the last note in the string, which is the farthest note, is farther than the current farthest, it is the new farthest
+			if(pos > farPos){
+				TabString farStr = strs.get(i);
+				p = farStr.get(farStr.size() - 1);
+				farPos = pos;
+			}
+		}
+		return p;
+	}
+
+	/**
+	 * Find the position on this {@link Tab} with the greatest position value
+	 * @return The value, or -1 if this tab is empty
+	 */
+	public double length(){
+		TabPosition p = this.lastPosition();
+		return (p == null) ? -1 : p.getPos();
+	}
+	
+	/**
 	 * Change the {@link TimeSignature} of this {@link Tab} and update the positions of all symbols in this {@link Tab} 
 	 * 	based on the given parameters 
 	 * @param newTime The new time signature to use. See {@link #timeSignature}
