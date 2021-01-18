@@ -31,14 +31,6 @@ import tab.symbol.TabSymbol;
 public class TabPainter extends ZabPanel{
 	private static final long serialVersionUID = 1L;
 	
-	/** The x coordinate at which the {@link Tab} of a {@link TabPainter} is rendered */
-	public static final double BASE_X = 100;
-	/** The y coordinate at which the {@link Tab} of a {@link TabPainter} is rendered */
-	public static final double BASE_Y = 200;
-	/** The base size of a rendered measure in number of pixels */
-	public static final double MEASURE_WIDTH = 200;
-	/** The amount of space between strings drawn for a tab */
-	public static final double STRING_SPACE = 40;
 	/** The font of symbols drawn for a tab */
 	public static final Font SYMBOL_FONT = new Font("Arial", Font.PLAIN, 20);
 	/** The font stroke used for strings drawn for a tab */
@@ -54,6 +46,9 @@ public class TabPainter extends ZabPanel{
 	
 	/** The {@link Tab} used for painting, can be null */
 	private Tab tab;
+	
+	/** The number of lines of tab to display */
+	private int tabLineCount;
 	
 	/** A list containing {@link Selection} objects for every user selected {@link TabPositiono} */
 	private ArrayList<Selection> selected;
@@ -97,6 +92,9 @@ public class TabPainter extends ZabPanel{
 		
 		// Ensure this JPanel has focus
 		this.requestFocusInWindow();
+		
+		// Initialize the state of the number of tab lines to draw
+		this.updateLineTabCount();
 		
 		// Final repaint to ensure the panel is updated
 		this.repaint();
@@ -267,11 +265,16 @@ public class TabPainter extends ZabPanel{
 	 */
 	public boolean selectNote(double mX, double mY){
 		ZabSettings settings = ZabAppSettings.get();
-		Tab t = this.getTab();
+		
 		// Ensure the tab exists
+		Tab t = this.getTab();
 		if(t == null) return false;
-		double x = t.getTimeSignature().quantize(xToTabPos(mX), settings.quantizeDivisor());
+		
+		// Find the positions to look for a note
+		double x = t.getTimeSignature().quantize(xToTabPos(mX, mY), settings.quantizeDivisor());
 		int y = pixelYToStringNum(mY);
+		
+		// If either coordinate is invalid, selection fails
 		if(x < 0 || y < 0) return false;
 		
 		// Only look for a note if the string has notes
@@ -313,15 +316,63 @@ public class TabPainter extends ZabPanel{
 		for(Selection s : this.getSelected()){
 			s.getString().remove(s.getPos());
 		}
-		clearSelection();
+		this.updateLineTabCount();
+		this.clearSelection();
 	}
 	
 	/**
-	 * Remove every note from the tab
+	 * Reset the entire tab painter to a default state, removing all notes, and resetting the camera
 	 */
-	public void removeAllNotes(){
+	public void reset(){
 		Tab t = this.getTab();
 		if(t != null) t.clearNotes();
+		this.resetCamera();
+		this.updateLineTabCount();
+	}
+	
+	/**
+	 * @return See {@link #tabLineCount}L
+	 */
+	public int getLineTabCount(){
+		return this.tabLineCount;
+	}
+	
+	/**
+	 * Based on the current state of this {@link TabPainter} determine how many lines should be displayed
+	 */
+	public void updateLineTabCount(){
+		this.tabLineCount = 0;
+		// If there are no strings, or tab is null, leave the line count at 1
+		if(this.numStrings() == 0) return;
+		
+		// Get the list of strings
+		ArrayList<TabString> strs = this.getTab().getStrings();
+		
+		// Find the farthest out note on the strings
+		double farPos = -1;
+		double strNum = 0;
+		for(int i = 0; i < this.numStrings(); i++){
+			TabString s = strs.get(i);
+			// If the current string has no notes, don't check it
+			if(s.size() <= 0) continue;
+			
+			// If the last note in the string, which is the farthest note, is farther than the current farthest, it is the new farthest
+			if(s.get(s.size() - 1).getPos() > farPos){
+				TabString farStr = strs.get(i);
+				farPos = farStr.get(farStr.size() - 1).getPos();
+				strNum = i;
+			}
+		}
+		int lineNum;
+		// If farPos is negative, then no note was found, default to zero lines
+		if(farPos < 0) lineNum = 0;
+		// Otherwise, find the position on the painter, then use that position to find the line number
+		else lineNum = this.lineNumber(this.tabPosToCamY(Math.max(0, farPos), strNum));
+		
+		// One after the proper line number is the minimum line amount, meaning a minimum of 2
+		// The 1 inside Math.max is because lineNum is an index, so one must be added to make it a proper number
+		// The 1 outside Math.max is to make it one after the line number
+		this.tabLineCount = Math.max(1, lineNum + 1) + 1;
 	}
 	
 	/**
@@ -390,19 +441,20 @@ public class TabPainter extends ZabPanel{
 	 * @return true if the note was placed, false otherwise
 	 */
 	public boolean placeNote(double mX, double mY, int fret){
-		double x = xToTabPos(mX);
+		double x = xToTabPos(mX, mY);
 		int y = pixelYToStringNum(mY);
 		Tab t = this.getTab();
-		// No need to check if tab is not null, y will be -1 when tab is null
-		if(x < 0 || y < 0) return false;
+		// If either coordinate is invalid, or the tab is null, the placement fails
+		if(x < 0 || y < 0 || t == null) return false;
 		TabPosition p = t.placeQuantizedNote(y, fret, x);
 		// Only add and select the note if it was placed
 		
 		boolean placed = p != null;
 		if(placed){
-			this.clearSelection();
-			this.selected.add(new Selection(p, t.getStrings().get(y)));
+			this.selectOne(p, t.getStrings().get(y));
 		}
+
+		this.updateLineTabCount();
 		return placed;
 	}
 
@@ -454,12 +506,176 @@ public class TabPainter extends ZabPanel{
 	}
 	
 	/**
+	 * Convert the given x painter coordinate to account for the offset of the tab's position
+	 * @param x The painter coordinate
+	 * @return A painter coordinate with the x offset removed
+	 */
+	public double removeXOffset(double x){
+		return x - ZabAppSettings.get().tabPaintBaseX();
+	}
+	
+	/**
+	 * Convert the given y painter coordinate to account for the offset of the tab's position
+	 * @param y The painter coordinate
+	 * @return A painter coordinate with the y offset removed
+	 */
+	public double removeYOffset(double y){
+		return y - ZabAppSettings.get().tabPaintBaseY();
+	}
+	
+	/**
+	 * @return The width, in painter pixels, of each line of tab
+	 */
+	public double tabWidth(){
+		return ZabAppSettings.get().tabPaintMeasureWidth() * ZabAppSettings.get().tabPaintLineMeasures();
+	}
+	
+	/**
+	 * @return The height, in painter pixels, of each line of tab
+	 */
+	public double tabHeight(){
+		return Math.max(0, ZabAppSettings.get().tabPaintStringSpace() * (this.numStrings() - 1));
+	}
+
+	/**
+	 * Find the y painter coordinate of the beginning of a line of tab, excluding the space before and after the line of tab
+	 * @param lineNum The line number, 
+	 * @return The coordinate
+	 */
+	public double tabLineStart(int lineNum){
+		/*
+		 * Determine the initial position of the top of the tab line 
+		 * 	then add the space above the tab line, bringing it to the absolute top of the tab line
+		 */
+		return this.lineHeight() * lineNum + ZabAppSettings.get().tabPaintAboveSpace();
+	}
+
+	/**
+	 * Find the y painter coordinate of the ending of a line of tab, excluding the space before and after the line of tab
+	 * @param lineNum The line number
+	 * @return The coordinate
+	 */
+	public double tabLineEnd(int lineNum){
+		/*
+		 * Determine the initial position of the end of the tab line 
+		 * 	then subtract the space above the tab line, bringing it to the absolute bottom of the tab line, 
+		 * 	subtract out one extra string space to account for the last string being just the end of the tab, 
+		 */
+		return this.lineHeight() * (lineNum + 1) - ZabAppSettings.get().tabPaintBelowSpace();
+	}
+	
+	/**
+	 * Find the y painter coordinate of the beginning of a line of tab, excluding the space before and after the line of tab, 
+	 *  with the extra buffer space above the line for checking positions near the note
+	 * @param lineNum The line number
+	 * @return The coordinate
+	 */
+	public double tabLineStartBuffer(int lineNum){
+		return this.tabLineStart(lineNum) - ZabAppSettings.get().tabPaintSelectionBuffer();
+	}
+
+	/**
+	 * Find the y painter coordinate of the ending of a line of tab, excluding the space before and after the line of tab, 
+	 *  with the extra buffer space above the line for checking positions near the note
+	 * @param lineNum The line number
+	 * @return The coordinate
+	 */
+	public double tabLineEndBuffer(int lineNum){
+		return this.tabLineEnd(lineNum) + ZabAppSettings.get().tabPaintSelectionBuffer();
+	}
+	
+	/**
+	 * Get the space to the side of a tab line which goes to the left or right of the line, 
+	 * 	allowing for extra detection space on either side
+	 * @return The buffer size
+	 */
+	public double tabLineSideBuffer(){
+		return ZabAppSettings.get().tabPaintMeasureWidth() * (1 / ZabAppSettings.get().quantizeDivisor());
+	}
+	
+	/**
+	 * Determine if the given x camera coordinate is inside the valid range of a tab string with the buffer size
+	 * @param x The camera coordinate to test
+	 * @return true if it is in the range, false otherwise
+	 */
+	public boolean camXInTabLine(double x){
+		double xOff = this.removeXOffset(x);
+		return  -tabLineSideBuffer() < xOff && xOff < this.tabWidth();
+	}
+	
+	/**
+	 * @return The number of strings in the current tab, or 0 if the tab is null
+	 */
+	public int numStrings(){
+		Tab t = this.getTab();
+		return (t == null) ? 0 : t.getStrings().size();
+	}
+	
+	/**
+	 * Find the line number of the tab, in floating point, meaning how many lines of tab down is the given coordinate. 
+	 * 	This will find a line even if the coordinate is not on a line of tab, but the space between.
+	 * @param y The painter coordinate
+	 * @return The tab number, can be a decimal number or negative
+	 */
+	public double lineNumberValue(double y){
+		return this.removeYOffset(y) / this.lineHeight();
+	}
+	
+	/**
+	 * Find the line number of the tab, meaning how many lines of tab down is the given coordinate. 
+	 * 	This will find a line even if the coordinate is not on a line of tab, but the space between.
+	 * @param y The painter coordinate
+	 * @return The line number, can be negative
+	 */
+	public int lineNumber(double y){
+		double num = this.lineNumberValue(y);
+		if(num < 0) num--;
+		return (int)num;
+	}
+
+	/**
+	 * Determine the distance on a tab which the line number of the given coordinate travels
+	 * @param y The painter coordinate
+	 * @return The x position in a tab, in measures
+	 */
+	public double lineLength(double y){
+		return this.tabWidth() * this.lineNumber(y);
+	}
+	
+	/**
+	 * @return The height, in painter pixels, of each line of tab, along with the space between each line
+	 */
+	public double lineHeight(){
+		ZabSettings settings = ZabAppSettings.get();
+		return settings.tabPaintAboveSpace() + this.tabHeight() + settings.tabPaintBelowSpace();
+	}
+	
+	/**
+	 * Convert the given width in painter space into the equivalent number of measures
+	 * @param width The width of the space in pixels
+	 * @return The measure position
+	 */
+	public double paintWidthToMeasures(double width){
+		return width / ZabAppSettings.get().tabPaintMeasureWidth();
+	}
+
+	/**
+	 * Convert the given number of measures to a width in painter space
+	 * @param measure The measure position
+	 * @return The width of the space in pixels
+	 */
+	public double measuresToPaintWidth(double measure){
+		return measure * ZabAppSettings.get().tabPaintMeasureWidth();
+	}
+	
+	/**
 	 * Convert an x coordinate on the painter, to a rhythmic position in a tab
 	 * @param x The x coordinate on the painter
+	 * @param y The y coordinate on the painter
 	 * @return The position in number measures
 	 */
-	public double xToTabPos(double x){
-		return this.camXToTabPos(this.getCamera().toCamX(x));
+	public double xToTabPos(double x, double y){
+		return this.camXToTabPos(this.getCamera().toCamX(x), this.getCamera().toCamY(y));
 	}
 	
 	/**
@@ -474,10 +690,17 @@ public class TabPainter extends ZabPanel{
 	/**
 	 * Convert an x coordinate on the camera, to a rhythmic position in a tab
 	 * @param x The x coordinate on the camera
-	 * @return The position in number measures
+	 * @param y The y coordinate on the camera
+	 * @return The position in number measures, can be negative to represent an invalid position
 	 */
-	public double camXToTabPos(double x){
-		return (x - BASE_X) / MEASURE_WIDTH;
+	public double camXToTabPos(double x, double y){
+		// If the note is attempted to be placed at the outside the line, don't place it
+		if(!this.camXInTabLine(x)) return -1;
+		// Keep the x coordinate in the range of the tab string so that it will only be placed on a tab string of the same line of tab
+		// 	and not on the next or previous line of tab
+		x = Math.max(0, Math.min(this.tabWidth() - this.tabLineSideBuffer(), this.removeXOffset(x)));
+		// Convert the position combined with the offset from the y position, to a measure position, to find the final tab position
+		return this.paintWidthToMeasures(x + this.lineLength(y)); 
 	}
 	
 	/**
@@ -486,7 +709,8 @@ public class TabPainter extends ZabPanel{
 	 * @return The x coordinate on the camera
 	 */
 	public double tabPosToCamX(double pos){
-		return pos * MEASURE_WIDTH + BASE_X;
+		// Find the relative portion of a line it will be on, and give it the offset
+		return this.measuresToPaintWidth(pos) % this.tabWidth() + ZabAppSettings.get().tabPaintBaseX();
 	}
 	
 	/**
@@ -501,41 +725,75 @@ public class TabPainter extends ZabPanel{
 	
 	/**
 	 * Convert a string number in a tab, to a y coordinate on the painter
+	 * @param pos The position on the tab, in number of measures
 	 * @param num The string number, decimal numbers represent the closeness to that string
 	 * @return The y position as a painter coordinate
 	 */
-	public double tabPosToY(double num){
-		return this.getCamera().toPixelY(this.tabPosToCamY(num));
+	public double tabPosToY(double pos, double num){
+		return this.getCamera().toPixelY(this.tabPosToCamY(pos, num));
 	}
 	
 	/**
 	 * Convert a y coordinate on the camera, to a string number
 	 * @param y The y coordinate on the camera
-	 * @return The string number, decimal numbers represent the closeness to that string
+	 * @return The string number, decimal numbers represent the closeness to that string. 
+	 * Can be negative if no valid line number is found
 	 */
 	public double camYToTabPos(double y){
-		return (y - BASE_Y) / STRING_SPACE;
+		ZabSettings settings = ZabAppSettings.get();
+		
+		// Get the line number as a double, and if it is a negative value, return -1 as it is not a valid line
+		int lineNum = this.lineNumber(y);
+		if(lineNum < 0) return -1;
+		
+		// Get rid of the tab offset, as well as 
+		y = this.removeYOffset(y);
+		
+		// Find the start and end position of the tab itself, including and excluding the buffer
+		double tabStart = this.tabLineStart(lineNum);
+		double tabStartBuff = this.tabLineStartBuffer(lineNum);
+		double tabEndBuff = this.tabLineEndBuffer(lineNum);
+		
+		// If the found coordinate is not within the buffered bounds, return -1, it is not a valid line
+		if(tabStartBuff > y || y > tabEndBuff) return -1;
+		
+		// Find the position in the unbuffered bounds
+		/*
+		 * Find the percentage of the space through the line they position is, and determine the string
+		 * 	First find the difference between the y position and the proper start position, 
+		 * 	then divide that value by the total space of all of the lines of tab, 
+		 * 	then multiply that percentage by the number of strings to get the string position
+		 */
+		double tabPos = y - tabStart;
+		double stringNum = tabPos / (this.tabHeight() + settings.tabPaintStringSpace()) * this.numStrings();
+		
+		// Ensure the string number will round to a valid string index
+		return Math.max(0, Math.min(this.numStrings() - 1, stringNum));
 	}
 	
 	/**
 	 * Convert the string number, to a y coordinate on the camera
+	 * @param pos The position on the tab, in measures
 	 * @param num The string number, decimal numbers represent the closeness to that string
 	 * @return The y coordinate on the camera
 	 */
-	public double tabPosToCamY(double num){
-		return num * STRING_SPACE + BASE_Y;
+	public double tabPosToCamY(double pos, double num){
+		ZabSettings settings = ZabAppSettings.get();
+		// Find the height which must be added to account for the line of that the tab position represents
+		double heightOffset = this.lineHeight() * (int)(pos / settings.tabPaintLineMeasures());
+		// First add the space above each tab line, then the total space in the line, then the space from extra lines, and the final offset
+		return settings.tabPaintAboveSpace() + (num * settings.tabPaintStringSpace()) + heightOffset + settings.tabPaintBaseY();
 	}
 	
 	/**
 	 * Get the string number which corresponds to the given y position
-	 * @param pos The y coordinate in pixel space
+	 * @param y The y coordinate in pixel space
 	 * @return The string number, or -1 if the position is not on a string
 	 */
-	public int pixelYToStringNum(double pos){
-		int s = (int)Math.round(yToTabPos(pos));
-		Tab t = this.getTab();
-		if(tab == null || s < 0 || s >= t.getStrings().size()) return -1;
-		return s;
+	public int pixelYToStringNum(double y){
+		y = yToTabPos(y);
+		if(y < 0) return -1;
+		return (int)Math.round(y);
 	}
 
 	/**
@@ -571,6 +829,7 @@ public class TabPainter extends ZabPanel{
 		if(this.getTab() == null) return false;
 
 		ZabTheme theme = ZabAppSettings.theme();
+		ZabSettings settings = ZabAppSettings.get();
 		
 		// Set up camera
 		Camera cam = this.tabCamera;
@@ -584,36 +843,56 @@ public class TabPainter extends ZabPanel{
 		
 		// Draw strings, string note labels, and note symbols
 		ArrayList<TabString> strings = this.getTab().getStrings();
-		// Length, in pixels, to render each string
-		double stringLength = 1500;
-		// Number of measure lines to draw
-		double measureLines = 8;
 		// Starting y position for the first string on the tab
-		double y = this.tabPosToCamY(0);
+		double y = this.tabPosToCamY(0, 0);
 		// The x position to draw the string labels
 		double labelX = this.tabPosToCamX(-0.1);
 		
-		// Draw a vertical line at the beginning of each measure
-		g.setColor(theme.tabString());
-		double measureLineEnd = y + (strings.size() - 1) * STRING_SPACE;
-		for(int i = 0; i < measureLines; i++){
-			double x = this.tabPosToCamX(i);
-			cam.drawLine(x, y, x, measureLineEnd);
+		int measuresPerLine = settings.tabPaintLineMeasures();
+		
+		// Drawing all strings and measure lines
+		String str;
+		// Iterate through each line of tab
+		for(int k = 0; k < this.getLineTabCount(); k++){
+			// Iterate through each string in the line of tab
+			for(int i = 0; i < this.numStrings(); i++){
+				TabString s = strings.get(i);
+				y = this.tabPosToCamY(k * measuresPerLine, i);
+				str = s.getRootPitch().getPitchName(false);
+				// Find the position of the label on this particular string
+				double labelSize = g.getFontMetrics().stringWidth(str);
+				double labelPos = labelX - labelSize;
+				
+				// Draw the string
+				g.setColor(theme.tabString());
+				cam.drawLine(labelPos + labelSize, y, this.measuresToPaintWidth(measuresPerLine) + settings.tabPaintBaseX(), y);
+				
+				// Draw string note labels
+				g.setColor(theme.tabSymbolText());
+				cam.drawScaleString(str, labelPos, y + 8);
+			}
+			
+			// Draw a vertical line at the beginning of each measure
+			g.setColor(theme.tabString());
+			double measureLineEnd = y;
+			double measureLineStart = measureLineEnd - this.tabHeight();
+			for(int i = 0; i < measuresPerLine; i++){
+				double x = this.tabPosToCamX(i);
+				cam.drawLine(x, measureLineStart, x, measureLineEnd);
+			}
 		}
 
-		String str;
-		for(TabString s : strings){
-			// Draw the string
-			g.setColor(theme.tabString());
-			cam.drawLine(labelX, y, stringLength, y);
+		// Drawing all symbols
+		g.setColor(theme.tabSymbolText());
+		// Go through all strings
+		for(int i = 0; i < this.numStrings(); i++){
+			TabString s = strings.get(i);
 			
-			// Draw string note labels
-			g.setColor(theme.tabSymbolText());
-			str = s.getRootPitch().getPitchName(false);
-			cam.drawScaleString(str, labelX - g.getFontMetrics().stringWidth(str), y + 8);
-			
-			// Draw symbols
-			for(TabPosition p : s){
+			// Draw symbols on that string
+			for(int j = 0; j < s.size(); j++){
+				TabPosition p = s.get(j);
+				y = this.tabPosToCamY(p.getPos(), i);
+				
 				// Get the symbol as a string
 				TabSymbol t = p.getSymbol();
 				str = t.getSymbol(s);
@@ -635,9 +914,6 @@ public class TabPainter extends ZabPanel{
 				cam.drawScaleString(str, sX, sY);
 				
 			}
-			
-			// Increment to y coordinate of next string
-			y += STRING_SPACE;
 		}
 		
 		return true;
@@ -728,7 +1004,7 @@ public class TabPainter extends ZabPanel{
 		@Override
 		public void keyPressed(KeyEvent e){
 			switch(e.getKeyCode()){
-				case KeyEvent.VK_R: if(e.isControlDown()) removeAllNotes(); break;
+				case KeyEvent.VK_R: if(e.isControlDown()) reset(); break;
 				case KeyEvent.VK_D: if(e.isControlDown()) removeSelectedNotes(); break;
 				case KeyEvent.VK_A: if(e.isControlDown()) selectAllNotes(); break;
 				default: appendSelectedTabNum(e.getKeyChar()); break;

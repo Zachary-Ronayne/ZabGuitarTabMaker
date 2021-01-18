@@ -156,17 +156,20 @@ public final class TabTextExporter{
 			// Ensure the parent path exists
 			File parent = file.getParentFile();
 			if(parent != null){
-				if(!parent.mkdirs()){
-					success = false;
-				}
+				if(!parent.exists() && !parent.mkdirs()) return false;
 			}
 			// If the path was made, or already existed, continue saving
-			if(success){
+			// Make the export string. If it fails to make, then don't write anything to a file
+			String s = export(tab);
+			if(s == null){
+				success = false;
+				if(ZabConstants.PRINT_ERRORS) System.err.println("Export of a tab failed");
+			}
+			// Otherwise write it to the file
+			else{
 				PrintWriter writer = new PrintWriter(file);
 				try{
-					String s = export(tab);
-					if(s == null) success = false;
-					else writer.print(s);
+					 writer.print(s);
 				}finally{
 					writer.close();
 				}

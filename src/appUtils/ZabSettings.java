@@ -8,6 +8,7 @@ import settings.SettingInt;
 import settings.SettingRhythm;
 import settings.SettingString;
 import settings.Settings;
+import tab.Tab;
 import tab.TabTextExporter;
 
 /**
@@ -59,6 +60,23 @@ public class ZabSettings extends Settings{
 	public static final boolean TAB_TEXT_ALIGN_SYMBOLS_END = false;
 	/** Default for {@link #tabTextEnd} */
 	public static final String TAB_TEXT_END = "|";
+
+	/** Default for {@link #tabPaintBaseX} */
+	public static final double TAB_PAINT_BASE_X = 100;
+	/** Default for {@link #tabPaintBaseY} */
+	public static final double TAB_PAINT_BASE_Y = -100;
+	/** Default for {@link #tabPaintMeasureWidth} */
+	public static final double TAB_PAINT_MEASURE_WIDTH = 200;
+	/** Default for {@link #tabPaintLineMeasures} */
+	public static final int TAB_PAINT_LINE_MEASURES = 8;
+	/** Default for {@link #tabPaintStringSpace} */
+	public static final double TAB_PAINT_STRING_SPACE = 30;
+	/** Default for {@link #tabPaintSelectionBuffer} */
+	public static final double TAB_PAINT_SELECTION_BUFFER = 15;
+	/** Default for {@link #tabPaintAboveSpace} */
+	public static final double TAB_PAINT_ABOVE_SPACE = 40;
+	/** Default for {@link #tabPaintBelowSpace} */
+	public static final double TAB_PAINT_BELOW_SPACE = 40;
 	
 	/** Default for {@link #zoomFactor} */
 	public static final double ZOOM_FACTOR = 0.1;
@@ -66,7 +84,6 @@ public class ZabSettings extends Settings{
 	public static final boolean ZOOM_INVERTED = true;
 	/** Default for {@link #zoomModifierFactor} */
 	public static final double ZOOM_MODIFIER_FACTOR = 2.0;
-	
 	
 	/** Default for {@link #quantizeDivisor} */
 	public static final Double QUANTIZE_DIVISOR = 8.0;
@@ -112,6 +129,23 @@ public class ZabSettings extends Settings{
 	/** In text output of a tab, the text printed at the end of every string line */
 	private SettingString tabTextEnd;
 	
+	/** The base x coordinate at which the painted {@link Tab} of a {@link TabPainter} is rendered */
+	private SettingDouble tabPaintBaseX;
+	/** The base y coordinate at which the painted {@link Tab} of a {@link TabPainter} is rendered */
+	private SettingDouble tabPaintBaseY;
+	/** The base size of a rendered measure of a {@link TabPainter}, in pixels */
+	private SettingDouble tabPaintMeasureWidth;
+	/** The number of measures a {@link TabPainter} draws per line */
+	private SettingInt tabPaintLineMeasures;
+	/** The amount of space between painted strings in a {@link TabPainter}, in pixels */
+	private SettingDouble tabPaintStringSpace;
+	/** The amount of space above and below a tab where a coordinate can still be detected in a {@link TabPainter}, in pixels */
+	private SettingDouble tabPaintSelectionBuffer;
+	/** The amount of space above each line of tab in a {@link TabPainter}, in pixels */
+	private SettingDouble tabPaintAboveSpace;
+	/** The amount of space below each line of tab in a {@link TabPainter}, in pixels */
+	private SettingDouble tabPaintBelowSpace;
+	
 	/** The value which determines how fast the camera zooms */
 	private SettingDouble zoomFactor;
 	/** true if zooming should be inverted, i.e. moving the mouse wheel towards the user should zoom out, false otherwise */
@@ -155,6 +189,15 @@ public class ZabSettings extends Settings{
 		this.tabTextFiller = this.addChar(TAB_TEXT_FILLER);
 		this.tabTextAlignSymbolsEnd = this.addBoolean(TAB_TEXT_ALIGN_SYMBOLS_END);
 		this.tabTextEnd = this.addString(TAB_TEXT_END);
+		
+		this.tabPaintBaseX = this.addDouble(TAB_PAINT_BASE_X);
+		this.tabPaintBaseY = this.addDouble(TAB_PAINT_BASE_Y);
+		this.tabPaintMeasureWidth = this.addDouble(TAB_PAINT_MEASURE_WIDTH);
+		this.tabPaintLineMeasures = this.addInt(TAB_PAINT_LINE_MEASURES);
+		this.tabPaintStringSpace = this.addDouble(TAB_PAINT_STRING_SPACE);
+		this.tabPaintSelectionBuffer = this.addDouble(TAB_PAINT_SELECTION_BUFFER);
+		this.tabPaintAboveSpace = this.addDouble(TAB_PAINT_ABOVE_SPACE);
+		this.tabPaintBelowSpace = this.addDouble(TAB_PAINT_BELOW_SPACE);
 		
 		this.zoomFactor = this.addDouble(ZOOM_FACTOR);
 		this.zoomInverted = this.addBoolean(ZOOM_INVERTED);
@@ -201,11 +244,29 @@ public class ZabSettings extends Settings{
 	public SettingBoolean getTabTextAlignSymbolsEnd(){ return this.tabTextAlignSymbolsEnd; }
 	/** @return See {@link #tabTextEnd} */
 	public SettingString getTabTextEnd(){ return this.tabTextEnd; }
+
+	/** @return See {@link #tabPaintBaseX} */
+	public SettingDouble getTabPaintBaseX(){ return this.tabPaintBaseX; }
+	/** @return See {@link #tabPaintBaseY} */
+	public SettingDouble getTabPaintBaseY(){ return this.tabPaintBaseY; }
+	/** @return See {@link #tabPaintMeasureWidth} */
+	public SettingDouble getTabPaintMeasureWidth(){ return this.tabPaintMeasureWidth; }
+	/** @return See {@link #tabPaintLineMeasures} */
+	public SettingInt getTabPaintLineMeasures(){ return this.tabPaintLineMeasures; }
+	/** @return See {@link #tabPaintStringSpace} */
+	public SettingDouble getTabPaintStringSpace(){ return this.tabPaintStringSpace; }
+	/** @return See {@link #tabPaintSelectionBuffer} */
+	public SettingDouble getTabPaintSelectionBuffer(){ return this.tabPaintSelectionBuffer; }
+	/** @return See {@link #tabPaintAboveSpace} */
+	public SettingDouble getTabPaintAboveSpace(){ return this.tabPaintAboveSpace; }
+	/** @return See {@link #tabPaintBelowSpace} */
+	public SettingDouble getTabPaintBelowSpace(){ return this.tabPaintBelowSpace; }
 	
 	/** @return See {@link #zoomFactor} */
 	public SettingDouble getZoomFactor(){ return this.zoomFactor; }
 	/** @return See {@link #zoomInverted} */
 	public SettingBoolean getZoomInverted(){ return this.zoomInverted; }
+	
 	/** @return See {@link #zoomModifierFactor} */
 	public SettingDouble getZoomModifierFactor(){ return this.zoomModifierFactor; }
 	
@@ -252,6 +313,23 @@ public class ZabSettings extends Settings{
 	public Boolean tabTextAlignSymbolsEnd(){ return this.getTabTextAlignSymbolsEnd().get(); }
 	/** @return See {@link #tabTextEnd} */
 	public String tabTextEnd(){ return this.getTabTextEnd().get(); }
+	
+	/** @return See {@link #tabPaintBaseX} */
+	public Double tabPaintBaseX(){ return this.getTabPaintBaseX().get(); }
+	/** @return See {@link #tabPaintBaseY} */
+	public Double tabPaintBaseY(){ return this.getTabPaintBaseY().get(); }
+	/** @return See {@link #tabPaintMeasureWidth} */
+	public Double tabPaintMeasureWidth(){ return this.getTabPaintMeasureWidth().get(); }
+	/** @return See {@link #tabPaintLineMeasures} */
+	public Integer tabPaintLineMeasures(){ return this.getTabPaintLineMeasures().get(); }
+	/** @return See {@link #tabPaintStringSpace} */
+	public Double tabPaintStringSpace(){ return this.getTabPaintStringSpace().get(); }
+	/** @return See {@link #tabPaintSelectionBuffer} */
+	public Double tabPaintSelectionBuffer(){ return this.getTabPaintSelectionBuffer().get(); }
+	/** @return See {@link #tabPaintAboveSpace} */
+	public Double tabPaintAboveSpace(){ return this.getTabPaintAboveSpace().get(); }
+	/** @return See {@link #tabPaintBelowSpace} */
+	public Double tabPaintBelowSpace(){ return this.getTabPaintBelowSpace().get(); }
 	
 	/** @return See {@link #zoomFactor} */
 	public Double zoomFactor(){ return this.getZoomFactor().get(); }

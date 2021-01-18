@@ -33,43 +33,37 @@ public class TestZabSettings{
 		assertEquals(value, s.getDefault(), "Checking default value set");
 		Assert.contains(settings.getAll(), s);
 	}
-	
+
 	@Test
 	public void hammerOn(){
 		assertSettingInitialized(settings.getHammerOn(), ZabSettings.HAMMER_ON);
 		assertEquals(ZabSettings.HAMMER_ON, settings.hammerOn(), "Checking value getter correct");
 	}
-	
 	@Test
 	public void pullOff(){
 		assertSettingInitialized(settings.getPullOff(), ZabSettings.PULL_OFF);
 		assertEquals(ZabSettings.PULL_OFF, settings.pullOff(), "Checking value getter correct");
 	}
-	
 	@Test
 	public void slideUp(){
 		assertSettingInitialized(settings.getSlideUp(), ZabSettings.SLIDE_UP);
 		assertEquals(ZabSettings.SLIDE_UP, settings.slideUp(), "Checking value getter correct");
 	}
-	
 	@Test
 	public void slideDown(){
 		assertSettingInitialized(settings.getSlideDown(), ZabSettings.SLIDE_DOWN);
 		assertEquals(ZabSettings.SLIDE_DOWN, settings.slideDown(), "Checking value getter correct");
 	}
-	
 	@Test
 	public void harmonicBefore(){
 		assertSettingInitialized(settings.getHarmonicBefore(), ZabSettings.HARMONIC_BEFORE);
 		assertEquals(ZabSettings.HARMONIC_BEFORE, settings.harmonicBefore(), "Checking value getter correct");
 	}
-	
 	@Test
 	public void harmonicAfter(){
 		assertSettingInitialized(settings.getHarmonicAfter(), ZabSettings.HARMONIC_AFTER);
 		assertEquals(ZabSettings.HARMONIC_AFTER, settings.harmonicAfter(), "Checking value getter correct");
 	}
-	
 	@Test
 	public void deadNote(){
 		assertSettingInitialized(settings.getDeadNote(), ZabSettings.DEAD_NOTE);
@@ -81,61 +75,51 @@ public class TestZabSettings{
 		assertSettingInitialized(settings.getTabTextPreString(), ZabSettings.TAB_TEXT_PRE_STRING);
 		assertEquals(ZabSettings.TAB_TEXT_PRE_STRING, settings.tabTextPreString(), "Checking value getter correct");
 	}
-	
 	@Test
 	public void tabTextPostNoteName(){
 		assertSettingInitialized(settings.getTabTextPostNoteName(), ZabSettings.TAB_TEXT_POST_NOTE_NAME);
 		assertEquals(ZabSettings.TAB_TEXT_POST_NOTE_NAME, settings.tabTextPostNoteName(), "Checking value getter correct");
 	}
-	
 	@Test
 	public void tabTextNoteNameFiller(){
 		assertSettingInitialized(settings.getTabTextNoteNameFiller(), ZabSettings.TAB_TEXT_NOTE_NAME_FILLER);
 		assertEquals(ZabSettings.TAB_TEXT_NOTE_NAME_FILLER, settings.tabTextNoteNameFiller(), "Checking value getter correct");
 	}
-	
 	@Test
 	public void tabTextNoteNameAlignEnd(){
 		assertSettingInitialized(settings.getTabTextNoteNameAlignEnd(), ZabSettings.TAB_TEXT_NOTE_NAME_ALIGN_END);
 		assertEquals(ZabSettings.TAB_TEXT_NOTE_NAME_ALIGN_END, settings.tabTextNoteNameAlignEnd(), "Checking value getter correct");
 	}
-	
 	@Test
 	public void tabTextNoteNameOctave(){
 		assertSettingInitialized(settings.getTabTextNoteNameOctave(), ZabSettings.TAB_TEXT_NOTE_NAME_OCTAVE);
 		assertEquals(ZabSettings.TAB_TEXT_NOTE_NAME_OCTAVE, settings.tabTextNoteNameOctave(), "Checking value getter correct");
 	}
-	
 	@Test
 	public void tabTextNoteNameFormat(){
 		assertSettingInitialized(settings.getTabTextNoteNameFormat(), ZabSettings.TAB_TEXT_NOTE_NAME_FORMAT);
 		assertEquals(ZabSettings.TAB_TEXT_NOTE_NAME_FORMAT, settings.tabTextNoteNameFormat(), "Checking value getter correct");
 	}
-	
 	@Test
 	public void tabTextBeforeSymbol(){
 		assertSettingInitialized(settings.getTabTextBeforeSymbol(), ZabSettings.TAB_TEXT_BEFORE_SYMBOL);
 		assertEquals(ZabSettings.TAB_TEXT_BEFORE_SYMBOL, settings.tabTextBeforeSymbol(), "Checking value getter correct");
 	}
-	
 	@Test
 	public void tabTextAfterSymbol(){
 		assertSettingInitialized(settings.getTabTextAfterSymbol(), ZabSettings.TAB_TEXT_AFTER_SYMBOL);
 		assertEquals(ZabSettings.TAB_TEXT_AFTER_SYMBOL, settings.tabTextAfterSymbol(), "Checking value getter correct");
 	}
-	
 	@Test
 	public void tabTextFiller(){
 		assertSettingInitialized(settings.getTabTextFiller(), ZabSettings.TAB_TEXT_FILLER);
 		assertEquals(ZabSettings.TAB_TEXT_FILLER, settings.tabTextFiller(), "Checking value getter correct");
 	}
-	
 	@Test
 	public void tabTextAlignSymbolsEnd(){
 		assertSettingInitialized(settings.getTabTextAlignSymbolsEnd(), ZabSettings.TAB_TEXT_ALIGN_SYMBOLS_END);
 		assertEquals(ZabSettings.TAB_TEXT_ALIGN_SYMBOLS_END, settings.tabTextAlignSymbolsEnd(), "Checking value getter correct");
 	}
-	
 	@Test
 	public void tabTextEnd(){
 		assertSettingInitialized(settings.getTabTextEnd(), ZabSettings.TAB_TEXT_END);
@@ -143,17 +127,56 @@ public class TestZabSettings{
 	}
 	
 	@Test
+	public void tabPaintBaseX(){
+		assertSettingInitialized(settings.getTabPaintBaseX(), ZabSettings.TAB_PAINT_BASE_X);
+		assertEquals(ZabSettings.TAB_PAINT_BASE_X, settings.tabPaintBaseX(), "Checking value getter correct");
+	}
+	@Test
+	public void tabPaintBaseY(){
+		assertSettingInitialized(settings.getTabPaintBaseY(), ZabSettings.TAB_PAINT_BASE_Y);
+		assertEquals(ZabSettings.TAB_PAINT_BASE_Y, settings.tabPaintBaseY(), "Checking value getter correct");
+	}
+	@Test
+	public void tabPaintMeasureWidth(){
+		assertSettingInitialized(settings.getTabPaintMeasureWidth(), ZabSettings.TAB_PAINT_MEASURE_WIDTH);
+		assertEquals(ZabSettings.TAB_PAINT_MEASURE_WIDTH, settings.tabPaintMeasureWidth(), "Checking value getter correct");
+	}
+	@Test
+	public void tabPaintLineMeasures(){
+		assertSettingInitialized(settings.getTabPaintLineMeasures(), ZabSettings.TAB_PAINT_LINE_MEASURES);
+		assertEquals(ZabSettings.TAB_PAINT_LINE_MEASURES, settings.tabPaintLineMeasures(), "Checking value getter correct");
+	}
+	@Test
+	public void tabPaintStringSpace(){
+		assertSettingInitialized(settings.getTabPaintStringSpace(), ZabSettings.TAB_PAINT_STRING_SPACE);
+		assertEquals(ZabSettings.TAB_PAINT_STRING_SPACE, settings.tabPaintStringSpace(), "Checking value getter correct");
+	}
+	@Test
+	public void tabPaintSelectionBuffer(){
+		assertSettingInitialized(settings.getTabPaintSelectionBuffer(), ZabSettings.TAB_PAINT_SELECTION_BUFFER);
+		assertEquals(ZabSettings.TAB_PAINT_SELECTION_BUFFER, settings.tabPaintSelectionBuffer(), "Checking value getter correct");
+	}
+	@Test
+	public void tabPaintAboveSpace(){
+		assertSettingInitialized(settings.getTabPaintAboveSpace(), ZabSettings.TAB_PAINT_ABOVE_SPACE);
+		assertEquals(ZabSettings.TAB_PAINT_ABOVE_SPACE, settings.tabPaintAboveSpace(), "Checking value getter correct");
+	}
+	@Test
+	public void tabPaintBelowSpace(){
+		assertSettingInitialized(settings.getTabPaintBelowSpace(), ZabSettings.TAB_PAINT_BELOW_SPACE);
+		assertEquals(ZabSettings.TAB_PAINT_BELOW_SPACE, settings.tabPaintBelowSpace(), "Checking value getter correct");
+	}
+	
+	@Test
 	public void zoomFactor(){
 		assertSettingInitialized(settings.getZoomFactor(), ZabSettings.ZOOM_FACTOR);
 		assertEquals(ZabSettings.ZOOM_FACTOR, settings.zoomFactor(), "Checking value getter correct");
 	}
-	
 	@Test
 	public void zoomInverted(){
 		assertSettingInitialized(settings.getZoomInverted(), ZabSettings.ZOOM_INVERTED);
 		assertEquals(ZabSettings.ZOOM_INVERTED, settings.zoomInverted(), "Checking value getter correct");
 	}
-	
 	@Test
 	public void zoomModifierFactor(){
 		assertSettingInitialized(settings.getZoomModifierFactor(), ZabSettings.ZOOM_MODIFIER_FACTOR);
@@ -165,7 +188,6 @@ public class TestZabSettings{
 		assertSettingInitialized(settings.getQuantizeDivisor(), ZabSettings.QUANTIZE_DIVISOR);
 		assertEquals(ZabSettings.QUANTIZE_DIVISOR, settings.quantizeDivisor(), "Checking value getter correct");
 	}
-	
 	@Test
 	public void rhythmConversionEndValue(){
 		assertSettingInitialized(settings.getRhythmConversionEndValue(), ZabSettings.RHYTHM_CONVERSION_END_VALUE());
