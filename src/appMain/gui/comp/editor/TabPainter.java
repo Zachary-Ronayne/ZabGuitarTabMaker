@@ -378,7 +378,7 @@ public class TabPainter extends ZabPanel{
 	 * @param s The {@link Selection} to unselect
 	 * @param mX The x coordinate of the selected symbol to remove, usually a mouse position
 	 * @param mY The y coordinate of the selected symbol to remove, usually a mouse position
-	 * @return true if the selection was removed, false otherwise
+	 * @return true if the selection was unselected, false otherwise
 	 */
 	public boolean deselect(double mX, double mY){
 		Selection s = this.findPosition(mX, mY);
@@ -396,13 +396,8 @@ public class TabPainter extends ZabPanel{
 	public boolean selectOne(TabPosition p, TabString string){
 		boolean selected = this.isSelected(p, string);
 		this.clearSelection();
-		
-		if(selected){
-			this.select(p, string);
-			return false;
-		}
-		
-		return this.select(p, string);
+
+		return this.select(p, string) && !selected;
 	}
 	
 	/**
@@ -452,7 +447,6 @@ public class TabPainter extends ZabPanel{
 		// Must return at this point if either there was no note originally selected, or if a note was not selected
 		boolean hasOriginal = originalSel != null;
 		if(!hasOriginal || !success) return success;
-		
 		// Get the newly selected position
 		Selection baseSel = originalSel;
 		Selection endSel = this.getLastSelected();

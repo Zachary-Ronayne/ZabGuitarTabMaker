@@ -266,8 +266,9 @@ public class TestTabPainter extends AbstractTestTabPainter{
 		TabString s = strs.get(0);
 		TabPosition p = s.get(0);
 		paint.appendSelectedTabNum('0');
-		assertFalse(paint.selectOne(p, strs.get(1)), "Checking note fails to select");
+		assertFalse(paint.selectOne(p, strs.get(1)), "Checking note fails to select with note on invalid string");
 		assertTrue(paint.selectOne(p, s), "Checking note selected");
+		assertFalse(paint.selectOne(p, s), "Checking returns false with note already selected");
 		assertEquals(p, list.selectedPosition(0), "Checking note was selected");
 		assertEquals(1, paint.getSelected().size(), "Checking only one note was selected");
 		assertEquals(null, paint.getSelectedNewTabNum(), "Checking selected new tab num set to null");

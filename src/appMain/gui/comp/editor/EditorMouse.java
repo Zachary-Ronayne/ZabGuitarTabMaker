@@ -5,6 +5,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.geom.Rectangle2D;
 
 import appMain.gui.util.Camera;
 import appUtils.ZabAppSettings;
@@ -24,6 +25,12 @@ public class EditorMouse extends TabPaintController implements MouseListener, Mo
 	private double lastY;
 	
 	/**
+	 * The {@link Selection} which needs to be deselected if the mouse is released over that {@link Selection}.  
+	 * Will be null when no {@link Selection} needs to be deselected
+	 */
+	private Selection toDeselect;
+	
+	/**
 	 * Create a default state {@link EditorMouse}
 	 * @param paint See {@link TabPaintController#paint}
 	 */
@@ -32,6 +39,7 @@ public class EditorMouse extends TabPaintController implements MouseListener, Mo
 		// Initializing coordinates to be negative so that they are not in the positive bounds of the painter
 		this.lastX = -1000;
 		this.lastY = -1000;
+		this.toDeselect = null;
 	}
 	
 	/** @return See {@link #lastX} */
@@ -89,42 +97,48 @@ public class EditorMouse extends TabPaintController implements MouseListener, Mo
 		
 		SelectionBox box = paint.getSelectionBox();
 		SelectionDragger drag = paint.getDragger();
-		Selection clickedPosition = paint.findPosition(x, y);
-		boolean mouseOnPosition = clickedPosition != null;
 		
+		// Find the Selection which was clicked on
+		Selection clickedPosition = paint.findPosition(x, y);
+		// Determine if the Selection had a TabPosition 
+		boolean mouseOnPosition = clickedPosition != null;
+		// If the TabPosition exists and is selected before the click, then it should be deselected after the click
+		boolean shouldDeselect = mouseOnPosition && paint.getSelected().isSelected(clickedPosition);
+
 		/*
-		 * If the selection box is currently not dragging, 
-		 * selection box is not currently making a selection, 
-		 * there is at least one selected note, 
-		 * and the user is not holding control
-		 * attempt to begin a drag
+		 * If the selection is currently not dragging, 
+		 * the selection box is not currently making a selection, 
+		 * and there is at least one selected note, 
+		 * attempt to begin a drag. 
+		 * This case is needed to account for when multiple notes are selected, and 
+		 * the user wants to click and drag all of those notes
 		 */
-		if(!drag.isDragging() && 
-				!box.isSelecting() && 
-				!paint.getSelected().isEmpty() &&
-				!e.isControlDown()){
-			
+		if(!drag.isDragging() && !box.isSelecting() && !paint.getSelected().isEmpty()){
 			drag.begin(x, y);
 		}
 		
-		// If a drag not is in place, then a selection box can begin, or selecting individual notes 
+		// If a drag was not otherwise started, do a normal click
 		if(!drag.isDragging()){
 			// If the mouse is on a TabPosition, then select or deselect it when applicable
 			if(mouseOnPosition){
-				boolean selected;
+				boolean selectLine = e.isShiftDown();
 				// If shift is held down, select a line of TabPositions
-				if(e.isShiftDown()) selected = paint.selectLine(x, y, e.isControlDown());
-				// Otherwise, select one note
-				else selected = paint.selectNote(x, y, e.isControlDown());
+				if(selectLine) paint.selectLine(x, y, e.isControlDown());
+				// Otherwise, try to select a single TabPosition
+				else paint.selectNote(x, y, e.isControlDown());
 				
-				// If selecting a TabPosition succeeds, allow a drag to begin
-				if(selected) drag.begin(x, y);
-				// Otherwise, the TabPosition wasn't selected, so deselect it if applicable
-				else paint.deselect(x, y);
+				// Begin a drag, it exists by being in this if chain, thus it can be moved
+				drag.begin(x, y);
 			}
 			// Otherwise, begin a box selection
-			else box.setSelecting(true);
+			else{
+				box.setSelecting(true);
+				box.updateSelectionBox(x, y);
+			}
 		}
+		
+		// If the note was selected before this click, then set it up to be deselected
+		if(shouldDeselect) this.toDeselect = paint.findPosition(x, y);
 	}
 	
 	/**
@@ -170,20 +184,44 @@ public class EditorMouse extends TabPaintController implements MouseListener, Mo
 	
 	/**
 	 * When the left mouse button is released, remove the selection box and add the selected {@link TabPosition} objects, 
-	 * if control is held down, add to the selection.
+	 * if control is held down, add to the selection.<br>
+	 * If a not is set to be deselected, and the mouse is still on that position, deselect it
 	 * @param e The mouse event, it is assumed this event is for the correct mouse button
 	 */
 	public void leftMouseReleased(MouseEvent e){
 		TabPainter paint = this.getPainter();
+		Camera cam = paint.getCamera();
 		SelectionBox box = paint.getSelectionBox();
 		box.selectInPainter(e.isControlDown());
 		box.clear();
 		SelectionDragger drag = paint.getDragger();
 		double x = e.getX();
 		double y = e.getY();
+
 		if(drag.isDragging()){
+			drag.update(x, y);
 			drag.place(x, y, e.isShiftDown());
 			drag.reset();
+		}
+		
+		/*
+		 *  Deselect the TabPosition to deselect if:
+		 *  There is a selection to deselect, 
+		 *  it is the position on the mouse, 
+		 *  And the bounds TabPosition to deselect contain the mouse
+		 */
+		if(this.toDeselect != null){
+			// Checking the selections are equal
+			if(this.toDeselect.equals(paint.findPosition(x, y))){
+				// Finding the compatible bounds for comparing the bounds of the TabPosition to the mouse
+				Rectangle2D.Double bounds = paint.symbolBounds(this.toDeselect.getPos(), this.toDeselect.getStringIndex());
+				// Checking if the mouse is in the bounds
+				if(bounds.contains(cam.toCamX(x), cam.toCamY(y))){
+					paint.getSelected().deselect(this.toDeselect);
+				}
+			}
+			// Regardless of if the TabPosition was deselected, the selection to deselect should be cleared
+			this.toDeselect = null;
 		}
 	}
 	
