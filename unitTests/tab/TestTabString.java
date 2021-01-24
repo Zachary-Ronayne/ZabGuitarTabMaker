@@ -213,6 +213,29 @@ public class TestTabString{
 	}
 	
 	@Test
+	public void contains(){
+		string.add(notes[1]);
+		string.add(notes[2]);
+		string.add(notes[4]);
+		
+		assertFalse(string.contains(null), "Checking TabString doesn't contain null");
+		assertTrue(string.contains(notes[1]), "Checking TabString contains TabPositions");
+		assertTrue(string.contains(notes[2]), "Checking TabString contains TabPositions");
+		assertTrue(string.contains(notes[4]), "Checking TabString contains TabPositions");
+		assertFalse(string.contains(notes[0]), "Checking TabString doesn't contain TabPositions");
+		assertFalse(string.contains(notes[3]), "Checking TabString doesn't contain TabPositions");
+		assertFalse(string.contains(notes[5]), "Checking TabString doesn't contain TabPositions");
+		
+		TabPosition copy = notes[1].copy();
+		copy.setSymbol(new TabDeadNote());
+		assertFalse(string.contains(copy), "Checking TabString doesn't contain TabPosition with different symbol but same position");
+
+		copy = notes[1].copy();
+		copy.setPos(100);
+		assertFalse(string.contains(copy), "Checking TabString doesn't contain TabPosition with same symbol but different position");
+	}
+	
+	@Test
 	public void tabLength(){
 		assertEquals(0, string.tabLength(), "Checking length is zero with no symbols");
 		

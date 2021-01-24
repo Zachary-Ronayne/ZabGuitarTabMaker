@@ -107,7 +107,7 @@ public class TabModifier implements Copyable<TabModifier>, Saveable{
 	/***/
 	@Override
 	public boolean equals(Object obj){
-		if(!ObjectUtils.isType(obj, this.getClass())) return false;
+		if(!ObjectUtils.isType(obj, TabModifier.class)) return false;
 		TabModifier m = (TabModifier)obj;
 		return	super.equals(obj) ||
 				this.getBefore().equals(m.getBefore()) &&

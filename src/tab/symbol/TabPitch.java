@@ -2,6 +2,7 @@ package tab.symbol;
 
 import music.Pitch;
 import tab.TabString;
+import util.ObjectUtils;
 
 /**
  * An object representing a symbol in a tab which contains pitch information
@@ -83,6 +84,7 @@ public abstract class TabPitch extends TabSymbol{
 	/***/
 	@Override
 	public boolean equals(Object obj){
+		if(!ObjectUtils.isType(obj, TabPitch.class)) return false;
 		TabPitch p = (TabPitch)obj;
 		return	super.equals(obj) &&
 				this.getPitch().equals(p.getPitch());

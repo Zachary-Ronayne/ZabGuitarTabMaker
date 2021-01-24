@@ -155,6 +155,9 @@ public class TestTabPitch{
 		assertFalse(n.equals(note), "Checking objects are not equal");
 		
 		n = new TestPitchObject(newPitch, mod);
+		assertFalse(note.equals(n), "Checking note not equal with different pitches");
+		
+		n = new TestPitchObject(note.getPitch(), new TabModifier("z", "x"));
 		assertFalse(note.equals(n), "Checking note not equal with different modifiers");
 	}
 

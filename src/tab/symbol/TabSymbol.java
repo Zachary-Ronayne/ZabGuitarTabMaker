@@ -96,7 +96,7 @@ public abstract class TabSymbol implements Copyable<TabSymbol>, Saveable{
 	/***/
 	@Override
 	public boolean equals(Object obj){
-		if(!ObjectUtils.isType(obj, this.getClass())) return false;
+		if(!ObjectUtils.isType(obj, TabSymbol.class)) return false;
 		TabSymbol s = (TabSymbol)obj;
 		TabModifier m1 = this.getModifier();
 		TabModifier m2 = s.getModifier();

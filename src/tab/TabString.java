@@ -193,6 +193,16 @@ public class TabString extends ArrayList<TabPosition> implements Copyable<TabStr
 	}
 	
 	/**
+	 * Overrides the standard contains method with a binary search
+	 */
+	@Override
+	public boolean contains(Object obj){
+		if(!ObjectUtils.isType(obj, TabPosition.class)) return false;
+		TabPosition p = (TabPosition)obj;
+		return p.equals(this.findPosition(p.getPos()));
+	}
+	
+	/**
 	 * Find the position of the symbol with the highest value
 	 * @return The farthest out this tab goes, in measures, or zero if this string is empty
 	 */

@@ -127,6 +127,7 @@ public class TabNoteRhythm extends TabPitch{
 	/***/
 	@Override
 	public boolean equals(Object obj){
+		if(!ObjectUtils.isType(obj, TabNoteRhythm.class)) return false;
 		TabNoteRhythm n = (TabNoteRhythm)obj;
 		return	super.equals(obj) &&
 				this.getRhythm().equals(n.getRhythm());
