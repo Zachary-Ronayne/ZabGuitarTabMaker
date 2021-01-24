@@ -32,7 +32,7 @@ public class TestTimeSignature{
 	
 	@BeforeEach
 	public void setup(){
-		four4 = new TimeSignature(4, 4);
+		four4 = new TimeSignature();
 		five8 = new TimeSignature(5, 8);
 		five4 = new TimeSignature(5, 4);
 		three2 = new TimeSignature(3, 2);

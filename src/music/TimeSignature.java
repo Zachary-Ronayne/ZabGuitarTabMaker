@@ -28,6 +28,13 @@ public class TimeSignature implements Copyable<TimeSignature>, Saveable{
 		this.setLower(lower);
 	}
 	
+	/**
+	 * Create a new {@link TimeSignature} in 4/4 time
+	 */
+	public TimeSignature(){
+		this(4, 4);
+	}
+	
 	/***/
 	@Override
 	public TimeSignature copy(){
