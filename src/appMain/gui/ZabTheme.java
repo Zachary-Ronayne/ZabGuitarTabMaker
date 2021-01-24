@@ -156,6 +156,8 @@ public interface ZabTheme{
 		@Override
 		public Color tabSymbolText(){ return new Color(200, 200, 200); }
 		@Override
+		public Color tabSymbolDragText(){ return new Color(200, 200, 255, 150); }
+		@Override
 		public Color tabSymbolHighlight(){ return new Color(170, 170, 255, 100); }
 		@Override
 		public Color tabSymbolBoxHighlight(){ return new Color(0, 255, 0, 127); }
@@ -192,6 +194,8 @@ public interface ZabTheme{
 		public Color tabString(){ return new Color(200, 200, 200); }
 		@Override
 		public Color tabSymbolText(){ return new Color(20, 20, 20); }
+		@Override
+		public Color tabSymbolDragText(){ return new Color(20, 20, 100, 150); }
 		@Override
 		public Color tabSymbolHighlight(){ return new Color(70, 70, 255, 100); }
 		@Override
@@ -236,6 +240,9 @@ public interface ZabTheme{
 	
 	/** @return The color of symbols drawn on a tab */
 	public abstract Color tabSymbolText();
+	
+	/** @return The color of symbols being dragged around */
+	public abstract Color tabSymbolDragText();
 	
 	/** @return The color of the highlight of selected symbols drawn on a tab */
 	public abstract Color tabSymbolHighlight();

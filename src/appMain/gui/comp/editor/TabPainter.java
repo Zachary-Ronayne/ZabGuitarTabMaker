@@ -1254,17 +1254,10 @@ public class TabPainter extends ZabPanel{
 		// Draw the selection box
 		this.getSelectionBox().draw(g);
 		
-		// Draw the moving selection
-		Point2D.Double p = this.getDragger().getDragPoint();
-		if(p != null){
-			String s = "Moving";
-			g.setColor(theme.tabSymbolHighlight());
-			cam.fillRect(p.getX(), p.getY() - SYMBOL_FONT.getSize(), g.getFontMetrics().stringWidth(s), SYMBOL_FONT.getSize());
-			g.setColor(theme.tabSymbolText());
-			
-			g.setFont(SYMBOL_FONT);
-			cam.drawScaleString(s, p.getX(), p.getY());
-		}
+		// Draw the selection being dragged
+		g.setFont(SYMBOL_FONT);
+		g.setColor(theme.tabSymbolDragText());
+		this.getDragger().draw();
 	}
 	
 	/**
@@ -1277,7 +1270,8 @@ public class TabPainter extends ZabPanel{
 	public boolean drawTab(Graphics2D g){
 		// Do nothing if the tab is null
 		if(this.getTab() == null) return false;
-
+		Tab tab = this.getTab();
+		
 		ZabTheme theme = ZabAppSettings.theme();
 		ZabSettings settings = ZabAppSettings.get();
 		
@@ -1292,7 +1286,7 @@ public class TabPainter extends ZabPanel{
 		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
 		
 		// Draw strings, string note labels, and note symbols
-		ArrayList<TabString> strings = this.getTab().getStrings();
+		ArrayList<TabString> strings = tab.getStrings();
 		// Starting y position for the first string on the tab
 		double y = this.tabPosToCamY(0, 0);
 		// The x position to draw the string labels
@@ -1334,11 +1328,39 @@ public class TabPainter extends ZabPanel{
 		
 		// Update the font metrics
 		this.lastSymbolFont = g.getFontMetrics();
-		// Drawing all symbols
+		// Drawing all main tab symbols
 		g.setColor(theme.tabSymbolText());
-		// Go through all strings
-		for(int i = 0; i < this.numStrings(); i++){
-			TabString s = strings.get(i);
+		this.drawSymbols(tab, 0, 0);
+		
+		return true;
+	}
+	
+	/**
+	 * Draw the symbols of a {@link Tab} to this TabPainter.<br>
+	 * This will use the current {@link #tabCamera} for rendering.<br>
+	 * This method does not set graphics attributes such as the color of the symbol text, 
+	 * that should be set by the method calling this method
+	 * @param tab The {@link Tab} to render
+	 * @param xOff The amount to offset the render on the x axis
+	 * @param YOff The amount to offset the render on the y axis
+	 * @return true if the render was successful, false otherwise
+	 */
+	public boolean drawSymbols(Tab tab, double xOff, double yOff){
+		// Ensure the tab is not null
+		if(tab == null) return false;
+		
+		ZabTheme theme = ZabAppSettings.theme();
+		Camera cam = this.getCamera();
+		Graphics2D g = cam.getG();
+		String str;
+		double y;
+		
+		// The current color is that which should be used for drawing symbols
+		Color symbolColor = g.getColor();
+		
+		ArrayList<TabString> strs = tab.getStrings();
+		for(int i = 0; i < strs.size(); i++){
+			TabString s = strs.get(i);
 			
 			// Draw symbols on that string
 			for(int j = 0; j < s.size(); j++){
@@ -1361,12 +1383,12 @@ public class TabPainter extends ZabPanel{
 				this.drawSymbolHighlight(this.getHoveredPosition(), p, i, theme.tabSymbolHoverHighlight());
 				
 				// Draw the symbol
-				g.setColor(theme.tabSymbolText());
-				cam.drawScaleString(str, sX, sY);
-				
+				g.setColor(symbolColor);
+				cam.drawScaleString(str, sX + xOff, sY + yOff);
 			}
 		}
-		
+		// Restore the original color and return success
+		g.setColor(symbolColor);
 		return true;
 	}
 	

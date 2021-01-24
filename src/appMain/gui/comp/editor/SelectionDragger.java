@@ -25,13 +25,18 @@ public class SelectionDragger extends TabPaintController{
 	private Point2D.Double dragPoint;
 	
 	/**
+	 * The {@link TabPosition} objects which are being moved by the current drag. Can be null when a drag is not initialized.<br>
+	 * This should only be used for display purposes 
+	 */
+	private Tab draggedTab;
+	
+	/**
 	 * Create a new {@link SelectionDragger} which is used by the given {@link TabPainter}
 	 * @param painter See {@link #painter}
 	 */
 	public SelectionDragger(TabPainter painter){
 		super(painter);
-		this.baseSelection = null;
-		this.dragPoint = null;
+		this.reset();
 	}
 	
 	/** @return See {@link #baseSelection} */
@@ -51,6 +56,10 @@ public class SelectionDragger extends TabPaintController{
 	public void setDragPoint(Point2D.Double dragPoint){
 		this.dragPoint = dragPoint;
 	}
+	/** @return See {@link #draggedTab} */
+	public Tab getDraggedTab(){
+		return this.draggedTab;
+	}
 	
 	/**
 	 * Cancel the current drag selection
@@ -58,6 +67,7 @@ public class SelectionDragger extends TabPaintController{
 	public void reset(){
 		this.setBaseSelection(null);
 		this.setDragPoint(null);
+		this.draggedTab = null;
 	}
 	
 	/** @return true if a selection drag has been initialized, false otherwise */
@@ -82,8 +92,18 @@ public class SelectionDragger extends TabPaintController{
 		// If a selected note was not found, do nothing
 		if(s == null || !paint.getSelected().isSelected(s)) return false;
 		
-		// Otherwise set the selected note and return success
+		// Otherwise set the base selection, set the notes to be dragged, and return success
+		
+		// Base selection
 		this.setBaseSelection(s);
+		// Copy over all relevant TabPositions
+		Tab pTab = paint.getTab();
+		this.draggedTab = pTab.copyWithoutSymbols();
+		ArrayList<TabString> strs = this.draggedTab.getStrings();
+		for(Selection sel : paint.getSelected()){
+			strs.get(sel.getStringIndex()).add(sel.getPos());
+		}
+		// Return success
 		return true;
 	}
 	
@@ -206,6 +226,25 @@ public class SelectionDragger extends TabPaintController{
 		
 		// End the drag selection, returning if the selection was placed in some way
 		return !failedToPlace;
+	}
+	
+	/**
+	 * Draw the currently being dragged TabPositions to the {@link TabPainter} using this {@link SelectionDragger}.<br>
+	 * This method does not handle setting color, font, etc those must be set by the method calling this method
+	 * @return true if the draw took place, false otherwise
+	 */
+	public boolean draw(){
+		if(!this.isDragging() || this.draggedTab == null) return false;
+		
+		TabPainter paint = this.getPainter();
+		Point2D.Double p = this.getDragPoint();
+		Selection base = this.baseSelection;
+		if(p == null || base == null) return false;
+		paint.drawSymbols(this.draggedTab, 
+				p.getX() - paint.tabPosToCamX(base.getPosition()), 
+				p.getY() - paint.tabPosToCamY(base.getPosition(), base.getStringIndex()));
+		
+		return true;
 	}
 	
 	/**

@@ -78,34 +78,37 @@ public class Tab implements Copyable<Tab>, Saveable{
 	/***/
 	@Override
 	public Tab copy(){
-		// Make an empty tab
-		Tab tab = new Tab();
+		// Make the copy without symbols
+		Tab copy = this.copyWithoutSymbols();
+		
+		copy.getStrings().clear();
 		
 		// Copy over each string
 		for(TabString s : this.getStrings()){
-			tab.getStrings().add(s.copy());
+			copy.getStrings().add(s.copy());
 		}
 		
-		// Copy other fields
-		tab.setTimeSignature(ObjectUtils.copy(this.getTimeSignature()));
-		tab.setUsesRhythm(this.usesRhythm());
-		
-		return tab;
+		return copy;
 	}
 
 	/**
 	 * Make a copy of this tab, but without any of its notes, i.e. only copy the strings, time signature, and if it uses rhythm
-	 * @return
+	 * @return The copy
 	 */
 	public Tab copyWithoutSymbols(){
-		// Make a copy of the tab
-		Tab tab = this.copy();
+		// Make an empty tab
+		Tab copy = new Tab();
 		
-		// Remove the notes
-		tab.clearNotes();
+		// Copy over number of strings
+		for(TabString s : this.getStrings()){
+			copy.getStrings().add(new TabString(s.getRootPitch().copy()));
+		}
 		
-		// Return the final tab
-		return tab;
+		// Copy misc fields
+		copy.setTimeSignature(ObjectUtils.copy(this.getTimeSignature()));
+		copy.setUsesRhythm(this.usesRhythm());
+
+		return copy;
 	}
 	
 	/**
