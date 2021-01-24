@@ -57,6 +57,12 @@ public class TestTabDeadNote{
 	}
 	
 	@Test
+	public void updateOnNewString(){
+		// Running method to test, does nothing
+		note.updateOnNewString(null, null);
+	}
+	
+	@Test
 	public void getSymbol(){
 		assertEquals("X", note.getSymbol(null), "Checking symbol is obtained");
 	}

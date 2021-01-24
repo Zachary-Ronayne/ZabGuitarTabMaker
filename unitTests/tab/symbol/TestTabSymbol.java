@@ -43,6 +43,8 @@ public class TestTabSymbol{
 		@Override
 		public boolean usesRhythm(){return false;}
 		@Override
+		public void updateOnNewString(TabString oldStr, TabString newStr){}
+		@Override
 		public boolean load(Scanner reader){return false;}
 		@Override
 		public boolean save(PrintWriter writer){return false;}

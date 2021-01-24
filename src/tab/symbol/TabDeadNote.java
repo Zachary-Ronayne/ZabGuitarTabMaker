@@ -45,7 +45,11 @@ public class TabDeadNote extends TabSymbol{
 	public boolean usesRhythm(){
 		return false;
 	}
-
+	
+	/** Does nothing, {@link TabDeadNote} objects don't change going from string to string */
+	@Override
+	public void updateOnNewString(TabString oldStr, TabString newStr){}
+	
 	/**
 	 * Get the text representing this dead note
 	 */

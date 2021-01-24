@@ -70,6 +70,16 @@ public abstract class TabPitch extends TabSymbol{
 		return String.valueOf(string.getTabNumber(this.getPitch()));
 	}
 	
+	/**
+	 * Sets the pitch of this {@link TabPitch} so that it will have the same tab number when placed on the new string
+	 */
+	@Override
+	public void updateOnNewString(TabString oldStr, TabString newStr){
+		if(oldStr == null || newStr == null) return;
+		int oldNum = oldStr.getTabNumber(this.getPitch());
+		this.setPitch(newStr.createPitch(oldNum));
+	}
+	
 	/***/
 	@Override
 	public boolean equals(Object obj){

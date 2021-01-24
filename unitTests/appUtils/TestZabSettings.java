@@ -173,6 +173,17 @@ public class TestZabSettings{
 	}
 	
 	@Test
+	public void tabControlMoveDeleteInvalid(){
+		assertSettingInitialized(settings.getTabControlMoveDeleteInvalid(), ZabSettings.TAB_CONTROL_MOVE_DELETE_INVALID);
+		assertEquals(ZabSettings.TAB_CONTROL_MOVE_DELETE_INVALID, settings.tabControlMoveDeleteInvalid(), "Checking value getter correct");
+	}
+	@Test
+	public void tabControlMoveCancelInvalid(){
+		assertSettingInitialized(settings.getTabControlMoveCancelInvalid(), ZabSettings.TAB_CONTROL_MOVE_CANCEL_INVALID);
+		assertEquals(ZabSettings.TAB_CONTROL_MOVE_CANCEL_INVALID, settings.tabControlMoveCancelInvalid(), "Checking value getter correct");
+	}
+	
+	@Test
 	public void zoomFactor(){
 		assertSettingInitialized(settings.getZoomFactor(), ZabSettings.ZOOM_FACTOR);
 		assertEquals(ZabSettings.ZOOM_FACTOR, settings.zoomFactor(), "Checking value getter correct");

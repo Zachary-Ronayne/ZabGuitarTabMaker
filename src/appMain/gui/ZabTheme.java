@@ -157,6 +157,10 @@ public interface ZabTheme{
 		public Color tabSymbolText(){ return new Color(200, 200, 200); }
 		@Override
 		public Color tabSymbolHighlight(){ return new Color(170, 170, 255, 100); }
+		@Override
+		public Color tabSymbolBoxHighlight(){ return new Color(0, 255, 0, 127); }
+		@Override
+		public Color tabSymbolHoverHighlight(){ return new Color(200, 200, 255, 63); }
 	}
 	
 	/**
@@ -185,11 +189,15 @@ public interface ZabTheme{
 		@Override
 		public Color borderColor(){ return new Color(0, 0, 0); }
 		@Override
-		public Color tabString(){ return new Color(150, 150, 150); }
+		public Color tabString(){ return new Color(200, 200, 200); }
 		@Override
 		public Color tabSymbolText(){ return new Color(20, 20, 20); }
 		@Override
 		public Color tabSymbolHighlight(){ return new Color(70, 70, 255, 100); }
+		@Override
+		public Color tabSymbolBoxHighlight(){ return new Color(30, 225, 30, 127); }
+		@Override
+		public Color tabSymbolHoverHighlight(){ return new Color(150, 150, 225, 63); }
 	
 	}
 	
@@ -229,8 +237,14 @@ public interface ZabTheme{
 	/** @return The color of symbols drawn on a tab */
 	public abstract Color tabSymbolText();
 	
-	/** @return The color of the highlights of selected symbols drawn on a tab */
+	/** @return The color of the highlight of selected symbols drawn on a tab */
 	public abstract Color tabSymbolHighlight();
+	
+	/** @return The color of the highlight of symbols drawn on a tab when a selection box is being drawn over them */
+	public abstract Color tabSymbolBoxHighlight();
+	
+	/** @return The color of the highlight of symbols drawn on a tab when the mouse hovers over them */
+	public abstract Color tabSymbolHoverHighlight();
 	
 	/**
 	 * A {@link MouseAdapter} given to all buttons which, via {@link ZabTheme#setToTheme(Component)}, 

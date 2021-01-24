@@ -12,8 +12,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import appMain.gui.ZabGui;
-import appMain.gui.comp.TabPainter;
 import appMain.gui.comp.ZabPanel;
+import appMain.gui.comp.editor.TabPainter;
 import appUtils.ZabAppSettings;
 import tab.InstrumentFactory;
 import tab.Tab;

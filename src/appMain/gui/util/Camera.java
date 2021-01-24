@@ -267,7 +267,7 @@ public class Camera implements Saveable{
 	}
 	
 	/**
-	 * Convert an x coordinate in pixel space, and convert it to camera space
+	 * Take an x coordinate in pixel space, and convert it to camera space
 	 * @param value The pixel coordinate
 	 * @return The x coordinate of the camera
 	 */
@@ -276,7 +276,7 @@ public class Camera implements Saveable{
 	}
 
 	/**
-	 * Convert an x camera coordinate, to an x coordinate in pixel space
+	 * Take an x camera coordinate, and convert it to an x coordinate in pixel space
 	 * @param value The x camera coordinate
 	 * @return The pixel space coordinate
 	 */
@@ -285,7 +285,7 @@ public class Camera implements Saveable{
 	}
 
 	/**
-	 * Convert a y coordinate in pixel space, and convert it to camera space
+	 * Take a y coordinate in pixel space, and convert it to camera space
 	 * @param value the pixel coordinate
 	 * @return the y coordinate of the camera
 	 */
@@ -294,7 +294,7 @@ public class Camera implements Saveable{
 	}
 
 	/**
-	 * Convert a y camera coordinate, to an x coordinate in pixel space
+	 * Take a y camera coordinate, and convert it to an x coordinate in pixel space
 	 * @param value The y camera coordinate
 	 * @return The pixel space coordinate
 	 */

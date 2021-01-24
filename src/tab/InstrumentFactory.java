@@ -26,7 +26,8 @@ public final class InstrumentFactory{
 	/**
 	 * Create an empty tab of a 6 string guitar in standard tuning, but offset by a number of half steps,  
 	 * 	i.e. -1 for Eb standard, -2 for D standard, etc.<br>
-	 * Calling {@code #guitarTuned(-1)} is the same as calling {@code #guitarEbStandard()}
+	 * Calling {@code guitarTuned(-1)} is the same as calling {@code guitarEbStandard()}
+	 * @param change The amount to tune up or down in pitch
 	 * @return The tab
 	 */
 	public static Tab guitarTuned(int change){

@@ -6,8 +6,8 @@ import javax.swing.JLabel;
 
 import appMain.gui.ZabGui;
 import appMain.gui.ZabTheme;
-import appMain.gui.comp.TabPainter;
 import appMain.gui.comp.ZabPanel;
+import appMain.gui.comp.editor.TabPainter;
 import appMain.gui.layout.ZabLayoutHandler;
 import lang.Language;
 import tab.InstrumentFactory;

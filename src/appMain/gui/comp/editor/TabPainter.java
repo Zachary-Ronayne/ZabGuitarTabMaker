@@ -1,20 +1,22 @@
-package appMain.gui.comp;
+package appMain.gui.comp.editor;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.List;
 
 import appMain.gui.ZabTheme;
+import appMain.gui.comp.ZabPanel;
 import appMain.gui.util.Camera;
 import appUtils.ZabAppSettings;
 import appUtils.ZabSettings;
@@ -47,14 +49,29 @@ public class TabPainter extends ZabPanel{
 	/** The {@link Tab} used for painting, can be null */
 	private Tab tab;
 	
+	/** The {@link FontMetrics} used the last time the symbols were painted, will be null until this {@link TabPainter} is painetd at least once */
+	private FontMetrics lastSymbolFont;
+	
 	/** The number of lines of tab to display */
 	private int tabLineCount;
 	
 	/** A list containing {@link Selection} objects for every user selected {@link TabPositiono} */
-	private ArrayList<Selection> selected;
+	private SelectionList selected;
+	
+	/** The {@link Selection} which was last selected by the user, i.e. the most recent {@link TabSymbol} they clicked on, null if no selection exists */
+	private Selection lastSelected;
+	
+	/** The {@link TabPosition} which the user is currently hovering, and should have an extra highlight */
+	private TabPosition hoveredPosition;
 	
 	/** The tab number which will be applied to the selected symbols, null if not set */
 	private Integer selectedNewTabNum;
+	
+	/** The {@link SelectionBox} currently used by this {@link TabPainter} to track selecting notes via a click and drag */
+	private SelectionBox selectionBox;
+	
+	/** The {@link SelectionDragger} used by this {@link TabPainter} to track moving selected notes around */
+	private SelectionDragger dragger;
 	
 	/** The {@link MouseAdapter} containing the functionality for mouse input in this {@link TabPainter} for the editor */
 	private EditorMouse mouseControl;
@@ -76,18 +93,24 @@ public class TabPainter extends ZabPanel{
 		this.resetCamera();
 		this.setPaintSize(width, height);
 		
-		// Set up objects for controlling the painter
-		this.selected = new ArrayList<Selection>();
+		// Set up objects for controlling selection
+		this.selected = new SelectionList();
+		this.lastSelected = null;
 		this.selectedNewTabNum = null;
+		this.selectionBox = new SelectionBox(this);
+		this.dragger = new SelectionDragger(this);
+		this.lastSymbolFont = null;
+		this.hoveredPosition = null;
+		
 		
 		// Add the mouse input to the panel
-		this.mouseControl = new EditorMouse();
+		this.mouseControl = new EditorMouse(this);
 		this.addMouseListener(mouseControl);
 		this.addMouseMotionListener(mouseControl);
 		this.addMouseWheelListener(mouseControl);
 		
 		// Create the key listener
-		this.keyControl = new EditorKeyboard();
+		this.keyControl = new EditorKeyboard(this);
 		this.addKeyListener(keyControl);
 		
 		// Ensure this JPanel has focus
@@ -150,58 +173,134 @@ public class TabPainter extends ZabPanel{
 		this.repaint();
 	}
 	
-	/**
-	 * @return See {@link #selected}
-	 */
-	public ArrayList<Selection> getSelected(){
+	/** @return See {@link #selected} */
+	public SelectionList getSelected(){
 		return this.selected;
 	}
 	
 	/**
-	 * Check if the current {@link #selected} contains the given {@link TabPosition}
-	 * @param h The {@link TabPosition}
-	 * @return true if it is contained, false otherwise
+	 * Determine if the given {@link TabPosition} on the given {@link TabString} index is selected
+	 * @param p The {@link TabPosition} to test
+	 * @param stringIndex The index of the {@link TabString}
+	 * @return true if it is selected on the given {@link TabString}, false otherwise
 	 */
-	public boolean isSelected(TabPosition p){
-		for(Selection s : this.getSelected()){
-			if(s.getPos().equals(p)) return true;
-		}
-		return false;
+	public boolean isSelected(TabPosition p, int stringIndex){
+		Tab t = this.getTab();
+		if(t == null) return false;
+		return this.getSelected().isSelected(p, t.getStrings().get(stringIndex), stringIndex);
+	}
+	
+	/**
+	 * Determine if the given {@link TabPosition} on the given {@link TabString} index is selected
+	 * @param p The {@link TabPosition} to test
+	 * @param stringIndex The index of the {@link TabString}
+	 * @return true if it is selected on the given {@link TabString}, false otherwise
+	 */
+	public boolean isSelected(TabPosition p, TabString string){
+		Tab t = this.getTab();
+		if(t == null) return false;
+		
+		int index = t.getStrings().indexOf(string);
+		if(index < 0) return false;
+		
+		return this.getSelected().isSelected(p, string, index);
+	}
+	
+	/** @return See {@link #lastSelected} */
+	public Selection getLastSelected(){
+		return this.lastSelected;
+	}
+	
+	/** @param lastSelected See {@link #lastSelected} */
+	public void setLastSelected(Selection lastSelected){
+		this.lastSelected = lastSelected;
+	}
+	
+	/** @return See {@link #hoveredPosition} */
+	public TabPosition getHoveredPosition(){
+		return hoveredPosition;
 	}
 
+	/** @param hoveredPosition See {@link #hoveredPosition} */
+	public void setHoveredPosition(TabPosition hoveredPosition){
+		this.hoveredPosition = hoveredPosition;
+	}
+	
+	/**
+	 * Update the hover position to the position at the given coordinate. This will remove the hover if the coordinates are not on a note
+	 * @param mX The x coordinate of the position, usually a mouse position
+	 * @param mY The y coordinate of the position, usually a mouse position
+	 * @return true if the position was changed, false otherwise
+	 */
+	public boolean updateHoveredPosition(double mX, double mY){
+		Selection s = findPosition(mX, mY);
+		TabPosition old = this.getHoveredPosition();
+		setHoveredPosition((s == null) ? null : s.getPos());
+		return old != this.getHoveredPosition();
+	}
+
+	/** @return See {@link #selectionBox} */
+	public SelectionBox getSelectionBox(){
+		return this.selectionBox;
+	}
+	
+	public SelectionDragger getDragger(){
+		return this.dragger;
+	}
+	
 	/**
 	 * Get the {@link TabSymbol} in {@link #selected} at the given index
 	 * @param i The index
 	 * @return The {@link TabSymbol}, or null if it is out of bounds
 	 */
 	public TabSymbol selected(int i){
-		TabPosition p = this.selectedPosition(i);
+		TabPosition p = this.getSelected().selectedPosition(i);
 		if(p == null) return null;
 		return p.getSymbol();
 	}
 	
 	/**
-	 * Get the {@link TabPosition} in {@link #selected} at the given index
-	 * @param i The index
-	 * @return The {@link TabPosition}, or null if it is out of bounds
+	 * Place the given selection into {@link #selected}, only if the given selection is a valid selection
+	 * @param s The {@link Selection} to add
+	 * @return true if it was added, false otherwise
 	 */
-	public TabPosition selectedPosition(int i){
-		if(i < 0 || i >= this.getSelected().size()) return null;
-		return this.getSelected().get(i).getPos();
+	public boolean select(Selection s){
+		Tab t = this.getTab();
+		// Ensure the selection and tab both exist
+		if(s == null || t == null) return false;
+		
+		SelectionList lis = this.getSelected();
+		
+		/*
+		 * Return false if the note is already selected, 
+		 * the string doesn't contain the position, 
+		 * or the tab doesn't contain the string, 
+		 * meaning it is an invalid selection
+		 */
+		TabPosition p = s.getPos();
+		TabString str = s.getString();
+		if(!str.contains(p) | !tab.getStrings().contains(str) | lis.isSelected(s)) return false;
+		
+		lis.add(s);
+		this.setLastSelected(s);
+		return true;
 	}
 	
 	/**
 	 * Select the given {@link TabPosition} on the given string. This does not unselect anything else. 
 	 * The selection only occurs if the note is not already selected, and the {@link TabPosition} is on the {@link TabString}
-	 * @param index index The index on the string of the {@link TabPosition} to select
+	 * @param pos index The {@link TabPosition} to select
 	 * @param string The {@link TabString} which to select a note on
-	 * @return true if the note was selected, false otherwise
+	 * @return true if the note was not selected and now is selected, false otherwise
 	 */
 	public boolean select(TabPosition pos, TabString string){
-		if(this.isSelected(pos) || !string.contains(pos)) return false;
+		Tab t = this.getTab();
+		if(t == null) return false;
 		
-		this.getSelected().add(new Selection(pos, string));
-		return true;
+		int stringIndex = t.getStrings().indexOf(string);
+		if(stringIndex < 0) return false;
+
+		return this.select(new Selection(pos, string, stringIndex));
 	}
 	
 	/**
@@ -244,16 +343,86 @@ public class TabPainter extends ZabPanel{
 		TabPosition p = s.get(index);
 		return this.select(p, s);
 	}
+
+	/**
+	 * Create a new selection based on a given string index and a position on that string. 
+	 * This does not select the note, it only creates a selection object referring to that note
+	 * @param pos The position on the string to find a note
+	 * @param strIndex The index of the {@link TabString} to make the selection
+	 * @return The selection, or null if the {@link TabPosition} couldn't be found
+	 */
+	public Selection createSelection(double pos, int strIndex){
+		Tab t = this.getTab();
+		if(t == null) return null;
+		TabString str = t.getStrings().get(strIndex);
+		TabPosition p = str.findPosition(pos);
+		if(p == null) return null;
+		return new Selection(p, str, strIndex);
+	}
+	
+	/**
+	 * Create a {@link Selection} from {@link #tab} based on a string index and index in the {@link TabString}
+	 * @param index The index on the {@link TabString}
+	 * @param string the index of the {@link TabString}
+	 * @return The {@link Selection}, or null if the tab doesn't exist
+	 */
+	public Selection stringSelection(int index, int string){
+		Tab t = this.getTab();
+		if(t == null) return null;
+		TabString str = t.getStrings().get(string);
+		return new Selection(str.get(index), str, string);
+	}
+	
+	/**
+	 * Remove the specified {@link Selection} from the currently selected
+	 * @param s The {@link Selection} to unselect
+	 * @param mX The x coordinate of the selected symbol to remove, usually a mouse position
+	 * @param mY The y coordinate of the selected symbol to remove, usually a mouse position
+	 * @return true if the selection was removed, false otherwise
+	 */
+	public boolean deselect(double mX, double mY){
+		Selection s = this.findPosition(mX, mY);
+		if(s == null) return false;
+		return this.getSelected().deselect(s);
+	}
 	
 	/**
 	 * Unselect all but the specified {@link TabPosition}
 	 * @param p The {@link TabPosition} containing the {@link TabSymbol} to select
-	 * @param string The String which h is on
-	 * @return true if the note was selected, false otherwise. Regardless of the return value, the selection is cleared
+	 * @param string The {@link TabString} which p is on
+	 * @return true if the note was selected and was not already selected, false otherwise. 
+	 * 	If the given note is not already selected, this method clears the selection other than the given note
 	 */
 	public boolean selectOne(TabPosition p, TabString string){
+		boolean selected = this.isSelected(p, string);
 		this.clearSelection();
+		
+		if(selected){
+			this.select(p, string);
+			return false;
+		}
+		
 		return this.select(p, string);
+	}
+	
+	/**
+	 * Select only one note near the given position<br>
+	 * Does nothing if no valid note can be found
+	 * @param mX The x coordinate, usually a mouse position
+	 * @param mY The y coordinate, usually a mouse position
+	 * @param add If this note is selected successfully, true to add to the existing selection, false to replace the selection with this selected note
+	 * @return true if the selection took place, false otherwise
+	 */
+	public boolean selectNote(double mX, double mY, boolean add){
+		// Find the position
+		Selection s = this.findPosition(mX, mY);
+		if(s == null) return false;
+		TabPosition p = s.getPos();
+		TabString str = s.getString();
+		
+		// No need to check if p is not null, findPosition will always have a non null TabPosition if it doesn't return null
+		if(add) return this.select(s);
+		else return this.selectOne(p, str);
 	}
 	
 	/**
@@ -261,30 +430,56 @@ public class TabPainter extends ZabPanel{
 	 * Does nothing if no valid note can be found
 	 * @param mX The x coordinate, usually a mouse position
 	 * @param mY The y coordinate, usually a mouse position
-	 * @return true if the selection took place, false otherwise
 	 */
 	public boolean selectNote(double mX, double mY){
-		ZabSettings settings = ZabAppSettings.get();
+		return this.selectNote(mX, mY, true);
+	}
+	
+	/**
+	 * Select all of the symbols which are on the same {@link TabString} as {@link #lastSelected}, and are also on the given note. 
+	 * This only selects notes on the same string and same line of tab, not notes on any other strings
+	 * @param mX The x coordinate of where to select a line, usually a mouse position
+	 * @param mY The y coordinate of where to select a line, usually a mouse position
+	 * @param add true if the newly selected notes should be added to the current selection, false to replace the previous selection
+	 * @return true if anything was selected, false otherwise
+	 */
+	public boolean selectLine(double mX, double mY, boolean add){
+		Selection originalSel = this.getLastSelected();
+		Selection newSelection = this.findPosition(mX, mY);
+		// Select the position, only if the newly selected selection is not already selected
+		boolean success = !this.getSelected().isSelected(newSelection) && this.selectNote(mX, mY, add);
+
+		// Must return at this point if either there was no note originally selected, or if a note was not selected
+		boolean hasOriginal = originalSel != null;
+		if(!hasOriginal || !success) return success;
 		
-		// Ensure the tab exists
-		Tab t = this.getTab();
-		if(t == null) return false;
+		// Get the newly selected position
+		Selection baseSel = originalSel;
+		Selection endSel = this.getLastSelected();
 		
-		// Find the positions to look for a note
-		double x = t.getTimeSignature().quantize(xToTabPos(mX, mY), settings.quantizeDivisor());
-		int y = pixelYToStringNum(mY);
+		// If the two selections are not on the same string, return false
+		TabString str = baseSel.getString();
+		if(str != endSel.getString()) return false;
 		
-		// If either coordinate is invalid, selection fails
-		if(x < 0 || y < 0) return false;
+		// Ensure that baseSel is the lower position
+		if(endSel.getPosition() < baseSel.getPosition()){
+			Selection s = endSel;
+			endSel = baseSel;
+			baseSel = s;
+		}
 		
-		// Only look for a note if the string has notes
-		TabString str = t.getStrings().get(y);
-		if(str.size() <= 0) return false;
+		// Select all notes between the two positions
+		int lowI = baseSel.getString().findIndex(baseSel.getPosition());
+		int highI = endSel.getString().findIndex(endSel.getPosition());
+		for(int i = lowI; i <= highI; i++){
+			this.select(i, str);
+		}
 		
-		// Find the note of the note
-		TabPosition p = str.findPosition(x);
-		if(p != null) return selectOne(p, str);
-		return false;
+		// Set the last selected to the value originally set
+		this.setLastSelected(originalSel);
+		
+		// Return success
+		return true;
 	}
 	
 	/**
@@ -306,18 +501,167 @@ public class TabPainter extends ZabPanel{
 	 */
 	public void clearSelection(){
 		this.getSelected().clear();
+		this.lastSelected = null;
 		this.selectedNewTabNum = null;
 	}
 	
 	/**
-	 * Remove every selected note from the tab
+	 * Remove the {@link TabPosition} contained by the given {@link Selection}
+	 * @param s The selection
+	 * @return true if the position was removed, false otherwise
 	 */
-	public void removeSelectedNotes(){
-		for(Selection s : this.getSelected()){
-			s.getString().remove(s.getPos());
+	public boolean removeSelection(Selection s){
+		this.getSelected().deselect(s);
+		return s.getString().remove(s.getPos());
+	}
+
+	/**
+	 * Remove every {@link TabPosition} in the given {@link SelectionList} from the {@link Tab}
+	 * @return The removed {@link Selection} objects, can be an empty list if nothing was removed
+	 */
+	public SelectionList removeSelections(List<Selection> list){
+		SelectionList removed = new SelectionList();
+		if(list == null) return removed;
+		
+		for(int i = 0; i < list.size(); i++){
+			Selection s = list.get(i);
+			if(this.removeSelection(s)){
+				removed.add(s);
+				i--;
+			}
 		}
+		return removed;
+	}
+	
+	/**
+	 * Remove every selected {@link TabPosition} from the tab
+	 * @return The removed {@link Selection} objects
+	 */
+	public SelectionList removeSelectedNotes(){
+		SelectionList removed = this.removeSelections(this.getSelected());
 		this.updateLineTabCount();
 		this.clearSelection();
+		return removed;
+	}
+
+	
+	/**
+	 * Create a selection where the given selection would be moved by the given amount in terms of number of strings and tab position distance.<br>
+	 * This method does not remove or add notes, it only determines the position a note should be placed.
+	 * @param s The selection to move
+	 * @param newBaseValue The position as a reference location to the new location of s. 
+	 * 	Essentially, the new location of s must be on the same line of tab as this base position. If it is not, then the movement will fail.
+	 * @param posValueChange The amount to add to the position, can be negative
+	 * @param stringIndexChange The amount to add to the string index, can be negative
+	 * @param keepPitch True to keep the pitch the same if the note moves position, false to keep the tab number
+	 * @return The selection in the moved place if the given selection can be moved there, null otherwise
+	 */
+	public Selection findMovePosition(Selection s, double newBaseValue, double posValueChange, int stringIndexChange, boolean keepPitch){
+		Tab t = this.getTab();
+		if(s == null || t == null) return null;
+		// Ensure the selection is not modifying any previous references
+		s = s.copy();
+		
+		ArrayList<TabString> strs = t.getStrings();
+		
+		// The string the current Selection object used to be on
+		TabString oldString = s.getString();
+		// The TabPosition to be moved
+		TabPosition newTabPos = s.getPos();
+		// The new index and position value for the note
+		int oldStringIndex = s.getStringIndex();
+		int newStringIndex = oldStringIndex + stringIndexChange;
+		double oldPosValue = s.getPosition();
+		double newPosValue = oldPosValue + posValueChange;
+		
+		/*
+		 * Move on to the next TabPosition it can't be placed in the new spot. 
+		 * It can't be placed if:
+		 * 	the string index is not in the range of the tab's string index size, 
+		 *	or the TabPosition would be placed outside of a measure. 
+		 *		This means that the position on a new line of tab, 
+		 *		shifted over by the amount from the base selection, 
+		 *		would be outside a tab
+		*/ 
+		// Checking inside the string range
+		double oldBaseValue = newBaseValue - posValueChange;
+		double measures = ZabAppSettings.get().tabPaintLineMeasures();
+		if(!this.validStringIndex(newStringIndex) || 
+				!this.tabPosInTabLine(newBaseValue, oldPosValue % measures - oldBaseValue % measures)){
+			return null;
+		}
+		
+		// Find the new valid string index
+		TabString newString = strs.get(newStringIndex);
+		
+		Selection placed = null;
+		// Find if the note exists on the string
+		// If it does not, then create the Selection to be placed
+		if(newString.findPosition(newPosValue) == null){
+			newTabPos.setPos(newPosValue);
+			placed = new Selection(newTabPos, newString, newStringIndex);
+		}
+		// Otherwise, the position cannot be moved there, return null
+		else return null;
+
+		// If necessary, update the pitch
+		if(!keepPitch){
+			TabSymbol newSymbol = newTabPos.getSymbol();
+			newSymbol.updateOnNewString(oldString, newString);
+		}
+		
+		return placed;
+	}
+	
+	/**
+	 * Find a {@link TabPosition} at the specified coordinates
+	 * @param mX The x coordinate, usually a mouse position
+	 * @param mY The y coordinate, usually a mouse position
+	 * @return A {@link Selection} containing the position, or null if no position could be found
+	 */
+	public Selection findPosition(double mX, double mY){
+		ZabSettings settings = ZabAppSettings.get();
+		
+		// Ensure the tab exists
+		Tab t = this.getTab();
+		if(t == null) return null;
+		
+		// Find the positions to look for a note
+		double x = t.getTimeSignature().quantize(xToTabPos(mX, mY), settings.quantizeDivisor());
+		int y = pixelYToStringNum(mY);
+
+		// If either coordinate is invalid, no note is found
+		if(x < 0 || y < 0) return null;
+		// Only look for a note if the string has notes
+		TabString str = t.getStrings().get(y);
+		if(str.size() <= 0) return null;
+
+		// Find the position
+		TabPosition p = str.findPosition(x);
+		if(p == null) return null;
+		return new Selection(p, str, y);
+	}
+	
+	/**
+	 * Determine the hit box bounds, for rendering and detection,
+	 * 	of the given {@link TabPosition} based on it's position and string index
+	 * @param p The {@link TabPosition} to find the bounds
+	 * @param string The string index
+	 * @return The bounds in camera coordinates
+	 */
+	public Rectangle2D.Double symbolBounds(TabPosition p, int string){
+		// Return an empty rectangle if the metrics are null, or if the tab is null
+		FontMetrics fm = this.getLastSymbolFont();
+		Tab t = this.getTab();
+		if(fm == null || t == null) return new Rectangle2D.Double();
+		
+		// Finding the size of the space the symbol will take up
+		double sW = fm.stringWidth(p.getSymbol().getModifiedSymbol(t.getStrings().get(string)));
+		double sH = fm.getFont().getSize();
+		// Center the x and y position based on the width and height
+		double sX = this.tabPosToCamX(p.getPos()) - sW * 0.5;
+		double sY = this.tabPosToCamY(p.getPos(), string) - sH * 0.5;
+		return new Rectangle2D.Double(sX, sY, sW, sH);
 	}
 	
 	/**
@@ -326,12 +670,14 @@ public class TabPainter extends ZabPanel{
 	public void reset(){
 		Tab t = this.getTab();
 		if(t != null) t.clearNotes();
-		this.resetCamera();
 		this.updateLineTabCount();
+		this.resetCamera();
+		this.getDragger().reset();
+		this.getSelectionBox().clear();
 	}
 	
 	/**
-	 * @return See {@link #tabLineCount}L
+	 * @return See {@link #tabLineCount}
 	 */
 	public int getLineTabCount(){
 		return this.tabLineCount;
@@ -396,7 +742,7 @@ public class TabPainter extends ZabPanel{
 		
 		// Update the number display
 		if(n != null){
-			for(Selection sel : selected){
+			for(Selection sel : this.getSelected()){
 				// Unpack selection
 				TabPosition p = sel.getPos();
 				TabSymbol t = p.getSymbol();
@@ -442,6 +788,43 @@ public class TabPainter extends ZabPanel{
 		this.updateLineTabCount();
 		return placed;
 	}
+	
+	/**
+	 * Place the given {@link TabPosition} on the given {@link TabString}
+	 * @param p The {@link TabPosition} to place
+	 * @param s The {@link TabString}
+	 * @return true if the note was placed, false otherwise
+	 */
+	public boolean placeNote(TabPosition p, TabString s){
+		return s.add(p);
+	}
+	
+	/**
+	 * Place the {@link TabPosition} of the given {@link Selection} on its {@link TabString}
+	 * @param s The {@link Selection}
+	 * @return true if the note was placed, false otherwise
+	 */
+	public boolean placeNote(Selection s){
+		return this.placeNote(s.getPos(), s.getString());
+	}
+	
+	/**
+	 * Place and select the given {@link Selection}
+	 * @param s The {@link Selection} to place and select
+	 */
+	public void placeAndSelect(Selection s){
+		this.placeNote(s);
+		this.select(s);
+	}
+	
+	/**
+	 * Place and select every {@link TabPosition} in the given list
+	 * @param list The list of {@link Selection} objects containing {@link TabPosition} objects to be placed and selected
+	 */
+	public void placeAndSelect(List<Selection> list){
+		if(list == null) return;
+		for(Selection s : list) this.placeAndSelect(s);
+	}
 
 	/**
 	 * Get the {@link Camera} this {@link TabPainter} uses for rendering
@@ -474,6 +857,7 @@ public class TabPainter extends ZabPanel{
 	 */
 	public void setTab(Tab tab){
 		this.tab = tab;
+		this.updateLineTabCount();
 	}
 	
 	/**
@@ -528,10 +912,6 @@ public class TabPainter extends ZabPanel{
 	 * @return The coordinate
 	 */
 	public double tabLineStart(int lineNum){
-		/*
-		 * Determine the initial position of the top of the tab line 
-		 * 	then add the space above the tab line, bringing it to the absolute top of the tab line
-		 */
 		return this.lineHeight() * lineNum + ZabAppSettings.get().tabPaintAboveSpace();
 	}
 
@@ -541,11 +921,6 @@ public class TabPainter extends ZabPanel{
 	 * @return The coordinate
 	 */
 	public double tabLineEnd(int lineNum){
-		/*
-		 * Determine the initial position of the end of the tab line 
-		 * 	then subtract the space above the tab line, bringing it to the absolute bottom of the tab line, 
-		 * 	subtract out one extra string space to account for the last string being just the end of the tab, 
-		 */
 		return this.lineHeight() * (lineNum + 1) - ZabAppSettings.get().tabPaintBelowSpace();
 	}
 	
@@ -589,11 +964,41 @@ public class TabPainter extends ZabPanel{
 	}
 	
 	/**
+	 * Determine if the given x camera coordinate is inside the valid range of a tab string without the buffer size
+	 * @param x The camera coordinate to test
+	 * @return true if it is in the range, false otherwise
+	 */
+	public boolean camXInTabLineNoBuffer(double x){
+		double xOff = this.removeXOffset(x);
+		return  0 <= xOff && xOff < this.tabWidth();
+	}
+	
+	/**
+	 * Determine if a tab position, as located on a line of tab in painter coordinates, extended by the given change in length, 
+	 * will still be on the same line, or if that change would place it in a new line.
+	 * @param old The initial position, in measures
+	 * @param change The number of measures to add
+	 * @return true if it will be in a valid line of tab, false otherwise
+	 */
+	public boolean tabPosInTabLine(double old, double change){
+		return this.camXInTabLineNoBuffer(this.tabPosToCamX(old) + this.measuresToPaintWidth(change));
+	}
+	
+	/**
 	 * @return The number of strings in the current tab, or 0 if the tab is null
 	 */
 	public int numStrings(){
 		Tab t = this.getTab();
 		return (t == null) ? 0 : t.getStrings().size();
+	}
+	
+	/**
+	 * Determine if the given string index is a valid one for the currently loaded tab
+	 * @param i The index to test
+	 * @return true if the index is valid, false otherwise
+	 */
+	public boolean validStringIndex(int i){
+		return i >= 0 && i < this.numStrings();
 	}
 	
 	/**
@@ -628,14 +1033,32 @@ public class TabPainter extends ZabPanel{
 		// The string position doesn't matter, because any string index will give the same line number, so just use zero
 		return this.lineNumber(this.tabPosToCamY(pos, 0));
 	}
-
+	
 	/**
-	 * Determine the distance on a tab which the line number of the given coordinate travels
+	 * Determine the distance in painter coordinates, which the beginning of the line number of the given coordinate travels
 	 * @param y The painter coordinate
-	 * @return The x position in a tab, in measures
+	 * @return The x position in painter coordinates
 	 */
 	public double lineLength(double y){
-		return this.tabWidth() * this.lineNumber(y);
+		return this.lineNumberLength(this.lineNumber(y));
+	}
+	
+	/**
+	 * Determine the distance in painter coordinates, which the beginning of the given line number travels
+	 * @param num The line number
+	 * @return The x position in painter coordinates
+	 */
+	public double lineNumberLength(int num){
+		return this.tabWidth() * num;
+	}
+	
+	/**
+	 * Determine the tab position of the beginning of the given line number
+	 * @param num The line number
+	 * @return The tab position, in measures
+	 */
+	public double lineNumberMeasures(int num){
+		return num * ZabAppSettings.get().tabPaintLineMeasures();
 	}
 	
 	/**
@@ -665,10 +1088,24 @@ public class TabPainter extends ZabPanel{
 	}
 	
 	/**
+	 * Take two painter coordinates and determine the quantized tab position at the given painter coordinates
+	 * @param mX The x coordinate on the painter
+	 * @param mY The y coordinate on the painter
+	 * @return The tab position, or -1 if no valid position could be generated
+	 */
+	public double quanitzedTabPos(double mX, double mY){
+		Tab t = this.getTab();
+		if(t == null) return -1;
+		double pos = this.xToTabPos(mX, mY);
+		if(pos < 0) return -1;
+		return t.getTimeSignature().quantize(this.xToTabPos(mX, mY), ZabAppSettings.get().quantizeDivisor());
+	}
+	
+	/**
 	 * Convert an x coordinate on the painter, to a rhythmic position in a tab
 	 * @param x The x coordinate on the painter
 	 * @param y The y coordinate on the painter
-	 * @return The position in number measures
+	 * @return The position in number measures, can be negative for an invalid tab position
 	 */
 	public double xToTabPos(double x, double y){
 		return this.camXToTabPos(this.getCamera().toCamX(x), this.getCamera().toCamY(y));
@@ -791,7 +1228,15 @@ public class TabPainter extends ZabPanel{
 		if(y < 0) return -1;
 		return (int)Math.round(y);
 	}
-
+	
+	/**
+	 * Get the {@link FontMetrics} for the font last used to repaint this {@link TabPainter}
+	 * @return The {@link FontMetrics}, can be null if the tab was never repainted
+	 */
+	public FontMetrics getLastSymbolFont(){
+		return this.lastSymbolFont;
+	}
+	
 	/**
 	 * Draw the {@link Tab} to the screen<br>
 	 * This method will reassign the graphics object in {@link #tabCamera}
@@ -811,6 +1256,21 @@ public class TabPainter extends ZabPanel{
 		
 		// Draw the tab
 		this.drawTab(g);
+		
+		// Draw the selection box
+		this.getSelectionBox().draw(g);
+		
+		// Draw the moving selection
+		Point2D.Double p = this.getDragger().getDragPoint();
+		if(p != null){
+			String s = "Moving";
+			g.setColor(theme.tabSymbolHighlight());
+			cam.fillRect(p.getX(), p.getY() - SYMBOL_FONT.getSize(), g.getFontMetrics().stringWidth(s), SYMBOL_FONT.getSize());
+			g.setColor(theme.tabSymbolText());
+			
+			g.setFont(SYMBOL_FONT);
+			cam.drawScaleString(s, p.getX(), p.getY());
+		}
 	}
 	
 	/**
@@ -877,7 +1337,9 @@ public class TabPainter extends ZabPanel{
 				cam.drawLine(x, measureLineStart, x, measureLineEnd);
 			}
 		}
-
+		
+		// Update the font metrics
+		this.lastSymbolFont = g.getFontMetrics();
 		// Drawing all symbols
 		g.setColor(theme.tabSymbolText());
 		// Go through all strings
@@ -900,13 +1362,12 @@ public class TabPainter extends ZabPanel{
 				double sX = this.tabPosToCamX(p.getPos()) - sW * 0.5;
 				double sY = y + sH * 0.5;
 				
-				// If the symbol is selected, draw a highlight under it
-				if(this.isSelected(p)){
-					g.setColor(theme.tabSymbolHighlight());
-					cam.fillRect(sX, sY - sH, sW, sH);
-					g.setColor(theme.tabSymbolText());
-				}
+				this.drawSymbolHighlight(this.getSelected(), p, i, theme.tabSymbolHighlight());
+				this.drawSymbolHighlight(this.getSelectionBox().getContents(), p, i, theme.tabSymbolBoxHighlight());
+				this.drawSymbolHighlight(this.getHoveredPosition(), p, i, theme.tabSymbolHoverHighlight());
+				
 				// Draw the symbol
+				g.setColor(theme.tabSymbolText());
 				cam.drawScaleString(str, sX, sY);
 				
 			}
@@ -916,136 +1377,53 @@ public class TabPainter extends ZabPanel{
 	}
 	
 	/**
-	 * A class used by {@link TabPainter} to handle mouse input on the graphics based editor
-	 * @author zrona
+	 * Draw a highlight where the given {@link TabPosition} would be drawn.<br>
+	 * This method uses the camera of this {@link TabPainter} to draw graphics, 
+	 * if no graphics object is set in that camera, this method fails 
+	 * @param p The {@link TabPosition} which will have it's position drawn
+	 * @param i The index of the {@link TabString} where the {@link TabPosition} will be drawn
+	 * @param c The color of the highlight
+	 * @return true if the highlight was drawn, false otherwise
 	 */
-	public class EditorMouse extends MouseAdapter{
-		
-		/**
-		 * When the left mouse button is pressed, attempt to select a note, if possible.<br>
-		 * When the middle mouse button is pressed, it sets an anchor point.<br>
-		 * When the right mouse button is pressed, place a note on the tab, if the mouse is close enough.<br>
-		 * Regardless of what button is pressed, give focus to the window when the mouse clicks
-		 */
-		@Override
-		public void mousePressed(MouseEvent e){
-			Camera cam = getCamera();
-			double x = e.getX();
-			double y = e.getY();
-			switch(e.getButton()){
-				case MouseEvent.BUTTON1: selectNote(x, y); break;
-				case MouseEvent.BUTTON2: cam.setAnchor(x, y); break;
-				case MouseEvent.BUTTON3: placeNote(x, y, 0); break;
-			}
-
-			requestFocusInWindow();
-			
-			repaint();
-		}
-		/**
-		 * When the middle mouse button is released, it releases the anchor point
-		 */
-		@Override
-		public void mouseReleased(MouseEvent e){
-			Camera cam = getCamera();
-			int b = e.getButton();
-			if(b == MouseEvent.BUTTON2) cam.releaseAnchor();
-			repaint();
-		}
-		
-		/**
-		 * When the middle mouse button is clicked while holding shift, reset the camera
-		 */
-		@Override
-		public void mouseClicked(MouseEvent e){
-			int b = e.getButton();
-			if(e.isShiftDown() && b == MouseEvent.BUTTON2) resetCamera();
-		}
-		
-		/**
-		 * When the middle mouse button is dragged, it pans the camera
-		 */
-		@Override
-		public void mouseDragged(MouseEvent e){
-			Camera cam = getCamera();
-			cam.pan(e.getX(), e.getY());
-			repaint();
-		}
-		
-		/**
-		 * When the mouse wheel is moved, zoom in or out based on the mouse position and wheel movement
-		 */
-		@Override
-		public void mouseWheelMoved(MouseWheelEvent e){
-			ZabSettings settings = ZabAppSettings.get();
-			Camera cam = getCamera();
-			
-			double factor = settings.zoomFactor();
-			if(settings.zoomInverted()) factor *= -1;
-			
-			double zoomMult = settings.zoomModifierFactor();
-			if(e.isShiftDown()) factor *= zoomMult;
-			if(e.isAltDown()) factor *= zoomMult;
-			if(e.isControlDown()) factor *= zoomMult;
-			cam.zoomIn(e.getX(), e.getY(), e.getWheelRotation() * factor);
-			repaint();
-		}
+	public void drawSymbolHighlight(TabPosition p, int i, Color c){
+		Camera cam = this.tabCamera;
+		cam.getG().setColor(c);
+		Rectangle2D.Double b = this.symbolBounds(p, i);
+		cam.fillRect(b.getX(), b.getY(), b.getWidth(), b.getHeight());
 	}
 	
 	/**
-	 * A class used by {@link TabPainter} to handle key input on the graphics based editor
-	 * @author zrona
+	 * If applicable, draw a highlight where the given {@link TabPosition} would be drawn<br>
+	 * This method uses the camera of this {@link TabPainter} to draw graphics, 
+	 * if no graphics object is set in that camera, this method fails 
+	 * @param list The list to check if the {@link TabPosition} is contained in the list, can be null to not check a list
+	 * @param p The {@link TabPosition} which will have it's position drawn
+	 * @param i The index of the {@link TabString} where the {@link TabPosition} will be drawn
+	 * @param c The color of the highlight
+	 * @return true if the highlight was drawn, false otherwise
 	 */
-	public class EditorKeyboard extends KeyAdapter{
-		@Override
-		public void keyPressed(KeyEvent e){
-			switch(e.getKeyCode()){
-				case KeyEvent.VK_R: if(e.isControlDown()) reset(); break;
-				case KeyEvent.VK_D: if(e.isControlDown()) removeSelectedNotes(); break;
-				case KeyEvent.VK_A: if(e.isControlDown()) selectAllNotes(); break;
-				default: appendSelectedTabNum(e.getKeyChar()); break;
-			}
-			repaint();
+	public boolean drawSymbolHighlight(SelectionList list, TabPosition p, int i, Color c){
+		Tab t = this.getTab();
+		if(t != null && (list == null || list.isSelected(p, t.getStrings().get(i), i))){
+			this.drawSymbolHighlight(p, i, c);
+			return true;
 		}
+		return false;
 	}
 	
 	/**
-	 * A helper object used to track an individually selected symbol with both its {@link TabPosition} and held string
-	 * @author zrona
+	 * If applicable, draw a highlight where the given {@link TabPosition} would be drawn<br>
+	 * This method uses the camera of this {@link TabPainter} to draw graphics, 
+	 * if no graphics object is set in that camera, this method fails 
+	 * @param check Only draw the highlight of the given {@link TabPosition} is the same object as this
+	 * @param p The {@link TabPosition} which will have it's position drawn
+	 * @param i The index of the {@link TabString} where the {@link TabPosition} will be drawn
+	 * @param c The color of the highlight
+	 * @return true if the highlight was drawn, false otherwise
 	 */
-	public static class Selection{
-		/** The {@link TabPosition} of this selection */
-		private TabPosition pos;
-		/** The {@link TabString} which {@link #hold} is on */
-		private TabString string;
-		
-		/**
-		 * Create a new selection
-		 * @param hold
-		 * @param string
-		 */
-		public Selection(TabPosition pos, TabString string){
-			super();
-			this.pos = pos;
-			this.string = string;
-		}
-		
-		/** @return See {@link #pos} */
-		public TabPosition getPos(){
-			return pos;
-		}
-		/** @param pos See {@link #pos} */
-		public void setPos(TabPosition pos){
-			this.pos = pos;
-		}
-		/** @return See {@link #string} */
-		public TabString getString(){
-			return string;
-		}
-		/** @param string See {@link #string} */
-		public void setString(TabString string){
-			this.string = string;
-		}
+	public boolean drawSymbolHighlight(TabPosition check, TabPosition p, int i, Color c){
+		if(check == p) return this.drawSymbolHighlight((SelectionList)null, p, i, c);
+		return false;
 	}
 	
 }

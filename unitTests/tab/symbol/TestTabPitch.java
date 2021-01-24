@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
 import appUtils.ZabAppSettings;
+import music.Music;
 import music.Pitch;
 import music.Rhythm;
 import tab.TabString;
@@ -117,6 +118,27 @@ public class TestTabPitch{
 		
 		note.setPitch(2);
 		assertEquals("-2", note.getSymbol(string), "Checking correct symbol is found");
+	}
+	
+	@Test
+	public void updateOnNewString(){
+		note.setPitch(Music.createPitch(Music.E, 4));
+		note.updateOnNewString(new TabString(Music.C, 4), new TabString(Music.C, 4));
+		assertEquals(Music.createPitch(Music.E, 4), note.getPitch(), "Checking moving to the same string doesn't change the pitch");
+		
+		note.updateOnNewString(null, new TabString(Music.C, 4));
+		assertEquals(Music.createPitch(Music.E, 4), note.getPitch(), "Checking null strings don't change the pitch");
+		
+		note.updateOnNewString(new TabString(Music.C, 4), null);
+		assertEquals(Music.createPitch(Music.E, 4), note.getPitch(), "Checking null strings don't change the pitch");
+
+		note.setPitch(Music.createPitch(Music.E, 4));
+		note.updateOnNewString(new TabString(Music.C, 4), new TabString(Music.D, 4));
+		assertEquals(Music.createPitch(Music.F_SHARP, 4), note.getPitch(), "Checking pitch changes moving to higher string");
+
+		note.setPitch(Music.createPitch(Music.E, 4));
+		note.updateOnNewString(new TabString(Music.C, 4), new TabString(Music.B_FLAT, 3));
+		assertEquals(Music.createPitch(Music.D, 4), note.getPitch(), "Checking pitch changes moving to lower string");
 	}
 	
 	@Test

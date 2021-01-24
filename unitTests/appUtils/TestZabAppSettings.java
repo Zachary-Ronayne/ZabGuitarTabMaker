@@ -83,6 +83,8 @@ public class TestZabAppSettings{
 			+ "15.0 15.0 null null \n"
 			+ "40.0 40.0 null null \n"
 			+ "40.0 40.0 null null \n"
+			+ "false false \n"
+			+ "false false \n"
 			+ "0.1 0.1 null null \n"
 			+ "true true \n"
 			+ "2.0 2.0 null null \n"

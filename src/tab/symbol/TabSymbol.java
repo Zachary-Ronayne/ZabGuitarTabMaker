@@ -63,6 +63,7 @@ public abstract class TabSymbol implements Copyable<TabSymbol>, Saveable{
 		String symbol = this.getSymbol(string);
 		return this.getModifier().modifySymbol(symbol);
 	}
+	
 
 	/**
 	 * Create a new version of this {@link TabSymbol} as using the given {@link Rhythm}.<br>
@@ -84,6 +85,13 @@ public abstract class TabSymbol implements Copyable<TabSymbol>, Saveable{
 	 * @return true if it uses rhythmic information, false otherwise
 	 */
 	public abstract boolean usesRhythm();
+	
+	/**
+	 * Update the state of this {@link TabSymbol} so that it remains the same symbol when changing {@link TabString} objects
+	 * @param oldStr The {@link TabString} it used to be on
+	 * @param newStr The {@link TabString} it will be moved to
+	 */
+	public abstract void updateOnNewString(TabString oldStr, TabString newStr);
 
 	/***/
 	@Override

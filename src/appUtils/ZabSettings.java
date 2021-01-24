@@ -9,6 +9,7 @@ import settings.SettingRhythm;
 import settings.SettingString;
 import settings.Settings;
 import tab.Tab;
+import tab.TabPosition;
 import tab.TabTextExporter;
 
 /**
@@ -80,6 +81,11 @@ public class ZabSettings extends Settings{
 	/** Default for {@link #tabPaintBelowSpace} */
 	public static final double TAB_PAINT_BELOW_SPACE = 40;
 	
+	/** Default for {@link #tabControlMoveDeleteInvalid} */
+	public static final boolean TAB_CONTROL_MOVE_DELETE_INVALID = false;
+	/** Default for {@link #tabControlMoveCancelInvalid} */
+	public static final boolean TAB_CONTROL_MOVE_CANCEL_INVALID = false;
+	
 	/** Default for {@link #zoomFactor} */
 	public static final double ZOOM_FACTOR = 0.1;
 	/** Default for {@link #zoomInverted} */
@@ -150,6 +156,19 @@ public class ZabSettings extends Settings{
 	/** The amount of space below each line of tab in a {@link TabPainter}, in pixels */
 	private SettingDouble tabPaintBelowSpace;
 	
+	/**
+	 * true if, when moving a {@link TabPosition} selection, 
+	 * they should be deleted if they are in an invalid position, 
+	 * false if they should remain unmoved 
+	 */
+	private SettingBoolean tabControlMoveDeleteInvalid;
+	/**
+	 * true if, when moving a {@link TabPosition} selection, 
+	 * the entire move should be canceled if any {@link TabPosition} objects couldn't be moved. 
+	 * False to determine behavior for individual notes based on {@link #tabControlMoveDeleteInvalid}
+	 */
+	private SettingBoolean tabControlMoveCancelInvalid;
+	
 	/** The value which determines how fast the camera zooms */
 	private SettingDouble zoomFactor;
 	/** true if zooming should be inverted, i.e. moving the mouse wheel towards the user should zoom out, false otherwise */
@@ -203,6 +222,9 @@ public class ZabSettings extends Settings{
 		this.tabPaintSelectionBuffer = this.addDouble(TAB_PAINT_SELECTION_BUFFER);
 		this.tabPaintAboveSpace = this.addDouble(TAB_PAINT_ABOVE_SPACE);
 		this.tabPaintBelowSpace = this.addDouble(TAB_PAINT_BELOW_SPACE);
+		
+		this.tabControlMoveDeleteInvalid = this.addBoolean(TAB_CONTROL_MOVE_DELETE_INVALID);
+		this.tabControlMoveCancelInvalid = this.addBoolean(TAB_CONTROL_MOVE_CANCEL_INVALID);
 		
 		this.zoomFactor = this.addDouble(ZOOM_FACTOR);
 		this.zoomInverted = this.addBoolean(ZOOM_INVERTED);
@@ -268,6 +290,11 @@ public class ZabSettings extends Settings{
 	public SettingDouble getTabPaintAboveSpace(){ return this.tabPaintAboveSpace; }
 	/** @return See {@link #tabPaintBelowSpace} */
 	public SettingDouble getTabPaintBelowSpace(){ return this.tabPaintBelowSpace; }
+	
+	/** @return See {@link #tabControlMoveDeleteInvalid} */
+	public SettingBoolean getTabControlMoveDeleteInvalid(){ return this.tabControlMoveDeleteInvalid; }
+	/** @return See {@link #tabControlMoveCancelInvalid} */
+	public SettingBoolean getTabControlMoveCancelInvalid(){ return this.tabControlMoveCancelInvalid; }
 	
 	/** @return See {@link #zoomFactor} */
 	public SettingDouble getZoomFactor(){ return this.zoomFactor; }
@@ -339,6 +366,11 @@ public class ZabSettings extends Settings{
 	public Double tabPaintAboveSpace(){ return this.getTabPaintAboveSpace().get(); }
 	/** @return See {@link #tabPaintBelowSpace} */
 	public Double tabPaintBelowSpace(){ return this.getTabPaintBelowSpace().get(); }
+	
+	/** @return See {@link #tabControlMoveDeleteInvalid} */
+	public Boolean tabControlMoveDeleteInvalid(){ return this.getTabControlMoveDeleteInvalid().get(); }
+	/** @return See {@link #tabControlMoveCancelInvalid} */
+	public Boolean tabControlMoveCancelInvalid(){ return this.getTabControlMoveCancelInvalid().get(); }
 	
 	/** @return See {@link #zoomFactor} */
 	public Double zoomFactor(){ return this.getZoomFactor().get(); }

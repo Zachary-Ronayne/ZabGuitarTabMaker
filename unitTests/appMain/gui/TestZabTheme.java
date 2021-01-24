@@ -79,154 +79,141 @@ public class TestZabTheme{
 		Assert.containsInstance(ButtonHoverSensor.class, button.getMouseListeners(), "Checking a ButtonHoverSensor is still there");
 		ZabTheme.setToTheme(button);
 	}
-	
 	@Test
 	public void setUIMangerTheme(){
 		ZabTheme t = dark;
 		ZabTheme.setUIMangerTheme(t);
 		assertEquals(t.menuBarMouseHover(), UIManager.get("MenuItem.selectionBackground"), "Checking UIManager key set");
 	}
-	
 	@Test
 	public void printDefaultUI(){
 		ZabTheme.printDefaultUI();
 	}
-	
 	@Test
 	public void getDefaultTheme(){
 		assertTrue(ZabTheme.getDefaultTheme() instanceof ZabTheme.DarkTheme, "Checking theme has correct type");
 	}
 	
-	
 	@Test
 	public void backgroundDarkTheme(){
 		assertEquals(new Color(30, 30, 30), dark.background());
 	}
-	
 	@Test
 	public void foregroundDarkTheme(){
 		assertEquals(new Color(180, 180, 180), dark.foreground());
 	}
-	
 	@Test
 	public void buttonClickDarkTheme(){
 		assertEquals(new Color(70, 70, 70), dark.buttonClick());
 	}
-	
 	@Test
 	public void buttonHoverDarkTheme(){
 		assertEquals(new Color(80, 80, 80), dark.buttonHover());
 	}
-	
 	@Test
 	public void menuMouseClickDarkTheme(){
 		assertEquals(new Color(70, 70, 70), dark.menuMouseClick());
 	}
-	
 	@Test
 	public void menuMouseClickTextDarkTheme(){
 		assertEquals(new Color(150, 150, 150), dark.menuMouseClickText());
 	}
-	
 	@Test
 	public void menuBarBackgroundDarkTheme(){
 		assertEquals(new Color(50, 50, 50), dark.menuBarBackground());
 	}
-	
 	@Test
 	public void menuBarMouseHoverDarkTheme(){
 		assertEquals(new Color(80, 80, 80), dark.menuBarMouseHover());
 	}
-	
 	@Test
 	public void menuBarMouseHoverTextDarkTheme(){
 		assertEquals(new Color(150, 150, 150), dark.menuBarMouseHoverText());
 	}
-	
 	@Test
 	public void borderColorDarkTheme(){
 		assertEquals(new Color(100, 100, 100), dark.borderColor());
 	}
-	
 	@Test
 	public void tabStringDarkTheme(){
 		assertEquals(new Color(60, 60, 60), dark.tabString());
 	}
-	
 	@Test
 	public void tabSymbolTextDarkTheme(){
 		assertEquals(new Color(200, 200, 200), dark.tabSymbolText());
 	}
-	
 	@Test
 	public void tabSymbolHighlightDarkTheme(){
 		assertEquals(new Color(170, 170, 255, 100), dark.tabSymbolHighlight());
 	}
-	
+	@Test
+	public void tabSymbolBoxHighlightDarkTheme(){
+		assertEquals(new Color(0, 255, 0, 127), dark.tabSymbolBoxHighlight());
+	}
+	@Test
+	public void tabSymbolHoverHighlightDarkTheme(){
+		assertEquals(new Color(200, 200, 255, 63), dark.tabSymbolHoverHighlight());
+	}
 	
 	@Test
 	public void backgroundLightTheme(){
 		assertEquals(new Color(240, 240, 240), light.background());
 	}
-	
 	@Test
 	public void foregroundLightTheme(){
 		assertEquals(new Color(0, 0, 0), light.foreground());
 	}
-	
 	@Test
 	public void buttonClickLightTheme(){
 		assertEquals(new Color(200, 200, 255), light.buttonClick());
 	}
-	
 	@Test
 	public void buttonHoverLightTheme(){
 		assertEquals(new Color(220, 220, 255), light.buttonHover());
 	}
-	
 	@Test
 	public void menuMouseClickLightTheme(){
 		assertEquals(new Color(200, 200, 255), light.menuMouseClick());
 	}
-	
 	@Test
 	public void menuMouseClickTextLightTheme(){
 		assertEquals(new Color(0, 0, 20), light.menuMouseClickText());
 	}
-	
 	@Test
 	public void menuBarBackgroundLightTheme(){
 		assertEquals(new Color(200, 200, 200), light.menuBarBackground());
 	}
-	
 	@Test
 	public void menuBarMouseHoverLightTheme(){
 		assertEquals(new Color(220, 220, 255), light.menuBarMouseHover());
 	}
-	
 	@Test
 	public void menuBarMouseHoverTextLightTheme(){
 		assertEquals(new Color(0, 0, 20), light.menuBarMouseHoverText());
 	}
-	
 	@Test
 	public void borderColorLightTheme(){
 		assertEquals(new Color(0, 0, 0), light.borderColor());
 	}
-	
 	@Test
 	public void tabStringLightTheme(){
-		assertEquals(new Color(150, 150, 150), light.tabString());
+		assertEquals(new Color(200, 200, 200), light.tabString());
 	}
-	
 	@Test
 	public void tabSymbolTextLightTheme(){
 		assertEquals(new Color(20, 20, 20), light.tabSymbolText());
 	}
-	
 	@Test
 	public void tabSymbolHighlightLightTheme(){
 		assertEquals(new Color(70, 70, 255, 100), light.tabSymbolHighlight());
+	}
+	@Test
+	public void tabSymbolBoxHighlightLightTheme(){
+		assertEquals(new Color(30, 225, 30, 127), light.tabSymbolBoxHighlight());
+	}
+	@Test
+	public void tabSymbolHoverHighlightLightTheme(){
+		assertEquals(new Color(150, 150, 225, 63), light.tabSymbolHoverHighlight());
 	}
 	
 	@Test
@@ -235,7 +222,6 @@ public class TestZabTheme{
 		sensor.mouseEntered(new MouseEvent(button, 0, 0, 0, 0, 0, 0, 0, 0, false, 0));
 		assertEquals(dark.buttonHover(), button.getBackground());
 	}
-	
 	@Test
 	public void mouseExitedButtonHoverSensor(){
 		button.setBackground(Color.RED);
