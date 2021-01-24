@@ -7,7 +7,7 @@ public final class ZabConstants{
 	 * Keeping track of if the code should build as normal or as a test build. 
 	 * true for a normal build, false for a test build
 	 */
-	public static final boolean BUILD_NORMAL = false;
+	public static final boolean BUILD_NORMAL = true;
 	
 	/**
 	 * True if ZabGui objects should show on creation, false otherwise,
