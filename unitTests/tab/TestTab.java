@@ -87,10 +87,10 @@ public class TestTab{
 		Tab copy = tabForRhythms.copy();
 		Tab cleared = copy.copyWithoutSymbols();
 		
-		assertEquals(copy.getStrings().get(0).getRootPitch(), highRhythms.getRootPitch(), "Checking first string copied correctly");
-		assertEquals(copy.getStrings().get(1).getRootPitch(), lowRhythms.getRootPitch(), "Checking first string copied correctly");
-		assertEquals(copy.getTimeSignature(), cleared.getTimeSignature(), "Checking time signature copied correctly");
-		assertEquals(copy.usesRhythm(), cleared.usesRhythm(), "Checking use of rhythm copied correctly");
+		assertEquals(cleared.getStrings().get(0).getRootPitch(), highRhythms.getRootPitch(), "Checking first string copied correctly");
+		assertEquals(cleared.getStrings().get(1).getRootPitch(), lowRhythms.getRootPitch(), "Checking first string copied correctly");
+		assertEquals(cleared.getTimeSignature(), copy.getTimeSignature(), "Checking time signature copied correctly");
+		assertEquals(cleared.usesRhythm(), copy.usesRhythm(), "Checking use of rhythm copied correctly");
 		assertTrue(cleared.isEmpty(), "Checking all of the notes have been removed");
 		assertFalse(copy.isEmpty(), "Checking source tab hasn't been cleared");
 	}

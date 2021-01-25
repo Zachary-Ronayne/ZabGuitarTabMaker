@@ -1163,6 +1163,12 @@ public class TestTabPainter extends AbstractTestTabPainter{
 	}
 	
 	@Test
+	public void drawSymbols(){
+		assertFalse(paint.drawSymbols(null, 0, 0), "Checking draw fails with null tab");
+		assertTrue(paint.drawSymbols(tab, 0, 0), "Checking draw succeeds with normal tab");
+	}
+	
+	@Test
 	public void drawSymbolHighlight(){
 		// Case of just a position, no check
 		paint.drawSymbolHighlight(str0.get(0), 0, Color.RED);

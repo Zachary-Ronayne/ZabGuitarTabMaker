@@ -17,6 +17,8 @@ import appUtils.ZabAppSettings;
 import appUtils.ZabSettings;
 import music.Music;
 import music.Pitch;
+import tab.InstrumentFactory;
+import tab.Tab;
 import tab.TabFactory;
 import tab.TabPosition;
 import tab.TabString;
@@ -77,6 +79,23 @@ public class TestSelectionDragger extends AbstractTestTabPainter{
 	}
 	
 	@Test
+	public void getAnchorPoint(){
+		assertEquals(null, drag.getAnchorPoint(), "Checking anchor point initially null");
+	}
+	
+	@Test
+	public void setAnchorPoint(){
+		Point2D.Double p = new Point2D.Double(3, 4);
+		drag.setAnchorPoint(p);
+		assertEquals(p, drag.getAnchorPoint(), "Checking anchor point set");
+	}
+	
+	@Test
+	public void getDraggedTab(){
+		assertEquals(null, drag.getDraggedTab(), "Checking dragged tab initially null");
+	}
+	
+	@Test
 	public void reset(){
 		Selection s = paint.createSelection(3.5, 0);
 		drag.setBaseSelection(s);
@@ -86,6 +105,8 @@ public class TestSelectionDragger extends AbstractTestTabPainter{
 		drag.reset();
 		assertEquals(null, drag.getBaseSelection(), "Checking base selection null after reset");
 		assertEquals(null, drag.getDragPoint(), "Checking drag point null after reset");
+		assertEquals(null, drag.getDraggedTab(), "Checking dragged tab null after reset");
+		assertEquals(null, drag.getAnchorPoint(), "Checking anchor point null after reset");
 	}
 	
 	@Test
@@ -105,6 +126,10 @@ public class TestSelectionDragger extends AbstractTestTabPainter{
 		paint.select(0, 0);
 		assertTrue(drag.begin(pX, pY), "Checking drag begins with a selected position");
 		assertEquals(pos, drag.getBaseSelection().getPos(), "Checking correct base position set");
+		Tab t = InstrumentFactory.guitarStandard();
+		t.placeQuantizedNote(0, 0, 3.5);
+		assertEquals(t, drag.getDraggedTab(), "Checking selection tab is correct");
+		assertEquals(new Point2D.Double(cam.toCamX(pX), cam.toCamY(pY)), drag.getAnchorPoint(), "Checking anchor point set");
 		
 		assertFalse(drag.begin(pX, pY), "Checking drag fails to begin with a drag in progress");
 	}
@@ -327,6 +352,34 @@ public class TestSelectionDragger extends AbstractTestTabPainter{
 		AbstractTestTabPainter.initNotes(tab);
 		paint.clearSelection();
 		drag.reset();
+	}
+	
+	@Test
+	public void draw(){
+		assertFalse(drag.draw(), "Checking draw fails when not dragging");
+		
+		paint.select(0, 0);
+		drag.setBaseSelection(paint.stringSelection(0, 0));
+		assertFalse(drag.draw(), "Checking draw fails with no selected tab");
+
+		drag.reset();
+		paint.select(0, 0);
+		drag.begin(pX, pY);
+		drag.setDragPoint(null);
+		assertFalse(drag.draw(), "Checking draw fails with no drag point");
+		
+		drag.reset();
+		paint.select(0, 0);
+		drag.begin(pX, pY);
+		drag.update(pX, pY);
+		drag.setAnchorPoint(null);
+		assertFalse(drag.draw(), "Checking draw fails with no anchor point");
+		
+		drag.reset();
+		paint.select(0, 0);
+		drag.begin(pX, pY);
+		drag.update(pX, pY);
+		assertTrue(drag.draw(), "Checking draw succeeds with all objects set");
 	}
 	
 	@Test

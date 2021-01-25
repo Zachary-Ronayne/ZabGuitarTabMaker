@@ -143,6 +143,10 @@ public class TestZabTheme{
 		assertEquals(new Color(200, 200, 200), dark.tabSymbolText());
 	}
 	@Test
+	public void tabSymbolDragTextDarkTheme(){
+		assertEquals(new Color(200, 200, 255, 150), dark.tabSymbolDragText());
+	}
+	@Test
 	public void tabSymbolHighlightDarkTheme(){
 		assertEquals(new Color(170, 170, 255, 100), dark.tabSymbolHighlight());
 	}
@@ -202,6 +206,10 @@ public class TestZabTheme{
 	@Test
 	public void tabSymbolTextLightTheme(){
 		assertEquals(new Color(20, 20, 20), light.tabSymbolText());
+	}
+	@Test
+	public void tabSymbolDragTextLightTheme(){
+		assertEquals(new Color(20, 20, 100, 150), light.tabSymbolDragText());
 	}
 	@Test
 	public void tabSymbolHighlightLightTheme(){

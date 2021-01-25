@@ -57,7 +57,7 @@ public class Camera implements Saveable{
 	 */
 	private double anchorCamX;
 	/**
-	 * They y position the camera was in when the camera was anchored
+	 * The y position the camera was in when the camera was anchored
 	 */
 	private double anchorCamY;
 	/**

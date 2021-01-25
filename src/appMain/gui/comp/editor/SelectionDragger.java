@@ -21,8 +21,13 @@ public class SelectionDragger extends TabPaintController{
 	/** The {@link Selection} which was clicked to initialize a drag, null if nothing is selected */
 	private Selection baseSelection;
 	
-	/** The point which was clicked when initializing a drag on a selection, null if no point is selected */
+	/** The point where this {@link #draggedTab} should be drawn, null if no point is selected */
 	private Point2D.Double dragPoint;
+	/** 
+	 * The camera coordinates of the mouse click when the drag is initiated. 
+	 * This is used, when rendering the selection to line up the selection to where it was with the mouse when the selection was initiated
+	 */
+	private Point2D.Double dragAnchorPoint;
 	
 	/**
 	 * The {@link TabPosition} objects which are being moved by the current drag. Can be null when a drag is not initialized.<br>
@@ -56,6 +61,15 @@ public class SelectionDragger extends TabPaintController{
 	public void setDragPoint(Point2D.Double dragPoint){
 		this.dragPoint = dragPoint;
 	}
+	/** @return See {@link #dragAnchorPoint} */
+	public Point2D.Double getAnchorPoint(){
+		return this.dragAnchorPoint;
+	}
+	/** @param anchorPoint See {@link #dragAnchorPoint} */
+	public void setAnchorPoint(Point2D.Double anchorPoint){
+		this.dragAnchorPoint = anchorPoint;
+	}
+	
 	/** @return See {@link #draggedTab} */
 	public Tab getDraggedTab(){
 		return this.draggedTab;
@@ -68,6 +82,7 @@ public class SelectionDragger extends TabPaintController{
 		this.setBaseSelection(null);
 		this.setDragPoint(null);
 		this.draggedTab = null;
+		this.dragAnchorPoint = null;
 	}
 	
 	/** @return true if a selection drag has been initialized, false otherwise */
@@ -103,6 +118,10 @@ public class SelectionDragger extends TabPaintController{
 		for(Selection sel : paint.getSelected()){
 			strs.get(sel.getStringIndex()).add(sel.getPos());
 		}
+		// Set the internal anchor position appropriately so that the moved notes are around the mouse
+		Camera cam = paint.getCamera();
+		this.dragAnchorPoint = new Point2D.Double(cam.toCamX(mX), cam.toCamY(mY));
+			
 		// Return success
 		return true;
 	}
@@ -118,8 +137,8 @@ public class SelectionDragger extends TabPaintController{
 		if(!this.isDragging()) return false;
 		
 		// Set the dragging point to the given coordinates
-		Camera cam = this.getPainter().getCamera();
-		this.setDragPoint(new Point2D.Double(cam.toCamX(mX), cam.toCamY(mY)));
+		Camera pCam = this.getPainter().getCamera();
+		this.setDragPoint(new Point2D.Double(pCam.toCamX(mX), pCam.toCamY(mY)));
 		
 		return true;
 	}
@@ -238,13 +257,9 @@ public class SelectionDragger extends TabPaintController{
 		
 		TabPainter paint = this.getPainter();
 		Point2D.Double p = this.getDragPoint();
-		Selection base = this.baseSelection;
-		if(p == null || base == null) return false;
-		paint.drawSymbols(this.draggedTab, 
-				p.getX() - paint.tabPosToCamX(base.getPosition()), 
-				p.getY() - paint.tabPosToCamY(base.getPosition(), base.getStringIndex()));
-		
-		return true;
+		Point2D.Double anchor = this.getAnchorPoint();
+		if(p == null || anchor == null) return false;
+		return paint.drawSymbols(this.draggedTab, p.getX() - anchor.getX(), p.getY() - anchor.getY());
 	}
 	
 	/**
