@@ -1,5 +1,6 @@
 package appUtils;
 
+import appMain.gui.util.Camera;
 import music.Rhythm;
 import settings.SettingBoolean;
 import settings.SettingChar;
@@ -10,6 +11,7 @@ import settings.SettingString;
 import settings.Settings;
 import tab.Tab;
 import tab.TabPosition;
+import tab.TabString;
 import tab.TabTextExporter;
 
 /**
@@ -80,21 +82,40 @@ public class ZabSettings extends Settings{
 	public static final double TAB_PAINT_ABOVE_SPACE = 40;
 	/** Default for {@link #tabPaintBelowSpace} */
 	public static final double TAB_PAINT_BELOW_SPACE = 40;
+	/** Default for {@link #tabPaintSymbolScaleMode} */
+	public static final int TAB_PAINT_SYMBOL_SCALE_MODE = Camera.STRING_SCALE_Y_AXIS;
+	/** Default for {@link #tabPaintSymbolXAlign} */
+	public static final int TAB_PAINT_SYMBOL_X_ALIGN = Camera.STRING_ALIGN_CENTER;
+	/** Default for {@link #tabPaintSymbolYAlign} */
+	public static final int TAB_PAINT_SYMBOL_Y_ALIGN = Camera.STRING_ALIGN_CENTER;
+	/** Default for {@link #tabPaintStringLabelScaleMode} */
+	public static final int TAB_PAINT_STRING_LABEL_SCALE_MODE = Camera.STRING_SCALE_Y_AXIS;
+	/** Default for {@link #tabPaintStringLabelXAlign} */
+	public static final int TAB_PAINT_STRING_LABEL_X_ALIGN = Camera.STRING_ALIGN_MAX;
+	/** Default for {@link #tabPaintStringLabelYAlign} */
+	public static final int TAB_PAINT_STRING_LABEL_Y_ALIGN = Camera.STRING_ALIGN_CENTER;
+	/** Default for {@link #tabPaintSymbolBorderSize} */
+	public static final double TAB_PAINT_SYMBOL_BORDER_SIZE = 2;
+	/** Default for {@link #tabPaintStringLabelSpace} */
+	public static final double TAB_PAINT_STRING_LABEL_SPACE = 14;
 	
 	/** Default for {@link #tabControlMoveDeleteInvalid} */
 	public static final boolean TAB_CONTROL_MOVE_DELETE_INVALID = false;
 	/** Default for {@link #tabControlMoveCancelInvalid} */
 	public static final boolean TAB_CONTROL_MOVE_CANCEL_INVALID = false;
-	
-	/** Default for {@link #zoomFactor} */
-	public static final double ZOOM_FACTOR = 0.1;
-	/** Default for {@link #zoomInverted} */
-	public static final boolean ZOOM_INVERTED = true;
-	/** Default for {@link #zoomModifierFactor} */
-	public static final double ZOOM_MODIFIER_FACTOR = 2.0;
+	/** Default for {@link #tabControlZoomFactor} */
+	public static final double TAB_CONTROL_ZOOM_FACTOR = 0.1;
+	/** Default for {@link #tabControlZoomInverted} */
+	public static final boolean TAB_CONTROL_ZOOM_INVERTED = true;
+	/** Default for {@link #tabControlScrollFactor} */
+	public static final double TAB_CONTROL_SCROLL_FACTOR = 40;
+	/** Default for {@link #tabControlScrollXInverted} */
+	public static final boolean TAB_CONTROL_SCROLL_X_INVERTED = false;
+	/** Default for {@link #tabControlScrollYInverted} */
+	public static final boolean TAB_CONTROL_SCROLL_Y_INVERTED = false;
 	
 	/** Default for {@link #quantizeDivisor} */
-	public static final Double QUANTIZE_DIVISOR = 8.0;
+	public static final double QUANTIZE_DIVISOR = 8.0;
 	/** @return Default for {@link #rhythmConversionEndValue} */
 	public static Rhythm RHYTHM_CONVERSION_END_VALUE(){ return new Rhythm(1, 4); }
 	
@@ -155,6 +176,22 @@ public class ZabSettings extends Settings{
 	private SettingDouble tabPaintAboveSpace;
 	/** The amount of space below each line of tab in a {@link TabPainter}, in pixels */
 	private SettingDouble tabPaintBelowSpace;
+	/** The {@link Camera} scale mode to use when scaling the text of {@link TabPosition} symbols */
+	private SettingInt tabPaintSymbolScaleMode;
+	/** The {@link Camera} alignment mode to use for the x axis of the text of {@link TabPosition} symbols */
+	private SettingInt tabPaintSymbolXAlign;
+	/** The {@link Camera} alignment mode to use for the y axis of the text of {@link TabPosition} symbols */
+	private SettingInt tabPaintSymbolYAlign;
+	/** The {@link Camera} scale mode to use when scaling the text of the pitch labels of drawn {@link TabString} objects */
+	private SettingInt tabPaintStringLabelScaleMode;
+	/** The {@link Camera} alignment mode to use for the x axis of the text of text of the pitch labels of drawn {@link TabString} objects */
+	private SettingInt tabPaintStringLabelXAlign;
+	/** The {@link Camera} alignment mode to use for the y axis of the text of text of the pitch labels of drawn {@link TabString} objects */
+	private SettingInt tabPaintStringLabelYAlign;
+	/** The extra amount of space added to the bounds of a rendered {@link TabPosition} when it has a highlight, in pixels. This pixel amount is the same regardless of zoom level */
+	private SettingDouble tabPaintSymbolBorderSize;
+	/** The extra amount of space added between the pitch labels of rendered {@link TabString} objects, in pixels. This pixel amount is the same regardless of zoom level */
+	private SettingDouble tabPaintStringLabelSpace;
 	
 	/**
 	 * true if, when moving a {@link TabPosition} selection, 
@@ -170,11 +207,15 @@ public class ZabSettings extends Settings{
 	private SettingBoolean tabControlMoveCancelInvalid;
 	
 	/** The value which determines how fast the camera zooms */
-	private SettingDouble zoomFactor;
+	private SettingDouble tabControlZoomFactor;
 	/** true if zooming should be inverted, i.e. moving the mouse wheel towards the user should zoom out, false otherwise */
-	private SettingBoolean zoomInverted;
-	/** The value for the extra amount the camera zooms when holding shift/alt/ctrl */
-	private SettingDouble zoomModifierFactor;
+	private SettingBoolean tabControlZoomInverted;
+	/** The value that determines how quickly scrolling happens. Larger values mean scrolling faster, lower values mean scrolling slower */
+	private SettingDouble tabControlScrollFactor;
+	/** true to reverse the direction of scrolling on the x axis, false otherwise */
+	private SettingBoolean tabControlScrollXInverted;
+	/** true to reverse the direction of scrolling on the y axis, false otherwise */
+	private SettingBoolean tabControlScrollYInverted;
 	
 	/**
 	 * The divisor used for quantizing notes for creation, placement, and selection, based on note duration. 
@@ -222,13 +263,22 @@ public class ZabSettings extends Settings{
 		this.tabPaintSelectionBuffer = this.addDouble(TAB_PAINT_SELECTION_BUFFER);
 		this.tabPaintAboveSpace = this.addDouble(TAB_PAINT_ABOVE_SPACE);
 		this.tabPaintBelowSpace = this.addDouble(TAB_PAINT_BELOW_SPACE);
+		this.tabPaintSymbolScaleMode = this.addInt(TAB_PAINT_SYMBOL_SCALE_MODE);
+		this.tabPaintSymbolXAlign = this.addInt(TAB_PAINT_SYMBOL_X_ALIGN);
+		this.tabPaintSymbolYAlign = this.addInt(TAB_PAINT_SYMBOL_Y_ALIGN);
+		this.tabPaintStringLabelScaleMode = this.addInt(TAB_PAINT_STRING_LABEL_SCALE_MODE);
+		this.tabPaintStringLabelXAlign = this.addInt(TAB_PAINT_STRING_LABEL_X_ALIGN);
+		this.tabPaintStringLabelYAlign = this.addInt(TAB_PAINT_STRING_LABEL_Y_ALIGN);
+		this.tabPaintSymbolBorderSize = this.addDouble(TAB_PAINT_SYMBOL_BORDER_SIZE);
+		this.tabPaintStringLabelSpace = this.addDouble(TAB_PAINT_STRING_LABEL_SPACE);
 		
 		this.tabControlMoveDeleteInvalid = this.addBoolean(TAB_CONTROL_MOVE_DELETE_INVALID);
 		this.tabControlMoveCancelInvalid = this.addBoolean(TAB_CONTROL_MOVE_CANCEL_INVALID);
-		
-		this.zoomFactor = this.addDouble(ZOOM_FACTOR);
-		this.zoomInverted = this.addBoolean(ZOOM_INVERTED);
-		this.zoomModifierFactor = this.addDouble(ZOOM_MODIFIER_FACTOR);
+		this.tabControlZoomFactor = this.addDouble(TAB_CONTROL_ZOOM_FACTOR);
+		this.tabControlZoomInverted = this.addBoolean(TAB_CONTROL_ZOOM_INVERTED);
+		this.tabControlScrollFactor = this.addDouble(TAB_CONTROL_SCROLL_FACTOR);
+		this.tabControlScrollXInverted = this.addBoolean(TAB_CONTROL_SCROLL_X_INVERTED);
+		this.tabControlScrollYInverted = this.addBoolean(TAB_CONTROL_SCROLL_Y_INVERTED);
 		
 		this.quantizeDivisor = this.addDouble(QUANTIZE_DIVISOR);
 		this.rhythmConversionEndValue = this.add(new SettingRhythm(RHYTHM_CONVERSION_END_VALUE()));
@@ -290,19 +340,37 @@ public class ZabSettings extends Settings{
 	public SettingDouble getTabPaintAboveSpace(){ return this.tabPaintAboveSpace; }
 	/** @return See {@link #tabPaintBelowSpace} */
 	public SettingDouble getTabPaintBelowSpace(){ return this.tabPaintBelowSpace; }
+	/** @return See {@link #tabPaintSymbolScaleMode} */
+	public SettingInt getTabPaintSymbolScaleMode(){ return this.tabPaintSymbolScaleMode; }
+	/** @return See {@link #tabPaintSymbolXAlign} */
+	public SettingInt getTabPaintSymbolXAlign(){ return this.tabPaintSymbolXAlign; }
+	/** @return See {@link #tabPaintSymbolYAlign} */
+	public SettingInt getTabPaintSymbolYAlign(){ return this.tabPaintSymbolYAlign; }
+	/** @return See {@link #tabPaintStringLabelScaleMode} */
+	public SettingInt getTabPaintStringLabelScaleMode(){ return this.tabPaintStringLabelScaleMode; }
+	/** @return See {@link #tabPaintStringLabelXAlign} */
+	public SettingInt getTabPaintStringLabelXAlign(){ return this.tabPaintStringLabelXAlign; }
+	/** @return See {@link #tabPaintStringLabelYAlign} */
+	public SettingInt getTabPaintStringLabelYAlign(){ return this.tabPaintStringLabelYAlign; }
+	/** @return See {@link #tabPaintSymbolBorderSize} */
+	public SettingDouble getTabPaintSymbolBorderSize(){ return this.tabPaintSymbolBorderSize; }
+	/** @return See {@link #tabPaintStringLabelSpace} */
+	public SettingDouble getTabPaintStringLabelSpace(){ return this.tabPaintStringLabelSpace; }
 	
 	/** @return See {@link #tabControlMoveDeleteInvalid} */
 	public SettingBoolean getTabControlMoveDeleteInvalid(){ return this.tabControlMoveDeleteInvalid; }
 	/** @return See {@link #tabControlMoveCancelInvalid} */
 	public SettingBoolean getTabControlMoveCancelInvalid(){ return this.tabControlMoveCancelInvalid; }
-	
-	/** @return See {@link #zoomFactor} */
-	public SettingDouble getZoomFactor(){ return this.zoomFactor; }
-	/** @return See {@link #zoomInverted} */
-	public SettingBoolean getZoomInverted(){ return this.zoomInverted; }
-	
-	/** @return See {@link #zoomModifierFactor} */
-	public SettingDouble getZoomModifierFactor(){ return this.zoomModifierFactor; }
+	/** @return See {@link #tabControlZoomFactor} */
+	public SettingDouble getTabControlZoomFactor(){ return this.tabControlZoomFactor; }
+	/** @return See {@link #tabControlZoomInverted} */
+	public SettingBoolean getTabControlZoomInverted(){ return this.tabControlZoomInverted; }
+	/** @return See {@link #tabControlScrollFactor} */
+	public SettingDouble getTabControlScrollFactor(){ return this.tabControlScrollFactor; }
+	/** @return See {@link #tabControlScrollXInverted} */
+	public SettingBoolean getTabControlScrollXInverted(){ return this.tabControlScrollXInverted; }
+	/** @return See {@link #tabControlScrollYInverted} */
+	public SettingBoolean getTabControlScrollYInverted(){ return this.tabControlScrollYInverted; }
 	
 	/** @return See {@link #quantizeDivisor} */
 	public SettingDouble getQuantizeDivisor(){ return this.quantizeDivisor; }
@@ -366,18 +434,37 @@ public class ZabSettings extends Settings{
 	public Double tabPaintAboveSpace(){ return this.getTabPaintAboveSpace().get(); }
 	/** @return See {@link #tabPaintBelowSpace} */
 	public Double tabPaintBelowSpace(){ return this.getTabPaintBelowSpace().get(); }
+	/** @return See {@link #tabPaintSymbolScaleMode} */
+	public Integer tabPaintSymbolScaleMode(){ return this.getTabPaintSymbolScaleMode().get(); }
+	/** @return See {@link #tabPaintSymbolXAlign} */
+	public Integer tabPaintSymbolXAlign(){ return this.getTabPaintSymbolXAlign().get(); }
+	/** @return See {@link #tabPaintSymbolYAlign} */
+	public Integer tabPaintSymbolYAlign(){ return this.getTabPaintSymbolYAlign().get(); }
+	/** @return See {@link #tabPaintStringLabelScaleMode} */
+	public Integer tabPaintStringLabelScaleMode(){ return this.getTabPaintStringLabelScaleMode().get(); }
+	/** @return See {@link #tabPaintStringLabelXAlign} */
+	public Integer tabPaintStringLabelXAlign(){ return this.getTabPaintStringLabelXAlign().get(); }
+	/** @return See {@link #tabPaintStringLabelYAlign} */
+	public Integer tabPaintStringLabelYAlign(){ return this.getTabPaintStringLabelYAlign().get(); }
+	/** @return See {@link #tabPaintSymbolBorderSize} */
+	public Double tabPaintSymbolBorderSize(){ return this.getTabPaintSymbolBorderSize().get(); }
+	/** @return See {@link #tabPaintStringLabelSpace} */
+	public Double tabPaintStringLabelSpace(){ return this.getTabPaintStringLabelSpace().get(); }
 	
 	/** @return See {@link #tabControlMoveDeleteInvalid} */
 	public Boolean tabControlMoveDeleteInvalid(){ return this.getTabControlMoveDeleteInvalid().get(); }
 	/** @return See {@link #tabControlMoveCancelInvalid} */
 	public Boolean tabControlMoveCancelInvalid(){ return this.getTabControlMoveCancelInvalid().get(); }
-	
-	/** @return See {@link #zoomFactor} */
-	public Double zoomFactor(){ return this.getZoomFactor().get(); }
-	/** @return See {@link #zoomInverted} */
-	public Boolean zoomInverted(){ return this.getZoomInverted().get(); }
-	/** @return See {@link #zoomModifierFactor} */
-	public Double zoomModifierFactor(){ return this.getZoomModifierFactor().get(); }
+	/** @return See {@link #tabControlZoomFactor} */
+	public Double tabControlZoomFactor(){ return this.getTabControlZoomFactor().get(); }
+	/** @return See {@link #tabControlZoomInverted} */
+	public Boolean tabControlZoomInverted(){ return this.getTabControlZoomInverted().get(); }
+	/** @return See {@link #tabControlScrollFactor} */
+	public Double tabControlScrollFactor(){ return this.getTabControlScrollFactor().get(); }
+	/** @return See {@link #tabControlScrollXInverted} */
+	public Boolean tabControlScrollXInverted(){ return this.getTabControlScrollXInverted().get(); }
+	/** @return See {@link #tabControlScrollYInverted} */
+	public Boolean tabControlScrollYInverted(){ return this.getTabControlScrollYInverted().get(); }
 	
 	/** @return See {@link #quantizeDivisor} */
 	public Double quantizeDivisor(){ return this.getQuantizeDivisor().get(); }

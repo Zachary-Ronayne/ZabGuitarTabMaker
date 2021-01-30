@@ -171,6 +171,46 @@ public class TestZabSettings{
 		assertSettingInitialized(settings.getTabPaintBelowSpace(), ZabSettings.TAB_PAINT_BELOW_SPACE);
 		assertEquals(ZabSettings.TAB_PAINT_BELOW_SPACE, settings.tabPaintBelowSpace(), "Checking value getter correct");
 	}
+	@Test
+	public void tabPaintSymbolScaleMode(){
+		assertSettingInitialized(settings.getTabPaintSymbolScaleMode(), ZabSettings.TAB_PAINT_SYMBOL_SCALE_MODE);
+		assertEquals(ZabSettings.TAB_PAINT_SYMBOL_SCALE_MODE, settings.tabPaintSymbolScaleMode(), "Checking value getter correct");
+	}
+	@Test
+	public void tabPaintSymbolXAlign(){
+		assertSettingInitialized(settings.getTabPaintSymbolXAlign(), ZabSettings.TAB_PAINT_SYMBOL_X_ALIGN);
+		assertEquals(ZabSettings.TAB_PAINT_SYMBOL_X_ALIGN, settings.tabPaintSymbolXAlign(), "Checking value getter correct");
+	}
+	@Test
+	public void tabPaintSymbolYAlign(){
+		assertSettingInitialized(settings.getTabPaintSymbolYAlign(), ZabSettings.TAB_PAINT_SYMBOL_Y_ALIGN);
+		assertEquals(ZabSettings.TAB_PAINT_SYMBOL_Y_ALIGN, settings.tabPaintSymbolYAlign(), "Checking value getter correct");
+	}
+	@Test
+	public void tabPaintStringLabelScaleMode(){
+		assertSettingInitialized(settings.getTabPaintStringLabelScaleMode(), ZabSettings.TAB_PAINT_STRING_LABEL_SCALE_MODE);
+		assertEquals(ZabSettings.TAB_PAINT_STRING_LABEL_SCALE_MODE, settings.tabPaintStringLabelScaleMode(), "Checking value getter correct");
+	}
+	@Test
+	public void tabPaintStringLabelXAlign(){
+		assertSettingInitialized(settings.getTabPaintStringLabelXAlign(), ZabSettings.TAB_PAINT_STRING_LABEL_X_ALIGN);
+		assertEquals(ZabSettings.TAB_PAINT_STRING_LABEL_X_ALIGN, settings.tabPaintStringLabelXAlign(), "Checking value getter correct");
+	}
+	@Test
+	public void tabPaintStringLabelYAlign(){
+		assertSettingInitialized(settings.getTabPaintStringLabelYAlign(), ZabSettings.TAB_PAINT_STRING_LABEL_Y_ALIGN);
+		assertEquals(ZabSettings.TAB_PAINT_STRING_LABEL_Y_ALIGN, settings.tabPaintStringLabelYAlign(), "Checking value getter correct");
+	}
+	@Test
+	public void tabPaintSymbolBorderSize(){
+		assertSettingInitialized(settings.getTabPaintSymbolBorderSize(), ZabSettings.TAB_PAINT_SYMBOL_BORDER_SIZE);
+		assertEquals(ZabSettings.TAB_PAINT_SYMBOL_BORDER_SIZE, settings.tabPaintSymbolBorderSize(), "Checking value getter correct");
+	}
+	@Test
+	public void tabPaintStringLabelSpace(){
+		assertSettingInitialized(settings.getTabPaintStringLabelSpace(), ZabSettings.TAB_PAINT_STRING_LABEL_SPACE);
+		assertEquals(ZabSettings.TAB_PAINT_STRING_LABEL_SPACE, settings.tabPaintStringLabelSpace(), "Checking value getter correct");
+	}
 	
 	@Test
 	public void tabControlMoveDeleteInvalid(){
@@ -182,21 +222,30 @@ public class TestZabSettings{
 		assertSettingInitialized(settings.getTabControlMoveCancelInvalid(), ZabSettings.TAB_CONTROL_MOVE_CANCEL_INVALID);
 		assertEquals(ZabSettings.TAB_CONTROL_MOVE_CANCEL_INVALID, settings.tabControlMoveCancelInvalid(), "Checking value getter correct");
 	}
-	
 	@Test
-	public void zoomFactor(){
-		assertSettingInitialized(settings.getZoomFactor(), ZabSettings.ZOOM_FACTOR);
-		assertEquals(ZabSettings.ZOOM_FACTOR, settings.zoomFactor(), "Checking value getter correct");
+	public void tabControlZoomFactor(){
+		assertSettingInitialized(settings.getTabControlZoomFactor(), ZabSettings.TAB_CONTROL_ZOOM_FACTOR);
+		assertEquals(ZabSettings.TAB_CONTROL_ZOOM_FACTOR, settings.tabControlZoomFactor(), "Checking value getter correct");
 	}
 	@Test
-	public void zoomInverted(){
-		assertSettingInitialized(settings.getZoomInverted(), ZabSettings.ZOOM_INVERTED);
-		assertEquals(ZabSettings.ZOOM_INVERTED, settings.zoomInverted(), "Checking value getter correct");
+	public void tabControlZoomInverted(){
+		assertSettingInitialized(settings.getTabControlZoomInverted(), ZabSettings.TAB_CONTROL_ZOOM_INVERTED);
+		assertEquals(ZabSettings.TAB_CONTROL_ZOOM_INVERTED, settings.tabControlZoomInverted(), "Checking value getter correct");
 	}
 	@Test
-	public void zoomModifierFactor(){
-		assertSettingInitialized(settings.getZoomModifierFactor(), ZabSettings.ZOOM_MODIFIER_FACTOR);
-		assertEquals(ZabSettings.ZOOM_MODIFIER_FACTOR, settings.zoomModifierFactor(), "Checking value getter correct");
+	public void tabControlScrollFactor(){
+		assertSettingInitialized(settings.getTabControlScrollFactor(), ZabSettings.TAB_CONTROL_SCROLL_FACTOR);
+		assertEquals(ZabSettings.TAB_CONTROL_SCROLL_FACTOR, settings.tabControlScrollFactor(), "Checking value getter correct");
+	}
+	@Test
+	public void tabControlScrollXInverted(){
+		assertSettingInitialized(settings.getTabControlScrollXInverted(), ZabSettings.TAB_CONTROL_SCROLL_X_INVERTED);
+		assertEquals(ZabSettings.TAB_CONTROL_SCROLL_X_INVERTED, settings.tabControlScrollXInverted(), "Checking value getter correct");
+	}
+	@Test
+	public void tabControlScrollYInverted(){
+		assertSettingInitialized(settings.getTabControlScrollYInverted(), ZabSettings.TAB_CONTROL_SCROLL_Y_INVERTED);
+		assertEquals(ZabSettings.TAB_CONTROL_SCROLL_Y_INVERTED, settings.tabControlScrollYInverted(), "Checking value getter correct");
 	}
 	
 	@Test

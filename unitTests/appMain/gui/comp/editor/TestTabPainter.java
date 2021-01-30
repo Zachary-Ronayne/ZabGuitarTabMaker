@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -17,6 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import appMain.gui.util.Camera;
+import appUtils.ZabAppSettings;
 import music.Music;
 import music.Pitch;
 import tab.InstrumentFactory;
@@ -623,11 +623,44 @@ public class TestTabPainter extends AbstractTestTabPainter{
 		assertEquals(empty, paint.symbolBounds(str0.get(0), 0), "Checking an empty rectangle returned with no valid font metrics");
 		
 		setup();
-		assertEquals(new Rectangle2D.Double(544.5, 540.0, 11.0, 20.0), paint.symbolBounds(str0.get(0), 0), "Checking correct bounds");
+		paint.resetCamera();
+		Assert.rectangleAproxEqual(new Rectangle2D.Double(542.5, 540.5, 15.0, 19.0), paint.symbolBounds(str0.get(0), 0), "Checking correct bounds");
 		
 		cam.addX(10);
 		cam.addY(5);
-		assertEquals(new Rectangle2D.Double(544.5, 540.0, 11.0, 20.0), paint.symbolBounds(str0.get(0), 0), "Checking changing camera doesn't change bounds");
+		Assert.rectangleAproxEqual(new Rectangle2D.Double(542.5, 540.5, 15.0, 19.0), paint.symbolBounds(str0.get(0), 0), "Checking changing camera doesn't change bounds");
+		
+		paint.resetCamera();
+		ZabAppSettings.get().getTabPaintSymbolScaleMode().set(Camera.STRING_SCALE_X_AXIS);
+		cam.zoomIn(0, 0, 1);
+		Assert.rectangleAproxEqual(new Rectangle2D.Double(544, 541.75, 12.0, 16.5), paint.symbolBounds(str0.get(0), 0), "Checking changing camera zoom");
+		
+		paint.resetCamera();
+		ZabAppSettings.get().getTabPaintSymbolScaleMode().set(Camera.STRING_SCALE_X_AXIS);
+		cam.zoomInY(0, 1);
+		Assert.rectangleAproxEqual(new Rectangle2D.Double(543.5, 541.5, 13.0, 17.0), paint.symbolBounds(str0.get(0), 0), 
+				"Checking symbol width unchanged, but y is changed with zooming on the y axis and scaling on the x axis");
+		AbstractTestTabPainter.init();
+		
+		cam.zoomInX(0, 1);
+		Assert.rectangleAproxEqual(new Rectangle2D.Double(544, 541.75, 12.0, 16.5), paint.symbolBounds(str0.get(0), 0), 
+				"Checking symbol size changed to zoomed after also zooming on the x axis");
+		AbstractTestTabPainter.init();
+		
+		paint.resetCamera();
+		ZabAppSettings.get().getTabPaintSymbolScaleMode().set(Camera.STRING_SCALE_Y_AXIS);
+		cam.zoomInX(0, 1);
+		Assert.rectangleAproxEqual(new Rectangle2D.Double(542.5, 540.5, 15.0, 19.0), paint.symbolBounds(str0.get(0), 0), 
+				"Checking symbol size unchanged with zooming on the x axis and scaling on the y axis");
+		cam.zoomInY(0, 1);
+		Assert.rectangleAproxEqual(new Rectangle2D.Double(544, 541.75, 12.0, 16.5), paint.symbolBounds(str0.get(0), 0), 
+				"Checking symbol size unchanged with zooming on the y axis and scaling on the y axis");
+		
+		paint.resetCamera();
+		ZabAppSettings.get().getTabPaintSymbolScaleMode().set(Camera.STRING_SCALE_NONE);
+		cam.zoomIn(0, 0, 1);
+		Assert.rectangleAproxEqual(new Rectangle2D.Double(543.5, 541.5, 13, 17), paint.symbolBounds(str0.get(0), 0), 
+				"Checking both symbol dimensions changed when zooming with no specific scaling");
 		
 		paint.setTab(null);
 		assertEquals(empty, paint.symbolBounds(str0.get(0), 0), "Checking an empty rectangle returned with null tab");
@@ -794,8 +827,8 @@ public class TestTabPainter extends AbstractTestTabPainter{
 		cam.setYZoomFactor(2);
 		cam.setDrawOnlyInBounds(true);
 		paint.resetCamera();
-		assertEquals(-50, cam.getX(), "Checking camera x reset");
-		assertEquals(-100, cam.getY(), "Checking camera y reset");
+		assertEquals(200, cam.getX(), "Checking camera x reset");
+		assertEquals(1630, cam.getY(), "Checking camera y reset");
 		assertEquals(0, cam.getXZoomFactor(), "Checking camera x zoom factor reset");
 		assertEquals(0, cam.getYZoomFactor(), "Checking camera y zoom factor reset");
 		assertEquals(true, cam.isDrawOnlyInBounds(), "Checking camera drawing in bounds reset");
@@ -1142,7 +1175,7 @@ public class TestTabPainter extends AbstractTestTabPainter{
 	@Test
 	public void paint(){
 		paint.paint(g);
-		assertEquals(g, paint.getCamera().getG(), "Checking graphics object set and used");
+		assertEquals(g, paint.getCamera().getGraphics(), "Checking graphics object set and used");
 		
 		// Calling paint with a drag point set
 		paint.getDragger().setDragPoint(new Point2D.Double(0, 0));
@@ -1151,15 +1184,15 @@ public class TestTabPainter extends AbstractTestTabPainter{
 	
 	@Test
 	public void drawTab(){
-		assertTrue(paint.drawTab(g), "Checking painting occurred");
-		assertEquals(g, paint.getCamera().getG(), "Checking graphics object set and used");
+		assertTrue(paint.drawTab(), "Checking painting occurred");
+		assertEquals(g, paint.getCamera().getGraphics(), "Checking graphics object set and used");
 
 		TabString s = tab.getStrings().get(0);
 		paint.selectOne(s.get(0), s);
-		assertTrue(paint.drawTab(g), "Checking painting occurred with drawing a selection");
+		assertTrue(paint.drawTab(), "Checking painting occurred with drawing a selection");
 		
 		paint.setTab(null);
-		assertFalse(paint.drawTab(g), "Checking painting failed with null tab");
+		assertFalse(paint.drawTab(), "Checking painting failed with null tab");
 	}
 	
 	@Test
@@ -1170,21 +1203,20 @@ public class TestTabPainter extends AbstractTestTabPainter{
 	
 	@Test
 	public void drawSymbolHighlight(){
-		// Case of just a position, no check
-		paint.drawSymbolHighlight(str0.get(0), 0, Color.RED);
+		Rectangle2D bounds = new Rectangle2D.Double(1, 2, 10, 20);
 		
 		paint.select(0, 0);
 		paint.select(0, 1);
 		paint.setTab(null);
-		assertFalse(paint.drawSymbolHighlight(list, str0.get(0), 0, Color.RED), "Checking paint fails with null tab");
+		assertFalse(paint.drawSymbolHighlight(list, str0.get(0), 0, bounds), "Checking paint fails with null tab");
 		paint.setTab(tab);
-		assertTrue(paint.drawSymbolHighlight((SelectionList)null, str0.get(0), 0, Color.RED), "Checking paint succeeds with null list");
+		assertTrue(paint.drawSymbolHighlight((SelectionList)null, str0.get(0), 0, bounds), "Checking paint succeeds with null list");
 		
-		assertFalse(paint.drawSymbolHighlight(list, str2.get(0), 0, Color.RED), "Checking paint fails with position not in list");
-		assertTrue(paint.drawSymbolHighlight(list, str0.get(0), 0, Color.RED), "Checking paint succeeds");
+		assertFalse(paint.drawSymbolHighlight(list, str2.get(0), 0, bounds), "Checking paint fails with position not in list");
+		assertTrue(paint.drawSymbolHighlight(list, str0.get(0), 0, bounds), "Checking paint succeeds");
 		
-		assertTrue(paint.drawSymbolHighlight(str0.get(0), str0.get(0), 0, Color.RED), "Checking paint succeeds");
-		assertFalse(paint.drawSymbolHighlight(str1.get(0), str0.get(0), 0, Color.RED), "Checking paint fails with differing check TabPosition");
+		assertTrue(paint.drawSymbolHighlight(str0.get(0), str0.get(0), bounds), "Checking paint succeeds");
+		assertFalse(paint.drawSymbolHighlight(str1.get(0), str0.get(0), bounds), "Checking paint fails with differing check TabPosition");
 	}
 	
 	@AfterEach

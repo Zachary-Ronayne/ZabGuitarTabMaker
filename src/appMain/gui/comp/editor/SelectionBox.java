@@ -134,7 +134,7 @@ public class SelectionBox extends TabPaintController{
 			// Add the each note to the list of TabPositions contained by this SelectionBox
 			for(int j = startIndex; j <= endIndex && j < s.size(); j++){
 				TabPosition p = s.get(j);
-				if(bounds.intersects(paint.symbolBounds(p, i))){
+				if(cam.camToPixelBounds(bounds).intersects(cam.stringCamToPixelBounds(paint.symbolBounds(p, i)))){
 					this.contents.add(new Selection(p, s, i));
 				}
 			}

@@ -4,6 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
@@ -18,13 +22,20 @@ import util.testUtils.Assert;
 
 public class TestGuiUtils{
 
+	private BufferedImage img;
+	private Graphics2D g;
+	
 	@BeforeAll
 	public static void init(){
 		ZabAppSettings.init();
 	}
 	
 	@BeforeEach
-	public void setup(){}
+	public void setup(){
+		img = new BufferedImage(1000, 1000, BufferedImage.TYPE_3BYTE_BGR);
+		g = img.createGraphics();
+		g.setFont(new Font("Arial", Font.PLAIN, 20));
+	}
 	
 	@Test
 	public void getAllComponents(){
@@ -62,6 +73,34 @@ public class TestGuiUtils{
 		
 		comps = GuiUtils.getAllComponents(nonContainer);
 		Assert.containsSize(comps, nonContainer);
+	}
+	
+	@Test
+	public void stringBounds(){
+		assertEquals(new Rectangle(), GuiUtils.stringBounds("", null, 0, 0), "Checking empty rectangle returned with null graphics");
+		assertEquals(new Rectangle(31, 5, 30, 15), GuiUtils.stringBounds("lllOl", g, 30, 20), "Checking correct bounds");
+		assertEquals(new Rectangle(36, 11, 30, 15), GuiUtils.stringBounds("lllOl", g, 35, 26), "Checking correct bounds");
+		assertEquals(new Rectangle(36, 11, 9, 15), GuiUtils.stringBounds("0", g, 35, 26), "Checking correct bounds");
+		assertEquals(new Rectangle(34, 11, 4, 19), GuiUtils.stringBounds("j", g, 35, 26), "Checking correct bounds");
+		
+		assertEquals(new Size2D(30, 15), GuiUtils.stringBounds("lllOl", g), "Checking correct with no coordinates");
+		assertEquals(new Size2D(9, 15), GuiUtils.stringBounds("0", g), "Checking correct with no coordinates");
+		assertEquals(new Size2D(4, 19), GuiUtils.stringBounds("j", g), "Checking correct with no coordinates");
+		
+		g.setFont(new Font("Times New Roman", Font.BOLD, 132));
+		assertEquals(new Rectangle(38, -64, 803, 118), GuiUtils.stringBounds("tfdgrehtrerhw", g, 35, 26), "Checking correct bounds");
+		assertEquals(new Rectangle(131, -316, 36, 118), GuiUtils.stringBounds("j", g, 135, -226), "Checking correct bounds");
+	}
+
+	@Test
+	public void stringBaselineOffset(){
+		assertEquals(new Size2D(-1, 15), GuiUtils.stringBaselineOffset("lllOl", g), "Checking correct offset");
+		assertEquals(new Size2D(-1, 15), GuiUtils.stringBaselineOffset("0", g), "Checking correct offset");
+		assertEquals(new Size2D(1, 15), GuiUtils.stringBaselineOffset("j", g), "Checking correct offset");
+		
+		g.setFont(new Font("Times New Roman", Font.BOLD, 132));
+		assertEquals(new Size2D(-3, 90), GuiUtils.stringBaselineOffset("tfdgrehtrerhw", g), "Checking correct offset");
+		assertEquals(new Size2D(4, 90), GuiUtils.stringBaselineOffset("j", g), "Checking correct offset");
 	}
 	
 	@AfterEach

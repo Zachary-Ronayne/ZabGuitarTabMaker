@@ -48,7 +48,7 @@ public class TabPainter extends ZabPanel{
 	/** The {@link Tab} used for painting, can be null */
 	private Tab tab;
 	
-	/** The {@link FontMetrics} used the last time the symbols were painted, will be null until this {@link TabPainter} is painetd at least once */
+	/** The {@link FontMetrics} used the last time the symbols were painted, will be null until this {@link TabPainter} is painted at least once */
 	private FontMetrics lastSymbolFont;
 	
 	/** The number of lines of tab to display */
@@ -89,7 +89,6 @@ public class TabPainter extends ZabPanel{
 		this.setTab(tab);
 		this.tabCamera = new Camera(width, height);
 		this.tabCamera.setDrawOnlyInBounds(false);
-		this.resetCamera();
 		this.setPaintSize(width, height);
 		
 		// Set up objects for controlling selection
@@ -100,7 +99,6 @@ public class TabPainter extends ZabPanel{
 		this.dragger = new SelectionDragger(this);
 		this.lastSymbolFont = null;
 		this.hoveredPosition = null;
-		
 		
 		// Add the mouse input to the panel
 		this.mouseControl = new EditorMouse(this);
@@ -117,6 +115,9 @@ public class TabPainter extends ZabPanel{
 		
 		// Initialize the state of the number of tab lines to draw
 		this.updateLineTabCount();
+		
+		// Update the camera position at the end
+		this.resetCamera();
 		
 		// Final repaint to ensure the panel is updated
 		this.repaint();
@@ -640,21 +641,49 @@ public class TabPainter extends ZabPanel{
 	 * 	of the given {@link TabPosition} based on it's position and string index
 	 * @param p The {@link TabPosition} to find the bounds
 	 * @param string The string index
-	 * @return The bounds in camera coordinates
+	 * @return The bounds in camera coordinates. These are special bounds, and must be treated as string bounds, not a normal rectangle
 	 */
-	public Rectangle2D.Double symbolBounds(TabPosition p, int string){
+	public Rectangle2D symbolBounds(TabPosition p, int string){
 		// Return an empty rectangle if the metrics are null, or if the tab is null
 		FontMetrics fm = this.getLastSymbolFont();
 		Tab t = this.getTab();
 		if(fm == null || t == null) return new Rectangle2D.Double();
 		
-		// Finding the size of the space the symbol will take up
-		double sW = fm.stringWidth(p.getSymbol().getModifiedSymbol(t.getStrings().get(string)));
-		double sH = fm.getFont().getSize();
-		// Center the x and y position based on the width and height
-		double sX = this.tabPosToCamX(p.getPos()) - sW * 0.5;
-		double sY = this.tabPosToCamY(p.getPos(), string) - sH * 0.5;
-		return new Rectangle2D.Double(sX, sY, sW, sH);
+		ZabSettings settings = ZabAppSettings.get();
+		Camera cam = this.getCamera(); 
+		// Save current alignment
+		int oldXAlign = cam.getStringXAlignment();
+		int oldYAlign = cam.getStringYAlignment();
+		int oldScale = cam.getStringScaleMode();
+		
+		cam.setStringXAlignment(settings.tabPaintSymbolXAlign());
+		cam.setStringYAlignment(settings.tabPaintSymbolYAlign());
+		cam.setStringScaleMode(settings.tabPaintSymbolScaleMode());
+		
+		double x = this.tabPosToCamX(p.getPos());
+		double y = this.tabPosToCamY(p.getPos(), string);
+		
+		TabSymbol symbol = p.getSymbol();
+		String str = symbol.getModifiedSymbol(t.getStrings().get(string));
+
+		// Finding the size of the space the symbol will take up based on the string which will be drawn;
+		Rectangle2D r = cam.stringCamBounds(str, x, y);
+		
+		// Restore previous alignment
+		cam.setStringXAlignment(oldXAlign);
+		cam.setStringYAlignment(oldYAlign);
+		cam.setStringScaleMode(oldScale);
+		
+		// Expand the bounds by a border
+		// Add a small border for the width and height, zooming out so that the border size is the same regardless of zoom level
+		double border = settings.tabPaintSymbolBorderSize();
+		double borderX = cam.stringInverseZoom(border);
+		double borderY = cam.stringInverseZoom(border);
+		double rx = r.getX() - borderX;
+		double ry = r.getY() - borderY;
+		double rw = r.getWidth() + borderX * 2;
+		double rh = r.getHeight() + borderY * 2;
+		return new Rectangle2D.Double(rx, ry, rw, rh);
 	}
 	
 	/**
@@ -664,9 +693,9 @@ public class TabPainter extends ZabPanel{
 		Tab t = this.getTab();
 		if(t != null) t.clearNotes();
 		this.updateLineTabCount();
-		this.resetCamera();
 		this.getDragger().reset();
 		this.getSelectionBox().clear();
+		this.resetCamera();
 	}
 	
 	/**
@@ -831,11 +860,17 @@ public class TabPainter extends ZabPanel{
 	 * Bring the camera to a default state of its origin
 	 */
 	public void resetCamera(){
-		this.tabCamera.setX(-50);
-		this.tabCamera.setY(-100);
-		this.tabCamera.setXZoomFactor(0);
-		this.tabCamera.setYZoomFactor(0);
-		this.tabCamera.setDrawOnlyInBounds(true);
+		Camera cam = this.tabCamera;
+		ZabSettings settings = ZabAppSettings.get();
+		
+		cam.setZoomBase(2);
+		cam.setXZoomFactor(0);
+		cam.setYZoomFactor(0);
+		cam.setDrawOnlyInBounds(true);
+
+		// Center the camera around the tab
+		double numMeasues = settings.tabPaintLineMeasures();
+		cam.center(cam.zoomX(this.tabPosToCamX(numMeasues * 0.5)), this.tabPosToCamY(numMeasues, 0));
 	}
 	
 	/**
@@ -1224,7 +1259,7 @@ public class TabPainter extends ZabPanel{
 	
 	/**
 	 * Get the {@link FontMetrics} for the font last used to repaint this {@link TabPainter}
-	 * @return The {@link FontMetrics}, can be null if the tab was never repainted
+	 * @return The {@link FontMetrics}, which will be in camera coordinates, can be null if the tab was never repainted
 	 */
 	public FontMetrics getLastSymbolFont(){
 		return this.lastSymbolFont;
@@ -1241,32 +1276,29 @@ public class TabPainter extends ZabPanel{
 		// Set up camera
 		Graphics2D g = (Graphics2D)gr;
 		Camera cam = this.tabCamera;
-		cam.setG(g);
+		cam.setGraphics(g);
 		
 		// Draw background
 		g.setColor(theme.background());
 		g.fillRect(0, 0, this.getPaintWidth(), this.getPaintHeight());
 		
 		// Draw the tab
-		this.drawTab(g);
+		this.drawTab();
 		
 		// Draw the selection box
 		this.getSelectionBox().draw(g);
 		
 		// Draw the selection being dragged
-		g.setFont(SYMBOL_FONT);
 		g.setColor(theme.tabSymbolDragText());
 		this.getDragger().draw();
 	}
 	
 	/**
 	 * Draw the {@link #tabCamera} of this {@link TabPainter}<br>
-	 * This method will reassign the graphics object in {@link #tabCamera}.<br>
 	 * This method will do nothing, and will not assign a graphics object, if {@link #tab} is null
-	 * @param g The graphics object to use
 	 * @return true if the drawing took place, false otherwise
 	 */
-	public boolean drawTab(Graphics2D g){
+	public boolean drawTab(){
 		// Do nothing if the tab is null
 		if(this.getTab() == null) return false;
 		Tab tab = this.getTab();
@@ -1276,11 +1308,16 @@ public class TabPainter extends ZabPanel{
 		
 		// Set up camera
 		Camera cam = this.tabCamera;
-		cam.setG(g);
+		Graphics2D g = cam.getGraphics();
 
-		// Set up for drawing strings
+		// Set up for drawing strings and their labels
+		cam.setStringXAlignment(settings.tabPaintStringLabelXAlign());
+		cam.setStringYAlignment(settings.tabPaintStringLabelYAlign());
+		cam.setStringScaleMode(settings.tabPaintStringLabelScaleMode());
 		g.setStroke(STRING_LINE_WEIGHT);
 		g.setFont(SYMBOL_FONT);
+		// Update the font metrics
+		this.lastSymbolFont = g.getFontMetrics();
 		// Enable antialiasing
 		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
 		
@@ -1289,7 +1326,7 @@ public class TabPainter extends ZabPanel{
 		// Starting y position for the first string on the tab
 		double y = this.tabPosToCamY(0, 0);
 		// The x position to draw the string labels
-		double labelX = this.tabPosToCamX(-0.1);
+		double labelX = this.tabPosToCamX(0) + cam.stringInverseZoom(-settings.tabPaintStringLabelSpace());
 		
 		int measuresPerLine = settings.tabPaintLineMeasures();
 		
@@ -1299,20 +1336,19 @@ public class TabPainter extends ZabPanel{
 		for(int k = 0; k < this.getLineTabCount(); k++){
 			// Iterate through each string in the line of tab
 			for(int i = 0; i < this.numStrings(); i++){
-				TabString s = strings.get(i);
+				// Find the position to draw the line
 				y = this.tabPosToCamY(k * measuresPerLine, i);
+				// Find the string which the drawn line will represent
+				TabString s = strings.get(i);
 				str = s.getRootPitch().getPitchName(false);
-				// Find the position of the label on this particular string
-				double labelSize = g.getFontMetrics().stringWidth(str);
-				double labelPos = labelX - labelSize;
 				
-				// Draw the string
+				// Draw the line for TabString
 				g.setColor(theme.tabString());
-				cam.drawLine(labelPos + labelSize, y, this.measuresToPaintWidth(measuresPerLine) + settings.tabPaintBaseX(), y);
+				cam.drawLine(labelX, y, this.measuresToPaintWidth(measuresPerLine) + settings.tabPaintBaseX(), y);
 				
-				// Draw string note labels
+				// Draw string note label
 				g.setColor(theme.tabSymbolText());
-				cam.drawScaleString(str, labelPos, y + 8);
+				cam.drawString(str, labelX, y);
 			}
 			
 			// Draw a vertical line at the beginning of each measure
@@ -1325,8 +1361,6 @@ public class TabPainter extends ZabPanel{
 			}
 		}
 		
-		// Update the font metrics
-		this.lastSymbolFont = g.getFontMetrics();
 		// Drawing all main tab symbols
 		g.setColor(theme.tabSymbolText());
 		this.drawSymbols(tab, 0, 0);
@@ -1349,10 +1383,15 @@ public class TabPainter extends ZabPanel{
 		if(tab == null) return false;
 		
 		ZabTheme theme = ZabAppSettings.theme();
+		ZabSettings settings = ZabAppSettings.get();
 		Camera cam = this.getCamera();
-		Graphics2D g = cam.getG();
+		Graphics2D g = cam.getGraphics();
 		String str;
-		double y;
+		
+		// Align the strings so that they are drawn in the upper left hand corner of the bounds
+		cam.setStringScaleMode(settings.tabPaintSymbolScaleMode());
+		cam.setStringXAlignment(Camera.STRING_ALIGN_CENTER);
+		cam.setStringYAlignment(Camera.STRING_ALIGN_CENTER);
 		
 		// The current color is that which should be used for drawing symbols
 		Color symbolColor = g.getColor();
@@ -1364,26 +1403,28 @@ public class TabPainter extends ZabPanel{
 			// Draw symbols on that string
 			for(int j = 0; j < s.size(); j++){
 				TabPosition p = s.get(j);
-				y = this.tabPosToCamY(p.getPos(), i);
-				
+
 				// Get the symbol as a string
 				TabSymbol t = p.getSymbol();
 				str = t.getSymbol(s);
 				
 				// Finding the size of the space the symbol will take up
-				double sW = g.getFontMetrics().stringWidth(str);
-				double sH = g.getFont().getSize();
-				// Draw the symbol centered at the x and y position
-				double sX = this.tabPosToCamX(p.getPos()) - sW * 0.5;
-				double sY = y + sH * 0.5;
+				Rectangle2D bounds = this.symbolBounds(p, i);
+				double sX = bounds.getCenterX();
+				double sY = bounds.getCenterY();
 				
-				this.drawSymbolHighlight(this.getSelected(), p, i, theme.tabSymbolHighlight());
-				this.drawSymbolHighlight(this.getSelectionBox().getContents(), p, i, theme.tabSymbolBoxHighlight());
-				this.drawSymbolHighlight(this.getHoveredPosition(), p, i, theme.tabSymbolHoverHighlight());
+				// Draw any applicable highlights
+				g.setColor(theme.tabSymbolHighlight());
+				this.drawSymbolHighlight(this.getSelected(), p, i, bounds);
+				g.setColor(theme.tabSymbolBoxHighlight());
+				this.drawSymbolHighlight(this.getSelectionBox().getContents(), p, i, bounds);
+				g.setColor(theme.tabSymbolHoverHighlight());
+				this.drawSymbolHighlight(this.getHoveredPosition(), p, bounds);
+
 				
 				// Draw the symbol
 				g.setColor(symbolColor);
-				cam.drawScaleString(str, sX + xOff, sY + yOff);
+				cam.drawString(str, sX + xOff, sY + yOff);
 			}
 		}
 		// Restore the original color and return success
@@ -1392,35 +1433,22 @@ public class TabPainter extends ZabPanel{
 	}
 	
 	/**
-	 * Draw a highlight where the given {@link TabPosition} would be drawn.<br>
+	 * If applicable, draw a highlight containing the given bounds.<br>
+	 * This method will fail if the given {@link TabPosition} is not in the given {@link SelectionList}.<br>
+	 * This method will also fail if the current {@link #tab} is null.<br>
 	 * This method uses the camera of this {@link TabPainter} to draw graphics, 
 	 * if no graphics object is set in that camera, this method fails 
-	 * @param p The {@link TabPosition} which will have it's position drawn
-	 * @param i The index of the {@link TabString} where the {@link TabPosition} will be drawn
-	 * @param c The color of the highlight
+	 * @param list The list to check, can be null to not check a list
+	 * @param p The {@link TabPosition} which should be in the list
+	 * @param i The index of the {@link TabString} which the {@link TabPosition} is on
+	 * @param bounds The bounds of the highlight to draw
 	 * @return true if the highlight was drawn, false otherwise
 	 */
-	public void drawSymbolHighlight(TabPosition p, int i, Color c){
-		Camera cam = this.tabCamera;
-		cam.getG().setColor(c);
-		Rectangle2D.Double b = this.symbolBounds(p, i);
-		cam.fillRect(b.getX(), b.getY(), b.getWidth(), b.getHeight());
-	}
-	
-	/**
-	 * If applicable, draw a highlight where the given {@link TabPosition} would be drawn<br>
-	 * This method uses the camera of this {@link TabPainter} to draw graphics, 
-	 * if no graphics object is set in that camera, this method fails 
-	 * @param list The list to check if the {@link TabPosition} is contained in the list, can be null to not check a list
-	 * @param p The {@link TabPosition} which will have it's position drawn
-	 * @param i The index of the {@link TabString} where the {@link TabPosition} will be drawn
-	 * @param c The color of the highlight
-	 * @return true if the highlight was drawn, false otherwise
-	 */
-	public boolean drawSymbolHighlight(SelectionList list, TabPosition p, int i, Color c){
+	public boolean drawSymbolHighlight(SelectionList list, TabPosition p, int i, Rectangle2D bounds){
 		Tab t = this.getTab();
 		if(t != null && (list == null || list.isSelected(p, t.getStrings().get(i), i))){
-			this.drawSymbolHighlight(p, i, c);
+			Camera cam = this.getCamera();
+			cam.fillStringRect(bounds);
 			return true;
 		}
 		return false;
@@ -1428,16 +1456,16 @@ public class TabPainter extends ZabPanel{
 	
 	/**
 	 * If applicable, draw a highlight where the given {@link TabPosition} would be drawn<br>
+	 * This method will fail if the given {@link TabPosition} is not equal to the given {@link TabPosition}, or check is null.<br>
 	 * This method uses the camera of this {@link TabPainter} to draw graphics, 
 	 * if no graphics object is set in that camera, this method fails 
 	 * @param check Only draw the highlight of the given {@link TabPosition} is the same object as this
-	 * @param p The {@link TabPosition} which will have it's position drawn
-	 * @param i The index of the {@link TabString} where the {@link TabPosition} will be drawn
-	 * @param c The color of the highlight
+	 * @param p The {@link TabPosition} which should be in the list
+	 * @param bounds The bounds of the highlight to draw
 	 * @return true if the highlight was drawn, false otherwise
 	 */
-	public boolean drawSymbolHighlight(TabPosition check, TabPosition p, int i, Color c){
-		if(check == p) return this.drawSymbolHighlight((SelectionList)null, p, i, c);
+	public boolean drawSymbolHighlight(TabPosition check, TabPosition p, Rectangle2D bounds){
+		if(check != null && check.equals(p)) return this.drawSymbolHighlight((SelectionList)null, p, 0, bounds);
 		return false;
 	}
 	

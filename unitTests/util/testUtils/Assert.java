@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.awt.geom.Rectangle2D;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -240,4 +241,29 @@ public class Assert{
 	public static void listSame(Object[] arr, Object... objs){
 		listSame(Arrays.asList(arr), objs);
 	}
+	
+	/**
+	 * Assert that the two given {@link Rectangle2D} objects have approximately the same x, y, width, and height. 
+	 * If the values are further apart than {@link UtilsTest#DELTA}, then the assertion fails
+	 * @param expect The expected rectangle
+	 * @param actual The actual rectangle
+	 * @param message The message to display with the assertion
+	 */
+	public static void rectangleAproxEqual(Rectangle2D expect, Rectangle2D actual, String message){
+		assertEquals(expect.getX(), actual.getX(), UtilsTest.DELTA, "Checking rectangle x equal, " + message);
+		assertEquals(expect.getY(), actual.getY(), UtilsTest.DELTA, "Checking rectangle y equal, " + message);
+		assertEquals(expect.getWidth(), actual.getWidth(), UtilsTest.DELTA, "Checking rectangle width equal, " + message);
+		assertEquals(expect.getHeight(), actual.getHeight(), UtilsTest.DELTA, "Checking rectangle height equal, " + message);
+	}
+	
+	/**
+	 * Assert that the two given {@link Rectangle2D} objects have approximately the same x, y, width, and height. 
+	 * If the values are further apart than {@link UtilsTest#DELTA}, then the assertion fails
+	 * @param expect The expected rectangle
+	 * @param actual The actual rectangle
+	 */
+	public static void rectangleAproxEqual(Rectangle2D expect, Rectangle2D actual){
+		rectangleAproxEqual(expect, actual, "");
+	}
+	
 }

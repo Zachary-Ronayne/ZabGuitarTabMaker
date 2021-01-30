@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import appUtils.ZabAppSettings;
+import appUtils.ZabSettings;
 import tab.TabPosition;
 
 public class TestEditorMouse extends AbstractTestTabPainter{
@@ -50,7 +51,7 @@ public class TestEditorMouse extends AbstractTestTabPainter{
 	
 	@Test
 	public void mousePressed(){
-		mouse.mouseEntered(new MouseEvent(paint, 0, 0, 0, 12, 34, 0, 0, 0, false, 0));
+		mouse.mousePressed(new MouseEvent(paint, 0, 0, 0, 12, 34, 0, 0, 0, false, 0));
 		assertEquals(12, mouse.x(), "Checking x coordinate updated");
 		assertEquals(34, mouse.y(), "Checking y coordinate updated");
 		
@@ -167,7 +168,7 @@ public class TestEditorMouse extends AbstractTestTabPainter{
 	
 	@Test
 	public void mouseReleased(){
-		mouse.mouseEntered(new MouseEvent(paint, 0, 0, 0, 12, 34, 0, 0, 0, false, 0));
+		mouse.mouseReleased(new MouseEvent(paint, 0, 0, 0, 12, 34, 0, 0, 0, false, 0));
 		assertEquals(12, mouse.x(), "Checking x coordinate updated");
 		assertEquals(34, mouse.y(), "Checking y coordinate updated");
 		
@@ -249,7 +250,7 @@ public class TestEditorMouse extends AbstractTestTabPainter{
 	
 	@Test
 	public void mouseClicked(){
-		mouse.mouseEntered(new MouseEvent(paint, 0, 0, 0, 12, 34, 0, 0, 0, false, 0));
+		mouse.mouseClicked(new MouseEvent(paint, 0, 0, 0, 12, 34, 0, 0, 0, false, 0));
 		assertEquals(12, mouse.x(), "Checking x coordinate updated");
 		assertEquals(34, mouse.y(), "Checking y coordinate updated");
 		
@@ -284,7 +285,7 @@ public class TestEditorMouse extends AbstractTestTabPainter{
 	
 	@Test
 	public void mouseDragged(){
-		mouse.mouseEntered(new MouseEvent(paint, 0, 0, 0, 12, 34, 0, 0, 0, false, 0));
+		mouse.mouseDragged(new MouseEvent(paint, 0, 0, 0, 12, 34, 0, 0, 0, false, 0));
 		assertEquals(12, mouse.x(), "Checking x coordinate updated");
 		assertEquals(34, mouse.y(), "Checking y coordinate updated");
 		
@@ -301,7 +302,7 @@ public class TestEditorMouse extends AbstractTestTabPainter{
 	
 	@Test
 	public void mouseMoved(){
-		mouse.mouseEntered(new MouseEvent(paint, 0, 0, 0, 12, 34, 0, 0, 0, false, 0));
+		mouse.mouseMoved(new MouseEvent(paint, 0, 0, 0, 12, 34, 0, 0, 0, false, 0));
 		assertEquals(12, mouse.x(), "Checking x coordinate updated");
 		assertEquals(34, mouse.y(), "Checking y coordinate updated");
 		
@@ -323,54 +324,109 @@ public class TestEditorMouse extends AbstractTestTabPainter{
 	
 	@Test
 	public void mouseWheelMoved(){
-		mouse.mouseEntered(new MouseWheelEvent(paint, 0, 0, 0, 12, 34, 0, false,
-				MouseWheelEvent.WHEEL_UNIT_SCROLL, 0, 1));
+		int shift = MouseWheelEvent.SHIFT_DOWN_MASK;
+		int alt = MouseWheelEvent.ALT_DOWN_MASK;
+		int ctrl = MouseWheelEvent.CTRL_DOWN_MASK;
+		
+		ZabSettings settings = ZabAppSettings.get();
+		
+		// Basic mouse wheel movement
+		mouse.mouseWheelMoved(mouseWheelMove(0, 12, 34, 1));
 		assertEquals(12, mouse.x(), "Checking x coordinate updated");
 		assertEquals(34, mouse.y(), "Checking y coordinate updated");
+		
+		// Scrolling up to down, and left to right
+		paint.resetCamera();
+		cam.setY(100);
+		settings.getTabControlScrollFactor().set(10.0);
+		mouse.mouseWheelMoved(mouseWheelMove(0, 950, 300, 1));
+		assertEquals(110, cam.getY(), "Checking scrolling up with y scroll inverted");
+		
+		mouse.mouseWheelMoved(mouseWheelMove(0, 950, 300, -2));
+		assertEquals(90, cam.getY(), "Checking scrolling down with y scroll inverted");
+		
+		settings.getTabControlScrollYInverted().set(true);
+		mouse.mouseWheelMoved(mouseWheelMove(0, 950, 300, 1));
+		assertEquals(80, cam.getY(), "Checking scrolling up with y scroll not inverted");
+		
+		mouse.mouseWheelMoved(mouseWheelMove(0, 950, 300, -2));
+		assertEquals(100, cam.getY(), "Checking scrolling down with y scroll not inverted");
+		
+		cam.setX(200);
+		settings.getTabControlScrollFactor().set(10.0);
+		mouse.mouseWheelMoved(mouseWheelMove(shift, 950, 300, 1));
+		assertEquals(210, cam.getX(), "Checking scrolling up with x scroll inverted");
+		
+		mouse.mouseWheelMoved(mouseWheelMove(shift, 950, 300, -2));
+		assertEquals(190, cam.getX(), "Checking scrolling down with x scroll inverted");
+		
+		settings.getTabControlScrollXInverted().set(true);
+		mouse.mouseWheelMoved(mouseWheelMove(shift, 950, 300, 1));
+		assertEquals(180, cam.getX(), "Checking scrolling up with x scroll not inverted");
+		
+		mouse.mouseWheelMoved(mouseWheelMove(shift, 950, 300, -2));
+		assertEquals(200, cam.getX(), "Checking scrolling down with x scroll not inverted");
+		
+		// Zooming
+		settings.getTabControlZoomFactor().set(0.5);
+		settings.getTabControlZoomInverted().set(true);
+		
+		paint.resetCamera();
+		cam.setZoomBase(2);
+		mouse.mouseWheelMoved(mouseWheelMove(ctrl, 950, 300, -1));
+		assertEquals(0.5, cam.getXZoomFactor(), "Checking zooming on both axes");
+		assertEquals(0.5, cam.getYZoomFactor(), "Checking zooming on both axes");
+		assertEquals(478.2485578727798, cam.getX(), "Checking zooming on both axes, camera position updated");
+		assertEquals(1717.8679656440358, cam.getY(), "Checking zooming on both axes, camera position updated");
+		
+		paint.resetCamera();
+		cam.setZoomBase(2);
+		mouse.mouseWheelMoved(mouseWheelMove(ctrl | alt, 950, 300, -1));
+		assertEquals(0.5, cam.getXZoomFactor(), "Checking zooming on only x axis");
+		assertEquals(0, cam.getYZoomFactor(), "Checking zooming on only x axis");
+		assertEquals(478.2485578727798, cam.getX(), "Checking zooming on both axes, camera x position updated");
+		assertEquals(1630.0, cam.getY(), "Checking zooming on both axes, camera y position not updated");
+		
+		paint.resetCamera();
+		cam.setZoomBase(2);
+		mouse.mouseWheelMoved(mouseWheelMove(ctrl | shift, 950, 300, -1));
+		assertEquals(0, cam.getXZoomFactor(), "Checking zooming on only y axis");
+		assertEquals(0.5, cam.getYZoomFactor(), "Checking zooming on only y axis");
+		assertEquals(200, cam.getX(), "Checking zooming on both axes, camera x position not updated");
+		assertEquals(1717.8679656440358, cam.getY(), "Checking zooming on both axes, camera y position updated");
+		
+		paint.resetCamera();
+		cam.setZoomBase(2);
+		mouse.mouseWheelMoved(mouseWheelMove(ctrl | alt | shift, 950, 300, -1));
+		assertEquals(0.5, cam.getXZoomFactor(), "Checking zooming on both axes");
+		assertEquals(0.5, cam.getYZoomFactor(), "Checking zooming on both axes");
+		assertEquals(478.2485578727798, cam.getX(), "Checking zooming on both axes, camera position updated");
+		assertEquals(1717.8679656440358, cam.getY(), "Checking zooming on both axes, camera position updated");
+		
+		settings.getTabControlZoomInverted().set(false);
+		paint.resetCamera();
+		cam.setZoomBase(2);
+		mouse.mouseWheelMoved(mouseWheelMove(ctrl | alt | shift, 950, 300, -1));
+		assertEquals(-0.5, cam.getXZoomFactor(), "Checking zooming on both axes with inverted zooming");
+		assertEquals(-0.5, cam.getYZoomFactor(), "Checking zooming on both axes with inverted zooming");
+		assertEquals(-193.50288425444035, cam.getX(), "Checking zooming on both axes, camera position updated with inverted zooming");
+		assertEquals(1505.7359312880715, cam.getY(), "Checking zooming on both axes, camera position updated with inverted zooming");
+		
+		// Putting settings back to their defaults
+		AbstractTestTabPainter.init();
+	}
 	
-		
-		paint.resetCamera();
-		mouse.mouseWheelMoved(new MouseWheelEvent(paint, 0, 0, 0, 950, 300, 0, false,
-				MouseWheelEvent.WHEEL_UNIT_SCROLL, 0, 1));
-		assertEquals(-2.0, cam.getXZoomFactor(), "Checking zooming in with no modifiers");
-		
-		paint.resetCamera();
-		mouse.mouseWheelMoved(new MouseWheelEvent(paint, 0, 0, 0, 950, 300, 0, false,
-				MouseWheelEvent.WHEEL_UNIT_SCROLL, 0, -1));
-		assertEquals(2.0, cam.getXZoomFactor(), "Checking zooming out with no modifiers");
-
-		paint.resetCamera();
-		mouse.mouseWheelMoved(new MouseWheelEvent(paint, 0, 0, MouseWheelEvent.SHIFT_DOWN_MASK, 950, 300, 0, false,
-				MouseWheelEvent.WHEEL_UNIT_SCROLL, 0, 1));
-		assertEquals(-4.0, cam.getXZoomFactor(), "Checking zooming in with shift");
-		
-		paint.resetCamera();
-		mouse.mouseWheelMoved(new MouseWheelEvent(paint, 0, 0, MouseWheelEvent.SHIFT_DOWN_MASK, 950, 300, 0, false,
-				MouseWheelEvent.WHEEL_UNIT_SCROLL, -1, -1));
-		assertEquals(4.0, cam.getXZoomFactor(), "Checking zooming out with shift");
-		
-		ZabAppSettings.get().getZoomInverted().set(false);
-		paint.resetCamera();
-		mouse.mouseWheelMoved(new MouseWheelEvent(paint, 0, 0, MouseWheelEvent.SHIFT_DOWN_MASK, 950, 300, 0, false,
-				MouseWheelEvent.WHEEL_UNIT_SCROLL, -2, -2));
-		assertEquals(-8.0, cam.getXZoomFactor(), "Checking zooming out with shift with opposite setting");
-		ZabAppSettings.get().getZoomInverted().set(true);
-		
-		paint.resetCamera();
-		mouse.mouseWheelMoved(new MouseWheelEvent(paint, 0, 0, MouseWheelEvent.ALT_DOWN_MASK, 950, 300, 0, false,
-				MouseWheelEvent.WHEEL_UNIT_SCROLL, 0, 1));
-		assertEquals(-4.0, cam.getXZoomFactor(), "Checking zooming in with alt");
-		
-		paint.resetCamera();
-		mouse.mouseWheelMoved(new MouseWheelEvent(paint, 0, 0, MouseWheelEvent.CTRL_DOWN_MASK, 950, 300, 0, false,
-				MouseWheelEvent.WHEEL_UNIT_SCROLL, 0, 1));
-		assertEquals(-4.0, cam.getXZoomFactor(), "Checking zooming in with ctrl");
-
-		paint.resetCamera();
-		mouse.mouseWheelMoved(new MouseWheelEvent(paint, 0, 0,
-				MouseWheelEvent.CTRL_DOWN_MASK | MouseWheelEvent.SHIFT_DOWN_MASK | MouseWheelEvent.ALT_DOWN_MASK,
-				950, 300, 0, false, MouseWheelEvent.WHEEL_UNIT_SCROLL, 0, 1));
-		assertEquals(-16.0, cam.getXZoomFactor(), "Checking zooming in with all modifiers");
+	/**
+	 * A convenience method for testing mouse wheel events. Creates a mouse wheel event with most of the values filled in.
+	 * @param modifiers The modifier mask for the event
+	 * @param x The x position the event took place
+	 * @param y The y position the event took place
+	 * @param srollAmount The amount the wheel was scrolled
+	 * @return The event
+	 */
+	private MouseWheelEvent mouseWheelMove(int modifiers, int x, int y, int srollAmount){
+		return new MouseWheelEvent(paint, 0, 0, modifiers,
+				x, y, 0, false, MouseWheelEvent.WHEEL_UNIT_SCROLL, srollAmount, srollAmount);
 	}
 	
 	@Test

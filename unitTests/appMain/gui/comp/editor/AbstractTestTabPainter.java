@@ -50,7 +50,7 @@ public abstract class AbstractTestTabPainter{
 		s.getTabPaintAboveSpace().set(400.0);
 		s.getTabPaintBelowSpace().set(600.0);
 		s.getQuantizeDivisor().set(4.0);
-		s.getZoomFactor().set(2.0);
+		s.getTabControlZoomFactor().set(2.0);
 	}
 	
 	/**

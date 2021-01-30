@@ -84,9 +84,10 @@ public class ZabGui extends JFrame{
 		// Show the GUI
 		this.setVisible(ZabConstants.SHOW_GUI_ON_INIT);
 
-		// Put the GUI in the full window
+		// Put the GUI in the full window and update the painter camera when the GUI is initially made
 		this.requestFocus();
 		this.maximize();
+		this.getEditorFrame().getTabScreen().resetCamera();
 	}
 	
 	/***

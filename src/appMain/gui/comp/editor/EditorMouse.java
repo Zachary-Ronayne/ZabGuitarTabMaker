@@ -214,7 +214,7 @@ public class EditorMouse extends TabPaintController implements MouseListener, Mo
 			// Checking the selections are equal
 			if(this.toDeselect.equals(paint.findPosition(x, y))){
 				// Finding the compatible bounds for comparing the bounds of the TabPosition to the mouse
-				Rectangle2D.Double bounds = paint.symbolBounds(this.toDeselect.getPos(), this.toDeselect.getStringIndex());
+				Rectangle2D bounds = paint.symbolBounds(this.toDeselect.getPos(), this.toDeselect.getStringIndex());
 				// Checking if the mouse is in the bounds
 				if(bounds.contains(cam.toCamX(x), cam.toCamY(y))){
 					paint.getSelected().deselect(this.toDeselect);
@@ -324,15 +324,40 @@ public class EditorMouse extends TabPaintController implements MouseListener, Mo
 		this.updateLastPos(e);
 		double x = e.getX();
 		double y = e.getY();
+		double wheelMove = e.getWheelRotation();
+		boolean shift = e.isShiftDown();
+		boolean alt = e.isAltDown();
+		boolean ctrl = e.isControlDown();
+		boolean zoom = ctrl;
 		
-		double factor = settings.zoomFactor();
-		if(settings.zoomInverted()) factor *= -1;
+		// If zooming in, i.e. holding control, then zoom in depending on which buttons are held
+		if(zoom){
+			double factor = settings.tabControlZoomFactor();
+			if(settings.tabControlZoomInverted()) factor *= -1;
+			double amount = wheelMove * factor;
+
+			// If alt is held and shift is not, then zoom only on the x axis
+			if(!shift && alt) cam.zoomInX(x, amount);
+			// If shift is held and alt is not, then zoom only on the y axis
+			else if(shift && !alt) cam.zoomInY(y, amount);
+			// Otherwise, zoom on both axis
+			else cam.zoomIn(x, y, amount);
+		}
+		// If not zooming, scroll the camera up or down
+		else{
+			double amount = wheelMove * settings.tabControlScrollFactor();
+			boolean inverseX = settings.tabControlScrollXInverted();
+			boolean inverseY = settings.tabControlScrollYInverted();
+			if(shift){
+				if(inverseX) amount *= -1;
+				cam.addX(cam.inverseZoomX(amount));
+			}
+			else{
+				if(inverseY) amount *= -1;
+				cam.addY(cam.inverseZoomY(amount));
+			}
+		}
 		
-		double zoomMult = settings.zoomModifierFactor();
-		if(e.isShiftDown()) factor *= zoomMult;
-		if(e.isAltDown()) factor *= zoomMult;
-		if(e.isControlDown()) factor *= zoomMult;
-		cam.zoomIn(x, y, e.getWheelRotation() * factor);
 		paint.repaint();
 	}
 
