@@ -51,7 +51,7 @@ public class Rhythm implements Copyable<Rhythm>, Saveable{
 	}
 	
 	/** @param duration See {@link #duration} */
-	public void setDuration(int duration){
+	private void setDuration(int duration){
 		if(duration < 0) duration = 0;
 		this.duration = duration;
 	}
@@ -62,7 +62,7 @@ public class Rhythm implements Copyable<Rhythm>, Saveable{
 	}
 
 	/** @param unit See {@link #unit} */
-	public void setUnit(int unit){
+	private void setUnit(int unit){
 		if(unit < 1) unit = 1;
 		this.unit = unit;
 	}
@@ -70,7 +70,7 @@ public class Rhythm implements Copyable<Rhythm>, Saveable{
 	/**
 	 * Bring the {@link #duration} and {@link #unit} to their most simple form
 	 */
-	public void simplify(){
+	private void simplify(){
 		int divisor = MathUtils.gcd(this.getDuration(), this.getUnit());
 		this.setDuration(this.getDuration() / divisor);
 		this.setUnit(this.getUnit() / divisor);

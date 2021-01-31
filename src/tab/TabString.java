@@ -263,7 +263,7 @@ public class TabString extends ArrayList<TabPosition> implements Copyable<TabStr
 	 * 	i.e. use 4 to quantize to quarter notes, use 6 to quantize to dotted quarter notes, etc
 	 */
 	public void quantize(TimeSignature sig, int divisor){
-		for(TabPosition p : this) p.getPosition().quantize(sig, divisor);
+		for(TabPosition p : this) p.setPosition(p.getPosition().quantize(sig, divisor));
 	}
 	
 	/***/

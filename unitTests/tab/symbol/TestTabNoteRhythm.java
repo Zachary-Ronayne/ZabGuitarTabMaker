@@ -115,18 +115,15 @@ public class TestTabNoteRhythm{
 	public void quantize(){
 		TimeSignature sig = new TimeSignature(4, 4);
 		
-		note.getRhythm().setDuration(33);
-		note.getRhythm().setUnit(64);
+		note.setRhythm(new Rhythm(33, 64));
 		note.quantize(sig, 4);
 		TestTimeSignature.guessRhythmHelper(1, 2, note.getRhythm().getLength(), sig, false);
-		
-		note.getRhythm().setDuration(18);
-		note.getRhythm().setUnit(32);
+
+		note.setRhythm(new Rhythm(18, 32));
 		note.quantize(sig, 4);
 		TestTimeSignature.guessRhythmHelper(9, 16, note.getRhythm().getLength(), sig, false);
-		
-		note.getRhythm().setDuration(5);
-		note.getRhythm().setUnit(64);
+
+		note.setRhythm(new Rhythm(5, 64));
 		note.quantize(sig, 4);
 		TestTimeSignature.guessRhythmHelper(1, 16, note.getRhythm().getLength(), sig, false);
 	}

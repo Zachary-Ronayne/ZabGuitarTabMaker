@@ -47,29 +47,16 @@ public class TestPitch{
 	}
 	
 	@Test
-	public void setNote(){
-		c5.setNote(5);
-		assertEquals(5, c5.getNote(), "Checking correct note is set");
-	}
-	
-	@Test
-	public void addNote(){
-		c5.setNote(0);
-		c5.addNote(2);
-		assertEquals(2, c5.getNote(), "Checking correct note is set after adding");
-	}
-	
-	@Test
 	public void tune(){
-		c5.setNote(0);
-		c5.tune(4);
-		assertEquals(4, c5.getNote(), "Checking correct note is set after tuning");
+		Pitch p = new Pitch(0);
+		p = p.tune(4);
+		assertEquals(4, p.getNote(), "Checking correct note is set after tuning");
 		
-		c5.tune(-3);
-		assertEquals(1, c5.getNote(), "Checking correct note is set after tuning");
+		p = p.tune(-3);
+		assertEquals(1, p.getNote(), "Checking correct note is set after tuning");
 		
-		c5.tune(-10);
-		assertEquals(-9, c5.getNote(), "Checking correct note is set after tuning");
+		p = p.tune(-10);
+		assertEquals(-9, p.getNote(), "Checking correct note is set after tuning");
 	}
 	
 	@Test
@@ -114,7 +101,7 @@ public class TestPitch{
 		assertFalse(c == c4, "Checking objects are not the same object");
 		assertTrue(c.equals(c4), "Checking objects are equal");
 		
-		c.setNote(-1);
+		c = new Pitch(-1);
 		assertFalse(c.equals(c4), "Checking objects are not equal");
 	}
 	

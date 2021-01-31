@@ -45,25 +45,17 @@ public class Pitch implements Copyable<Pitch>, Saveable{
 	 * Set the integer representing the {@link #note} of his {@link Pitch}
 	 * @param note The integer
 	 */
-	public void setNote(int note){
+	private void setNote(int note){
 		this.note = note;
 	}
 	
 	/**
-	 * Does the same thing as {@link #tune(int)}.
-	 * Here for convenience
-	 * @param note The note to add
-	 */
-	public void addNote(int note){
-		this.tune(note);
-	}
-	
-	/**
-	 * Tune this pitch up or down by a number of semitones
+	 * Create a tuned version of this pitch up or down by a number of semitones
 	 * @param change The change in semitones, use positive for higher pitch, negative for lower pitch
+	 * @return The new {@link Pitch}
 	 */
-	public void tune(int change){
-		this.setNote(this.getNote() + change);
+	public Pitch tune(int change){
+		return new Pitch(this.getNote() + change);
 	}
 	
 	/**

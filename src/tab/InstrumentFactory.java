@@ -34,7 +34,7 @@ public final class InstrumentFactory{
 		Tab guitar = guitarStandard();
 		ArrayList<TabString> strings = guitar.getStrings();
 		for(TabString t : strings){
-			t.getRootPitch().tune(change);
+			t.setRootPitch(t.getRootPitch().tune(change));
 		}
 		return guitar;
 	}
@@ -64,7 +64,8 @@ public final class InstrumentFactory{
 	 */
 	public static Tab guitarDropD(){
 		Tab guitar = guitarStandard();
-		guitar.getStrings().get(5).getRootPitch().tune(-2);
+		TabString str = guitar.getStrings().get(5);
+		str.setRootPitch(str.getRootPitch().tune(-2));
 		return guitar;
 	}
 	

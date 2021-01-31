@@ -48,6 +48,23 @@ public class TestTimeSignature{
 	}
 	
 	@Test
+	public void constructor(){
+		assertThrows(IllegalArgumentException.class, new Executable(){
+			@Override
+			public void execute() throws Throwable{
+				new TimeSignature(0, 4);
+			}
+		}, "Checking error thrown on invalid upper value");
+		
+		assertThrows(IllegalArgumentException.class, new Executable(){
+			@Override
+			public void execute() throws Throwable{
+				new TimeSignature(4, 0);
+			}
+		}, "Checking error thrown on invalid lower value");
+	}
+	
+	@Test
 	public void getUpper(){
 		assertEquals(4, four4.getUpper(), "Checking upper initialized");
 		assertEquals(5, five8.getUpper(), "Checking upper initialized");
@@ -56,37 +73,11 @@ public class TestTimeSignature{
 	}
 	
 	@Test
-	public void setUpper(){
-		four4.setUpper(2);
-		assertEquals(2, four4.getUpper(), "Checking upper set");
-		
-		assertThrows(IllegalArgumentException.class, new Executable(){
-			@Override
-			public void execute() throws Throwable{
-				four4.setUpper(0);
-			}
-		}, "Checking error thrown on invalid upper value");
-	}
-	
-	@Test
 	public void getLower(){
 		assertEquals(4, four4.getLower(), "Checking lower initialized");
 		assertEquals(8, five8.getLower(), "Checking lower initialized");
 		assertEquals(4, five4.getLower(), "Checking lower initialized");
 		assertEquals(2, three2.getLower(), "Checking lower initialized");
-	}
-	
-	@Test
-	public void setLower(){
-		four4.setLower(2);
-		assertEquals(2, four4.getLower(), "Checking lower set");
-		
-		assertThrows(IllegalArgumentException.class, new Executable(){
-			@Override
-			public void execute() throws Throwable{
-				four4.setLower(0);
-			}
-		}, "Checking error thrown on invalid lower value");
 	}
 	
 	@Test

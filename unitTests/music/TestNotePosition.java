@@ -48,22 +48,16 @@ public class TestNotePosition{
 	}
 	
 	@Test
-	public void setValue(){
-		pos.setValue(2);
-		assertEquals(2, pos.getValue(), "Checking value is set");
-	}
-	
-	@Test
 	public void addValue(){
-		pos.setValue(2);
-		pos.addValue(3);
-		assertEquals(5, pos.getValue(), "Checking value is added");
+		pos = new NotePosition(2);
+		NotePosition p = pos.added(3);
+		assertEquals(5, p.getValue(), "Checking value is added");
 	}
 	
 	@Test
 	public void retime(){
-		pos.setValue(1.5);
-		pos.retime(five8, four4);
+		pos = new NotePosition(1.5);
+		pos = pos.retime(five8, four4);
 		assertEquals(2.4, pos.getValue(), "Checking retimed position");
 	}
 	
@@ -94,17 +88,15 @@ public class TestNotePosition{
 	 */
 	private void retimeMeasureHelper(double expectPos, double currentPos, TimeSignature oldTime, TimeSignature newTime, boolean inside){
 		NotePosition p = new NotePosition(currentPos);
-		boolean result = p.retimeMeasure(newTime, oldTime);
+		p = p.retimeMeasure(newTime, oldTime);
 		assertEquals(expectPos, p.getValue(), UtilsTest.DELTA, "Checking retiming in the same measure from " 
 				+ oldTime.symbol() + " to " + newTime.symbol());
-		if(inside) assertTrue(result, "Checking retiming is in the original measure");
-		else assertFalse(result, "Checking retiming is outside the original measure");
 	}
 	
 	@Test
 	public void quantize(){
-		pos.setValue(1.1);
-		pos.quantize(new TimeSignature(4, 4), 4);
+		pos = new NotePosition(1.1);
+		pos = pos.quantize(new TimeSignature(4, 4), 4);
 		assertEquals(1, pos.getValue(), UtilsTest.DELTA, "Checking note is quantized");
 	}
 	
@@ -127,13 +119,13 @@ public class TestNotePosition{
 	public void save(){
 		assertFalse(pos.save(null), "Checking save fails with invalid writer");
 		
-		pos.setValue(2.3);
+		pos = new NotePosition(2.3);
 		assertEquals("2.3 \n", UtilsTest.testSave(pos), "Checking correct value saved");
 		
-		pos.setValue(2);
+		pos = new NotePosition(2);
 		assertEquals("2.0 \n", UtilsTest.testSave(pos), "Checking correct value saved");
 		
-		pos.setValue(-1.5);
+		pos = new NotePosition(-1.5);
 		assertEquals("-1.5 \n", UtilsTest.testSave(pos), "Checking correct value saved");
 	}
 	
@@ -155,7 +147,7 @@ public class TestNotePosition{
 		assertFalse(p == pos, "Checking objects are not the same object");
 		assertTrue(p.equals(pos), "Checking objects are equal");
 		
-		p.setValue(4);
+		p = new NotePosition(4);
 		assertFalse(p.equals(pos), "Checking objects are not equal");
 	}
 	

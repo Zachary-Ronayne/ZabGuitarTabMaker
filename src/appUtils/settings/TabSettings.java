@@ -15,7 +15,7 @@ public class TabSettings extends Settings{
 	/** Default for {@link #quantizeDivisor} */
 	public static final double QUANTIZE_DIVISOR = 8.0;
 	/** @return Default for {@link #rhythmConversionEndValue} */
-	public static Rhythm RHYTHM_CONVERSION_END_VALUE(){ return new Rhythm(1, 4); }
+	public static Rhythm RHYTHM_CONVERSION_END_VALUE = new Rhythm(1, 4);
 
 	/**
 	 * The divisor used for quantizing notes for creation, placement, and selection, based on note duration. 
@@ -34,7 +34,7 @@ public class TabSettings extends Settings{
 	public TabSettings(){
 		super();
 		this.quantizeDivisor = this.addDouble(QUANTIZE_DIVISOR);
-		this.rhythmConversionEndValue = this.add(new SettingRhythm(RHYTHM_CONVERSION_END_VALUE()));
+		this.rhythmConversionEndValue = this.add(new SettingRhythm(RHYTHM_CONVERSION_END_VALUE));
 	}
 
 	/** @return See {@link #quantizeDivisor} */

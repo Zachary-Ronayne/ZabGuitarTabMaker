@@ -49,28 +49,19 @@ public class TimeSignature implements Copyable<TimeSignature>, Saveable{
 		return upper;
 	}
 
-	/**
-	 * Set the upper value of this {@link TimeSignature}
-	 * @param upper see {@link #upper}
-	 */
-	public void setUpper(int upper){
+	/** @param upper see {@link #upper} */
+	private void setUpper(int upper){
 		if(upper <= 0) throw new IllegalArgumentException("Upper must be greater than 0");
 		this.upper = upper;
 	}
 
-	/**
-	 * Get the lower value of this {@link TimeSignature}
-	 * @return see {@link #lower}
-	 */
+	/** @return see {@link #lower} */
 	public int getLower(){
 		return lower;
 	}
 
-	/**
-	 * Set the lower value of this {@link TimeSignature}
-	 * @param lower see {@link #lower}
-	 */
-	public void setLower(int lower){
+	/** @param lower see {@link #lower} */
+	private void setLower(int lower){
 		if(lower <= 0) throw new IllegalArgumentException("lower must be greater than 0");
 		this.lower = lower;
 	}
@@ -189,11 +180,9 @@ public class TimeSignature implements Copyable<TimeSignature>, Saveable{
 			 */
 			if(amount >= 1 && remain < best || n == loopEnd){
 				best = remain;
-				r.setDuration(closeAmount);
-				r.setUnit(n);
+				r = new Rhythm(closeAmount, n);
 			}
 		}
-		r.simplify();
 		return r;
 	}
 	

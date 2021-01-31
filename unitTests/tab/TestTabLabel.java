@@ -109,7 +109,7 @@ public class TestTabLabel{
 		assertEquals(1, label.getBeginningPos(), "Checking beginning position with offset zero");
 		assertEquals(-1, fullLabel.getBeginningPos(), "Checking beginning position with non zero offset");
 		
-		pos.setValue(4);
+		fullLabel.setPosition(new NotePosition(4));
 		assertEquals(2, fullLabel.getBeginningPos(), "Checking beginning position after changing note position");
 		
 		fullLabel.setPosition(null);
@@ -121,7 +121,7 @@ public class TestTabLabel{
 		assertEquals(1, label.getEndingPos(), "Checking end position with offset and length zero");
 		assertEquals(4, fullLabel.getEndingPos(), "Checking end position with nonzero offset and length");
 		
-		pos.setValue(3);
+		fullLabel.setPosition(new NotePosition(3));
 		assertEquals(6, fullLabel.getEndingPos(), "Checking end position after changing note position");
 		
 		fullLabel.setLength(3);

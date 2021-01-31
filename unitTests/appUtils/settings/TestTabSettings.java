@@ -29,8 +29,8 @@ public class TestTabSettings{
 	}
 	@Test
 	public void rhythmConversionEndValue(){
-		TestZabSettings.assertSettingInitialized(settings.getRhythmConversionEndValue(), TabSettings.RHYTHM_CONVERSION_END_VALUE());
-		assertEquals(TabSettings.RHYTHM_CONVERSION_END_VALUE(), settings.rhythmConversionEndValue(), "Checking value getter correct");
+		TestZabSettings.assertSettingInitialized(settings.getRhythmConversionEndValue(), TabSettings.RHYTHM_CONVERSION_END_VALUE);
+		assertEquals(TabSettings.RHYTHM_CONVERSION_END_VALUE, settings.rhythmConversionEndValue(), "Checking value getter correct");
 	}
 	
 	@AfterEach

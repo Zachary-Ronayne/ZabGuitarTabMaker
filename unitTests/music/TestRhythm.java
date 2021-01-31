@@ -39,6 +39,16 @@ public class TestRhythm{
 	}
 	
 	@Test
+	public void constructor(){
+		Rhythm r = new Rhythm(-1, -1);
+		assertEquals(0, r.getDuration(), "Checking duration set to 0 on negative value");
+		assertEquals(1, r.getUnit(), "Checking unit set to 1 on negative value");
+
+		r = new Rhythm(-1, 0);
+		assertEquals(1, r.getUnit(), "Checking unit set to 1 on zero value");
+	}
+	
+	@Test
 	public void copy(){
 		Rhythm copy = half.copy();
 		assertTrue(copy.equals(half), "Checking copy is equal to the source object");
@@ -57,15 +67,6 @@ public class TestRhythm{
 	}
 	
 	@Test
-	public void setDuration(){
-		fives.setDuration(4);
-		assertEquals(4, fives.getDuration(), "Checking correct set duration");
-		
-		fives.setDuration(-1);
-		assertEquals(0, fives.getDuration(), "Checking duration set to 0 on negative value");
-	}
-	
-	@Test
 	public void getUnit(){
 		assertEquals(1, whole.getUnit(), "Checking correct initialized unit");
 		assertEquals(2, half.getUnit(), "Checking correct initialized unit");
@@ -74,19 +75,6 @@ public class TestRhythm{
 		assertEquals(5, fives.getUnit(), "Checking correct initialized unit");
 		
 		assertEquals(2, simplify.getUnit(), "Checking simplified initialized unit");
-	}
-	
-	@Test
-	public void setUnit(){
-		fives.setUnit(3);
-		assertEquals(3, fives.getUnit(), "Checking correct set unit");
-		
-		fives.setUnit(-1);
-		assertEquals(1, fives.getUnit(), "Checking unit set to 1 on negative value");
-
-		fives.setUnit(2);
-		fives.setUnit(0);
-		assertEquals(1, fives.getUnit(), "Checking unit set to 1 on zero value");
 	}
 	
 	@Test
@@ -100,29 +88,21 @@ public class TestRhythm{
 	
 	@Test
 	public void simplify(){
-		whole.setDuration(2);
-		whole.setUnit(4);
-		whole.simplify();
-		assertEquals(1, whole.getDuration(), "Checking duration is simplified");
-		assertEquals(2, whole.getUnit(), "Checking unit is simplified");
-		
-		whole.setDuration(12);
-		whole.setUnit(4);
-		whole.simplify();
-		assertEquals(3, whole.getDuration(), "Checking duration is simplified");
-		assertEquals(1, whole.getUnit(), "Checking unit is simplified");
-		
-		whole.setDuration(7);
-		whole.setUnit(5);
-		whole.simplify();
-		assertEquals(7, whole.getDuration(), "Checking duration is unchanged");
-		assertEquals(5, whole.getUnit(), "Checking unit is unchanged");
-		
-		whole.setDuration(1);
-		whole.setUnit(0);
-		whole.simplify();
-		assertEquals(1, whole.getDuration(), "Checking duration is unchanged with unit set to zero");
-		assertEquals(1, whole.getUnit(), "Checking unit is unchanged");
+		Rhythm r = new Rhythm(2, 4);
+		assertEquals(1, r.getDuration(), "Checking duration is simplified");
+		assertEquals(2, r.getUnit(), "Checking unit is simplified");
+
+		r = new Rhythm(12, 4);
+		assertEquals(3, r.getDuration(), "Checking duration is simplified");
+		assertEquals(1, r.getUnit(), "Checking unit is simplified");
+
+		r = new Rhythm(7, 5);
+		assertEquals(7, r.getDuration(), "Checking duration is unchanged");
+		assertEquals(5, r.getUnit(), "Checking unit is unchanged");
+
+		r = new Rhythm(1, 0);
+		assertEquals(1, r.getDuration(), "Checking duration is unchanged with unit set to zero");
+		assertEquals(1, r.getUnit(), "Checking unit is unchanged");
 	}
 	
 	@Test
@@ -164,12 +144,13 @@ public class TestRhythm{
 		assertFalse(r == half, "Checking objects are not the same object");
 		assertTrue(r.equals(half), "Checking objects are equal");
 		
-		r.setDuration(10);
+		r = new Rhythm(10, 2);
 		assertFalse(r.equals(half), "Checking objects are not equal");
-		
-		r.setDuration(1);
+
+		r = new Rhythm(1, 2);
 		assertTrue(r.equals(half), "Checking objects are equal");
-		r.setUnit(20);
+		
+		r = new Rhythm(1, 20);
 		assertFalse(r.equals(half), "Checking objects are not equal");
 	}
 	

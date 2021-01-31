@@ -301,7 +301,7 @@ public class TestTabString{
 	@Test
 	public void quantize(){
 		for(TabPosition p : notes){
-			p.getPosition().addValue(1.1);
+			p.setPosition(p.getPosition().added(1.1));
 			string.add(p);
 		}
 		
