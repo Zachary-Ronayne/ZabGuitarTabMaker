@@ -45,12 +45,6 @@ public class TestTabModifier{
 	}
 	
 	@Test
-	public void setBefore(){
-		mod.setBefore("<");
-		assertEquals("<", mod.getBefore(), "Checking before set");
-	}
-	
-	@Test
 	public void getAfter(){
 		assertEquals(")", mod.getAfter(), "Checking after initialized");
 		
@@ -58,9 +52,17 @@ public class TestTabModifier{
 	}
 	
 	@Test
-	public void setAfter(){
-		mod.setAfter(">");
-		assertEquals(">", mod.getAfter(), "Checking after set");
+	public void added(){
+		assertEquals(new TabModifier("a", "b"), empty.added(new TabModifier("a", "b")), "Checking adding both modifiers");
+
+		mod = new TabModifier("", "d");
+		assertEquals(new TabModifier("a", "d"), mod.added(new TabModifier("a", "b")), "Checking adding only before modifier");
+		
+		mod = new TabModifier("c", "");
+		assertEquals(new TabModifier("c", "b"), mod.added(new TabModifier("a", "b")), "Checking adding only after modifier");
+		
+		mod = new TabModifier("c", "d");
+		assertEquals(new TabModifier("c", "d"), mod.added(new TabModifier("a", "b")), "Checking adding no modifiers");
 	}
 	
 	@Test
@@ -92,12 +94,10 @@ public class TestTabModifier{
 	public void save(){
 		assertEquals("(\n)\n", UtilsTest.testSave(mod), "Checking correct value saved");
 		
-		mod.setBefore("d");
-		mod.setAfter("f");
+		mod = new TabModifier("d", "f");
 		assertEquals("d\nf\n", UtilsTest.testSave(mod), "Checking correct value saved");
-		
-		mod.setBefore("");
-		mod.setAfter("");
+
+		mod = new TabModifier();
 		assertEquals("\n\n", UtilsTest.testSave(mod), "Checking correct value saved for the case of an empty string");
 	}
 	
@@ -110,12 +110,12 @@ public class TestTabModifier{
 		assertFalse(m == mod, "Checking objects are not the same object");
 		assertTrue(m.equals(mod), "Checking objects are equal");
 		
-		m.setBefore("a");
+		m = new TabModifier("a", ")");
 		assertFalse(m.equals(mod), "Checking objects are not equal");
 
-		m.setBefore("(");
+		m = new TabModifier("(", ")");
 		assertTrue(m.equals(mod), "Checking objects are equal");
-		m.setAfter("b");
+		m = new TabModifier("(", "b");
 		assertFalse(m.equals(mod), "Checking objects are not equal");
 	}
 	

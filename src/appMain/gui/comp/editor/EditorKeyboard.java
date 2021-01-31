@@ -3,7 +3,10 @@ package appMain.gui.comp.editor;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
+import tab.ModifierFactory;
 import tab.Tab;
+import tab.TabPosition;
+import tab.symbol.TabModifier;
 
 /**
  * A class used by {@link TabPainter} to control key input
@@ -41,6 +44,7 @@ public class EditorKeyboard extends TabPaintController implements KeyListener{
 			case KeyEvent.VK_ESCAPE: this.keyCancelActions(e); break;
 		}
 		this.keyTypeTabPitch(e);
+		this.keyTypeSetModifier(e);
 		
 		paint.repaint();
 	}
@@ -110,6 +114,54 @@ public class EditorKeyboard extends TabPaintController implements KeyListener{
 	public void keyTypeTabPitch(KeyEvent e){
 		TabPainter paint = this.getPainter();
 		paint.appendSelectedTabNum(e.getKeyChar());
+	}
+	
+	/**
+	 * Called when a key is pressed which should be used for the modifier. 
+	 * This will process the key event and set the modifier appropriately for select {@link TabPosition} objects
+	 * @param e The event of the key, it is assumed the event is for the appropriate action
+	 * @return true if a modifier was set, false otherwise
+	 */
+	public boolean keyTypeSetModifier(KeyEvent e){
+		TabPainter paint = this.getPainter();
+		// Do nothing if no selection is made
+		if(paint.getSelected().isEmpty()) return false;
+		
+		int key = e.getKeyCode();
+		boolean shift = e.isShiftDown();
+		
+		// If space and shift were held down, remove the modifier and end the method
+		if(key == KeyEvent.VK_SPACE && shift){
+			paint.placeModifier(null, 2);
+			return true;
+		}
+		
+		// Otherwise, use a modifier if an applicable one was selected
+		TabModifier mod = null;
+
+		// If shift was held down, add to the modifier, otherwise replace it
+		int mode = shift ? 1 : 0;
+		
+		// Determine the modifier
+		switch(key){
+			case KeyEvent.VK_P: mod = ModifierFactory.pullOff(); break;
+			case KeyEvent.VK_H: mod = ModifierFactory.hammerOn(); break;
+			case KeyEvent.VK_SLASH: mod = ModifierFactory.slideUp(); break;
+			case KeyEvent.VK_BACK_SLASH: mod = ModifierFactory.slideDown(); break;
+			// Special case of a harmonic, it will always replace
+			case KeyEvent.VK_COMMA:
+			case KeyEvent.VK_PERIOD:
+				mod = ModifierFactory.harmonic();
+				mode = 0;
+				break;
+		}
+		
+		// If no valid modifier was found, do nothing
+		if(mod == null) return false;
+		
+		paint.placeModifier(mod, mode);
+		
+		return true;
 	}
 	
 }

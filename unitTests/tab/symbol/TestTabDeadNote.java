@@ -81,17 +81,14 @@ public class TestTabDeadNote{
 	public void save(){
 		assertEquals("\n\n", UtilsTest.testSave(note), "Checking note saved correctly");
 		
-		note.getModifier().setBefore("{");
-		note.getModifier().setAfter("}");
+		note.setModifier(new TabModifier("{", "}"));
 		assertEquals("{\n}\n", UtilsTest.testSave(note), "Checking note saved correctly");
-		
-		note.getModifier().setBefore("<");
-		note.getModifier().setAfter(">");
+
+		note.setModifier(new TabModifier("<", ">"));
 		assertEquals("<\n>\n", UtilsTest.testSave(note), "Checking note saved correctly");
-		
-		note.getModifier().setBefore("{ {");
-		note.getModifier().setAfter("} }");
-		assertEquals("{ {\n} }\n", UtilsTest.testSave(note), "Checking note saved correctly");
+
+		note.setModifier(new TabModifier("{", "}"));
+		assertEquals("{\n}\n", UtilsTest.testSave(note), "Checking note saved correctly");
 	}
 	
 	@Test

@@ -32,8 +32,7 @@ public class ModifierFactory{
 	 */
 	public static TabModifier hammerOnPullOff(){
 		TabModifier m = hammerOn();
-		m.setAfter(ZabAppSettings.get().symbol().pullOff());
-		return m;
+		return new TabModifier(m.getBefore(), ZabAppSettings.get().symbol().pullOff());
 	}
 	
 	/**

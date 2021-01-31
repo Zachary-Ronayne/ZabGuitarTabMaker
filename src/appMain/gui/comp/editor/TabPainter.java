@@ -23,6 +23,7 @@ import appUtils.settings.TabSettings;
 import tab.Tab;
 import tab.TabPosition;
 import tab.TabString;
+import tab.symbol.TabModifier;
 import tab.symbol.TabNote;
 import tab.symbol.TabSymbol;
 
@@ -787,6 +788,34 @@ public class TabPainter extends ZabPanel{
 	}
 
 	/**
+	 * Apply the given modifier to every selected {@link TabPosition}.<br>
+	 * Will use a empty modifier for mod if it is null
+	 * @param mod The modifier to give to the notes
+	 * @param mode The way to apply the modifier. Values to use:
+	 * <ul>
+	 * <li>0: Replace: remove the modifier currently used by the selection, and apply the new one</li>
+	 * <li>1: Add: If the modifier is empty, use the given modifier, otherwise don't change the modifier </li>
+	 * <li>2: Remove: Completely remove the modifier from the selected symbols. In this case the value of mod is not used </li>
+	 * </ul>
+	 * 	An unrecognized value will default to 0, i.e. replace mode.
+	 */
+	public void placeModifier(TabModifier mod, int mode){
+		if(mod == null) mod = new TabModifier();
+		for(Selection s : this.getSelected()){
+			TabSymbol sym = s.getPos().getSymbol();
+			switch(mode){
+				default:
+				// Replace
+				case 0: sym.setModifier(mod); break;
+				// Add
+				case 1: sym.addModifier(mod); break;
+				// Remove
+				case 2: sym.setModifier(new TabModifier()); break;
+			}
+		}
+	}
+	
+	/**
 	 * Place a note based on the given coordinates in pixel space.<br>
 	 * Can do nothing if the coordinates aren't near the tab, or if the note cannot be placed
 	 * @param mX The x coordinate, usually a mouse position
@@ -1419,7 +1448,7 @@ public class TabPainter extends ZabPanel{
 
 				// Get the symbol as a string
 				TabSymbol t = p.getSymbol();
-				str = t.getSymbol(s);
+				str = t.getModifiedSymbol(s);
 				
 				// Finding the size of the space the symbol will take up
 				Rectangle2D bounds = this.symbolBounds(p, i);

@@ -45,6 +45,15 @@ public abstract class TabSymbol implements Copyable<TabSymbol>, Saveable{
 		if(modifier == null) return;
 		this.modifier = modifier;
 	}
+	
+	/**
+	 * Add the given {@link TabModifier} to this {@link TabSymbol}. 
+	 * For definition of adding, see {@link TabModifier#added(TabModifier)}
+	 * @param mod The modifier to add
+	 */
+	public void addModifier(TabModifier mod){
+		this.setModifier(this.getModifier().added(mod));
+	}
 
 	/**
 	 * Get the text representing this symbol with no modifiers
@@ -52,7 +61,6 @@ public abstract class TabSymbol implements Copyable<TabSymbol>, Saveable{
 	 * @return The text
 	 */
 	public abstract String getSymbol(TabString string);
-
 	
 	/**
 	 * Get the text representing this symbol with all modifiers

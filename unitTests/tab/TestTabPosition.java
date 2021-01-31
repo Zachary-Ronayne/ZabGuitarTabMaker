@@ -16,6 +16,7 @@ import org.junit.jupiter.api.function.Executable;
 import appUtils.ZabAppSettings;
 import music.NotePosition;
 import music.TimeSignature;
+import tab.symbol.TabModifier;
 import tab.symbol.TabNote;
 import tab.symbol.TabSymbol;
 import util.Saveable;
@@ -156,10 +157,10 @@ public class TestTabPosition{
 		same.setPos(3);
 		assertTrue(note.equals(same), "Checking notes are equal");
 		
-		same.getSymbol().getModifier().setAfter("aa");
+		same.getSymbol().setModifier(new TabModifier(same.getSymbol().getModifier().getBefore(), "aa"));
 		assertFalse(note.equals(same), "Checking notes are not equal with different modifiers");
-		
-		same.getSymbol().getModifier().setAfter("aa");
+
+		same.getSymbol().setModifier(new TabModifier("aa", same.getSymbol().getModifier().getAfter()));
 		assertFalse(note.equals(symbol), "Checking notes are not equal with different object types");
 	}
 	

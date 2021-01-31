@@ -25,7 +25,9 @@ import tab.Tab;
 import tab.TabFactory;
 import tab.TabPosition;
 import tab.TabString;
+import tab.symbol.TabModifier;
 import tab.symbol.TabPitch;
+import tab.symbol.TabSymbol;
 import util.testUtils.Assert;
 import util.testUtils.UtilsTest;
 
@@ -767,6 +769,47 @@ public class TestTabPainter extends AbstractTestTabPainter{
 
 		paint.appendSelectedTabNum('7');
 		assertEquals(-7, paint.getSelectedNewTabNum(), "Checking appending a negative number resets it");
+	}
+	
+	@Test
+	public void placeModifier(){
+		paint.clearSelection();
+		paint.select(0, 0);
+		
+		TabSymbol sym = str0.get(0).getSymbol();
+		paint.placeModifier(new TabModifier("a", ""), 0);
+		assertEquals(new TabModifier("a", ""), sym.getModifier(), "Checking replacing a modifier");
+		
+		paint.placeModifier(new TabModifier("", "b"), 0);
+		assertEquals(new TabModifier("", "b"), sym.getModifier(), "Checking replacing modifier");
+		
+		paint.placeModifier(new TabModifier("d", "f"), 0);
+		assertEquals(new TabModifier("d", "f"), sym.getModifier(), "Checking replacing modifier");
+		
+		paint.placeModifier(new TabModifier("e", "r"), 0);
+		assertEquals(new TabModifier("e", "r"), sym.getModifier(), "Checking replacing modifier");
+		
+		paint.placeModifier(new TabModifier("e", "r"), 2);
+		assertEquals(new TabModifier("", ""), sym.getModifier(), "Checking erasing modifier");
+		
+		paint.placeModifier(new TabModifier("", "r"), 1);
+		assertEquals(new TabModifier("", "r"), sym.getModifier(), "Checking adding modifier");
+		
+		paint.placeModifier(new TabModifier("d", "f"), 1);
+		assertEquals(new TabModifier("d", "r"), sym.getModifier(), "Checking adding modifier");
+		
+		paint.placeModifier(new TabModifier("w", "e"), 1);
+		assertEquals(new TabModifier("d", "r"), sym.getModifier(), "Checking adding modifier");
+
+		paint.clearSelection();
+		paint.select(0, 5);
+		paint.select(1, 5);
+		paint.select(2, 5);
+		paint.placeModifier(new TabModifier("v", "b"), 0);
+		assertEquals(new TabModifier("v", "b"), str5.get(0).getSymbol().getModifier(), "Checking adding modifiers to many notes");
+		assertEquals(new TabModifier("v", "b"), str5.get(1).getSymbol().getModifier(), "Checking adding modifiers to many notes");
+		assertEquals(new TabModifier("v", "b"), str5.get(2).getSymbol().getModifier(), "Checking adding modifiers to many notes");
+		assertEquals(new TabModifier("", ""), str5.get(3).getSymbol().getModifier(), "Checking adding modifier not added");
 	}
 	
 	@Test

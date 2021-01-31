@@ -13,6 +13,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import tab.ModifierFactory;
+import tab.symbol.TabModifier;
+import tab.symbol.TabSymbol;
+
 public class TestEditorKeyboard extends AbstractTestTabPainter{
 
 	private EditorKeyboard keys;
@@ -132,6 +136,73 @@ public class TestEditorKeyboard extends AbstractTestTabPainter{
 		
 		keys.keyPressed(new KeyEvent(paint, 0, 0, 0, 0, '-'));
 		assertEquals(-1, paint.getSelectedNewTabNum(), "Checking tab num updated with minus sign");
+	}
+	
+	@Test
+	public void keyTypeSetModifier(){
+		paint.clearSelection();
+		TabSymbol sym = str0.get(0).getSymbol();
+		
+		assertFalse(keys.keyTypeSetModifier(
+				new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_P, '1')),
+				"Checking nothing placed with no selection");
+		
+		paint.select(0, 0);
+		assertFalse(keys.keyTypeSetModifier(
+				new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_1, '1')),
+				"Checking nothing placed with unrecognized key");
+		
+		assertTrue(keys.keyTypeSetModifier(
+				new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_P, 'p')),
+				"Checking modifier placed");
+		assertEquals(new TabModifier("", "p"), sym.getModifier(), "Checking pull off placed");
+		
+		assertTrue(keys.keyTypeSetModifier(
+				new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_H, 'h')),
+				"Checking modifier placed");
+		assertEquals(new TabModifier("h", ""), sym.getModifier(), "Checking hammer on placed");
+		
+		assertTrue(keys.keyTypeSetModifier(
+				new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_SLASH, '/')),
+				"Checking modifier placed");
+		assertEquals(new TabModifier("/", ""), sym.getModifier(), "Checking slide down placed");
+
+		assertTrue(keys.keyTypeSetModifier(
+				new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_BACK_SLASH, '\\')),
+				"Checking modifier placed");
+		assertEquals(new TabModifier("\\", ""), sym.getModifier(), "Checking slide up placed");
+		
+		// TODO all harmonic cases
+		assertTrue(keys.keyTypeSetModifier(
+				new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_PERIOD, '.')),
+				"Checking modifier placed");
+		assertEquals(new TabModifier("<", ">"), sym.getModifier(), "Checking harmonic placed");
+		sym.setModifier(new TabModifier());
+		assertTrue(keys.keyTypeSetModifier(
+				new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_COMMA, ',')),
+				"Checking modifier placed");
+		assertEquals(new TabModifier("<", ">"), sym.getModifier(), "Checking harmonic placed");
+		
+		assertTrue(keys.keyTypeSetModifier(
+				new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_P, 'p')),
+				"Checking modifier placed");
+		assertEquals(new TabModifier("", "p"), sym.getModifier(), "Checking pull off placed");
+		
+		assertTrue(keys.keyTypeSetModifier(
+				new KeyEvent(paint, 0, 0, KeyEvent.SHIFT_DOWN_MASK, KeyEvent.VK_H, 'h')),
+				"Checking modifier placed");
+		assertEquals(new TabModifier("h", "p"), sym.getModifier(), "Checking both modifiers exist");
+		
+		assertTrue(keys.keyTypeSetModifier(
+				new KeyEvent(paint, 0, 0, KeyEvent.SHIFT_DOWN_MASK, KeyEvent.VK_SPACE, ' ')),
+				"Checking modifier removed");
+		assertEquals(new TabModifier("", ""), sym.getModifier(), "Checking removing modifier");
+		
+		sym.setModifier(ModifierFactory.hammerOn());
+		assertFalse(keys.keyTypeSetModifier(
+				new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_SPACE, ' ')),
+				"Checking modifier not changed");
+		assertEquals(new TabModifier("h", ""), sym.getModifier(), "Checking modifier unchanged with space and no shift");
 	}
 	
 	@AfterEach

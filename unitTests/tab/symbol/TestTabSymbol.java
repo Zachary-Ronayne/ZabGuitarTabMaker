@@ -93,6 +93,17 @@ public class TestTabSymbol{
 	}
 	
 	@Test
+	public void addModifier(){
+		symbol.setModifier(new TabModifier("a", ""));
+		symbol.addModifier(new TabModifier("b", "d"));
+		assertEquals(new TabModifier("a", "d"), symbol.getModifier(), "Checking modifier added correctly");
+		
+		symbol.setModifier(new TabModifier("", ""));
+		symbol.addModifier(new TabModifier("b", "d"));
+		assertEquals(new TabModifier("b", "d"), symbol.getModifier(), "Checking modifier added correctly");
+	}
+	
+	@Test
 	public void getModifiedSymbol(){
 		assertEquals("[A]", symbol.getModifiedSymbol(string), "Checking modified symbol obtained");
 		

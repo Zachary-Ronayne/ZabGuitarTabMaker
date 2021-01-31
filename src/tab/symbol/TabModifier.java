@@ -54,10 +54,10 @@ public class TabModifier implements Copyable<TabModifier>, Saveable{
 	 * Set the {@link #before} of this {@link TabModifier}
 	 * @param before The string
 	 */
-	public void setBefore(String before){
+	private void setBefore(String before){
 		this.before = before;
 	}
-
+	
 	/**
 	 * Get the {@link #after} of this {@link TabModifier}
 	 * @return The string
@@ -70,8 +70,21 @@ public class TabModifier implements Copyable<TabModifier>, Saveable{
 	 * Set the {@link #after} of this {@link TabModifier}
 	 * @return The string
 	 */
-	public void setAfter(String after){
+	private void setAfter(String after){
 		this.after = after;
+	}
+	
+	/**
+	 * Create a new {@link TabModifier} by adding the given {@link TabModifier} to this {@link TabModifier}.
+	 * To add means to only replace the before or after fields of the modifier if that field is empty, otherwise it is unchanged
+	 * @param mod The modifier to add
+	 * @return The new {@link TabModifier}
+	 */
+	public TabModifier added(TabModifier mod){
+		return new TabModifier(
+				this.getBefore().isEmpty() ? mod.getBefore() : this.getBefore(),
+				this.getAfter().isEmpty() ? mod.getAfter() : this.getAfter()
+			);
 	}
 	
 	/**
