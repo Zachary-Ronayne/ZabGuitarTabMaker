@@ -88,6 +88,12 @@ public class TestEditorFrame{
 		assertEquals(guitar, frame.getTabScreen().getTab(), "Checking painter tab is set");
 	}
 	
+	@Test
+	public void focused(){
+		// Calling focus method for completeness
+		frame.focused();
+	}
+	
 	@AfterEach
 	public void end(){}
 	

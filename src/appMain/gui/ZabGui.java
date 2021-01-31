@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 import java.awt.event.WindowListener;
 import java.awt.event.WindowStateListener;
 import java.util.ArrayList;
@@ -46,7 +47,7 @@ public class ZabGui extends JFrame{
 	 * Create the default {@link ZabGui}
 	 */
 	public ZabGui(){
-		super();
+		super("Zab");
 		
 		// Keep hidden initially
 		this.setVisible(false);
@@ -80,6 +81,7 @@ public class ZabGui extends JFrame{
 		this.addComponentListener(resizer);
 		this.addWindowStateListener(resizer);
 		this.addWindowListener(resizer);
+		this.addWindowFocusListener(resizer);
 		
 		// Show the GUI
 		this.setVisible(ZabConstants.SHOW_GUI_ON_INIT);
@@ -200,7 +202,7 @@ public class ZabGui extends JFrame{
 	 * A class used for handling resizing the {@link ZabGui}
 	 * @author zrona
 	 */
-	public class GuiResizeListener extends ComponentAdapter implements WindowStateListener, WindowListener{
+	public class GuiResizeListener extends ComponentAdapter implements WindowStateListener, WindowListener, WindowFocusListener{
 		/** The {@link ZabGui} which this listener uses */
 		private ZabGui gui;
 		
@@ -260,6 +262,15 @@ public class ZabGui extends JFrame{
 		public void windowDeactivated(WindowEvent e){
 			resize();
 		}
+
+		@Override
+		public void windowGainedFocus(WindowEvent e){
+			// Provides focus to the needed frame
+			getCurrentFrame().focused();
+		}
+
+		@Override
+		public void windowLostFocus(WindowEvent e){}
 	}
 	
 }

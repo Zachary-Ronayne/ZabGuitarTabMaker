@@ -113,4 +113,12 @@ public class EditorFrame extends ZabFrame{
 		this.getTabScreen().setTab(tab);
 	}
 	
+	/**
+	 * Called when the {@link ZabGui} holding this {@link EditorFrame} 
+	 */
+	@Override
+	public void focused(){
+		this.getTabScreen().requestFocusInWindow();
+	}
+	
 }

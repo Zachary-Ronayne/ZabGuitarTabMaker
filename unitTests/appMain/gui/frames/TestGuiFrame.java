@@ -29,7 +29,14 @@ public class TestGuiFrame{
 	
 	@Test
 	public void parentResized(){
+		// Calling empty method for completeness
 		frame.parentResized(0, 0);
+	}
+	
+	@Test
+	public void focused(){
+		// Calling empty method for completeness
+		frame.focused();
 	}
 	
 	@AfterEach

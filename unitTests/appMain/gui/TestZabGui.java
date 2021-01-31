@@ -186,6 +186,16 @@ public class TestZabGui{
 		resizer.windowDeactivated(winEvent);
 	}
 	
+	@Test
+	public void windowGainedFocusGuiResizeListener(){
+		resizer.windowGainedFocus(winEvent);
+	}
+	
+	@Test
+	public void windowLostFocusGuiResizeListener(){
+		resizer.windowLostFocus(winEvent);
+	}
+	
 	@AfterEach
 	public void end(){
 		gui.dispose();

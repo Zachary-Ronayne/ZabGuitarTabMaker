@@ -2,6 +2,8 @@ package appMain.gui.frames;
 
 import javax.swing.JPanel;
 
+import appMain.gui.ZabGui;
+
 /**
  * A JPanel holding all of the components used for a screen of a GUI, i.e. a main menu screen, main work screen, etc.
  * @author zrona
@@ -23,5 +25,10 @@ public abstract class GuiFrame extends JPanel{
 	 * @param h The new height of the parent
 	 */
 	public abstract void parentResized(int w,  int h);
-	
+
+	/**
+	 * Called when the {@link ZabGui} holding this {@link EditorFrame} gets focus, does nothing by default. 
+	 * Override this method to do something when this {@link GuiFrame} should gain focus
+	 */
+	public void focused(){}
 }
