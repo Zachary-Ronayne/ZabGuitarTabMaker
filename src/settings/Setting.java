@@ -4,7 +4,7 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 import appUtils.ZabConstants;
-import appUtils.ZabSettings;
+import appUtils.settings.ZabSettings;
 import util.ObjectUtils;
 import util.Saveable;
 

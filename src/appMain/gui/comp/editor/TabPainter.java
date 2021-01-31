@@ -18,7 +18,8 @@ import appMain.gui.ZabTheme;
 import appMain.gui.comp.ZabPanel;
 import appMain.gui.util.Camera;
 import appUtils.ZabAppSettings;
-import appUtils.ZabSettings;
+import appUtils.settings.TabPaintSettings;
+import appUtils.settings.TabSettings;
 import tab.Tab;
 import tab.TabPosition;
 import tab.TabString;
@@ -579,7 +580,7 @@ public class TabPainter extends ZabPanel{
 		*/ 
 		// Checking inside the string range
 		double oldBaseValue = newBaseValue - posValueChange;
-		double measures = ZabAppSettings.get().tabPaintLineMeasures();
+		double measures = ZabAppSettings.get().paint().lineMeasures();
 		if(!this.validStringIndex(newStringIndex) || 
 				!this.tabPosInTabLine(newBaseValue, oldPosValue % measures - oldBaseValue % measures)){
 			return null;
@@ -614,7 +615,7 @@ public class TabPainter extends ZabPanel{
 	 * @return A {@link Selection} containing the position, or null if no position could be found
 	 */
 	public Selection findPosition(double mX, double mY){
-		ZabSettings settings = ZabAppSettings.get();
+		TabSettings settings = ZabAppSettings.get().tab();
 		
 		// Ensure the tab exists
 		Tab t = this.getTab();
@@ -649,16 +650,16 @@ public class TabPainter extends ZabPanel{
 		Tab t = this.getTab();
 		if(fm == null || t == null) return new Rectangle2D.Double();
 		
-		ZabSettings settings = ZabAppSettings.get();
+		TabPaintSettings settings = ZabAppSettings.get().paint();
 		Camera cam = this.getCamera(); 
 		// Save current alignment
 		int oldXAlign = cam.getStringXAlignment();
 		int oldYAlign = cam.getStringYAlignment();
 		int oldScale = cam.getStringScaleMode();
 		
-		cam.setStringXAlignment(settings.tabPaintSymbolXAlign());
-		cam.setStringYAlignment(settings.tabPaintSymbolYAlign());
-		cam.setStringScaleMode(settings.tabPaintSymbolScaleMode());
+		cam.setStringXAlignment(settings.symbolXAlign());
+		cam.setStringYAlignment(settings.symbolYAlign());
+		cam.setStringScaleMode(settings.symbolScaleMode());
 		
 		double x = this.tabPosToCamX(p.getPos());
 		double y = this.tabPosToCamY(p.getPos(), string);
@@ -676,7 +677,7 @@ public class TabPainter extends ZabPanel{
 		
 		// Expand the bounds by a border
 		// Add a small border for the width and height, zooming out so that the border size is the same regardless of zoom level
-		double border = settings.tabPaintSymbolBorderSize();
+		double border = settings.symbolBorderSize();
 		double borderX = cam.stringInverseZoom(border);
 		double borderY = cam.stringInverseZoom(border);
 		double rx = r.getX() - borderX;
@@ -861,7 +862,7 @@ public class TabPainter extends ZabPanel{
 	 */
 	public void resetCamera(){
 		Camera cam = this.tabCamera;
-		ZabSettings settings = ZabAppSettings.get();
+		TabPaintSettings settings = ZabAppSettings.get().paint();
 		
 		cam.setZoomBase(2);
 		cam.setXZoomFactor(0);
@@ -869,7 +870,7 @@ public class TabPainter extends ZabPanel{
 		cam.setDrawOnlyInBounds(true);
 
 		// Center the camera around the tab
-		double numMeasues = settings.tabPaintLineMeasures();
+		double numMeasues = settings.lineMeasures();
 		cam.center(cam.zoomX(this.tabPosToCamX(numMeasues * 0.5)), this.tabPosToCamY(numMeasues, 0));
 	}
 	
@@ -908,7 +909,7 @@ public class TabPainter extends ZabPanel{
 	 * @return A painter coordinate with the x offset removed
 	 */
 	public double removeXOffset(double x){
-		return x - ZabAppSettings.get().tabPaintBaseX();
+		return x - ZabAppSettings.get().paint().baseX();
 	}
 	
 	/**
@@ -917,21 +918,23 @@ public class TabPainter extends ZabPanel{
 	 * @return A painter coordinate with the y offset removed
 	 */
 	public double removeYOffset(double y){
-		return y - ZabAppSettings.get().tabPaintBaseY();
+		return y - ZabAppSettings.get().paint().baseY();
 	}
 	
 	/**
 	 * @return The width, in painter pixels, of each line of tab
 	 */
 	public double tabWidth(){
-		return ZabAppSettings.get().tabPaintMeasureWidth() * ZabAppSettings.get().tabPaintLineMeasures();
+		TabPaintSettings settings = ZabAppSettings.get().paint();
+		return settings.measureWidth() * settings.lineMeasures();
 	}
 	
 	/**
 	 * @return The height, in painter pixels, of each line of tab
 	 */
 	public double tabHeight(){
-		return Math.max(0, ZabAppSettings.get().tabPaintStringSpace() * (this.numStrings() - 1));
+		TabPaintSettings settings = ZabAppSettings.get().paint();
+		return Math.max(0, settings.stringSpace() * (this.numStrings() - 1));
 	}
 
 	/**
@@ -940,7 +943,8 @@ public class TabPainter extends ZabPanel{
 	 * @return The coordinate
 	 */
 	public double tabLineStart(int lineNum){
-		return this.lineHeight() * lineNum + ZabAppSettings.get().tabPaintAboveSpace();
+		TabPaintSettings settings = ZabAppSettings.get().paint();
+		return this.lineHeight() * lineNum + settings.aboveSpace();
 	}
 
 	/**
@@ -949,7 +953,8 @@ public class TabPainter extends ZabPanel{
 	 * @return The coordinate
 	 */
 	public double tabLineEnd(int lineNum){
-		return this.lineHeight() * (lineNum + 1) - ZabAppSettings.get().tabPaintBelowSpace();
+		TabPaintSettings settings = ZabAppSettings.get().paint();
+		return this.lineHeight() * (lineNum + 1) - settings.belowSpace();
 	}
 	
 	/**
@@ -959,7 +964,8 @@ public class TabPainter extends ZabPanel{
 	 * @return The coordinate
 	 */
 	public double tabLineStartBuffer(int lineNum){
-		return this.tabLineStart(lineNum) - ZabAppSettings.get().tabPaintSelectionBuffer();
+		TabPaintSettings settings = ZabAppSettings.get().paint();
+		return this.tabLineStart(lineNum) - settings.selectionBuffer();
 	}
 
 	/**
@@ -969,7 +975,8 @@ public class TabPainter extends ZabPanel{
 	 * @return The coordinate
 	 */
 	public double tabLineEndBuffer(int lineNum){
-		return this.tabLineEnd(lineNum) + ZabAppSettings.get().tabPaintSelectionBuffer();
+		TabPaintSettings settings = ZabAppSettings.get().paint();
+		return this.tabLineEnd(lineNum) + settings.selectionBuffer();
 	}
 	
 	/**
@@ -978,7 +985,8 @@ public class TabPainter extends ZabPanel{
 	 * @return The buffer size
 	 */
 	public double tabLineSideBuffer(){
-		return ZabAppSettings.get().tabPaintMeasureWidth() * (1 / ZabAppSettings.get().quantizeDivisor());
+		TabPaintSettings settings = ZabAppSettings.get().paint();
+		return settings.measureWidth() * (1 / ZabAppSettings.get().tab().quantizeDivisor());
 	}
 	
 	/**
@@ -1086,15 +1094,16 @@ public class TabPainter extends ZabPanel{
 	 * @return The tab position, in measures
 	 */
 	public double lineNumberMeasures(int num){
-		return num * ZabAppSettings.get().tabPaintLineMeasures();
+		TabPaintSettings settings = ZabAppSettings.get().paint();
+		return num * settings.lineMeasures();
 	}
 	
 	/**
 	 * @return The height, in painter pixels, of each line of tab, along with the space between each line
 	 */
 	public double lineHeight(){
-		ZabSettings settings = ZabAppSettings.get();
-		return settings.tabPaintAboveSpace() + this.tabHeight() + settings.tabPaintBelowSpace();
+		TabPaintSettings settings = ZabAppSettings.get().paint();
+		return settings.aboveSpace() + this.tabHeight() + settings.belowSpace();
 	}
 	
 	/**
@@ -1103,7 +1112,8 @@ public class TabPainter extends ZabPanel{
 	 * @return The measure position
 	 */
 	public double paintWidthToMeasures(double width){
-		return width / ZabAppSettings.get().tabPaintMeasureWidth();
+		TabPaintSettings settings = ZabAppSettings.get().paint();
+		return width / settings.measureWidth();
 	}
 
 	/**
@@ -1112,7 +1122,8 @@ public class TabPainter extends ZabPanel{
 	 * @return The width of the space in pixels
 	 */
 	public double measuresToPaintWidth(double measure){
-		return measure * ZabAppSettings.get().tabPaintMeasureWidth();
+		TabPaintSettings settings = ZabAppSettings.get().paint();
+		return measure * settings.measureWidth();
 	}
 	
 	/**
@@ -1124,9 +1135,10 @@ public class TabPainter extends ZabPanel{
 	public double quanitzedTabPos(double mX, double mY){
 		Tab t = this.getTab();
 		if(t == null) return -1;
+		TabSettings settings = ZabAppSettings.get().tab();
 		double pos = this.xToTabPos(mX, mY);
 		if(pos < 0) return -1;
-		return t.getTimeSignature().quantize(this.xToTabPos(mX, mY), ZabAppSettings.get().quantizeDivisor());
+		return t.getTimeSignature().quantize(this.xToTabPos(mX, mY), settings.quantizeDivisor());
 	}
 	
 	/**
@@ -1170,8 +1182,9 @@ public class TabPainter extends ZabPanel{
 	 * @return The x coordinate on the camera
 	 */
 	public double tabPosToCamX(double pos){
+		TabPaintSettings settings = ZabAppSettings.get().paint();
 		// Find the relative portion of a line it will be on, and give it the offset
-		return this.measuresToPaintWidth(pos) % this.tabWidth() + ZabAppSettings.get().tabPaintBaseX();
+		return this.measuresToPaintWidth(pos) % this.tabWidth() + settings.baseX();
 	}
 	
 	/**
@@ -1201,7 +1214,7 @@ public class TabPainter extends ZabPanel{
 	 * Can be negative if no valid line number is found
 	 */
 	public double camYToTabPos(double y){
-		ZabSettings settings = ZabAppSettings.get();
+		TabPaintSettings settings = ZabAppSettings.get().paint();
 		
 		// Get the line number as a double, and if it is a negative value, return -1 as it is not a valid line
 		int lineNum = this.lineNumber(y);
@@ -1217,7 +1230,7 @@ public class TabPainter extends ZabPanel{
 		
 		// If the found coordinate is not within the buffered bounds, return -1, it is not a valid line
 		if(tabStartBuff > y || y > tabEndBuff) return -1;
-		
+
 		// Find the position in the unbuffered bounds
 		/*
 		 * Find the percentage of the space through the line they position is, and determine the string
@@ -1226,7 +1239,7 @@ public class TabPainter extends ZabPanel{
 		 * 	then multiply that percentage by the number of strings to get the string position
 		 */
 		double tabPos = y - tabStart;
-		double stringNum = tabPos / (this.tabHeight() + settings.tabPaintStringSpace()) * this.numStrings();
+		double stringNum = tabPos / (this.tabHeight() + settings.stringSpace()) * this.numStrings();
 		
 		// Ensure the string number will round to a valid string index
 		return Math.max(0, Math.min(this.numStrings() - 1, stringNum));
@@ -1239,11 +1252,11 @@ public class TabPainter extends ZabPanel{
 	 * @return The y coordinate on the camera
 	 */
 	public double tabPosToCamY(double pos, double num){
-		ZabSettings settings = ZabAppSettings.get();
+		TabPaintSettings settings = ZabAppSettings.get().paint();
 		// Find the height which must be added to account for the line of that the tab position represents
-		double heightOffset = this.lineHeight() * (int)(pos / settings.tabPaintLineMeasures());
+		double heightOffset = this.lineHeight() * (int)(pos / settings.lineMeasures());
 		// First add the space above each tab line, then the total space in the line, then the space from extra lines, and the final offset
-		return settings.tabPaintAboveSpace() + (num * settings.tabPaintStringSpace()) + heightOffset + settings.tabPaintBaseY();
+		return settings.aboveSpace() + (num * settings.stringSpace()) + heightOffset + settings.baseY();
 	}
 	
 	/**
@@ -1304,16 +1317,16 @@ public class TabPainter extends ZabPanel{
 		Tab tab = this.getTab();
 		
 		ZabTheme theme = ZabAppSettings.theme();
-		ZabSettings settings = ZabAppSettings.get();
+		TabPaintSettings settings = ZabAppSettings.get().paint();
 		
 		// Set up camera
 		Camera cam = this.tabCamera;
 		Graphics2D g = cam.getGraphics();
 
 		// Set up for drawing strings and their labels
-		cam.setStringXAlignment(settings.tabPaintStringLabelXAlign());
-		cam.setStringYAlignment(settings.tabPaintStringLabelYAlign());
-		cam.setStringScaleMode(settings.tabPaintStringLabelScaleMode());
+		cam.setStringXAlignment(settings.stringLabelXAlign());
+		cam.setStringYAlignment(settings.stringLabelYAlign());
+		cam.setStringScaleMode(settings.stringLabelScaleMode());
 		g.setStroke(STRING_LINE_WEIGHT);
 		g.setFont(SYMBOL_FONT);
 		// Update the font metrics
@@ -1326,9 +1339,9 @@ public class TabPainter extends ZabPanel{
 		// Starting y position for the first string on the tab
 		double y = this.tabPosToCamY(0, 0);
 		// The x position to draw the string labels
-		double labelX = this.tabPosToCamX(0) + cam.stringInverseZoom(-settings.tabPaintStringLabelSpace());
+		double labelX = this.tabPosToCamX(0) + cam.stringInverseZoom(-settings.stringLabelSpace());
 		
-		int measuresPerLine = settings.tabPaintLineMeasures();
+		int measuresPerLine = settings.lineMeasures();
 		
 		// Drawing all strings and measure lines
 		String str;
@@ -1344,7 +1357,7 @@ public class TabPainter extends ZabPanel{
 				
 				// Draw the line for TabString
 				g.setColor(theme.tabString());
-				cam.drawLine(labelX, y, this.measuresToPaintWidth(measuresPerLine) + settings.tabPaintBaseX(), y);
+				cam.drawLine(labelX, y, this.measuresToPaintWidth(measuresPerLine) + settings.baseX(), y);
 				
 				// Draw string note label
 				g.setColor(theme.tabSymbolText());
@@ -1383,13 +1396,13 @@ public class TabPainter extends ZabPanel{
 		if(tab == null) return false;
 		
 		ZabTheme theme = ZabAppSettings.theme();
-		ZabSettings settings = ZabAppSettings.get();
+		TabPaintSettings settings = ZabAppSettings.get().paint();
 		Camera cam = this.getCamera();
 		Graphics2D g = cam.getGraphics();
 		String str;
 		
 		// Align the strings so that they are drawn in the upper left hand corner of the bounds
-		cam.setStringScaleMode(settings.tabPaintSymbolScaleMode());
+		cam.setStringScaleMode(settings.symbolScaleMode());
 		cam.setStringXAlignment(Camera.STRING_ALIGN_CENTER);
 		cam.setStringYAlignment(Camera.STRING_ALIGN_CENTER);
 		

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 import appMain.gui.util.Camera;
 import appUtils.ZabAppSettings;
-import appUtils.ZabSettings;
+import appUtils.settings.ZabSettings;
 import tab.InstrumentFactory;
 import tab.Tab;
 import tab.TabString;
@@ -40,17 +40,17 @@ public abstract class AbstractTestTabPainter{
 		ZabAppSettings.init();
 		
 		ZabSettings s = ZabAppSettings.get();
-		s.getTabPaintBaseX().set(200.0);
-		s.getTabPaintBaseY().set(150.0);
-		s.getTabPaintMeasureWidth().set(100.0);
-		s.getTabPaintLineMeasures().set(4);
-		s.getTabTextMeasuresPerLine().set(4);
-		s.getTabPaintStringSpace().set(50.0);
-		s.getTabPaintSelectionBuffer().set(10.0);
-		s.getTabPaintAboveSpace().set(400.0);
-		s.getTabPaintBelowSpace().set(600.0);
-		s.getQuantizeDivisor().set(4.0);
-		s.getTabControlZoomFactor().set(2.0);
+		s.paint().getBaseX().set(200.0);
+		s.paint().getBaseY().set(150.0);
+		s.paint().getMeasureWidth().set(100.0);
+		s.paint().getLineMeasures().set(4);
+		s.text().getMeasuresPerLine().set(4);
+		s.paint().getStringSpace().set(50.0);
+		s.paint().getSelectionBuffer().set(10.0);
+		s.paint().getAboveSpace().set(400.0);
+		s.paint().getBelowSpace().set(600.0);
+		s.tab().getQuantizeDivisor().set(4.0);
+		s.control().getZoomFactor().set(2.0);
 	}
 	
 	/**

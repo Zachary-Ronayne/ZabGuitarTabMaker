@@ -7,6 +7,7 @@ import java.util.Scanner;
 
 import appMain.gui.ZabGui;
 import appMain.gui.ZabTheme;
+import appUtils.settings.ZabSettings;
 import lang.Language;
 import tab.Tab;
 import util.FileUtils;

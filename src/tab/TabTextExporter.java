@@ -8,7 +8,7 @@ import java.util.Collections;
 
 import appUtils.ZabAppSettings;
 import appUtils.ZabConstants;
-import appUtils.ZabSettings;
+import appUtils.settings.TabTextSettings;
 import music.Music;
 import tab.symbol.TabSymbol;
 import util.FileUtils;
@@ -33,8 +33,8 @@ public final class TabTextExporter{
 	public static String export(Tab tab){
 		if(tab == null) return null;
 		
-		ZabSettings settings = ZabAppSettings.get();
-		int measuresPerLine = settings.tabTextMeasuresPerLine();
+		TabTextSettings settings = ZabAppSettings.get().text();
+		int measuresPerLine = settings.measuresPerLine();
 		
 		// String for the final result of the tab
 		String result = "";
@@ -64,31 +64,31 @@ public final class TabTextExporter{
 	public static String exportLine(Tab tab, double start, double end, boolean hardEnd){
 		if(tab == null) return null;
 		
-		ZabSettings settings = ZabAppSettings.get();
+		TabTextSettings settings = ZabAppSettings.get().text();
 		
 		// The text string added before each tab string
-		String offset = settings.tabTextPreString();
+		String offset = settings.preString();
 		// The text placed directly after the note name
-		String afterNoteName = settings.tabTextPostNoteName();
+		String afterNoteName = settings.postNoteName();
 		// The character used to fill the space between note names of differing length
-		char noteNameFiller = settings.tabTextNoteNameFiller();
+		char noteNameFiller = settings.noteNameFiller();
 		// Whether or not the note name filler should come before or after the name
-		boolean noteNameFillerBefore = settings.tabTextNoteNameAlignEnd();
+		boolean noteNameFillerBefore = settings.noteNameAlignEnd();
 		// Whether or not to include the octave number for each number
-		boolean noteNameOctave = settings.tabTextNoteNameOctave();
+		boolean noteNameOctave = settings.noteNameOctave();
 		// The way to display the text notes for flat/sharp notes, 0 for all flats, 1 for all sharps.
 		// This is an integer to keep it open to other formats, i.e. mix of flat and sharps, including double sharps, using E# instead of F
-		int noteNameFormat = settings.tabTextNoteNameFormat();
+		int noteNameFormat = settings.noteNameFormat();
 		// The text added before each symbol is added
-		String symbolBefore = settings.tabTextBeforeSymbol();
+		String symbolBefore = settings.beforeSymbol();
 		// The text added after each symbol is added
-		String symbolAfter = settings.tabTextAfterSymbol();
+		String symbolAfter = settings.afterSymbol();
 		// The character used to fill up the tab
-		char tabFiller = settings.tabTextFiller();
+		char tabFiller = settings.filler();
 		// Whether the tab filler should be placed before or after the symbols
-		boolean tabFillerBefore = settings.tabTextAlignSymbolsEnd();
+		boolean tabFillerBefore = settings.alignSymbolsEnd();
 		// The string to place at the end of every tabString
-		String tabEnd = settings.tabTextEnd();
+		String tabEnd = settings.textEnd();
 		
 		// Get all of the TabStrings
 		ArrayList<TabString> tabStrings = tab.getStrings();

@@ -14,7 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import appUtils.ZabAppSettings;
-import appUtils.ZabSettings;
+import appUtils.settings.ZabSettings;
 import tab.TabPosition;
 
 public class TestEditorMouse extends AbstractTestTabPainter{
@@ -338,14 +338,14 @@ public class TestEditorMouse extends AbstractTestTabPainter{
 		// Scrolling up to down, and left to right
 		paint.resetCamera();
 		cam.setY(100);
-		settings.getTabControlScrollFactor().set(10.0);
+		settings.control().getScrollFactor().set(10.0);
 		mouse.mouseWheelMoved(mouseWheelMove(0, 950, 300, 1));
 		assertEquals(110, cam.getY(), "Checking scrolling up with y scroll inverted");
 		
 		mouse.mouseWheelMoved(mouseWheelMove(0, 950, 300, -2));
 		assertEquals(90, cam.getY(), "Checking scrolling down with y scroll inverted");
 		
-		settings.getTabControlScrollYInverted().set(true);
+		settings.control().getScrollYInverted().set(true);
 		mouse.mouseWheelMoved(mouseWheelMove(0, 950, 300, 1));
 		assertEquals(80, cam.getY(), "Checking scrolling up with y scroll not inverted");
 		
@@ -353,14 +353,14 @@ public class TestEditorMouse extends AbstractTestTabPainter{
 		assertEquals(100, cam.getY(), "Checking scrolling down with y scroll not inverted");
 		
 		cam.setX(200);
-		settings.getTabControlScrollFactor().set(10.0);
+		settings.control().getScrollFactor().set(10.0);
 		mouse.mouseWheelMoved(mouseWheelMove(shift, 950, 300, 1));
 		assertEquals(210, cam.getX(), "Checking scrolling up with x scroll inverted");
 		
 		mouse.mouseWheelMoved(mouseWheelMove(shift, 950, 300, -2));
 		assertEquals(190, cam.getX(), "Checking scrolling down with x scroll inverted");
 		
-		settings.getTabControlScrollXInverted().set(true);
+		settings.control().getScrollXInverted().set(true);
 		mouse.mouseWheelMoved(mouseWheelMove(shift, 950, 300, 1));
 		assertEquals(180, cam.getX(), "Checking scrolling up with x scroll not inverted");
 		
@@ -368,8 +368,8 @@ public class TestEditorMouse extends AbstractTestTabPainter{
 		assertEquals(200, cam.getX(), "Checking scrolling down with x scroll not inverted");
 		
 		// Zooming
-		settings.getTabControlZoomFactor().set(0.5);
-		settings.getTabControlZoomInverted().set(true);
+		settings.control().getZoomFactor().set(0.5);
+		settings.control().getZoomInverted().set(true);
 		
 		paint.resetCamera();
 		cam.setZoomBase(2);
@@ -403,7 +403,7 @@ public class TestEditorMouse extends AbstractTestTabPainter{
 		assertEquals(478.2485578727798, cam.getX(), "Checking zooming on both axes, camera position updated");
 		assertEquals(1717.8679656440358, cam.getY(), "Checking zooming on both axes, camera position updated");
 		
-		settings.getTabControlZoomInverted().set(false);
+		settings.control().getZoomInverted().set(false);
 		paint.resetCamera();
 		cam.setZoomBase(2);
 		mouse.mouseWheelMoved(mouseWheelMove(ctrl | alt | shift, 950, 300, -1));

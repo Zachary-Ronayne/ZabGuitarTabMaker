@@ -55,7 +55,7 @@ public class TabDeadNote extends TabSymbol{
 	 */
 	@Override
 	public String getSymbol(TabString string){
-		return ZabAppSettings.get().deadNote();
+		return ZabAppSettings.get().symbol().deadNote();
 	}
 	
 	/***/

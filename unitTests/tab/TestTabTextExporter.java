@@ -10,7 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import appUtils.ZabAppSettings;
-import appUtils.ZabSettings;
+import appUtils.settings.ZabSettings;
 import tab.TabTextExporter.IndexAndPos;
 import tab.symbol.TabNote;
 import util.testUtils.Assert;
@@ -116,13 +116,13 @@ public class TestTabTextExporter{
 				"Checking exporting guitar with default settings");
 		
 		ZabSettings settings = ZabAppSettings.get();
-		settings.getTabTextNoteNameOctave().set(true);
-		settings.getTabTextNoteNameFormat().set(TabTextExporter.NOTE_FORMAT_ALL_FLAT);
-		settings.getTabTextNoteNameAlignEnd().set(true);
-		settings.getTabTextAlignSymbolsEnd().set(true);
-		settings.getTabTextEnd().set("|]");
-		settings.getTabTextPreString().set("[");
-		settings.getTabTextMeasuresPerLine().set(3);
+		settings.text().getNoteNameOctave().set(true);
+		settings.text().getNoteNameFormat().set(TabTextExporter.NOTE_FORMAT_ALL_FLAT);
+		settings.text().getNoteNameAlignEnd().set(true);
+		settings.text().getAlignSymbolsEnd().set(true);
+		settings.text().getEnd().set("|]");
+		settings.text().getPreString().set("[");
+		settings.text().getMeasuresPerLine().set(3);
 		
 		assertEquals(""
 				+ "[ F4|-0--3--5--0-|]\n"

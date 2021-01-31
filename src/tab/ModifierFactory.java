@@ -1,7 +1,7 @@
 package tab;
 
 import appUtils.ZabAppSettings;
-import appUtils.ZabSettings;
+import appUtils.settings.SymbolSettings;
 import tab.symbol.TabModifier;
 
 /**
@@ -15,7 +15,7 @@ public class ModifierFactory{
 	 * @return The modifier
 	 */
 	public static TabModifier hammerOn(){
-		return new TabModifier(ZabAppSettings.get().hammerOn(), "");
+		return new TabModifier(ZabAppSettings.get().symbol().hammerOn(), "");
 	}
 	
 	/**
@@ -23,7 +23,7 @@ public class ModifierFactory{
 	 * @return The modifier
 	 */
 	public static TabModifier pullOff(){
-		return new TabModifier("", ZabAppSettings.get().pullOff());
+		return new TabModifier("", ZabAppSettings.get().symbol().pullOff());
 	}
 	
 	/**
@@ -32,7 +32,7 @@ public class ModifierFactory{
 	 */
 	public static TabModifier hammerOnPullOff(){
 		TabModifier m = hammerOn();
-		m.setAfter(ZabAppSettings.get().pullOff());
+		m.setAfter(ZabAppSettings.get().symbol().pullOff());
 		return m;
 	}
 	
@@ -41,7 +41,7 @@ public class ModifierFactory{
 	 * @return The modifier
 	 */
 	public static TabModifier slideUp(){
-		return new TabModifier(ZabAppSettings.get().slideUp(), "");
+		return new TabModifier(ZabAppSettings.get().symbol().slideUp(), "");
 	}
 	
 	/**
@@ -49,7 +49,7 @@ public class ModifierFactory{
 	 * @return The modifier
 	 */
 	public static TabModifier slideDown(){
-		return new TabModifier(ZabAppSettings.get().slideDown(), "");
+		return new TabModifier(ZabAppSettings.get().symbol().slideDown(), "");
 	}
 	
 	/**
@@ -57,7 +57,7 @@ public class ModifierFactory{
 	 * @return The modifier
 	 */
 	public static TabModifier harmonic(){
-		ZabSettings settings = ZabAppSettings.get();
+		SymbolSettings settings = ZabAppSettings.get().symbol();
 		return new TabModifier(settings.harmonicBefore(), settings.harmonicAfter());
 	}
 	

@@ -7,7 +7,7 @@ import java.util.List;
 
 import appMain.gui.util.Camera;
 import appUtils.ZabAppSettings;
-import appUtils.ZabSettings;
+import appUtils.settings.TabControlSettings;
 import tab.Tab;
 import tab.TabPosition;
 import tab.TabString;
@@ -158,9 +158,9 @@ public class SelectionDragger extends TabPaintController{
 		// If the position to place is not on a valid line of tab, do nothing
 		if(paint.xToTabPos(mX, mY) < 0 || paint.pixelYToStringNum(mY) < 0) return false;
 		
-		ZabSettings settings = ZabAppSettings.get();
-		boolean deleteInvalid = settings.tabControlMoveDeleteInvalid();
-		boolean cancelInvalid = settings.tabControlMoveCancelInvalid();
+		TabControlSettings settings = ZabAppSettings.get().control();
+		boolean deleteInvalid = settings.moveDeleteInvalid();
+		boolean cancelInvalid = settings.cancelInvalid();
 		
 		// If tab or the base position is null, the selection cannot be placed, do nothing
 		Selection base = this.getBaseSelection();

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import appUtils.ZabAppSettings;
-import appUtils.ZabSettings;
+import appUtils.settings.TabSettings;
 import music.Music;
 import music.NotePosition;
 import music.Pitch;
@@ -222,7 +222,7 @@ public class TabString extends ArrayList<TabPosition> implements Copyable<TabStr
 	 * 	or that it is null because the note could not be placed.
 	 */
 	public TabPosition placeQuantizedNote(TimeSignature sig, int fret, double pos){
-		ZabSettings settings = ZabAppSettings.get();
+		TabSettings settings = ZabAppSettings.get().tab();
 		TabPosition p = TabFactory.modifiedFret(this, fret, pos);
 		p.quantize(sig, settings.quantizeDivisor());
 		if(!this.add(p)) return null;

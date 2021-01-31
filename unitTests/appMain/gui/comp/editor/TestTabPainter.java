@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 
 import appMain.gui.util.Camera;
 import appUtils.ZabAppSettings;
+import appUtils.settings.ZabSettings;
 import music.Music;
 import music.Pitch;
 import tab.InstrumentFactory;
@@ -619,6 +620,7 @@ public class TestTabPainter extends AbstractTestTabPainter{
 	@Test
 	public void symbolBounds(){
 		setup(false);
+		ZabSettings settings = ZabAppSettings.get();
 		Rectangle2D.Double empty = new Rectangle2D.Double();
 		assertEquals(empty, paint.symbolBounds(str0.get(0), 0), "Checking an empty rectangle returned with no valid font metrics");
 		
@@ -631,12 +633,12 @@ public class TestTabPainter extends AbstractTestTabPainter{
 		Assert.rectangleAproxEqual(new Rectangle2D.Double(542.5, 540.5, 15.0, 19.0), paint.symbolBounds(str0.get(0), 0), "Checking changing camera doesn't change bounds");
 		
 		paint.resetCamera();
-		ZabAppSettings.get().getTabPaintSymbolScaleMode().set(Camera.STRING_SCALE_X_AXIS);
+		settings.paint().getSymbolScaleMode().set(Camera.STRING_SCALE_X_AXIS);
 		cam.zoomIn(0, 0, 1);
 		Assert.rectangleAproxEqual(new Rectangle2D.Double(544, 541.75, 12.0, 16.5), paint.symbolBounds(str0.get(0), 0), "Checking changing camera zoom");
 		
 		paint.resetCamera();
-		ZabAppSettings.get().getTabPaintSymbolScaleMode().set(Camera.STRING_SCALE_X_AXIS);
+		settings.paint().getSymbolScaleMode().set(Camera.STRING_SCALE_X_AXIS);
 		cam.zoomInY(0, 1);
 		Assert.rectangleAproxEqual(new Rectangle2D.Double(543.5, 541.5, 13.0, 17.0), paint.symbolBounds(str0.get(0), 0), 
 				"Checking symbol width unchanged, but y is changed with zooming on the y axis and scaling on the x axis");
@@ -648,7 +650,7 @@ public class TestTabPainter extends AbstractTestTabPainter{
 		AbstractTestTabPainter.init();
 		
 		paint.resetCamera();
-		ZabAppSettings.get().getTabPaintSymbolScaleMode().set(Camera.STRING_SCALE_Y_AXIS);
+		settings.paint().getSymbolScaleMode().set(Camera.STRING_SCALE_Y_AXIS);
 		cam.zoomInX(0, 1);
 		Assert.rectangleAproxEqual(new Rectangle2D.Double(542.5, 540.5, 15.0, 19.0), paint.symbolBounds(str0.get(0), 0), 
 				"Checking symbol size unchanged with zooming on the x axis and scaling on the y axis");
@@ -657,9 +659,9 @@ public class TestTabPainter extends AbstractTestTabPainter{
 				"Checking symbol size unchanged with zooming on the y axis and scaling on the y axis");
 		
 		paint.resetCamera();
-		ZabAppSettings.get().getTabPaintSymbolScaleMode().set(Camera.STRING_SCALE_NONE);
+		settings.paint().getSymbolScaleMode().set(Camera.STRING_SCALE_NONE);
 		cam.zoomIn(0, 0, 1);
-		Assert.rectangleAproxEqual(new Rectangle2D.Double(543.5, 541.5, 13, 17), paint.symbolBounds(str0.get(0), 0), 
+		Assert.rectangleAproxEqual(new Rectangle2D.Double(544, 541.75, 12, 16.5), paint.symbolBounds(str0.get(0), 0), 
 				"Checking both symbol dimensions changed when zooming with no specific scaling");
 		
 		paint.setTab(null);

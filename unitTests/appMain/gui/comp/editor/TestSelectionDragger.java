@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 
 import appMain.gui.comp.editor.SelectionDragger.DragSorter;
 import appUtils.ZabAppSettings;
-import appUtils.ZabSettings;
+import appUtils.settings.ZabSettings;
 import music.Music;
 import music.Pitch;
 import tab.InstrumentFactory;
@@ -172,8 +172,8 @@ public class TestSelectionDragger extends AbstractTestTabPainter{
 		 */
 		drag.reset();
 		ZabSettings settings = ZabAppSettings.get();
-		settings.getTabControlMoveDeleteInvalid().set(false);
-		settings.getTabControlMoveCancelInvalid().set(false);
+		settings.control().getMoveDeleteInvalid().set(false);
+		settings.control().getMoveCancelInvalid().set(false);
 		// Moving one note to the left on the same string
 		assertTrue(paint.select(0, 0), "Checking note selected");
 		assertTrue(drag.begin(pX, pY), "Checking drag begins");
@@ -228,7 +228,7 @@ public class TestSelectionDragger extends AbstractTestTabPainter{
 		 * Testing scenarios where notes that, during a placement, 
 		 * can't be moved are deleted, but notes that can be moved are moved
 		 */
-		settings.getTabControlMoveDeleteInvalid().set(true);
+		settings.control().getMoveDeleteInvalid().set(true);
 		
 		// Moving notes on different strings, and base is moving to an empty spot
 		resetPlace();
@@ -248,7 +248,7 @@ public class TestSelectionDragger extends AbstractTestTabPainter{
 		 * Testing scenarios where during a placement, if any note cannot be moved, 
 		 * then none move
 		 */
-		settings.getTabControlMoveCancelInvalid().set(true);
+		settings.control().getMoveCancelInvalid().set(true);
 		
 		// Moving notes on different strings, and base is moving to an occupied spot
 		resetPlace();
@@ -292,8 +292,8 @@ public class TestSelectionDragger extends AbstractTestTabPainter{
 		assertEquals(6.25, str3.get(1).getPos(), "Checking position of note");
 		
 		// Checking cases of moving between strings
-		settings.getTabControlMoveCancelInvalid().set(false);
-		settings.getTabControlMoveDeleteInvalid().set(false);
+		settings.control().getMoveCancelInvalid().set(false);
+		settings.control().getMoveDeleteInvalid().set(false);
 		
 		// Moving multiple notes on different lines
 		resetPlace();

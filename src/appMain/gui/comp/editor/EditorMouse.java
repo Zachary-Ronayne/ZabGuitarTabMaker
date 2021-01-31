@@ -9,7 +9,7 @@ import java.awt.geom.Rectangle2D;
 
 import appMain.gui.util.Camera;
 import appUtils.ZabAppSettings;
-import appUtils.ZabSettings;
+import appUtils.settings.TabControlSettings;
 import tab.TabPosition;
 
 /**
@@ -319,7 +319,7 @@ public class EditorMouse extends TabPaintController implements MouseListener, Mo
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e){
 		TabPainter paint = this.getPainter();
-		ZabSettings settings = ZabAppSettings.get();
+		TabControlSettings settings = ZabAppSettings.get().control();
 		Camera cam = paint.getCamera();
 		this.updateLastPos(e);
 		double x = e.getX();
@@ -332,8 +332,8 @@ public class EditorMouse extends TabPaintController implements MouseListener, Mo
 		
 		// If zooming in, i.e. holding control, then zoom in depending on which buttons are held
 		if(zoom){
-			double factor = settings.tabControlZoomFactor();
-			if(settings.tabControlZoomInverted()) factor *= -1;
+			double factor = settings.zoomFactor();
+			if(settings.zoomInverted()) factor *= -1;
 			double amount = wheelMove * factor;
 
 			// If alt is held and shift is not, then zoom only on the x axis
@@ -345,9 +345,9 @@ public class EditorMouse extends TabPaintController implements MouseListener, Mo
 		}
 		// If not zooming, scroll the camera up or down
 		else{
-			double amount = wheelMove * settings.tabControlScrollFactor();
-			boolean inverseX = settings.tabControlScrollXInverted();
-			boolean inverseY = settings.tabControlScrollYInverted();
+			double amount = wheelMove * settings.scrollFactor();
+			boolean inverseX = settings.scrollXInverted();
+			boolean inverseY = settings.scrollYInverted();
 			if(shift){
 				if(inverseX) amount *= -1;
 				cam.addX(cam.inverseZoomX(amount));
