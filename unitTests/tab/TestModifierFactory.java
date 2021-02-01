@@ -50,6 +50,31 @@ public class TestModifierFactory{
 		assertEquals(new TabModifier("<", ">"), ModifierFactory.harmonic(), "Checking correct modifier");
 	}
 	
+	@Test
+	public void bend(){
+		assertEquals(new TabModifier("", "b"), ModifierFactory.bend(), "Checking correct modifier");
+	}
+	
+	@Test
+	public void ghostNote(){
+		assertEquals(new TabModifier("(", ")"), ModifierFactory.ghostNote(), "Checking correct modifier");
+	}
+	
+	@Test
+	public void pinchHarmonic(){
+		assertEquals(new TabModifier("", "ph"), ModifierFactory.pinchHarmonic(), "Checking correct modifier");
+	}
+	
+	@Test
+	public void vibrato(){
+		assertEquals(new TabModifier("", "~"), ModifierFactory.vibrato(), "Checking correct modifier");
+	}
+	
+	@Test
+	public void tab(){
+		assertEquals(new TabModifier("", "t"), ModifierFactory.tap(), "Checking correct modifier");
+	}
+	
 	@AfterEach
 	public void end(){}
 	

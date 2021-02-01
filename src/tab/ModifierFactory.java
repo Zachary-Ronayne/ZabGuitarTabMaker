@@ -60,6 +60,51 @@ public class ModifierFactory{
 		return new TabModifier(settings.harmonicBefore(), settings.harmonicAfter());
 	}
 	
+	/**
+	 * Get the modifier for bending a string up to a note
+	 * @return The modifier
+	 */
+	public static TabModifier bend(){
+		SymbolSettings settings = ZabAppSettings.get().symbol();
+		return new TabModifier("", settings.bend());
+	}
+	
+	/**
+	 * Get the modifier for a ghost note that rings out
+	 * @return The modifier
+	 */
+	public static TabModifier ghostNote(){
+		SymbolSettings settings = ZabAppSettings.get().symbol();
+		return new TabModifier(settings.ghostBefore(), settings.ghostAfter());
+	}
+	
+	/**
+	 * Get the modifier for a pinch harmonic note
+	 * @return The modifier
+	 */
+	public static TabModifier pinchHarmonic(){
+		SymbolSettings settings = ZabAppSettings.get().symbol();
+		return new TabModifier("", settings.pinchHarmonic());
+	}
+	
+	/**
+	 * Get the modifier for putting vibrato on a note
+	 * @return The modifier
+	 */
+	public static TabModifier vibrato(){
+		SymbolSettings settings = ZabAppSettings.get().symbol();
+		return new TabModifier("", settings.vibrato());
+	}
+	
+	/**
+	 * Get the modifier for a tap note
+	 * @return The modifier
+	 */
+	public static TabModifier tap(){
+		SymbolSettings settings = ZabAppSettings.get().symbol();
+		return new TabModifier("", settings.tap());
+	}
+	
 	/** Cannot instantiate {@link ModifierFactory} */
 	private ModifierFactory(){}
 	

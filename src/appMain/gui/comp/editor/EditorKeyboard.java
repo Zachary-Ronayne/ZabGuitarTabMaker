@@ -35,16 +35,18 @@ public class EditorKeyboard extends TabPaintController implements KeyListener{
 	@Override
 	public void keyPressed(KeyEvent e){
 		TabPainter paint = this.getPainter();
-		
-		switch(e.getKeyCode()){
-			case KeyEvent.VK_R: this.keyReset(e); break;
-			case KeyEvent.VK_D: this.keySelectionRemoval(e); break;
-			case KeyEvent.VK_DELETE: this.keySelectionDelete(e); break;
-			case KeyEvent.VK_A: this.keySelectAll(e); break;
-			case KeyEvent.VK_ESCAPE: this.keyCancelActions(e); break;
+
+		// Only do normal key presses if a modifier action was not used
+		if(!this.keyTypeSetModifier(e)){
+			switch(e.getKeyCode()){
+				case KeyEvent.VK_R: this.keyReset(e); break;
+				case KeyEvent.VK_D: this.keySelectionRemoval(e); break;
+				case KeyEvent.VK_DELETE: this.keySelectionDelete(e); break;
+				case KeyEvent.VK_A: this.keySelectAll(e); break;
+				case KeyEvent.VK_ESCAPE: this.keyCancelActions(e); break;
+			}
+			this.keyTypeTabPitch(e);
 		}
-		this.keyTypeTabPitch(e);
-		this.keyTypeSetModifier(e);
 		
 		paint.repaint();
 	}
@@ -124,8 +126,8 @@ public class EditorKeyboard extends TabPaintController implements KeyListener{
 	 */
 	public boolean keyTypeSetModifier(KeyEvent e){
 		TabPainter paint = this.getPainter();
-		// Do nothing if no selection is made
-		if(paint.getSelected().isEmpty()) return false;
+		// Do nothing if no selection is made, or if control is held down
+		if(paint.getSelected().isEmpty() || e.isControlDown()) return false;
 		
 		int key = e.getKeyCode();
 		boolean shift = e.isShiftDown();
@@ -141,14 +143,24 @@ public class EditorKeyboard extends TabPaintController implements KeyListener{
 
 		// If shift was held down, add to the modifier, otherwise replace it
 		int mode = shift ? 1 : 0;
-		
+
 		// Determine the modifier
 		switch(key){
 			case KeyEvent.VK_P: mod = ModifierFactory.pullOff(); break;
 			case KeyEvent.VK_H: mod = ModifierFactory.hammerOn(); break;
 			case KeyEvent.VK_SLASH: mod = ModifierFactory.slideUp(); break;
 			case KeyEvent.VK_BACK_SLASH: mod = ModifierFactory.slideDown(); break;
-			// Special case of a harmonic, it will always replace
+			case KeyEvent.VK_B: mod = ModifierFactory.bend(); break;
+			case KeyEvent.VK_R: mod = ModifierFactory.pinchHarmonic(); break;
+			case KeyEvent.VK_BACK_QUOTE: mod = ModifierFactory.vibrato(); break;
+			case KeyEvent.VK_T: mod = ModifierFactory.tap(); break;
+			
+			case KeyEvent.VK_9:
+			case KeyEvent.VK_0:
+				mod = ModifierFactory.ghostNote();
+				mode = 0;
+				break;
+			
 			case KeyEvent.VK_COMMA:
 			case KeyEvent.VK_PERIOD:
 				mod = ModifierFactory.harmonic();

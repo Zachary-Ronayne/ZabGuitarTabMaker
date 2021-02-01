@@ -57,6 +57,36 @@ public class TestSymbolSettings{
 		TestZabSettings.assertSettingInitialized(settings.getDeadNote(), SymbolSettings.DEAD_NOTE);
 		assertEquals(SymbolSettings.DEAD_NOTE, settings.deadNote(), "Checking value getter correct");
 	}
+	@Test
+	public void bend(){
+		TestZabSettings.assertSettingInitialized(settings.getBend(), SymbolSettings.BEND);
+		assertEquals(SymbolSettings.BEND, settings.bend(), "Checking value getter correct");
+	}
+	@Test
+	public void ghostBefore(){
+		TestZabSettings.assertSettingInitialized(settings.getGhostBefore(), SymbolSettings.GHOST_BEFORE);
+		assertEquals(SymbolSettings.GHOST_BEFORE, settings.ghostBefore(), "Checking value getter correct");
+	}
+	@Test
+	public void ghostAfter(){
+		TestZabSettings.assertSettingInitialized(settings.getGhostAfter(), SymbolSettings.GHOST_AFTER);
+		assertEquals(SymbolSettings.GHOST_AFTER, settings.ghostAfter(), "Checking value getter correct");
+	}
+	@Test
+	public void pinchHarmoic(){
+		TestZabSettings.assertSettingInitialized(settings.getPinchHarmonic(), SymbolSettings.PINCH_HARMONIC);
+		assertEquals(SymbolSettings.PINCH_HARMONIC, settings.pinchHarmonic(), "Checking value getter correct");
+	}
+	@Test
+	public void vibrato(){
+		TestZabSettings.assertSettingInitialized(settings.getVibrato(), SymbolSettings.VIBRATO);
+		assertEquals(SymbolSettings.VIBRATO, settings.vibrato(), "Checking value getter correct");
+	}
+	@Test
+	public void tap(){
+		TestZabSettings.assertSettingInitialized(settings.getTap(), SymbolSettings.TAP);
+		assertEquals(SymbolSettings.TAP, settings.tap(), "Checking value getter correct");
+	}
 	
 	@AfterEach
 	public void end(){}
