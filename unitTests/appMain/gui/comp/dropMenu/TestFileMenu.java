@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import appMain.gui.ZabGui;
 import appMain.gui.comp.ZabFileChooser;
+import appMain.gui.comp.dropMenu.FileMenu.NewFileListener;
 import appMain.gui.comp.dropMenu.FileMenu.SaveListener;
 import appUtils.ZabAppSettings;
 import tab.InstrumentFactory;
@@ -66,6 +67,20 @@ public class TestFileMenu{
 		
 		menu.setLoadedFile(null);
 		assertFalse(gui.getTitle().contains(name), "Checking the title no longer has the name of the file with a null file");
+	}
+	
+	@Test
+	public void getNewFileItem(){
+		// Checking save item in the list
+		Assert.contains(menu.getMenuComponents(), menu.getNewFileItem());
+		assertEquals("New", menu.getNewFileItem().getText(), "Checking new file item has correct name");
+	}
+	
+	@Test
+	public void getNewFileMaker(){
+		assertNotEquals(null, menu.getNewFileMaker(), "Checking saver listener initialized");
+		// Checking the new file button has the correct listener
+		Assert.contains(menu.getNewFileItem().getActionListeners(), menu.getNewFileMaker());
 	}
 	
 	@Test
@@ -126,6 +141,15 @@ public class TestFileMenu{
 	}
 	
 	@Test
+	public void newFile(){
+		menu.setLoadedFile(new File(UtilsTest.UNIT_PATH));
+		gui.getEditorFrame().setOpenedTab(InstrumentFactory.guitarEbStandard());
+		menu.newFile();
+		assertEquals(null, menu.getLoadedFile(), "Checking loaded file set to null");
+		assertEquals(InstrumentFactory.guitarStandard(), gui.getEditorFrame().getOpenedTab(), "Checking tab reset");
+	}
+	
+	@Test
 	public void save(){
 		ZabFileChooser choose = menu.getFileChooser();
 		
@@ -176,6 +200,17 @@ public class TestFileMenu{
 	@Test
 	public void openExportDialog(){
 		menu.openExportDialog();
+	}
+	
+	@Test
+	public void actionPerformedNewFileListener(){
+		NewFileListener newFile = menu.getNewFileMaker();
+		
+		gui.getEditorFrame().getOpenedTab().placeQuantizedNote(0, 0, 0);
+		assertFalse(gui.getEditorFrame().getOpenedTab().isEmpty(), "Checking the tab has notes before the button press");
+
+		newFile.actionPerformed(new ActionEvent(this, 0, null));
+		assertTrue(gui.getEditorFrame().getOpenedTab().isEmpty(), "Checking the tab is empty after the button press");
 	}
 	
 	@Test

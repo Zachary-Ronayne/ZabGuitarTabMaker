@@ -11,9 +11,11 @@ import javax.swing.UnsupportedLookAndFeelException;
 import appMain.gui.ZabGui;
 import appMain.gui.comp.ZabExporterDialog;
 import appMain.gui.comp.ZabFileChooser;
+import appMain.gui.comp.editor.TabPainter;
 import appUtils.ZabConstants;
 import lang.AbstractLanguage;
 import lang.Language;
+import tab.InstrumentFactory;
 import tab.Tab;
 
 /**
@@ -28,6 +30,11 @@ public class FileMenu extends ZabMenu{
 	
 	/** The {@link File} Which is currently loaded in the editor to save and load to. Can be null if no file is loaded */
 	private File loadedFile;
+	
+	/** The {@link ZabMenuItem} used for creating a new tab file */
+	private ZabMenuItem newFileItem;
+	/** The {@link ActionListener} which is used by {@link #newFileItem} */
+	private NewFileListener newFileMaker;
 	
 	/** The {@link ZabMenuItem} used for quickly saving a loaded tab to a file */
 	private ZabMenuItem saveItem;
@@ -62,6 +69,12 @@ public class FileMenu extends ZabMenu{
 		// File related items
 		this.createFileChooser();
 		this.loadedFile = null;
+		
+		// new
+		this.newFileItem = new ZabMenuItem(lang.newFile());
+		this.newFileMaker = new NewFileListener();
+		this.newFileItem.addActionListener(newFileMaker);
+		this.add(newFileItem);
 		
 		// save
 		this.saveItem = new ZabMenuItem(lang.save());
@@ -126,6 +139,15 @@ public class FileMenu extends ZabMenu{
 		this.getGui().updateTitle(s);
 	}
 	
+	/** @return See {@link #newFileItem} */
+	public ZabMenuItem getNewFileItem(){
+		return this.newFileItem;
+	}
+	/** @return See {@link #newFileMaker} */
+	public NewFileListener getNewFileMaker(){
+		return this.newFileMaker;
+	}
+	
 	/** @return See {@link #saveItem} */
 	public ZabMenuItem getSaveItem(){
 		return this.saveItem;
@@ -164,6 +186,17 @@ public class FileMenu extends ZabMenu{
 	/** @return See {@link #exportDialog} */
 	public ZabExporterDialog getExportDialog(){
 		return this.exportDialog;
+	}
+	
+	/**
+	 * Remove the current tab and file of the Zab Application, creating a new file
+	 */
+	public void newFile(){
+		this.setLoadedFile(null);
+		TabPainter paint = this.getGui().getEditorFrame().getTabScreen();
+		this.getGui().getEditorFrame().setOpenedTab(InstrumentFactory.guitarStandard());
+		paint.resetCamera();
+		paint.repaint();
 	}
 	
 	/**
@@ -210,7 +243,15 @@ public class FileMenu extends ZabMenu{
 		this.getExportDialog().open();
 	}
 	
-	/** Used by {@link ZabMenuBar#saveItem} when the item is clicked */
+	/** Used by {@link FileMenu#newFileItem} when the item is clicked */
+	public class NewFileListener implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent e){
+			newFile();
+		}
+	}
+	
+	/** Used by {@link FileMenu#saveItem} when the item is clicked */
 	public class SaveListener implements ActionListener{
 		@Override
 		public void actionPerformed(ActionEvent e){
@@ -218,7 +259,7 @@ public class FileMenu extends ZabMenu{
 		}
 	}
 	
-	/** Used by {@link ZabMenuBar#saveAsItem} when the item is clicked */
+	/** Used by {@link FileMenu#saveAsItem} when the item is clicked */
 	public class SaveAsListener implements ActionListener{
 		@Override
 		public void actionPerformed(ActionEvent e){
@@ -226,7 +267,7 @@ public class FileMenu extends ZabMenu{
 		}
 	}
 	
-	/** Used by {@link ZabMenuBar#loadItem} when the item is clicked */
+	/** Used by {@link FileMenu#loadItem} when the item is clicked */
 	public class LoadListener implements ActionListener{
 		@Override
 		public void actionPerformed(ActionEvent e){
@@ -234,7 +275,7 @@ public class FileMenu extends ZabMenu{
 		}
 	}
 	
-	/** Used by {@link ZabMenuBar#exportItem} when the item is clicked */
+	/** Used by {@link FileMenu#exportItem} when the item is clicked */
 	public class ExportListener implements ActionListener{
 		/** When the button is clicked, open the dialog for exporting the tab of the editor to a file */
 		@Override

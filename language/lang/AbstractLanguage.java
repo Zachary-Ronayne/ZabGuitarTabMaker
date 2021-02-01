@@ -13,6 +13,8 @@ public interface AbstractLanguage{
 	public String appName();
 	/** Get the text for displaying a title label which means a file, a directory in a computer */
 	public String file();
+	/** Get the text for displaying a title label which means to create a new file*/
+	public String newFile();
 	/** Get the text for displaying a title label which means to save something */
 	public String save();
 	/** Get the text for displaying a title label which means to save something with a file name */

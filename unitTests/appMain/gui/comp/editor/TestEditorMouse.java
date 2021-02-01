@@ -269,12 +269,8 @@ public class TestEditorMouse extends AbstractTestTabPainter{
 	
 	@Test
 	public void middleMouseClicked(){
-		cam.setXZoomFactor(1);
-		mouse.mouseClicked(new MouseEvent(paint, 0, 0, 0, 950, 300, 0, 0, 0, false, MouseEvent.BUTTON2));
-		assertEquals(1, cam.getXZoomFactor(), "Checking zoom factor unchanged on middle click without shift");
-		
-		mouse.mouseClicked(new MouseEvent(paint, 0, 0, MouseEvent.SHIFT_DOWN_MASK, 950, 300, 0, 0, 0, false, MouseEvent.BUTTON2));
-		assertEquals(0, cam.getXZoomFactor(), "Checking zoom factor reset on middle click with shift");
+		// Running empty case
+		mouse.rightMouseReleased(new MouseEvent(paint, 0, 0, 0, 10, 11, 0, 0, 0, false, MouseEvent.BUTTON2));
 	}
 	
 	@Test

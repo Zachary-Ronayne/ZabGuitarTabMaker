@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import appMain.gui.comp.dropMenu.FileMenu;
 import tab.ModifierFactory;
 import tab.symbol.TabModifier;
 import tab.symbol.TabSymbol;
@@ -63,6 +64,7 @@ public class TestEditorKeyboard extends AbstractTestTabPainter{
 		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_S, ' '));
 		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_L, ' '));
 		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_E, ' '));
+		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_N, ' '));
 		
 		// Running case of invalid key press
 		keys.keyPressed(new KeyEvent(paint, 0, 0, 0, KeyEvent.KEY_LOCATION_UNKNOWN, ' '));
@@ -84,11 +86,18 @@ public class TestEditorKeyboard extends AbstractTestTabPainter{
 	public void keyReset(){
 		tab.placeQuantizedNote(0, 0, 0);
 		tab.placeQuantizedNote(1, 0, 1);
+		paint.resetCamera();
+		double centeredX = cam.getX();
+		double centeredY = cam.getY();
+		cam.setX(-99);
+		cam.setY(-79);
 		keys.keyReset(new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_R, 'r'));
-		assertFalse(tab.isEmpty(), "Checking tab notes were not removed on r press no ctrl");
+		assertEquals(-99, cam.getX(), "Checking cam x not changed on reset without control");
+		assertEquals(-79, cam.getY(), "Checking cam y not changed on reset without control");
 		
 		keys.keyReset(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_R, 'r'));
-		assertTrue(tab.isEmpty(), "Checking tab notes were removed on r press no ctrl");
+		assertEquals(centeredX, cam.getX(), "Checking cam x centered on reset with control");
+		assertEquals(centeredY, cam.getY(), "Checking cam y centered on reset with control");
 	}
 	
 	@Test
@@ -181,6 +190,14 @@ public class TestEditorKeyboard extends AbstractTestTabPainter{
 		
 		assertTrue(keys.keyExport(new KeyEvent(gui, 0, 0, KeyEvent.SHIFT_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK , KeyEvent.VK_E, 'e')),
 				"Checking opening dialog succeeds with shift and ctrl held down");
+	}
+	
+	@Test
+	public void keyNewFile(){
+		FileMenu menu = gui.getZabMenuBar().getFileMenu();
+		menu.setLoadedFile(new File(UtilsTest.UNIT_PATH));
+		keys.keyNewFile(new KeyEvent(gui, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_N, 'n'));
+		assertEquals(null, menu.getLoadedFile(), "Checking loaded file reset");
 	}
 	
 	@Test

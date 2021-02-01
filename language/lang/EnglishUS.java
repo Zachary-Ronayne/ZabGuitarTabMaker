@@ -11,6 +11,8 @@ public class EnglishUS implements AbstractLanguage{
 	@Override
 	public String file(){ return "File"; }
 	@Override
+	public String newFile(){ return "New"; }
+	@Override
 	public String save(){ return "Save"; }
 	@Override
 	public String saveAs(){ return "Save As"; }

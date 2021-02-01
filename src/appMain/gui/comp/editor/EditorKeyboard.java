@@ -48,6 +48,7 @@ public class EditorKeyboard extends TabPaintController implements KeyListener{
 				case KeyEvent.VK_S: this.keySave(e); break;
 				case KeyEvent.VK_L: this.keyLoad(e); break;
 				case KeyEvent.VK_E: this.keyExport(e); break;
+				case KeyEvent.VK_N: this.keyNewFile(e); break;
 			}
 			this.keyTypeTabPitch(e);
 		}
@@ -69,7 +70,7 @@ public class EditorKeyboard extends TabPaintController implements KeyListener{
 	 */
 	public void keyReset(KeyEvent e){
 		TabPainter paint = this.getPainter();
-		if(e.isControlDown()) paint.reset(); 
+		if(e.isControlDown()) paint.resetCamera(); 
 	}
 	
 	/**
@@ -156,6 +157,15 @@ public class EditorKeyboard extends TabPaintController implements KeyListener{
 		FileMenu file = this.findFileMenu();
 		file.openExportDialog();
 		return true;
+	}
+	
+	/**
+	 * Called when the key associated with creating a new file, is pressed
+	 * @param e The event of the key, it is assumed the event is for the appropriate action
+	 */
+	public void keyNewFile(KeyEvent e){// TODO test in gui
+		FileMenu file = this.findFileMenu();
+		file.newFile();
 	}
 	
 	/**

@@ -265,13 +265,10 @@ public class EditorMouse extends TabPaintController implements MouseListener, Mo
 	public void leftMouseClicked(MouseEvent e){}
 	
 	/**
-	 * Left mouse button click does nothing
+	 * Middle mouse button click does nothing
 	 * @param e The mouse event, it is assumed this event is for the correct mouse button
 	 */
-	public void middleMouseClicked(MouseEvent e){
-		TabPainter paint = this.getPainter();
-		if(e.isShiftDown()) paint.resetCamera();
-	}
+	public void middleMouseClicked(MouseEvent e){}
 	
 	/**
 	 * Right mouse button click does nothing
