@@ -44,6 +44,11 @@ public class TestTabPainter extends AbstractTestTabPainter{
 	}
 	
 	@Test
+	public void getGui(){
+		assertEquals(gui, paint.getGui(), "Checking gui initialized");
+	}
+	
+	@Test
 	public void getPaintWidth(){
 		assertEquals(400, paint.getPaintWidth(), "Checking width initialized");
 	}

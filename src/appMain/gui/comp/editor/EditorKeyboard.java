@@ -3,6 +3,7 @@ package appMain.gui.comp.editor;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
+import appMain.gui.comp.dropMenu.FileMenu;
 import tab.ModifierFactory;
 import tab.Tab;
 import tab.TabPosition;
@@ -44,6 +45,9 @@ public class EditorKeyboard extends TabPaintController implements KeyListener{
 				case KeyEvent.VK_DELETE: this.keySelectionDelete(e); break;
 				case KeyEvent.VK_A: this.keySelectAll(e); break;
 				case KeyEvent.VK_ESCAPE: this.keyCancelActions(e); break;
+				case KeyEvent.VK_S: this.keySave(e); break;
+				case KeyEvent.VK_L: this.keyLoad(e); break;
+				case KeyEvent.VK_E: this.keyExport(e); break;
 			}
 			this.keyTypeTabPitch(e);
 		}
@@ -107,6 +111,51 @@ public class EditorKeyboard extends TabPaintController implements KeyListener{
 		TabPainter paint = this.getPainter();
 		paint.getDragger().reset();
 		paint.getSelectionBox().clear();
+	}
+	
+	/**
+	 * Get the {@link FileMenu} associated with this {@link EditorKeyboard}
+	 * @return The {@link FileMenu}
+	 */
+	public FileMenu findFileMenu(){
+		return this.getPainter().getGui().getZabMenuBar().getFileMenu();
+	}
+	
+	/**
+	 * Called when the key associated with saving to a file, is pressed
+	 * @param e The event of the key, it is assumed the event is for the appropriate action
+	 * @return true if a save occurred, i.e. valid keys pressed to initiate save, and save was successful, false otherwise
+	 */
+	public boolean keySave(KeyEvent e){
+		FileMenu file = this.findFileMenu();
+		if(e.isControlDown()){
+			if(e.isShiftDown()) return file.saveAs();
+			else return file.save();
+		}
+		return false;
+	}
+	
+	/**
+	 * Called when the key associated with loading a file, is pressed
+	 * @param e The event of the key, it is assumed the event is for the appropriate action
+	 * @return true if a load occurred, i.e. valid keys pressed to initiate load, and load was successful, false otherwise
+	 */
+	public boolean keyLoad(KeyEvent e){
+		if(!e.isControlDown()) return false;
+		FileMenu file = this.findFileMenu();
+		return file.load();
+	}
+	
+	/**
+	 * Called when the key associated with exporting to a file, is pressed
+	 * @param e The event of the key, it is assumed the event is for the appropriate action
+	 * @return true if the export dialog was opened, false otherwise
+	 */
+	public boolean keyExport(KeyEvent e){
+		if(!e.isControlDown() || !e.isShiftDown()) return false;
+		FileMenu file = this.findFileMenu();
+		file.openExportDialog();
+		return true;
 	}
 	
 	/**

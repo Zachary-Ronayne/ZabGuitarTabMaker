@@ -5,11 +5,15 @@ package lang;
  * @author zrona
  */
 public class EnglishUS implements AbstractLanguage{
-	
+
+	@Override
+	public String appName(){ return "Zab Guitar Tab Editor"; }
 	@Override
 	public String file(){ return "File"; }
 	@Override
 	public String save(){ return "Save"; }
+	@Override
+	public String saveAs(){ return "Save As"; }
 	@Override
 	public String load(){ return "Load"; }
 	@Override

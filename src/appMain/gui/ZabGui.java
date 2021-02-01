@@ -19,6 +19,8 @@ import appMain.gui.frames.EditorFrame;
 import appMain.gui.frames.GuiFrame;
 import appMain.gui.frames.ZabFrame;
 import appUtils.ZabConstants;
+import lang.AbstractLanguage;
+import lang.Language;
 import util.GuiUtils;
 
 /**
@@ -47,7 +49,8 @@ public class ZabGui extends JFrame{
 	 * Create the default {@link ZabGui}
 	 */
 	public ZabGui(){
-		super("Zab");
+		super();
+		this.updateTitle(null);
 		
 		// Keep hidden initially
 		this.setVisible(false);
@@ -108,6 +111,19 @@ public class ZabGui extends JFrame{
 		}
 		
 		this.repaint();
+	}
+	
+	/**
+	 * Update the name of this {@link ZabGui}, extending it with the given string
+	 * @param ext The string to append to the end of the standard portion of the name. Can be null or empty to not append anything
+	 */
+	public void updateTitle(String ext){
+		boolean append = !(ext == null || ext.isBlank() || ext.isEmpty());
+		AbstractLanguage lang = Language.get();
+		
+		String base = lang.appName();
+		if(append) base = base.concat(" | ").concat(ext);
+		this.setTitle(base);
 	}
 	
 	/**

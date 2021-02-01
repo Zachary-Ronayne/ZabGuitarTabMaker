@@ -25,13 +25,16 @@ public class ZabFileChooser extends JFileChooser{
 	private static final long serialVersionUID = 1L;
 	
 	/** The path to the default directory for saving and loading files */
-	public static final String DEFAULT_SAVCE_LOC = "./saves";
+	public static final String DEFAULT_SAVES_LOC = "./saves";
 	
 	/** The {@link ZabFrame} which uses this {@link ZabFileChooser} */
 	private ZabFrame frame;
 	
 	/** A {@link FileFilter} that accepts .zab files */
 	private FileFilter zabFileFilter;
+	
+	/** The last directory this FileChooser was opened to. If this information is unknown, this will default to the path defined by {@link #DEFAULT_SAVES_LOC} */
+	private File lastLocation;
 	
 	/**
 	 * Create a new {@link ZabFileChooser} using the given {@link ZabGui}i
@@ -51,6 +54,9 @@ public class ZabFileChooser extends JFileChooser{
 		// Set this file chooser to only allow one file, not multiple files, and only files, not directories
 		this.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		this.setMultiSelectionEnabled(false);
+		
+		// The last location is always the saves folder initially
+		this.loadDefaultSaveLocation();
 	}
 	
 	/**
@@ -65,16 +71,43 @@ public class ZabFileChooser extends JFileChooser{
 		return this.zabFileFilter;
 	}
 	
+	/** @return See {@link #lastLocation} */
+	public File getLastLocation(){
+		return this.lastLocation;
+	}
+	
+	/**
+	 * Set the last loaded location to the default saved location
+	 */
+	private void loadDefaultSaveLocation(){
+		this.lastLocation = new File(DEFAULT_SAVES_LOC);
+	}
+	
 	/**
 	 * Prepare for processing a file by ensuring the path to the specified file exists  
 	 * and setting the directory of this {@link ZabFileChooser} to the given path
-	 * @param path The path to set
+	 * @param file The file to use
 	 */
-	public void filePrep(String path){
-		// Ensure the directory to the save location exists
-		File file = new File(path);
+	public void filePrep(File file){
 		if(!file.exists()) file.mkdirs();
 		this.setCurrentDirectory(file);
+	}
+	
+	/**
+	 * Take the current location of this {@link ZabFileChooser} and save it. That location will later 
+	 * be loaded the next time the loaded is opened
+	 * @return true if the location was set, false otherwise
+	 */
+	public boolean saveCurrentLocation(){
+		File f = this.getSelectedFile();
+		// If there is no file, do not set it
+		if(f == null) return false;
+		
+		String path = f.getParent();
+		if(path == null) return false;
+		this.lastLocation = new File(path);
+		
+		return true;
 	}
 	
 	/**
@@ -84,7 +117,7 @@ public class ZabFileChooser extends JFileChooser{
 	 */
 	public File exportSelect(String extension){
 		// Prep for selection
-		this.filePrep(DEFAULT_SAVCE_LOC);
+		this.filePrep(this.getLastLocation());
 		
 		// Set filter to all files
 		this.setFileFilter(getAcceptAllFileFilter());
@@ -92,8 +125,13 @@ public class ZabFileChooser extends JFileChooser{
 		// Request the file selection
 		if(ZabConstants.ENABLE_DIALOG) this.showDialog(null, "Select location");
 		
-		// Add the file extension and return the selected file
+		// Add the file extension
 		this.setSelectedFile(FileUtils.extendTo(getSelectedFile(), extension));
+
+		// After the file was selected, save that location
+		this.saveCurrentLocation();
+		
+		// Return the selected file
 		return this.getSelectedFile();
 	}
 	
@@ -102,13 +140,16 @@ public class ZabFileChooser extends JFileChooser{
 	 * @return true if the load was successful, false otherwise
 	 */
 	public boolean loadTab(){
-		this.filePrep(DEFAULT_SAVCE_LOC);
+		this.filePrep(this.getLastLocation());
 		// Set the filter to only use .zab files
 		this.setFileFilter(this.getZabFileFilter());
 		
 		// Open the save window and wait for the user to pick a file name
 		if(ZabConstants.ENABLE_DIALOG) this.showDialog(null, "Load tab");
 
+		// After the file was selected, save that location
+		this.saveCurrentLocation();
+		
 		// Ensure a file was selected
 		File file = this.getSelectedFile();
 		if(file == null) return false;
@@ -131,30 +172,43 @@ public class ZabFileChooser extends JFileChooser{
 	}
 	
 	/**
-	 * Save the {@link Tab} of {@link #gui} to the file selected by the user
+	 * Save the {@link Tab} of {@link #getGui()} to the file selected by the user
 	 * @return true if the save was successful, false otherwise
 	 */
 	public boolean saveTab(){
-		this.filePrep(DEFAULT_SAVCE_LOC);
+		this.filePrep(this.getLastLocation());
 		// Set the filter to only use .zab files
 		this.setFileFilter(this.getZabFileFilter());
-		
 		// Open the save window and wait for the user to pick a file name
 		if(ZabConstants.ENABLE_DIALOG) this.showDialog(null, "Save tab");
 
+		// After the file was selected, save that location
+		this.saveCurrentLocation();
+		
 		// Ensure a file was selected
 		File file = this.getSelectedFile();
 		if(file == null) return false;
-		
+
+		// Save the file
+		return this.saveTab(file);
+	}
+	
+	/**
+	 * Save the tab currently loaded by the {@link EditorFrame} of {@link #getGui()} to the given file. 
+	 * This method assumes the file is a valid file, if anything goes wrong with saving the file, this method returns false.
+	 * @param f The {@link File} to use
+	 * @return true if the save was successful, false otherwise
+	 */
+	public boolean saveTab(File f){
+		// Ensure the file has an appropriate extension
+		f = FileUtils.extendToZab(f);
+
 		// Ensure a tab exists
 		Tab tab = this.getGui().getEditorFrame().getOpenedTab();
 		if(tab == null) return false;
 		
-		// Ensure the file has an appropriate extension
-		file = FileUtils.extendToZab(file);
-		
-		// Save the file
-		return ZabAppSettings.save(file, tab, true);
+		// Perform the save
+		return ZabAppSettings.save(f, tab, true);
 	}
 	
 }

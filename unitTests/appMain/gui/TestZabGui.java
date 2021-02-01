@@ -53,6 +53,23 @@ public class TestZabGui{
 	}
 	
 	@Test
+	public void updateName(){
+		assertEquals("Zab Guitar Tab Editor", gui.getTitle(), "Checking title set with no string");
+		
+		gui.updateTitle(null);
+		assertEquals("Zab Guitar Tab Editor", gui.getTitle(), "Checking title set with null string");
+		
+		gui.updateTitle("");
+		assertEquals("Zab Guitar Tab Editor", gui.getTitle(), "Checking title set with empty string");
+		
+		gui.updateTitle(" ");
+		assertEquals("Zab Guitar Tab Editor", gui.getTitle(), "Checking title set with blank string");
+		
+		gui.updateTitle("words");
+		assertEquals("Zab Guitar Tab Editor | words", gui.getTitle(), "Checking title set with used string");
+	}
+	
+	@Test
 	public void copyData(){
 		ZabGui newGui = new ZabGui();
 		newGui.setVisible(false);

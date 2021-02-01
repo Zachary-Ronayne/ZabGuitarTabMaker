@@ -25,8 +25,8 @@ import util.testUtils.UtilsTest;
 public class TestZabFileChooser{
 
 	private static ZabGui gui;
-	private static ZabFrame frame;
-	private static ZabFileChooser chooser;
+	private ZabFrame frame;
+	private ZabFileChooser chooser;
 
 	private String name;
 	private File file;
@@ -36,15 +36,16 @@ public class TestZabFileChooser{
 	@BeforeAll
 	public static void init(){
 		ZabAppSettings.init();
-		gui = new ZabGui();
-		gui.setVisible(false);
-		frame = new ExporterFrame(gui);
-		chooser = new ZabFileChooser(frame);
 		UtilsTest.createUnitFolder();
 	}
 	
 	@BeforeEach
 	public void setup(){
+		gui = new ZabGui();
+		gui.setVisible(false);
+		frame = new ExporterFrame(gui);
+		chooser = new ZabFileChooser(frame);
+		
 		name = FileUtils.makeFileName(UtilsTest.UNIT_PATH, UtilsTest.UNIT_NAME);
 		file = new File(name);
 		tab = new Tab();
@@ -62,13 +63,35 @@ public class TestZabFileChooser{
 	}
 	
 	@Test
+	public void getLastLocation(){
+		assertEquals(new File(ZabFileChooser.DEFAULT_SAVES_LOC), chooser.getLastLocation(),
+				"Checking last location initialized");
+	}
+	
+	@Test
 	public void filePrep(){
-		String path = UtilsTest.UNIT_PATH + "/testPrep";
-		chooser.filePrep(path);
-		assertTrue(new File(path).exists(), "Checking path was made");
+		File f = new File(UtilsTest.UNIT_PATH + "/testPrep");
+		chooser.filePrep(f);
+		assertTrue(f.exists(), "Checking path was made");
 		
-		chooser.filePrep(path);
-		assertTrue(new File(path).exists(), "Checking path still exists after it was made");
+		chooser.filePrep(f);
+		assertTrue(f.exists(), "Checking path still exists after it was made");
+	}
+	
+	@Test
+	public void saveCurrentLocation(){
+		chooser.setSelectedFile(null);
+		assertFalse(chooser.saveCurrentLocation(), "Checking saving null fails");
+		
+		File f = new File(UtilsTest.UNIT_PATH + "/folder/file.txt");
+		chooser.setSelectedFile(f);
+		assertTrue(chooser.saveCurrentLocation(), "Checking saving succeeds with file");
+		assertEquals(new File(UtilsTest.UNIT_PATH + "/folder"), chooser.getLastLocation(),
+				"Checking last location set to the directory, not file");
+		
+		f = new File("");
+		chooser.setSelectedFile(f);
+		assertFalse(chooser.saveCurrentLocation(), "Checking saving fails with a file with no parent");
 	}
 	
 	@Test
@@ -123,12 +146,12 @@ public class TestZabFileChooser{
 	
 	@After
 	public void end(){
-		UtilsTest.deleteUnitFolder();
 	}
 	
 	@AfterAll
 	public static void endAll(){
 		gui.dispose();
+		UtilsTest.deleteUnitFolder();
 	}
 
 }

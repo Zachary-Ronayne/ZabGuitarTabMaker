@@ -57,7 +57,7 @@ public class EditorFrame extends ZabFrame{
 		menuHolder.add(lab);
 		
 		// Set up the graphics objects
-		this.tabScreen = new TabPainter(0, 0, this.getOpenedTab());
+		this.tabScreen = new TabPainter(this.getGui(), 0, 0, this.getOpenedTab());
 		this.paintHolder = new ZabPanel();
 		this.paintHolder.add(tabScreen);
 		this.add(paintHolder);

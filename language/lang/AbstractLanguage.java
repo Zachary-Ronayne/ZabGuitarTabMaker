@@ -9,10 +9,14 @@ import appMain.gui.ZabTheme;
  */
 public interface AbstractLanguage{
 	
+	/** Get the text for displaying the name of the Zab Application */
+	public String appName();
 	/** Get the text for displaying a title label which means a file, a directory in a computer */
 	public String file();
 	/** Get the text for displaying a title label which means to save something */
 	public String save();
+	/** Get the text for displaying a title label which means to save something with a file name */
+	public String saveAs();
 	/** Get the text for displaying a title label which means to load something */
 	public String load();
 	/** Get the text for displaying a title label which means to export something */

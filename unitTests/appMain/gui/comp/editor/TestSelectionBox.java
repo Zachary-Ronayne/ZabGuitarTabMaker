@@ -8,40 +8,30 @@ import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import appMain.gui.util.Camera;
 import tab.InstrumentFactory;
-import tab.Tab;
-import tab.TabString;
 import util.testUtils.UtilsTest;
 
-public class TestSelectionBox{
+public class TestSelectionBox extends AbstractTestTabPainter{
 
-	private BufferedImage img;
-	private Graphics2D g;
 	private SelectionBox box;
-	private Tab tab;
-	private ArrayList<TabString> strs;
-	private TabPainter paint;
-	private Camera cam;
 	
 	@BeforeAll
 	public static void init(){
-		TestTabPainter.init();
+		AbstractTestTabPainter.init();
 	}
 	
 	@BeforeEach
 	public void setup(){
+		super.setup(true);
 		img = new BufferedImage(100, 100, BufferedImage.TYPE_4BYTE_ABGR);
 		g = (Graphics2D)img.getGraphics();
 		tab = InstrumentFactory.guitarStandard();
-		paint = new TabPainter(1000, 1000, tab);
 		box = new SelectionBox(paint);
 		cam = paint.getCamera();
 		TestTabPainter.initNotes(tab);

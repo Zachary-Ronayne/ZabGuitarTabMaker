@@ -7,7 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
+import java.io.File;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import tab.ModifierFactory;
 import tab.symbol.TabModifier;
 import tab.symbol.TabSymbol;
+import util.testUtils.UtilsTest;
 
 public class TestEditorKeyboard extends AbstractTestTabPainter{
 
@@ -24,6 +27,7 @@ public class TestEditorKeyboard extends AbstractTestTabPainter{
 	@BeforeAll
 	public static void init(){
 		AbstractTestTabPainter.init();
+		UtilsTest.createUnitFolder();
 	}
 	
 	@BeforeEach
@@ -56,6 +60,9 @@ public class TestEditorKeyboard extends AbstractTestTabPainter{
 		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_DELETE, ' '));
 		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_A, 'a'));
 		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_ESCAPE, ' '));
+		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_S, ' '));
+		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_L, ' '));
+		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_E, ' '));
 		
 		// Running case of invalid key press
 		keys.keyPressed(new KeyEvent(paint, 0, 0, 0, KeyEvent.KEY_LOCATION_UNKNOWN, ' '));
@@ -128,6 +135,52 @@ public class TestEditorKeyboard extends AbstractTestTabPainter{
 		keys.keyCancelActions(new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_ESCAPE, ' '));
 		assertEquals(null, paint.getDragger().getDragPoint(), "Checking drag point reset on escape press");
 		assertEquals(null, paint.getSelectionBox().getFirstCorner(), "Checking selection box corner reset on escape press");
+	}
+	
+	@Test
+	public void findFileMenu(){
+		assertEquals(gui.getZabMenuBar().getFileMenu(), keys.findFileMenu(), "Checking file menu found");
+	}
+	
+	@Test
+	public void keySave(){
+		File f = new File(UtilsTest.UNIT_PATH + "/keyboardShortCutSaveTest.zab");
+		keys.findFileMenu().setLoadedFile(f);
+		keys.findFileMenu().getFileChooser().setSelectedFile(f);
+		assertFalse(keys.keySave(new KeyEvent(gui, 0, 0, 0, KeyEvent.VK_S, 's')), "Checking save fails with control not held down");
+		
+		assertTrue(keys.keySave(new KeyEvent(gui, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_S, 's')),
+				"Checking save succeeds with control held down");
+		
+		assertTrue(keys.keySave(new KeyEvent(gui, 0, 0, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK, KeyEvent.VK_S, 's')),
+				"Checking save as succeeds with control and shift held down");
+	}
+	
+	@Test
+	public void keyLoad(){
+		File f = new File(UtilsTest.UNIT_PATH + "/keyboardShortCutSaveTest.zab");
+		keys.findFileMenu().setLoadedFile(f);
+		keys.findFileMenu().getFileChooser().setSelectedFile(f);
+		keys.findFileMenu().save();
+		assertFalse(keys.keyLoad(new KeyEvent(gui, 0, 0, 0, KeyEvent.VK_L, ';')), "Checking load fails with control not held down");
+		
+		assertTrue(keys.keyLoad(new KeyEvent(gui, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_L, 'l')),
+				"Checking load succeeds with control held down");
+	}
+	
+	@Test
+	public void keyExport(){
+		assertFalse(keys.keyExport(new KeyEvent(gui, 0, 0, 0, KeyEvent.VK_E, 'e')),
+				"Checking opening dialog fails with no modifiers held down");
+		
+		assertFalse(keys.keyExport(new KeyEvent(gui, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_E, 'e')),
+				"Checking opening dialog fails with only control held down");
+		
+		assertFalse(keys.keyExport(new KeyEvent(gui, 0, 0, KeyEvent.SHIFT_DOWN_MASK, KeyEvent.VK_E, 'e')),
+				"Checking opening dialog fails with only shift held down");
+		
+		assertTrue(keys.keyExport(new KeyEvent(gui, 0, 0, KeyEvent.SHIFT_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK , KeyEvent.VK_E, 'e')),
+				"Checking opening dialog succeeds with shift and ctrl held down");
 	}
 	
 	@Test
@@ -241,5 +294,10 @@ public class TestEditorKeyboard extends AbstractTestTabPainter{
 	
 	@AfterEach
 	public void end(){}
+	
+	@AfterAll
+	public static void endAll(){
+		UtilsTest.deleteUnitFolder();
+	}
 	
 }

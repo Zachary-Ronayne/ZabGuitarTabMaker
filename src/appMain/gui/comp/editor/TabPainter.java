@@ -14,6 +14,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
+import appMain.gui.ZabGui;
 import appMain.gui.ZabTheme;
 import appMain.gui.comp.ZabPanel;
 import appMain.gui.util.Camera;
@@ -38,6 +39,9 @@ public class TabPainter extends ZabPanel{
 	public static final Font SYMBOL_FONT = new Font("Arial", Font.PLAIN, 20);
 	/** The font stroke used for strings drawn for a tab */
 	public static final Stroke STRING_LINE_WEIGHT = new BasicStroke(3);
+	
+	/** The {@link ZabGui} which uses this {@link TabPainter} */
+	private ZabGui gui;
 	
 	/** The camera used to control drawing the graphics with the {@link #tabScreen} */
 	private Camera tabCamera;
@@ -82,11 +86,15 @@ public class TabPainter extends ZabPanel{
 	
 	/**
 	 * Create a new {@link TabPainter} at the given size
+	 * @param gui See {@link #gui)}
 	 * @param width See {@link #width}
 	 * @param height See {@link #height}
+	 * @param tab See {@link #tab}
 	 */
-	public TabPainter(int width, int height, Tab tab){
+	public TabPainter(ZabGui gui, int width, int height, Tab tab){
 		super();
+		this.gui = gui;
+		
 		// Set up tab and camera
 		this.setTab(tab);
 		this.tabCamera = new Camera(width, height);
@@ -123,6 +131,11 @@ public class TabPainter extends ZabPanel{
 		
 		// Final repaint to ensure the panel is updated
 		this.repaint();
+	}
+	
+	/** @return See {@link #gui} */
+	public ZabGui getGui(){
+		return this.gui;
 	}
 	
 	/**

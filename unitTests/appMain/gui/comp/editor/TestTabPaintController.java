@@ -9,14 +9,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
-import appUtils.ZabAppSettings;
-import tab.InstrumentFactory;
-import tab.Tab;
-
-public class TestTabPaintController{
+public class TestTabPaintController extends AbstractTestTabPainter{
 	
-	private Tab tab;
-	private TabPainter paint;
 	private Selector sel;
 	
 	/**
@@ -29,13 +23,12 @@ public class TestTabPaintController{
 	
 	@BeforeAll
 	public static void init(){
-		ZabAppSettings.init();
+		AbstractTestTabPainter.init();
 	}
 	
 	@BeforeEach
 	public void setup(){
-		tab = InstrumentFactory.guitarStandard();
-		paint = new TabPainter(1000, 1000, tab);
+		super.setup(true);
 		sel = new Selector(paint);
 	}
 	
