@@ -188,7 +188,7 @@ public class EditorKeyboard extends TabPaintController implements KeyListener{
 	 * Called when the key associated with creating a new file, is pressed
 	 * @param e The event of the key, it is assumed the event is for the appropriate action
 	 */
-	public void keyNewFile(KeyEvent e){// TODO test in gui
+	public void keyNewFile(KeyEvent e){
 		FileMenu file = this.findFileMenu();
 		file.newFile();
 	}

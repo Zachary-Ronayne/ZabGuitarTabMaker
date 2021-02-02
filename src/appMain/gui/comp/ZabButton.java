@@ -1,10 +1,9 @@
 package appMain.gui.comp;
 
-import java.awt.Font;
-
 import javax.swing.JButton;
 
 import appMain.gui.ZabTheme;
+import util.GuiUtils;
 
 /**
  * A {@link JButton} used by the Zab application
@@ -29,9 +28,7 @@ public class ZabButton extends JButton{
 	 * @param size The new size
 	 */
 	public void setFontSize(int size){
-		if(size < 0) return;
-		Font f = this.getFont();
-		this.setFont(new Font(f.getFontName(), f.getStyle(), size));
+		GuiUtils.setFontSize(this, size);
 	}
 	
 }

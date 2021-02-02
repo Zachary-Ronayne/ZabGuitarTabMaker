@@ -1,9 +1,7 @@
-package appMain.gui.frames;
+package appMain.gui.frames.editor;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import javax.swing.BoxLayout;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -53,7 +51,7 @@ public class TestEditorFrame{
 		frame.parentResized(550, 350);
 		TabPainter paint = frame.getTabScreen();
 		assertEquals(550, paint.getPaintWidth(), "Checking width updated");
-		assertEquals(326, paint.getPaintHeight(), "Checking height updated based on height of menu");
+		assertEquals(332, paint.getPaintHeight(), "Checking height updated based on height of menu");
 	}
 	
 	@Test
@@ -62,10 +60,9 @@ public class TestEditorFrame{
 	}
 	
 	@Test
-	public void getMenuHolder(){
-		ZabPanel menu = frame.getMenuHolder();
-		assertTrue(frame.isAncestorOf(menu), "Checking menu holder in the frame");
-		assertEquals(BoxLayout.X_AXIS, ((BoxLayout)menu.getLayout()).getAxis(), "Checking menu has correct layout");
+	public void getEditorBar(){
+		EditorBar bar = frame.getEditorBar();
+		assertTrue(frame.isAncestorOf(bar), "Checking menu holder in the frame");
 	}
 	
 	@Test

@@ -2,6 +2,7 @@ package util;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.font.FontRenderContext;
@@ -40,6 +41,19 @@ public class GuiUtils{
 		}
 		
 		return list;
+	}
+	
+	/**
+	 * Set the font size of the given {@link Component}, other font related fields stay the same
+	 * @param c The {@link Component} to change the font
+	 * @param size The new font size, if this value is negative, the font change fails
+	 * @return true if the font was changed, false otherwise
+	 */
+	public static boolean setFontSize(Component c, int size){
+		if(size < 0) return false;
+		Font f = c.getFont();
+		c.setFont(new Font(f.getFontName(), f.getStyle(), size));
+		return true;
 	}
 	
 	/**

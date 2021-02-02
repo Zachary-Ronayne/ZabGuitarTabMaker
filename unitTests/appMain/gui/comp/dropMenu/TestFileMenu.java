@@ -157,12 +157,14 @@ public class TestFileMenu{
 		
 		assertFalse(menu.save(), "Checking save fails");
 		assertEquals(null, menu.getLoadedFile(), "Checking loaded file is null after failed save");
+		assertEquals("Save failed", gui.getEditorFrame().getEditorBar().getFileStatusLab().getText(), "Checking save fail text set");
 		
 		File expectFile = new File(UtilsTest.UNIT_PATH + "/testSave.zab");
 		choose.setSelectedFile(expectFile);
 		assertTrue(menu.save(), "Checking save successful");
 		assertEquals(expectFile, menu.getLoadedFile(),
 				"Checking loaded file is now the selected file, i.e. save as succeeded");
+		assertEquals("Save successful", gui.getEditorFrame().getEditorBar().getFileStatusLab().getText(), "Checking save success text set");
 		
 		choose.setSelectedFile(null);
 		assertTrue(menu.save(), "Checking save successful");
@@ -179,11 +181,13 @@ public class TestFileMenu{
 		choose.setSelectedFile(expectFile);
 		assertTrue(menu.saveAs(), "Checking save successful");
 		assertEquals(expectFile, menu.getLoadedFile(), "Checking loaded file is now the selected file");
+		assertEquals("Save successful", gui.getEditorFrame().getEditorBar().getFileStatusLab().getText(), "Checking save success text set");
 		
 		choose.setSelectedFile(null);
 		menu.setLoadedFile(null);
 		assertFalse(menu.saveAs(), "Checking save fails");
 		assertEquals(null, menu.getLoadedFile(), "Checking loaded file is null with failed save");
+		assertEquals("Save failed", gui.getEditorFrame().getEditorBar().getFileStatusLab().getText(), "Checking save fail text set");
 	}
 	
 	@Test
@@ -195,6 +199,11 @@ public class TestFileMenu{
 		menu.getFileChooser().setSelectedFile(f);
 		assertTrue(menu.load(), "Checking load successful");
 		assertEquals(uke, gui.getEditorFrame().getOpenedTab(), "Checking opened tab is now the one saved, i.e. it has loaded");
+		assertEquals("Load successful", gui.getEditorFrame().getEditorBar().getFileStatusLab().getText(), "Checking load success text set");
+		
+		menu.getFileChooser().setSelectedFile(new File(""));
+		assertFalse(menu.load(), "Checking load fails");
+		assertEquals("Load failed", gui.getEditorFrame().getEditorBar().getFileStatusLab().getText(), "Checking load fail text set");
 	}
 	
 	@Test

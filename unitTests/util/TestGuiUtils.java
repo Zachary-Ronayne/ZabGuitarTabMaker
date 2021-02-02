@@ -1,6 +1,8 @@
 package util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -10,6 +12,7 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.junit.jupiter.api.AfterEach;
@@ -73,6 +76,20 @@ public class TestGuiUtils{
 		
 		comps = GuiUtils.getAllComponents(nonContainer);
 		Assert.containsSize(comps, nonContainer);
+	}
+	
+	@Test
+	public void setFontSize(){
+		JLabel lab = new JLabel();
+		Font f = new Font("Times New Roman", Font.BOLD, 32);
+		lab.setFont(f);
+		assertTrue(GuiUtils.setFontSize(lab, 3), "Checking change is successful");
+		assertEquals(3, lab.getFont().getSize(), "Checking size set");
+		assertEquals("Times New Roman Bold", lab.getFont().getName(), "Checking name unchanged");
+		assertEquals(Font.BOLD, lab.getFont().getStyle(), "Checking style unchanged");
+
+		assertTrue(GuiUtils.setFontSize(lab, 0), "Checking change is successful");
+		assertFalse(GuiUtils.setFontSize(lab, -1), "Checking change fails");
 	}
 	
 	@Test

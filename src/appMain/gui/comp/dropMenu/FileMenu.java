@@ -12,6 +12,7 @@ import appMain.gui.ZabGui;
 import appMain.gui.comp.ZabExporterDialog;
 import appMain.gui.comp.ZabFileChooser;
 import appMain.gui.comp.editor.TabPainter;
+import appMain.gui.frames.editor.FileStatusLabel;
 import appUtils.ZabConstants;
 import lang.AbstractLanguage;
 import lang.Language;
@@ -200,6 +201,14 @@ public class FileMenu extends ZabMenu{
 	}
 	
 	/**
+	 * Utility method used by methods like save and load, for getting the label which must be updated
+	 * @return The label
+	 */
+	private FileStatusLabel getFileStatusLabel(){
+		return this.getGui().getEditorFrame().getEditorBar().getFileStatusLab();
+	}
+	
+	/**
 	 * Quickly save the current {@link Tab} to the current loaded file. 
 	 * Or, if no file is loaded, save the file as.
 	 * @return true on a successful save, false otherwise
@@ -207,10 +216,18 @@ public class FileMenu extends ZabMenu{
 	public boolean save(){
 		ZabFileChooser choose = getFileChooser();
 		File f = getLoadedFile();
+		
+		boolean success;
 		// If there is is no file, then save as, asking for a new file
-		if(f == null) return this.saveAs();
+		if(f == null) success = this.saveAs();
 		// Otherwise, save to that file
-		else return choose.saveTab(f);
+		else success = choose.saveTab(f);
+		
+		// Set the current file status based on if the save succeeded
+		this.getFileStatusLabel().updateSaveStatus(success);
+		
+		// Return the success status
+		return success;
 	}
 	
 	/**
@@ -222,6 +239,10 @@ public class FileMenu extends ZabMenu{
 		ZabFileChooser choose = this.getFileChooser();
 		boolean success = choose.saveTab();
 		if(success) this.setLoadedFile(choose.getSelectedFile());
+		
+		// Update the save status
+		this.getFileStatusLabel().updateSaveStatus(success);
+		
 		return success;
 	}
 	
@@ -233,6 +254,9 @@ public class FileMenu extends ZabMenu{
 	public boolean load(){
 		boolean success = this.getFileChooser().loadTab();
 		if(success) this.setLoadedFile(this.getFileChooser().getSelectedFile());
+
+		// Update the load status
+		this.getFileStatusLabel().updateLoadStatus(success);
 		return success;
 	}
 	

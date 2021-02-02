@@ -1,15 +1,11 @@
-package appMain.gui.frames;
-
-import java.awt.Font;
-
-import javax.swing.JLabel;
+package appMain.gui.frames.editor;
 
 import appMain.gui.ZabGui;
-import appMain.gui.ZabTheme;
 import appMain.gui.comp.ZabPanel;
 import appMain.gui.comp.editor.TabPainter;
+import appMain.gui.frames.GuiFrame;
+import appMain.gui.frames.ZabFrame;
 import appMain.gui.layout.ZabLayoutHandler;
-import lang.Language;
 import tab.InstrumentFactory;
 import tab.Tab;
 
@@ -22,8 +18,8 @@ public class EditorFrame extends ZabFrame{
 	/** The {@link ZabPanel} where all of the graphics for the {@link Tab} are drawn */
 	private TabPainter tabScreen;
 	
-	/** The {@link ZabPanel} holding all of the extra components acting as the menu of this {@link GuiFrame} */
-	private ZabPanel menuHolder;
+	/** The {@link EditorBar} holding all of the extra components acting as the menu of this {@link GuiFrame} */
+	private EditorBar editorBar;
 	
 	/** The {@link ZabPanel} holding the {@link TabPainter} used by this {@link EditorFrame} */
 	private ZabPanel paintHolder;
@@ -45,16 +41,8 @@ public class EditorFrame extends ZabFrame{
 		ZabLayoutHandler.createVerticalLayout(this);
 		
 		// Set up the menu holder
-		this.menuHolder = new ZabPanel();
-		ZabLayoutHandler.createHorizontalLayout(this.menuHolder);
-		this.add(this.menuHolder);
-		
-		// Temporary title placeholder
-		JLabel lab = new JLabel();
-		ZabTheme.setToTheme(lab);
-		lab.setText(Language.get().edit());
-		lab.setFont(new Font("Arial", Font.PLAIN, 20));
-		menuHolder.add(lab);
+		this.editorBar = new EditorBar();
+		this.add(this.editorBar);
 		
 		// Set up the graphics objects
 		this.tabScreen = new TabPainter(this.getGui(), 0, 0, this.getOpenedTab());
@@ -65,8 +53,6 @@ public class EditorFrame extends ZabFrame{
 		// Update the screen's display
 		repaint();
 	}
-	
-	// TODO method in here to handle error checking for saving?
 	
 	/**
 	 * Update the size of the painting area in this {@link EditorFrame} with the new width and height
@@ -82,22 +68,22 @@ public class EditorFrame extends ZabFrame{
 		this.tabScreen.setPaintSize(width, height);
 	}
 	
+	/** @return See {@link #editorBar} */
+	public EditorBar getEditorBar(){
+		return this.editorBar;
+	}
+	
 	/**
 	 * Updates the size of the painting canvas
 	 */
 	@Override
 	public void parentResized(int w, int h){
-		this.updatePaintSize(w, h - menuHolder.getHeight());
+		this.updatePaintSize(w, h - editorBar.getHeight());
 	}
 	
 	/** @return See {@link #tabScreen} */
 	public TabPainter getTabScreen(){
 		return this.tabScreen;
-	}
-	
-	/** @return {@link #menuHolder} */
-	public ZabPanel getMenuHolder(){
-		return this.menuHolder;
 	}
 	
 	/** @return {@link #paintHolder} */

@@ -17,9 +17,21 @@ public class EnglishUS implements AbstractLanguage{
 	@Override
 	public String saveAs(){ return "Save As"; }
 	@Override
+	public String saveFail(){ return this.save().concat(" failed"); }
+	@Override
+	public String saveSuccess(){ return this.save().concat(" successful"); }
+	@Override
 	public String load(){ return "Load"; }
 	@Override
+	public String loadFail(){ return this.load().concat(" failed"); }
+	@Override
+	public String loadSuccess(){ return this.load().concat(" successful"); }
+	@Override
 	public String export(){ return "Export"; }
+	@Override
+	public String exportFail(){ return this.export().concat(" failed"); }
+	@Override
+	public String exportSuccess(){ return this.export().concat(" successful"); }
 
 	@Override
 	public String edit(){ return "Edit"; }

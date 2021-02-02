@@ -19,10 +19,22 @@ public interface AbstractLanguage{
 	public String save();
 	/** Get the text for displaying a title label which means to save something with a file name */
 	public String saveAs();
+	/** Get the text for displaying when saving to a file fails */
+	public String saveFail();
+	/** Get the text for displaying when saving to a file succeeds */
+	public String saveSuccess();
 	/** Get the text for displaying a title label which means to load something */
 	public String load();
+	/** Get the text for displaying when loading from a file fails */
+	public String loadFail();
+	/** Get the text for displaying when loading from a file succeeds */
+	public String loadSuccess();
 	/** Get the text for displaying a title label which means to export something */
 	public String export();
+	/** Get the text for displaying when exporting to a file fails */
+	public String exportFail();
+	/** Get the text for displaying when exporting to a file succeeds */
+	public String exportSuccess();
 	
 	/** Get the text for displaying a title label which means to edit something */
 	public String edit();

@@ -3,6 +3,7 @@ package appMain.gui.frames;
 import javax.swing.JPanel;
 
 import appMain.gui.ZabGui;
+import appMain.gui.frames.editor.EditorFrame;
 
 /**
  * A JPanel holding all of the components used for a screen of a GUI, i.e. a main menu screen, main work screen, etc.

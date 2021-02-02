@@ -7,8 +7,8 @@ import javax.swing.JDialog;
 
 import appMain.gui.ZabGui;
 import appMain.gui.ZabTheme;
-import appMain.gui.frames.EditorFrame;
 import appMain.gui.frames.ExporterFrame;
+import appMain.gui.frames.editor.EditorFrame;
 import appUtils.ZabConstants;
 import tab.Tab;
 import tab.TabTextExporter;
@@ -79,12 +79,15 @@ public class ZabExporterDialog extends JDialog{
 	
 	/**
 	 * Perform the export to a file as specified by the fields of this {@link ZabExporterDialog}
+	 * @return true if the export was successful, false otherwise
 	 */
-	public void export(){
-		EditorFrame editFrame = getGui().getEditorFrame();
+	public boolean export(){
+		EditorFrame editFrame = this.getGui().getEditorFrame();
 		Tab tab = editFrame.getOpenedTab();
-		File file = getFrame().getExportFile();
-		TabTextExporter.exportToFile(tab, file);
+		File file = this.getFrame().getExportFile();
+		boolean success = TabTextExporter.exportToFile(tab, file);
+		editFrame.getEditorBar().getFileStatusLab().updateExportStatus(success); 
+		return success;
 	}
 	
 }

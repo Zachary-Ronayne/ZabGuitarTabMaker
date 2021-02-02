@@ -8,8 +8,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import appMain.gui.ZabGui;
 import appMain.gui.ZabTheme;
-import appMain.gui.frames.EditorFrame;
 import appMain.gui.frames.ZabFrame;
+import appMain.gui.frames.editor.EditorFrame;
 import appUtils.ZabAppSettings;
 import appUtils.ZabConstants;
 import lang.AbstractLanguage;
