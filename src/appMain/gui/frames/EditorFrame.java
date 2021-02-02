@@ -45,9 +45,9 @@ public class EditorFrame extends ZabFrame{
 		ZabLayoutHandler.createVerticalLayout(this);
 		
 		// Set up the menu holder
-		menuHolder = new ZabPanel();
-		ZabLayoutHandler.createHorizontalLayout(menuHolder);
-		this.add(menuHolder);
+		this.menuHolder = new ZabPanel();
+		ZabLayoutHandler.createHorizontalLayout(this.menuHolder);
+		this.add(this.menuHolder);
 		
 		// Temporary title placeholder
 		JLabel lab = new JLabel();
@@ -65,6 +65,8 @@ public class EditorFrame extends ZabFrame{
 		// Update the screen's display
 		repaint();
 	}
+	
+	// TODO method in here to handle error checking for saving?
 	
 	/**
 	 * Update the size of the painting area in this {@link EditorFrame} with the new width and height

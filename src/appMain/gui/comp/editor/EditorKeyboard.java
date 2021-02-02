@@ -2,6 +2,7 @@ package appMain.gui.comp.editor;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseWheelEvent;
 
 import appMain.gui.comp.dropMenu.FileMenu;
 import tab.ModifierFactory;
@@ -50,7 +51,8 @@ public class EditorKeyboard extends TabPaintController implements KeyListener{
 				case KeyEvent.VK_E: this.keyExport(e); break;
 				case KeyEvent.VK_N: this.keyNewFile(e); break;
 			}
-			this.keyTypeTabPitch(e);
+			if(!e.isControlDown()) this.keyTypeTabPitch(e);
+			this.keyZoom(e);
 		}
 		
 		paint.repaint();
@@ -63,6 +65,29 @@ public class EditorKeyboard extends TabPaintController implements KeyListener{
 	/** Does nothing */
 	@Override
 	public void keyReleased(KeyEvent e){}
+	
+	/**
+	 * Called when the a key associated with zooming in and out, is pressed. 
+	 * This method zooms in by simulating a scroll wheel event based on the mouseWheelListener used by {@link #getPainter()}
+	 * @param e The event of the key, it is assumed the event is for the appropriate action
+	 * @return true if a zoom happened, false otherwise
+	 */
+	public boolean keyZoom(KeyEvent e){
+		int key = e.getKeyCode();
+		boolean down = key == KeyEvent.VK_MINUS;
+		boolean up = key == KeyEvent.VK_EQUALS;
+		if(!down && !up) return false;
+		
+		int modifiers = MouseWheelEvent.CTRL_DOWN_MASK;
+		if(e.isShiftDown()) modifiers |= MouseWheelEvent.SHIFT_DOWN_MASK;
+		if(e.isAltDown()) modifiers |= MouseWheelEvent.ALT_DOWN_MASK;
+		
+		MouseWheelEvent me = new MouseWheelEvent(getPainter(), MouseWheelEvent.MOUSE_WHEEL, System.currentTimeMillis(),
+				modifiers, (int)this.mouseX(), (int)this.mouseY(), 1, false, MouseWheelEvent.WHEEL_UNIT_SCROLL, 1, down ? -1 : 1);
+		this.getPainter().getMouseInput().mouseWheelMoved(me);
+		
+		return true;
+	}
 	
 	/**
 	 * Called when the key associated with resetting the {@link Tab}, is pressed

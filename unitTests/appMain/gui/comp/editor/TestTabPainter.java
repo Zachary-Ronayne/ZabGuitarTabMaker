@@ -901,6 +901,8 @@ public class TestTabPainter extends AbstractTestTabPainter{
 		assertNotEquals(null, paint.getMouseInput(), "Checking mouse input initialized");
 		// Checking mouse input is in the painter
 		Assert.contains(paint.getMouseListeners(), paint.getMouseInput());
+		Assert.contains(paint.getMouseMotionListeners(), paint.getMouseInput());
+		Assert.contains(paint.getMouseWheelListeners(), paint.getMouseInput());
 	}
 	
 	@Test

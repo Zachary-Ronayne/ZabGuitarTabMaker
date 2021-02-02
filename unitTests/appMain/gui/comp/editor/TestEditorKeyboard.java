@@ -65,6 +65,16 @@ public class TestEditorKeyboard extends AbstractTestTabPainter{
 		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_L, ' '));
 		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_E, ' '));
 		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_N, ' '));
+		keys.keyPressed(new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_MINUS, '-'));
+		keys.keyPressed(new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_EQUALS, '='));
+		
+		paint.clearSelection();
+		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_A, 'a'));
+		assertTrue(paint.isSelected(str0.get(0), 0), "Checking note selected after pressing ctrl a");
+		
+		paint.clearSelection();
+		keys.keyPressed(new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_A, 'a'));
+		assertFalse(paint.isSelected(str0.get(0), 0), "Checking note not selected after pressing a without ctrl");
 		
 		// Running case of invalid key press
 		keys.keyPressed(new KeyEvent(paint, 0, 0, 0, KeyEvent.KEY_LOCATION_UNKNOWN, ' '));
@@ -80,6 +90,29 @@ public class TestEditorKeyboard extends AbstractTestTabPainter{
 	public void keyReleased(){
 		// Running empty case
 		keys.keyReleased(new KeyEvent(paint, 0, 0, 0, KeyEvent.KEY_LOCATION_UNKNOWN, ' '));
+	}
+	
+	@Test
+	public void keyZoom(){
+		assertFalse(keys.keyZoom(new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_0, '0')),
+				"Checking non zoom key does not zoom");
+		
+		cam.setXZoomFactor(0);
+		cam.setYZoomFactor(0);
+		assertTrue(keys.keyZoom(new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_MINUS, '-')),
+				"Checking zoom in, no modifiers");
+		assertEquals(2, cam.getXZoomFactor(), "Checking x zoomed in");
+		assertEquals(2, cam.getYZoomFactor(), "Checking y zoomed in");
+		
+		assertTrue(keys.keyZoom(new KeyEvent(paint, 0, 0, KeyEvent.ALT_DOWN_MASK, KeyEvent.VK_EQUALS, '=')),
+				"Checking zoom out, only x axis");
+		assertEquals(0, cam.getXZoomFactor(), "Checking x zoomed out");
+		assertEquals(2, cam.getYZoomFactor(), "Checking y not zoomed out");
+		
+		assertTrue(keys.keyZoom(new KeyEvent(paint, 0, 0, KeyEvent.SHIFT_DOWN_MASK, KeyEvent.VK_MINUS, '-')),
+				"Checking zoom in, only y axis");
+		assertEquals(0, cam.getXZoomFactor(), "Checking x not zoomed in");
+		assertEquals(4, cam.getYZoomFactor(), "Checking y zoomed in");
 	}
 	
 	@Test
