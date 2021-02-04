@@ -8,6 +8,7 @@ import java.util.Collections;
 import appUtils.ZabAppSettings;
 import appUtils.ZabConstants;
 import appUtils.settings.TabTextSettings;
+import appUtils.settings.ZabSettings;
 import gui.FileUtilsUntested;
 import music.Music;
 import tab.symbol.TabSymbol;
@@ -26,7 +27,7 @@ public final class TabTextExporter{
 	public static final int NOTE_FORMAT_ALL_SHARP = 1;
 	
 	/**
-	 * Export a tab to a text String with no special parameters
+	 * Export a tab to a text String using all of the values defined in the {@link ZabSettings} of {@link ZabAppSettings#get()}
 	 * @param tab The {@link Tab} to export
 	 * @return The exported String, or null if an issue occurred with exporting. Should be viewed with a monospace font.
 	 */
@@ -54,7 +55,7 @@ public final class TabTextExporter{
 	}
 	
 	/**
-	 * Export, to a String, all of the symbols in the specified area to a line of tab
+	 * Export, to a String, all of the symbols in the specified area to a single line of tab
 	 * @param tab The tab to export
 	 * @param start The position, in measures, to begin the region of export
 	 * @param end The position, in measures, to end the region of export
@@ -79,16 +80,11 @@ public final class TabTextExporter{
 		// The way to display the text notes for flat/sharp notes, 0 for all flats, 1 for all sharps.
 		// This is an integer to keep it open to other formats, i.e. mix of flat and sharps, including double sharps, using E# instead of F
 		int noteNameFormat = settings.noteNameFormat();
-		// The text added before each symbol is added
-		String symbolBefore = settings.beforeSymbol();
-		// The text added after each symbol is added
-		String symbolAfter = settings.afterSymbol();
-		// The character used to fill up the tab
-		char tabFiller = settings.filler();
-		// Whether the tab filler should be placed before or after the symbols
-		boolean tabFillerBefore = settings.alignSymbolsEnd();
 		// The string to place at the end of every tabString
 		String tabEnd = settings.textEnd();
+		// true if the amount of space between each note in a measure should be used when exporting the text, 
+		// false to ignore space and pack all notes together as much as possible
+		boolean useSpacing = true; // TODO add setting
 		
 		// Get all of the TabStrings
 		ArrayList<TabString> tabStrings = tab.getStrings();
@@ -142,6 +138,43 @@ public final class TabTextExporter{
 		// Sort all of the symbols in increasing order based on position
 		Collections.sort(symbols);
 		
+		// Add all of the symbols with no extra space between them
+		if(useSpacing) appendSymbolsWithSpace(exportStrings, start, end, tabStrings);
+		// Add all of the symbols with extra space based on their positions
+		else appendSymbolsNoSpace(exportStrings, symbols, tabStrings);
+		
+		// String for the final result of the tab
+		String result = "";
+		
+		// Combine all of the strings together, and add the final vertical bar
+		for(int i = 0; i < numStrings; i++){
+			result = String.join("", result, exportStrings[i], tabEnd, "\n");
+		}
+		
+		// Return the final tab string
+		return result;
+	}
+	
+	/**
+	 * Given an array of of strings, add the text of all of the given symbols, so that all of the symbols are spaced based on their relative positions.
+	 * @param exportStrings The strings to use initially, must be the same size as tabStrings
+	 * @param symbols The symbols to add, must be sorted
+	 * @param tabStrings The strings which the symbols reside
+	 */
+	public static void appendSymbolsNoSpace(String[] exportStrings, ArrayList<IndexAndPos> symbols, ArrayList<TabString> tabStrings){
+		TabTextSettings settings = ZabAppSettings.get().text();
+		// The text added before each symbol is added
+		String symbolBefore = settings.beforeSymbol();
+		// The text added after each symbol is added
+		String symbolAfter = settings.afterSymbol();
+		// The character used to fill up the tab
+		char tabFiller = settings.filler();
+		// Whether the tab filler should be placed before or after the symbols
+		boolean tabFillerBefore = settings.alignSymbolsEnd();
+		
+		int numStrings = tabStrings.size();
+		String[] toAdd = new String[numStrings];
+		
 		// Add each note one at a time, placing a dash between each one
 		// Notes with the same position value are placed at the same character position
 		for(int s = 0; s < symbols.size(); s++){
@@ -172,17 +205,53 @@ public final class TabTextExporter{
 			// Combine the export text strings with the text for the next tab character
 			StringUtils.combineStringsWithFiller(exportStrings, toAdd, symbolBefore, symbolAfter, tabFiller, tabFillerBefore);
 		}
+	}
+	
+	// TODO give better name, and add doc
+	public static void appendSymbolsWithSpace(String[] exportStrings, double lowPos, double highPos, ArrayList<TabString> tabStrings){
+		TabTextSettings settings = ZabAppSettings.get().text();
+		// The text added before each symbol is added
+		String symbolBefore = settings.beforeSymbol();
+		// The text added after each symbol is added
+		String symbolAfter = settings.afterSymbol();
+		// The character used to fill up the tab
+		char tabFiller = settings.filler();
+		// Whether the tab filler should be placed before or after the symbols
+		boolean tabFillerBefore = settings.alignSymbolsEnd();
+		// true to add extra extra lines between each measure, false otherwise
+		boolean addMeasureLines = true; // TODO add setting
+		// the text used to represent a measure line
+		String measureSeparator = "|"; // TODO add setting
 		
-		// String for the final result of the tab
-		String result = "";
+		int numStrings = tabStrings.size();
+		String[] toAdd = new String[numStrings];
 		
-		// Combine all of the strings together, and add the final vertical bar
-		for(int i = 0; i < numStrings; i++){
-			result = String.join("", result, exportStrings[i], tabEnd, "\n");
+		// Find the maximum space between each symbol, in measures
+		double measureSpace = 1 / ZabAppSettings.get().tab().quantizeDivisor();
+		
+		// Go through each space in the tab, adding notes if they are found, or an empty space if they are not
+		for(double p = lowPos; p <= highPos; p += measureSpace){
+			
+			// Find the symbol at each position, and place it in the list, or an empty string if there is no symbol
+			for(int i = 0; i < numStrings; i++){
+				TabString str = tabStrings.get(i);
+				TabPosition pos = str.findPosition(p);
+				toAdd[i] = (pos == null) ? "" : pos.getSymbol().getModifiedSymbol(str);
+			}
+			
+			// Combine the export text strings with the text for the next tab character
+			StringUtils.combineStringsWithFiller(exportStrings, toAdd, symbolBefore, symbolAfter, tabFiller, tabFillerBefore);
+			
+			// If adding measure lines, and the next space will be a measure, add the measure separator to each line
+			if(addMeasureLines){
+				// Mod a double by 1 to get its decimal remainder
+				double measurePos = p % 1 + measureSpace;
+				// If the next position will be on or after a measure, and it is not the end of the measure, add the line
+				if(measurePos >= 1 && p + measureSpace != highPos){
+					for(int i = 0; i < numStrings; i++) exportStrings[i] = exportStrings[i].concat(measureSeparator);
+				}
+			}
 		}
-		
-		// Return the final tab string
-		return result;
 	}
 	
 	/**
@@ -232,7 +301,7 @@ public final class TabTextExporter{
 	private TabTextExporter(){}
 	
 	/**
-	 * Helper object for storing both an index, and an associated {@link TabSymbol}
+	 * Helper object for storing both an index in a list of Strings, and an associated {@link TabSymbol}
 	 * @author zrona
 	 */
 	public static class IndexAndPos implements Comparable<IndexAndPos>{

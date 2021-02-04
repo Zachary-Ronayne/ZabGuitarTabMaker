@@ -166,6 +166,9 @@ public class EditorFrame extends ZabFrame{
 		// Update the load status
 		this.getEditorBar().getFileStatusLab().updateLoadStatus(success);
 		
+		// Update the state of the TabPainter
+		this.getTabScreen().updateLineTabCount();
+		
 		// Update the GUI to reflect the loaded tab
 		getGui().repaint();
 		

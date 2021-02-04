@@ -28,7 +28,7 @@ public class TabTextSettings extends Settings{
 	/** Default for {@link #beforeSymbol} */
 	public static final String BEFORE_SYMBOL = "-";
 	/** Default for {@link #afterSymbol} */
-	public static final String AFTER_SYMBOL = "-";
+	public static final String AFTER_SYMBOL = "";
 	/** Default for {@link #textFiller} */
 	public static final char FILLER = '-';
 	/** Default for {@link #alignSymbolsEnd} */

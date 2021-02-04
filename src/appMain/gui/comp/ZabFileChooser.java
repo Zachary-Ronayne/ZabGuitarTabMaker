@@ -123,6 +123,7 @@ public class ZabFileChooser extends JFileChooser{
 			int state = this.showDialog(null, "Save tab");
 			// If the save was canceled, send a null file, which cancels the save
 			if(state == JFileChooser.CANCEL_OPTION) file = null;
+			else file = this.getSelectedFile();
 		}
 		
 		// After the file was selected, save that location
