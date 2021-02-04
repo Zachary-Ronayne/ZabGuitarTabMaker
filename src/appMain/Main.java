@@ -1,5 +1,7 @@
 package appMain;
 
+import javax.swing.JFrame;
+
 import appMain.gui.ZabGui;
 import appUtils.ZabAppSettings;
 import appUtils.ZabConstants;
@@ -17,6 +19,10 @@ public final class Main{
 		// Start up the main GUI
 		ZabGui gui = new ZabGui();
 		if(ZabConstants.BUILD_NORMAL) gui.setVisible(true);
+		else{
+			gui.dispose();
+			gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		}
 	}
 	
 	/** Cannot instantiate {@link Main} */

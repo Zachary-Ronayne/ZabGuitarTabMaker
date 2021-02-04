@@ -12,13 +12,14 @@ import java.util.ArrayList;
 
 import javax.swing.JFrame;
 
-import appMain.gui.comp.ZabExporterDialog;
+import appMain.gui.comp.GuiFrame;
+import appMain.gui.comp.ZabFrame;
 import appMain.gui.comp.ZabPanel;
-import appMain.gui.comp.dropMenu.ZabMenuBar;
-import appMain.gui.frames.GuiFrame;
-import appMain.gui.frames.ZabFrame;
-import appMain.gui.frames.editor.EditorFrame;
+import appMain.gui.dropMenu.ZabMenuBar;
+import appMain.gui.editor.frame.EditorFrame;
+import appMain.gui.export.ZabExporterDialog;
 import appUtils.ZabConstants;
+import gui.ConfirmNotSavedPopup;
 import lang.AbstractLanguage;
 import lang.Language;
 import util.GuiUtils;
@@ -40,7 +41,7 @@ public class ZabGui extends JFrame{
 	private ZabMenuBar menuBar;
 	
 	/** The listener used for resizing the window by this {@link ZabGui} */
-	private GuiResizeListener resizer;
+	private ZabWindowListener resizer;
 	
 	/** The {@link EditorFrame} used by this {@link ZabGui} */
 	private EditorFrame editorFrame;
@@ -61,8 +62,8 @@ public class ZabGui extends JFrame{
 		// Set the minimum size to the constant minimum size
 		this.setMinimumSize(new Dimension(ZabConstants.MIN_APP_WIDTH, ZabConstants.MIN_APP_HEIGHT));
 		
-		// Set the default size of the window
-		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		// Set the window to do nothing when it closes, the window listener will handle closing
+		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		
 		// Set up the main panel holding everything
 		this.primaryPanel = new ZabPanel();
@@ -80,7 +81,7 @@ public class ZabGui extends JFrame{
 		this.pack();
 
 		// Adding listener for changing the window size
-		resizer = new GuiResizeListener(this);
+		resizer = new ZabWindowListener(this);
 		this.addComponentListener(resizer);
 		this.addWindowStateListener(resizer);
 		this.addWindowListener(resizer);
@@ -132,7 +133,10 @@ public class ZabGui extends JFrame{
 	 * @param gui The gui to copy into
 	 */
 	public void copyData(ZabGui gui){
+		boolean isSaved = this.getEditorFrame().getTabScreen().getUndoStack().isSaved();
 		gui.getEditorFrame().setOpenedTab(this.getEditorFrame().getOpenedTab());
+		
+		if(!isSaved) gui.getEditorFrame().getTabScreen().getUndoStack().markNotSaved();
 	}
 	
 	/**
@@ -210,15 +214,15 @@ public class ZabGui extends JFrame{
 	 * Get the listener responsible for handling resizing of this {@link ZabGui}
 	 * @return See {@link #resizer}
 	 */
-	public GuiResizeListener getResizer(){
+	public ZabWindowListener getResizer(){
 		return this.resizer;
 	}
 	
 	/**
-	 * A class used for handling resizing the {@link ZabGui}
+	 * A class used for handling resizing the {@link ZabGui}, and all other window related functions of a {@link ZabGui}
 	 * @author zrona
 	 */
-	public class GuiResizeListener extends ComponentAdapter implements WindowStateListener, WindowListener, WindowFocusListener{
+	public class ZabWindowListener extends ComponentAdapter implements WindowStateListener, WindowListener, WindowFocusListener{
 		/** The {@link ZabGui} which this listener uses */
 		private ZabGui gui;
 		
@@ -226,7 +230,7 @@ public class ZabGui extends JFrame{
 		 * Create the listener
 		 * @param gui The {@link ZabGui} which uses this listener
 		 */
-		public GuiResizeListener(ZabGui gui){
+		public ZabWindowListener(ZabGui gui){
 			this.gui = gui;
 		}
 		
@@ -259,7 +263,17 @@ public class ZabGui extends JFrame{
 			resize();
 		}
 		@Override
-		public void windowClosing(WindowEvent e){}
+		public void windowClosing(WindowEvent e){
+			// If the tab is not saved, confirm that the user wants to close the window
+			// If the user says not to close, then cancel the close
+			if(!getEditorFrame().getTabScreen().getUndoStack().isSaved()){
+				if(!ConfirmNotSavedPopup.show()){
+					return;
+				}
+			}
+			// Otherwise, terminate the program, only if this is a normal build
+			if(ZabConstants.BUILD_NORMAL) System.exit(0);
+		}
 		@Override
 		public void windowClosed(WindowEvent e){}
 		@Override

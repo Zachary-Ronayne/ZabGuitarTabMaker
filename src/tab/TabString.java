@@ -300,8 +300,8 @@ public class TabString extends ArrayList<TabPosition> implements Copyable<TabStr
 		// Save the pitch of the string
 		if(!Saveable.save(writer, this.getRootPitch())) return false;
 		
-		// Save the number of symbols
-		if(!Saveable.saveToString(writer, this.size(), true)) return false;
+		// Save the number of symbols, this cannot fail so long that previous saves have succeeded and the writer is not running on a different thread
+		Saveable.saveToString(writer, this.size(), true);
 		
 		// Save each symbol, first by saving its class name, then the symbol itself
 		for(TabPosition p : this){

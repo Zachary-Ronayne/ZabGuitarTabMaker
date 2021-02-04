@@ -394,9 +394,9 @@ public class Tab implements Copyable<Tab>, Saveable{
 		// Save the time signature
 		if(!Saveable.save(writer, this.getTimeSignature())) return false;
 		
-		// Save the number of strings of this tab
+		// Save the number of strings of this tab, this cannot fail so long that previous saves have succeeded and the writer is not running on a different thread
 		int size = this.getStrings().size();
-		if(!Saveable.saveToString(writer, size, true)) return false;
+		Saveable.saveToString(writer, size, true);
 
 		// Save each string
 		// Put the strings in a usable array for saving

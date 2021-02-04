@@ -14,9 +14,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import appMain.gui.ZabGui;
-import appMain.gui.frames.ExporterFrame;
-import appMain.gui.frames.ZabFrame;
+import appMain.gui.editor.paint.event.DummyEditorEvent;
+import appMain.gui.editor.paint.event.EditorEventStack;
+import appMain.gui.export.ExporterFrame;
 import appUtils.ZabAppSettings;
+import appUtils.ZabFileSaver;
 import tab.InstrumentFactory;
 import tab.Tab;
 import util.FileUtils;
@@ -95,31 +97,58 @@ public class TestZabFileChooser{
 	}
 	
 	@Test
+	public void saveTab(){
+		file = FileUtils.extendToZab(file);
+		EditorEventStack stack = gui.getEditorFrame().getTabScreen().getUndoStack();
+		
+		chooser.setSelectedFile(file);
+		assertTrue(chooser.saveTab(), "Checking save successful");
+		assertTrue(stack.isSaved(), "Checking tab marked as saved");
+		
+		stack.addEvent(new DummyEditorEvent());
+		gui.getEditorFrame().setOpenedTab(null);
+		assertFalse(chooser.saveTab(), "Checking save fails on null tab");
+		assertFalse(stack.isSaved(), "Checking tab not marked as saved");
+		
+		gui.getEditorFrame().setOpenedTab(tab);
+		chooser.setSelectedFile(null);
+		assertFalse(chooser.saveTab(), "Checking save fails on null file");
+		
+		stack.markNotSaved();
+		assertFalse(chooser.saveTab(new File(UtilsTest.UNIT_PATH + "/fakeFolder/fakeFile")), "Checking save fails on file that doesn't exist");
+		assertFalse(stack.isSaved(), "Checking tab marked as not saved");
+
+		stack.markNotSaved();
+		assertTrue(chooser.saveTab(file), "Checking save succeeds");
+		assertTrue(stack.isSaved(), "Checking tab marked as saved");
+	}
+	
+	@Test
 	public void exportSelect(){
 		chooser.setSelectedFile(file);
 		chooser.exportSelect("txt");
 		file = new File(name + ".txt");
 		assertEquals(file, chooser.getSelectedFile(), "Checking correct file object created");
 	}
-	
+
 	@Test
 	public void loadTab(){
 		file = FileUtils.extendToZab(file);
 		chooser.setSelectedFile(file);
-		assertTrue(ZabAppSettings.save(file, InstrumentFactory.guitarStandard(), true),
+		assertTrue(ZabFileSaver.save(file, InstrumentFactory.guitarStandard(), true),
 				"Checking save successful");
 		assertTrue(chooser.loadTab(), "Checking load successful");
 		assertEquals(InstrumentFactory.guitarStandard(), gui.getEditorFrame().getOpenedTab(),
 				"Checking tab loaded from a file and into openedTab");
 		
-		assertTrue(ZabAppSettings.save(file, InstrumentFactory.bassStandard(), true),
+		assertTrue(ZabFileSaver.save(file, InstrumentFactory.bassStandard(), true),
 				"Checking save successful");
 		assertTrue(chooser.loadTab(), "Checking load successful");
 		assertEquals(InstrumentFactory.bassStandard(), gui.getEditorFrame().getOpenedTab(),
 				"Checking different tab loaded from a file and into openedTab");
-
+	
 		gui.getEditorFrame().setOpenedTab(null);
-		assertTrue(ZabAppSettings.save(file, InstrumentFactory.ukuleleStandard(), true),
+		assertTrue(ZabFileSaver.save(file, InstrumentFactory.ukuleleStandard(), true),
 				"Checking save successful");
 		assertTrue(chooser.loadTab(), "Checking load successful");
 		assertEquals(InstrumentFactory.ukuleleStandard(), gui.getEditorFrame().getOpenedTab(),
@@ -128,25 +157,9 @@ public class TestZabFileChooser{
 		chooser.setSelectedFile(null);
 		assertFalse(chooser.loadTab(), "Checking load fails on null file");
 	}
-	
-	@Test
-	public void saveTab(){
-		file = FileUtils.extendToZab(file);
-		
-		chooser.setSelectedFile(file);
-		assertTrue(chooser.saveTab(), "Checking save successful");
-		
-		gui.getEditorFrame().setOpenedTab(null);
-		assertFalse(chooser.saveTab(), "Checking save fails on null tab");
 
-		gui.getEditorFrame().setOpenedTab(tab);
-		chooser.setSelectedFile(null);
-		assertFalse(chooser.saveTab(), "Checking save fails on null file");
-	}
-	
 	@After
-	public void end(){
-	}
+	public void end(){}
 	
 	@AfterAll
 	public static void endAll(){

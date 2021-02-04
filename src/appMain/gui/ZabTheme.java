@@ -2,12 +2,14 @@ package appMain.gui;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
@@ -16,6 +18,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 
+import appMain.gui.editor.paint.TabPainter;
 import appUtils.ZabAppSettings;
 import tab.TabString;
 
@@ -98,13 +101,34 @@ public interface ZabTheme{
 	 * @param t The theme to use
 	 */
 	public static void setUIMangerTheme(ZabTheme t){
+		// General
+		UIManager.put("Panel.background", t.background());
+		UIManager.put("Label.foreground", t.foreground());
+		
+		// Buttons and menus
 		UIManager.put("MenuItem.selectionBackground", t.menuBarMouseHover());
 		UIManager.put("MenuItem.selectionForeground", t.menuBarMouseHoverText());
 		UIManager.put("Button.select", t.buttonClick());
+		UIManager.put("Button.highlight", t.buttonHover());
+		UIManager.put("Button.light", t.buttonHover());
+		UIManager.put("Button.foreground", t.foreground());
+		UIManager.put("Button.background", t.background());
 		UIManager.put("Menu.selectionBackground", t.menuMouseClick());
 		UIManager.put("Menu.selectionForeground", t.menuMouseClickText());
 		
-		//printDefaultUI();
+		// Option pane
+		UIManager.put("OptionPane.background", t.background());
+		UIManager.put("OptionPane.foreground", t.foreground());
+		UIManager.put("OptionPane.messageForeground", t.foreground());
+		UIManager.put("OptionPane.border", BorderFactory.createLineBorder(t.background(), 15, false));
+		UIManager.put("OptionPane.buttonAreaBorder", BorderFactory.createLineBorder(t.background(), 2, false));
+		UIManager.put("Button.border", BorderFactory.createLineBorder(t.foreground(), 2, true));
+		UIManager.put("OptionPane.buttonFont", TabPainter.SYMBOL_FONT);
+		UIManager.put("OptionPane.font", TabPainter.SYMBOL_FONT);
+		UIManager.put("OptionPane.messageFont", TabPainter.SYMBOL_FONT);
+		UIManager.put("OptionPane.questionIcon", new ZabQuestionIcon());
+		
+//		printDefaultUI();
 	}
 	
 	/**
@@ -191,7 +215,7 @@ public interface ZabTheme{
 		@Override
 		public Color borderColor(){ return new Color(0, 0, 0); }
 		@Override
-		public Color tabString(){ return new Color(200, 200, 200); }
+		public Color tabString(){ return new Color(180, 180, 180); }
 		@Override
 		public Color tabSymbolText(){ return new Color(20, 20, 20); }
 		@Override
@@ -276,6 +300,20 @@ public interface ZabTheme{
 		public void mouseExited(MouseEvent e){
 			this.button.setBackground(this.theme.background());
 		}
+	}
+	
+	/**
+	 * A utility class for creating a custom icon for displaying a question icon JOptionPane. 
+	 * This is currently an empty icon which displays nothing
+	 * @author zrona
+	 */
+	public static class ZabQuestionIcon implements Icon{
+		@Override
+		public void paintIcon(Component c, Graphics g, int x, int y){}
+		@Override
+		public int getIconWidth(){return 0;}
+		@Override
+		public int getIconHeight(){return 0;}
 	}
 	
 }

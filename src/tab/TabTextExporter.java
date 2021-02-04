@@ -1,7 +1,6 @@
 package tab;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,6 +8,7 @@ import java.util.Collections;
 import appUtils.ZabAppSettings;
 import appUtils.ZabConstants;
 import appUtils.settings.TabTextSettings;
+import gui.FileUtilsUntested;
 import music.Music;
 import tab.symbol.TabSymbol;
 import util.FileUtils;
@@ -194,32 +194,24 @@ public final class TabTextExporter{
 	public static boolean exportToFile(Tab tab, File file){
 		if(file == null) return false;
 		boolean success = true;
-		try{
-			// Ensure the parent path exists
-			File parent = file.getParentFile();
-			if(parent != null){
-				if(!parent.exists() && !parent.mkdirs()) return false;
-			}
-			// If the path was made, or already existed, continue saving
-			// Make the export string. If it fails to make, then don't write anything to a file
-			String s = export(tab);
-			if(s == null){
-				success = false;
-				if(ZabConstants.PRINT_ERRORS) System.err.println("Export of a tab failed");
-			}
-			// Otherwise write it to the file
-			else{
-				PrintWriter writer = new PrintWriter(file);
-				try{
-					 writer.print(s);
-				}finally{
-					writer.close();
-				}
-			}
-		}
-		catch(FileNotFoundException | SecurityException e){
-			if(ZabConstants.PRINT_ERRORS) e.printStackTrace();
+		// Ensure the parent path exists
+		FileUtilsUntested.ensureParentExists(file);
+		
+		// If the path was made, or already existed, continue saving
+		// Make the export string. If it fails to make, then don't write anything to a file
+		String s = export(tab);
+		if(s == null){
 			success = false;
+			if(ZabConstants.PRINT_ERRORS) System.err.println("Export of a tab failed");
+		}
+		// Otherwise write it to the file
+		else{
+			PrintWriter writer = FileUtilsUntested.createFilePrintWriter(file);
+			try{
+				writer.print(s);
+			}finally{
+				writer.close();
+			}
 		}
 		return success;
 	}

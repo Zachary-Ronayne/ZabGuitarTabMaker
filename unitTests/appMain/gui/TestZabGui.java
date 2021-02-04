@@ -16,16 +16,18 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import appMain.gui.frames.ZabFrame;
-import appMain.gui.frames.editor.EditorFrame;
+import appMain.gui.comp.ZabFrame;
+import appMain.gui.editor.frame.EditorFrame;
+import appMain.gui.editor.paint.event.DummyEditorEvent;
 import appUtils.ZabAppSettings;
+import gui.ConfirmNotSavedPopup;
 import util.testUtils.Assert;
 
 public class TestZabGui{
 
 	private ZabGui gui;
 	
-	private ZabGui.GuiResizeListener resizer;
+	private ZabGui.ZabWindowListener resizer;
 	
 	private ComponentEvent compEvent;
 	private WindowEvent winEvent;
@@ -73,9 +75,12 @@ public class TestZabGui{
 	public void copyData(){
 		ZabGui newGui = new ZabGui();
 		newGui.setVisible(false);
+		gui.getEditorFrame().getTabScreen().getUndoStack().addEvent(new DummyEditorEvent());
 		gui.copyData(newGui);
 		assertEquals(gui.getEditorFrame().getOpenedTab(), newGui.getEditorFrame().getOpenedTab(),
 				"Checking tab copied");
+		
+		assertFalse(newGui.getEditorFrame().getTabScreen().getUndoStack().isSaved(), "Checking stack is unsaved");
 		
 		newGui.dispose();
 	}
@@ -149,67 +154,78 @@ public class TestZabGui{
 	}
 	
 	@Test
-	public void getGuiGuiResizeListener(){
+	public void getGuiZabWindowListener(){
 		assertEquals(gui, resizer.getGui(), "Checking gui set in listener");
 	}
 	
 	@Test
-	public void resizeGuiResizeListener(){
+	public void resizeZabWindowListener(){
 		resizer.resize();
 	}
 	
 	@Test
-	public void componentResizedGuiResizeListener(){
+	public void componentResizedZabWindowListener(){
 		resizer.componentResized(compEvent);
 	}
 	
 	@Test
-	public void windowStateChangedGuiResizeListener(){
+	public void windowStateChangedZabWindowListener(){
 		resizer.windowStateChanged(winEvent);
 	}
 	
 	@Test
-	public void windowOpenedGuiResizeListener(){
+	public void windowOpenedZabWindowListener(){
 		resizer.windowOpened(winEvent);
 	}
 	
 	@Test
-	public void windowClosingGuiResizeListener(){
+	public void windowClosingZabWindowListener(){
+		// Running case of not saved, pop up fails
+		ConfirmNotSavedPopup.setDisableState(false);
+		gui.getEditorFrame().getTabScreen().getUndoStack().markNotSaved();
+		resizer.windowClosing(winEvent);
+		
+		// Running case of not saved, pop up succeeds
+		ConfirmNotSavedPopup.setDisableState(true);
+		gui.getEditorFrame().getTabScreen().getUndoStack().markNotSaved();
+		resizer.windowClosing(winEvent);
+		
+		// Running case of saved
+		gui.getEditorFrame().getTabScreen().getUndoStack().markSaved();
 		resizer.windowClosing(winEvent);
 	}
 	
 	@Test
-	public void windowClosedGuiResizeListener(){
-		resizer.windowClosed(winEvent);
-	}
+	public void windowClosedZabWindowListener(){
+		resizer.windowClosed(winEvent);}
 	
 	@Test
-	public void windowIconifiedGuiResizeListener(){
+	public void windowIconifiedZabWindowListener(){
 		resizer.windowIconified(winEvent);
 	}
 	
 	@Test
-	public void windowDeiconifiedGuiResizeListener(){
+	public void windowDeiconifiedZabWindowListener(){
 		resizer.windowDeiconified(winEvent);
 	}
 	
 	@Test
-	public void windowActivatedGuiResizeListener(){
+	public void windowActivatedZabWindowListener(){
 		resizer.windowActivated(winEvent);
 	}
 	
 	@Test
-	public void windowDeactivatedGuiResizeListener(){
+	public void windowDeactivatedZabWindowListener(){
 		resizer.windowDeactivated(winEvent);
 	}
 	
 	@Test
-	public void windowGainedFocusGuiResizeListener(){
+	public void windowGainedFocusZabWindowListener(){
 		resizer.windowGainedFocus(winEvent);
 	}
 	
 	@Test
-	public void windowLostFocusGuiResizeListener(){
+	public void windowLostFocusZabWindowListener(){
 		resizer.windowLostFocus(winEvent);
 	}
 	

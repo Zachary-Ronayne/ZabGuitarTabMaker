@@ -8,9 +8,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import appMain.gui.ZabGui;
 import appMain.gui.ZabTheme;
-import appMain.gui.frames.ZabFrame;
-import appMain.gui.frames.editor.EditorFrame;
-import appUtils.ZabAppSettings;
+import appMain.gui.editor.frame.EditorFrame;
 import appUtils.ZabConstants;
 import lang.AbstractLanguage;
 import lang.Language;
@@ -111,6 +109,67 @@ public class ZabFileChooser extends JFileChooser{
 	}
 	
 	/**
+	 * Save the {@link Tab} of {@link #getGui()} to the file selected by the user
+	 * @return true if the save was successful, false otherwise
+	 */
+	public boolean saveTab(){
+		this.filePrep(this.getLastLocation());
+		// Set the filter to only use .zab files
+		this.setFileFilter(this.getZabFileFilter());
+		
+		// Open the save window and wait for the user to pick a file name
+		File file = this.getSelectedFile();
+		if(ZabConstants.ENABLE_DIALOG){
+			int state = this.showDialog(null, "Save tab");
+			// If the save was canceled, send a null file, which cancels the save
+			if(state == JFileChooser.CANCEL_OPTION) file = null;
+		}
+		
+		// After the file was selected, save that location
+		this.saveCurrentLocation();
+		
+		// Save the file
+		return this.saveTab(file);
+	}
+	
+	/**
+	 * Save the tab currently loaded by the {@link EditorFrame} of {@link #getGui()} to the given file. 
+	 * This method assumes the file is a valid file, if anything goes wrong with saving the file, this method returns false.
+	 * @param f The {@link File} to use
+	 * @return true if the save was successful, false otherwise
+	 */
+	public boolean saveTab(File f){
+		// Ensure the file has an appropriate extension
+		f = FileUtils.extendToZab(f);
+
+		// Save the tab
+		return this.getGui().getEditorFrame().save(f);
+	}
+
+	/**
+	 * Load the {@link Tab} of {@link #gui} from the file selected by the user
+	 * @return true if the load was successful, false otherwise
+	 */
+	public boolean loadTab(){
+		this.filePrep(this.getLastLocation());
+		// Set the filter to only use .zab files
+		this.setFileFilter(this.getZabFileFilter());
+		
+		// Open the save window and wait for the user to pick a file name
+		if(ZabConstants.ENABLE_DIALOG){
+			int state = this.showDialog(null, "Load tab");
+			// If the load was canceled, fail the load
+			if(state == JFileChooser.CANCEL_OPTION) return false;
+		}
+		
+		// After the file was selected, even if one was not selected, save that location
+		this.saveCurrentLocation();
+		
+		// Perform the load
+		return this.getGui().getEditorFrame().load(this.getSelectedFile());
+	}
+	
+	/**
 	 * Request that the user selects a file for exporting, and return that file
 	 * @param extension The file extension, no dot
 	 * @return The selected file, can be null if no file was selected. This file is also the same which can be obtained by {@link #getSelectedFile()}
@@ -126,89 +185,13 @@ public class ZabFileChooser extends JFileChooser{
 		if(ZabConstants.ENABLE_DIALOG) this.showDialog(null, "Select location");
 		
 		// Add the file extension
-		this.setSelectedFile(FileUtils.extendTo(getSelectedFile(), extension));
+		this.setSelectedFile(FileUtils.extendTo(this.getSelectedFile(), extension));
 
 		// After the file was selected, save that location
 		this.saveCurrentLocation();
 		
 		// Return the selected file
 		return this.getSelectedFile();
-	}
-	
-	/**
-	 * Load the {@link Tab} of {@link #gui} from the file selected by the user
-	 * @return true if the load was successful, false otherwise
-	 */
-	public boolean loadTab(){
-		this.filePrep(this.getLastLocation());
-		// Set the filter to only use .zab files
-		this.setFileFilter(this.getZabFileFilter());
-		
-		// Open the save window and wait for the user to pick a file name
-		if(ZabConstants.ENABLE_DIALOG) this.showDialog(null, "Load tab");
-
-		// After the file was selected, save that location
-		this.saveCurrentLocation();
-		
-		// Ensure a file was selected
-		File file = this.getSelectedFile();
-		if(file == null) return false;
-		
-		// Ensure a tab exists
-		EditorFrame frame = this.getGui().getEditorFrame();
-		Tab tab = frame.getOpenedTab();
-		if(tab == null){
-			frame.setOpenedTab(new Tab());
-			tab = frame.getOpenedTab();
-		}
-		
-		// Load the tab from the file
-		boolean success = ZabAppSettings.load(file, tab, true);
-		
-		// Update the GUI to reflect the loaded tab
-		getGui().repaint();
-		
-		return success;
-	}
-	
-	/**
-	 * Save the {@link Tab} of {@link #getGui()} to the file selected by the user
-	 * @return true if the save was successful, false otherwise
-	 */
-	public boolean saveTab(){
-		this.filePrep(this.getLastLocation());
-		// Set the filter to only use .zab files
-		this.setFileFilter(this.getZabFileFilter());
-		// Open the save window and wait for the user to pick a file name
-		if(ZabConstants.ENABLE_DIALOG) this.showDialog(null, "Save tab");
-
-		// After the file was selected, save that location
-		this.saveCurrentLocation();
-		
-		// Ensure a file was selected
-		File file = this.getSelectedFile();
-		if(file == null) return false;
-
-		// Save the file
-		return this.saveTab(file);
-	}
-	
-	/**
-	 * Save the tab currently loaded by the {@link EditorFrame} of {@link #getGui()} to the given file. 
-	 * This method assumes the file is a valid file, if anything goes wrong with saving the file, this method returns false.
-	 * @param f The {@link File} to use
-	 * @return true if the save was successful, false otherwise
-	 */
-	public boolean saveTab(File f){
-		// Ensure the file has an appropriate extension
-		f = FileUtils.extendToZab(f);
-
-		// Ensure a tab exists
-		Tab tab = this.getGui().getEditorFrame().getOpenedTab();
-		if(tab == null) return false;
-		
-		// Perform the save
-		return ZabAppSettings.save(f, tab, true);
 	}
 	
 }

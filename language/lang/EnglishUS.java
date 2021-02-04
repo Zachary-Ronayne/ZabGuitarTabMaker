@@ -55,4 +55,9 @@ public class EnglishUS implements AbstractLanguage{
 	@Override
 	public String noPathSelected(){ return "No path selected"; }
 	
+	@Override
+	public String workNotSavedTitle(){ return "Work not saved"; }
+	@Override
+	public String workNotSavedDescription(){ return "You have unsaved work, are you sure you want to continue?"; }
+	
 }

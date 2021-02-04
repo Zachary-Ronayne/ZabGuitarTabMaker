@@ -21,6 +21,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import appMain.gui.ZabTheme.ButtonHoverSensor;
+import appMain.gui.ZabTheme.ZabQuestionIcon;
 import appUtils.ZabAppSettings;
 import util.testUtils.Assert;
 
@@ -31,6 +32,7 @@ public class TestZabTheme{
 	
 	private ZabTheme dark;
 	private ZabTheme light;
+	private ZabQuestionIcon icon;
 	
 	@BeforeAll
 	public static void init(){
@@ -41,6 +43,8 @@ public class TestZabTheme{
 	public void setup(){
 		button = new JButton();
 		sensor = new ButtonHoverSensor(button);
+		
+		icon = new ZabQuestionIcon();
 		
 		dark = new ZabTheme.DarkTheme();
 		light = new ZabTheme.LightTheme();
@@ -201,7 +205,7 @@ public class TestZabTheme{
 	}
 	@Test
 	public void tabStringLightTheme(){
-		assertEquals(new Color(200, 200, 200), light.tabString());
+		assertEquals(new Color(180, 180, 180), light.tabString());
 	}
 	@Test
 	public void tabSymbolTextLightTheme(){
@@ -235,6 +239,21 @@ public class TestZabTheme{
 		button.setBackground(Color.RED);
 		sensor.mouseExited(new MouseEvent(button, 0, 0, 0, 0, 0, 0, 0, 0, false, 0));
 		assertEquals(dark.background(), button.getBackground());
+	}
+	
+	@Test
+	public void paintIconZabQuestionIcon(){
+		// Running empty code for completeness
+		icon.paintIcon(button, null, 0, 0);
+	}
+	
+	@Test
+	public void getIconWidthZabQuestionIcon(){
+		assertEquals(0, icon.getIconWidth(), "Checking width zero");
+	}
+	@Test
+	public void getIconHeightZabQuestionIcon(){
+		assertEquals(0, icon.getIconHeight(), "Checking height zero");
 	}
 
 	@AfterEach

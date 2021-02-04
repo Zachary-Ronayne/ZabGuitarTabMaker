@@ -58,4 +58,9 @@ public interface AbstractLanguage{
 	/** Get the text for describing that a file path needs to be selected, and one has not yet been selected */
 	public String noPathSelected();
 	
+	/** Get the text for the title of a pop up box asking if the user wants to continue their action, as it would mean they'd lose work */
+	public String workNotSavedTitle();
+	/** Get the text for the description of a pop up box asking if the user wants to continue their action, as it would mean they'd lose work */
+	public String workNotSavedDescription();
+	
 }
