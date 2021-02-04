@@ -14,9 +14,11 @@ import org.junit.jupiter.api.Test;
 
 import appMain.gui.ZabGui;
 import appMain.gui.comp.ZabPanel;
+import appMain.gui.editor.paint.AbstractTestTabPainter;
 import appMain.gui.editor.paint.TabPainter;
 import appMain.gui.editor.paint.event.EditorEventStack;
 import appUtils.ZabAppSettings;
+import appUtils.settings.ZabSettings;
 import tab.InstrumentFactory;
 import tab.Tab;
 import util.testUtils.UtilsTest;
@@ -32,6 +34,8 @@ public class TestEditorFrame{
 	@BeforeAll
 	public static void init(){
 		ZabAppSettings.init();
+		ZabSettings settings = ZabAppSettings.get();
+		settings.paint().getLineMeasures().set(2);
 		gui = new ZabGui();
 		gui.setVisible(false);
 		
@@ -130,12 +134,15 @@ public class TestEditorFrame{
 	@Test
 	public void load(){
 		File file = new File(UtilsTest.UNIT_PATH + "/EditorFrameLoadTest.zab");
+		AbstractTestTabPainter.initAditionalNotes(frame.getOpenedTab());
+		
 		assertTrue(frame.save(file), "Checking file was saved");
 		
 		stack.markNotSaved();
 		assertTrue(frame.load(file), "Checking load succeeds in normal case");
 		assertEquals("Load successful", bar.getFileStatusLab().getText(), "Checking label text set on load");
 		assertTrue(stack.isSaved(), "Checking undo stack is now saved");
+		assertEquals(5, frame.getTabScreen().getLineTabCount(), "Checking number of tab lines updated");
 
 		stack.markNotSaved();
 		frame.setOpenedTab(null);

@@ -117,14 +117,16 @@ public class ZabFileChooser extends JFileChooser{
 		// Set the filter to only use .zab files
 		this.setFileFilter(this.getZabFileFilter());
 		
-		// Open the save window and wait for the user to pick a file name
-		File file = this.getSelectedFile();
-		if(ZabConstants.ENABLE_DIALOG){
-			int state = this.showDialog(null, "Save tab");
-			// If the save was canceled, send a null file, which cancels the save
-			if(state == JFileChooser.CANCEL_OPTION) file = null;
-			else file = this.getSelectedFile();
-		}
+		// Set up the file to initially be nothing, if one is not selected
+		File file = null;
+		int state;
+		// Open the save window and wait for the user to pick a file name, only if the dialog is enabled
+		if(ZabConstants.ENABLE_DIALOG) state = this.showDialog(null, "Save tab");
+		// If it is not enabled, whatever file is selected is automatically approved if it is not null
+		else state = (this.getSelectedFile() == null) ? JFileChooser.CANCEL_OPTION : JFileChooser.APPROVE_OPTION;
+		// If the save was not canceled, get the selected file
+		// Otherwise a null file is sent, which cancels the save
+		if(state != JFileChooser.CANCEL_OPTION) file = this.getSelectedFile();
 		
 		// After the file was selected, save that location
 		this.saveCurrentLocation();

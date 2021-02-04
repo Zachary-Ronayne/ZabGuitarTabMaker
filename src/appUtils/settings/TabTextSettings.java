@@ -35,8 +35,12 @@ public class TabTextSettings extends Settings{
 	public static final boolean ALIGN_SYMBOLS_END = false;
 	/** Default for {@link #end} */
 	public static final String END = "|";
-	/** Default for {@link #end} */
+	/** Default for {@link #MEASURES_PER_LINE} */
 	public static final int MEASURES_PER_LINE = 8;
+	/** Default for {@link #useSpacing} */
+	public static final boolean USE_SPACING = true;
+	/** Default for {@link #measureSeparator} */
+	public static final String MEASURE_SEPARATOR = "|";
 
 	/** In text output of a tab, the text that goes before each string line in a line of tab */
 	private SettingString preString;
@@ -62,6 +66,10 @@ public class TabTextSettings extends Settings{
 	private SettingString end;
 	/** In text output of a tab, the number of measures before going to a new line */
 	private SettingInt measuresPerLine;
+	/** In text output of a tab, true if symbols should be spaced based on their placement in measures, false to have no space */
+	private SettingBoolean useSpacing;
+	/** In text output of a tab, the string to use for the separator of a measure. Can use an empty string to turn off. Only applies when tabs use spacing */
+	private SettingString measureSeparator;
 
 	/**
 	 * Create a new set of {@link TabTextSettings} with all default values loaded
@@ -80,6 +88,8 @@ public class TabTextSettings extends Settings{
 		this.alignSymbolsEnd = this.addBoolean(ALIGN_SYMBOLS_END);
 		this.end = this.addString(END);
 		this.measuresPerLine = this.addInt(MEASURES_PER_LINE);
+		this.useSpacing = this.addBoolean(USE_SPACING);
+		this.measureSeparator = this.addString(MEASURE_SEPARATOR);
 	}
 	
 	/** @return See {@link #preString} */
@@ -106,7 +116,11 @@ public class TabTextSettings extends Settings{
 	public SettingString getEnd(){ return this.end; }
 	/** @return See {@link #measuresPerLine} */
 	public SettingInt getMeasuresPerLine(){ return this.measuresPerLine; }
-
+	/** @return See {@link #useSpacing} */
+	public SettingBoolean getUseSpacing(){ return this.useSpacing; }
+	/** @return See {@link #measuresPerLine} */
+	public SettingString getMeasureSeparator(){ return this.measureSeparator; }
+	
 	/** @return See {@link #preString} */
 	public String preString(){ return this.getPreString().get(); }
 	/** @return See {@link #postNoteName} */
@@ -131,4 +145,8 @@ public class TabTextSettings extends Settings{
 	public String textEnd(){ return this.getEnd().get(); }
 	/** @return See {@link #measuresPerLine} */
 	public Integer measuresPerLine(){ return this.getMeasuresPerLine().get(); }
+	/** @return See {@link #useSpacing} */
+	public Boolean useSpacing(){ return this.getUseSpacing().get(); }
+	/** @return See {@link #measuresPerLine} */
+	public String measureSeparator(){ return this.getMeasureSeparator().get(); } 
 }

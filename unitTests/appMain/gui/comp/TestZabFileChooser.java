@@ -122,14 +122,6 @@ public class TestZabFileChooser{
 		assertTrue(chooser.saveTab(file), "Checking save succeeds");
 		assertTrue(stack.isSaved(), "Checking tab marked as saved");
 	}
-	
-	@Test
-	public void exportSelect(){
-		chooser.setSelectedFile(file);
-		chooser.exportSelect("txt");
-		file = new File(name + ".txt");
-		assertEquals(file, chooser.getSelectedFile(), "Checking correct file object created");
-	}
 
 	@Test
 	public void loadTab(){
@@ -156,6 +148,14 @@ public class TestZabFileChooser{
 		
 		chooser.setSelectedFile(null);
 		assertFalse(chooser.loadTab(), "Checking load fails on null file");
+	}
+	
+	@Test
+	public void exportSelect(){
+		chooser.setSelectedFile(file);
+		chooser.exportSelect("txt");
+		file = new File(name + ".txt");
+		assertEquals(file, chooser.getSelectedFile(), "Checking correct file object created");
 	}
 
 	@After

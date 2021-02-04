@@ -82,6 +82,16 @@ public class TestTabTextSettings{
 		TestZabSettings.assertSettingInitialized(settings.getMeasuresPerLine(), TabTextSettings.MEASURES_PER_LINE);
 		assertEquals(TabTextSettings.MEASURES_PER_LINE, settings.measuresPerLine(), "Checking value getter correct");
 	}
+	@Test
+	public void useSpacing(){
+		TestZabSettings.assertSettingInitialized(settings.getUseSpacing(), TabTextSettings.USE_SPACING);
+		assertEquals(TabTextSettings.USE_SPACING, settings.useSpacing(), "Checking value getter correct");
+	}
+	@Test
+	public void measureSeparator(){
+		TestZabSettings.assertSettingInitialized(settings.getMeasureSeparator(), TabTextSettings.MEASURE_SEPARATOR);
+		assertEquals(TabTextSettings.MEASURE_SEPARATOR, settings.measureSeparator(), "Checking value getter correct");
+	}
 	
 	@AfterEach
 	public void end(){}

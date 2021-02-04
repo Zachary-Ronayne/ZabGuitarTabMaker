@@ -84,7 +84,7 @@ public final class TabTextExporter{
 		String tabEnd = settings.textEnd();
 		// true if the amount of space between each note in a measure should be used when exporting the text, 
 		// false to ignore space and pack all notes together as much as possible
-		boolean useSpacing = true; // TODO add setting
+		boolean useSpacing = settings.useSpacing();
 		
 		// Get all of the TabStrings
 		ArrayList<TabString> tabStrings = tab.getStrings();
@@ -116,6 +116,45 @@ public final class TabTextExporter{
 		// Combine the strings, placing exportStrings after the toAdd strings
 		StringUtils.combineStringsWithFiller(exportStrings, toAdd, offset, afterNoteName, noteNameFiller, noteNameFillerBefore);
 		
+		// Add all of the symbols with no extra space between them
+		if(useSpacing) appendSymbolsWithSpace(exportStrings, start, end, tabStrings, hardEnd);
+		// Add all of the symbols with extra space based on their positions
+		else appendSymbolsNoSpace(exportStrings, start, end, tabStrings, hardEnd);
+		
+		// String for the final result of the tab
+		String result = "";
+		
+		// Combine all of the strings together, and add the final vertical bar
+		for(int i = 0; i < numStrings; i++){
+			result = String.join("", result, exportStrings[i], tabEnd, "\n");
+		}
+		
+		// Return the final tab string
+		return result;
+	}
+	
+	/**
+	 * Given an array of of strings, add the text of all of the given symbols, so that all of the symbols are spaced based on their relative positions.
+	 * @param exportStrings The strings to use initially, must be the same size as tabStrings
+	 * @param start The starting note position in the TabStrings, symbols with a lower position value will not be included 
+	 * @param end The ending note position in the TabStrings, symbols with a higher position value will not be included 
+	 * @param tabStrings The strings which contain the symbols to place
+	 * 	Must have the same number of elements as exportStrings
+	 * @param hardEnd true to include notes lining up with the exact end of the range, false otherwise
+	 */
+	public static void appendSymbolsNoSpace(String[] exportStrings, double start, double end, ArrayList<TabString> tabStrings, boolean hardEnd){
+		TabTextSettings settings = ZabAppSettings.get().text();
+		// The text added before each symbol is added
+		String symbolBefore = settings.beforeSymbol();
+		// The text added after each symbol is added
+		String symbolAfter = settings.afterSymbol();
+		// The character used to fill up the tab
+		char tabFiller = settings.filler();
+		// Whether the tab filler should be placed before or after the symbols
+		boolean tabFillerBefore = settings.alignSymbolsEnd();
+		
+		int numStrings = tabStrings.size();
+
 		// Create a list storing each symbol and its position in the region
 		ArrayList<IndexAndPos> symbols = new ArrayList<IndexAndPos>();
 		for(int i = 0; i < numStrings; i++){
@@ -138,41 +177,6 @@ public final class TabTextExporter{
 		// Sort all of the symbols in increasing order based on position
 		Collections.sort(symbols);
 		
-		// Add all of the symbols with no extra space between them
-		if(useSpacing) appendSymbolsWithSpace(exportStrings, start, end, tabStrings);
-		// Add all of the symbols with extra space based on their positions
-		else appendSymbolsNoSpace(exportStrings, symbols, tabStrings);
-		
-		// String for the final result of the tab
-		String result = "";
-		
-		// Combine all of the strings together, and add the final vertical bar
-		for(int i = 0; i < numStrings; i++){
-			result = String.join("", result, exportStrings[i], tabEnd, "\n");
-		}
-		
-		// Return the final tab string
-		return result;
-	}
-	
-	/**
-	 * Given an array of of strings, add the text of all of the given symbols, so that all of the symbols are spaced based on their relative positions.
-	 * @param exportStrings The strings to use initially, must be the same size as tabStrings
-	 * @param symbols The symbols to add, must be sorted
-	 * @param tabStrings The strings which the symbols reside
-	 */
-	public static void appendSymbolsNoSpace(String[] exportStrings, ArrayList<IndexAndPos> symbols, ArrayList<TabString> tabStrings){
-		TabTextSettings settings = ZabAppSettings.get().text();
-		// The text added before each symbol is added
-		String symbolBefore = settings.beforeSymbol();
-		// The text added after each symbol is added
-		String symbolAfter = settings.afterSymbol();
-		// The character used to fill up the tab
-		char tabFiller = settings.filler();
-		// Whether the tab filler should be placed before or after the symbols
-		boolean tabFillerBefore = settings.alignSymbolsEnd();
-		
-		int numStrings = tabStrings.size();
 		String[] toAdd = new String[numStrings];
 		
 		// Add each note one at a time, placing a dash between each one
@@ -206,9 +210,17 @@ public final class TabTextExporter{
 			StringUtils.combineStringsWithFiller(exportStrings, toAdd, symbolBefore, symbolAfter, tabFiller, tabFillerBefore);
 		}
 	}
-	
-	// TODO give better name, and add doc
-	public static void appendSymbolsWithSpace(String[] exportStrings, double lowPos, double highPos, ArrayList<TabString> tabStrings){
+
+	/**
+	 * Add on to the end of exportStrings, all of the symbols in the given range of measures.
+	 * @param exportStrings The text Strings to add the text
+	 * @param lowPos The beginning point to start looking for the symbols, any symbol with a position less than this value will not be included
+	 * @param highPos The ending point for looking for the symbols, any symbol with a position less greater than this value will not be included
+	 * @param tabStrings The list of {@link TabString} objects which contain the symbols at the desired export positions. 
+	 * 	Must have the same number of elements as exportStrings
+	 * @param hardEnd true to include notes lining up with the exact end of the range, false otherwise
+	 */
+	public static void appendSymbolsWithSpace(String[] exportStrings, double lowPos, double highPos, ArrayList<TabString> tabStrings, boolean hardEnd){
 		TabTextSettings settings = ZabAppSettings.get().text();
 		// The text added before each symbol is added
 		String symbolBefore = settings.beforeSymbol();
@@ -218,10 +230,8 @@ public final class TabTextExporter{
 		char tabFiller = settings.filler();
 		// Whether the tab filler should be placed before or after the symbols
 		boolean tabFillerBefore = settings.alignSymbolsEnd();
-		// true to add extra extra lines between each measure, false otherwise
-		boolean addMeasureLines = true; // TODO add setting
 		// the text used to represent a measure line
-		String measureSeparator = "|"; // TODO add setting
+		String measureSeparator = settings.measureSeparator();
 		
 		int numStrings = tabStrings.size();
 		String[] toAdd = new String[numStrings];
@@ -230,7 +240,7 @@ public final class TabTextExporter{
 		double measureSpace = 1 / ZabAppSettings.get().tab().quantizeDivisor();
 		
 		// Go through each space in the tab, adding notes if they are found, or an empty space if they are not
-		for(double p = lowPos; p <= highPos; p += measureSpace){
+		for(double p = lowPos; p < highPos || hardEnd && p == highPos; p += measureSpace){
 			
 			// Find the symbol at each position, and place it in the list, or an empty string if there is no symbol
 			for(int i = 0; i < numStrings; i++){
@@ -242,14 +252,12 @@ public final class TabTextExporter{
 			// Combine the export text strings with the text for the next tab character
 			StringUtils.combineStringsWithFiller(exportStrings, toAdd, symbolBefore, symbolAfter, tabFiller, tabFillerBefore);
 			
-			// If adding measure lines, and the next space will be a measure, add the measure separator to each line
-			if(addMeasureLines){
-				// Mod a double by 1 to get its decimal remainder
-				double measurePos = p % 1 + measureSpace;
-				// If the next position will be on or after a measure, and it is not the end of the measure, add the line
-				if(measurePos >= 1 && p + measureSpace != highPos){
-					for(int i = 0; i < numStrings; i++) exportStrings[i] = exportStrings[i].concat(measureSeparator);
-				}
+			// If the next space will be a measure, add the measure separator to each line
+			// Mod a double by 1 to get its decimal remainder
+			double measurePos = p % 1 + measureSpace;
+			// If the next position will be on or after a measure, and it is not the end of the measure, add the line
+			if(measurePos >= 1 && p + measureSpace != highPos){
+				for(int i = 0; i < numStrings; i++) exportStrings[i] = exportStrings[i].concat(measureSeparator);
 			}
 		}
 	}
@@ -276,11 +284,8 @@ public final class TabTextExporter{
 		// Otherwise write it to the file
 		else{
 			PrintWriter writer = FileUtilsUntested.createFilePrintWriter(file);
-			try{
-				writer.print(s);
-			}finally{
-				writer.close();
-			}
+			writer.print(s);
+			writer.close();
 		}
 		return success;
 	}
