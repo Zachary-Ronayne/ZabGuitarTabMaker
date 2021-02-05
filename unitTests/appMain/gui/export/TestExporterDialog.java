@@ -2,7 +2,6 @@ package appMain.gui.export;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
@@ -18,11 +17,11 @@ import appMain.gui.editor.frame.FileStatusLabel;
 import appUtils.ZabAppSettings;
 import util.testUtils.UtilsTest;
 
-public class TestZabExporterDialog{
+public class TestExporterDialog{
 
 	private static ZabGui gui;
 	
-	private ZabExporterDialog dialog;
+	private ExportDialog dialog;
 	
 	@BeforeAll
 	public static void init(){
@@ -34,24 +33,13 @@ public class TestZabExporterDialog{
 	
 	@BeforeEach
 	public void setup(){
-		dialog = new ZabExporterDialog(gui);
+		dialog = new ExportDialog(gui);
 		dialog.setVisible(false);
-	}
-	
-	@Test
-	public void getGui(){
-		assertEquals(gui, dialog.getGui(), "Checking gui initialized");
-	}
-	
-	@Test
-	public void getFrame(){
-		assertNotEquals(null, dialog.getFrame(), "Checking frame initialized");
 	}
 	
 	@Test
 	public void open(){
 		dialog.open();
-		assertTrue(dialog.isAlwaysOnTop(), "Checking dialog always on top");
 	}
 	
 	@Test

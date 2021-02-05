@@ -7,7 +7,7 @@ import java.io.File;
 import appMain.gui.ZabGui;
 import appMain.gui.comp.ZabFileChooser;
 import appMain.gui.editor.paint.TabPainter;
-import appMain.gui.export.ZabExporterDialog;
+import appMain.gui.export.ExportDialog;
 import gui.ConfirmNotSavedPopup;
 import gui.GuiGenerator;
 import lang.AbstractLanguage;
@@ -51,8 +51,8 @@ public class FileMenu extends ZabMenu{
 	private ZabMenuItem exportItem;
 	/** The {@link ActionListener} which handles click the JMenuItem for exporting to a file */
 	private ExportListener exporter;
-	/** The {@link ZabExporterDialog} which handles user input for exporting to a file */
-	private ZabExporterDialog exportDialog;
+	/** The {@link ExportDialog} which handles user input for exporting to a file */
+	private ExportDialog exportDialog;
 	
 	/**
 	 * Create a new default {@link FileMenu}
@@ -93,7 +93,7 @@ public class FileMenu extends ZabMenu{
 		this.exportItem = new ZabMenuItem(lang.export());
 		this.exporter = new ExportListener();
 		this.exportItem.addActionListener(this.exporter);
-		this.exportDialog = new ZabExporterDialog(this.getGui());
+		this.exportDialog = new ExportDialog(this.getGui());
 		this.add(exportItem);
 	}
 	
@@ -160,7 +160,7 @@ public class FileMenu extends ZabMenu{
 	}
 	
 	/** @return See {@link #exportDialog} */
-	public ZabExporterDialog getExportDialog(){
+	public ExportDialog getExportDialog(){
 		return this.exportDialog;
 	}
 	

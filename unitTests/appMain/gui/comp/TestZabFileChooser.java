@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 import appMain.gui.ZabGui;
 import appMain.gui.editor.paint.event.DummyEditorEvent;
 import appMain.gui.editor.paint.event.EditorEventStack;
-import appMain.gui.export.ExporterFrame;
+import appMain.gui.export.ExportFrame;
 import appUtils.ZabAppSettings;
 import appUtils.ZabFileSaver;
 import tab.InstrumentFactory;
@@ -45,7 +45,7 @@ public class TestZabFileChooser{
 	public void setup(){
 		gui = new ZabGui();
 		gui.setVisible(false);
-		frame = new ExporterFrame(gui);
+		frame = new ExportFrame(gui);
 		chooser = new ZabFileChooser(frame);
 		
 		name = FileUtils.makeFileName(UtilsTest.UNIT_PATH, UtilsTest.UNIT_NAME);

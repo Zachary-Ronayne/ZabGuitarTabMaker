@@ -2,10 +2,8 @@ package appMain.gui.export;
 
 import java.awt.Dimension;
 
-import javax.swing.JDialog;
-
 import appMain.gui.ZabGui;
-import appMain.gui.ZabTheme;
+import appMain.gui.comp.ZabDialog;
 import appMain.gui.editor.frame.EditorFrame;
 import appUtils.ZabConstants;
 import tab.Tab;
@@ -14,34 +12,18 @@ import tab.Tab;
  * A class used for tracking a pop up GUI used to select settings for exporting a {@link Tab}
  * @author zrona
  */
-public class ZabExporterDialog extends JDialog{
+public class ExportDialog extends ZabDialog{
 	private static final long serialVersionUID = 1L;
 	
-	/** The {@link ZabGui} which uses this {@link ZabExporterDialog} */
-	private ZabGui gui;
-	
-	/** The {@link ExporterFrame} used by this {@link ZabExporterDialog} */
-	private ExporterFrame frame;
-	
 	/**
-	 * Create a {@link ZabExporterDialog} dialog box in the default state
-	 * @param gui See {@link #gui}
+	 * Create a {@link ExportDialog} dialog box in the default state
+	 * @param gui See {@link #getGui()}
 	 */
-	public ZabExporterDialog(ZabGui gui){
-		super(gui);
+	public ExportDialog(ZabGui gui){
+		super(gui, new ExportFrame(gui));
 		
 		// Ensure this JDialog is not initially shown
 		this.setVisible(false);
-		
-		// Set the gui
-		this.gui = gui;
-		
-		// Load appropriate theme
-		ZabTheme.setToTheme(this);
-		
-		// Set up and add the frame
-		this.frame = new ExporterFrame(gui);
-		this.add(this.frame);
 		
 		// Set up the preferred size
 		this.setMinimumSize(new Dimension(ZabConstants.MIN_APP_EXPORT_WIDTH, ZabConstants.MIN_APP_EXPORT_HEIGHT));
@@ -50,14 +32,12 @@ public class ZabExporterDialog extends JDialog{
 		this.pack();
 	}
 	
-	/** @return See {@link #gui} */
-	public ZabGui getGui(){
-		return this.gui;
-	}
-	
-	/** @return See {@link #frame} */
-	public ExporterFrame getFrame(){
-		return this.frame;
+	/**
+	 * This method is in place for convenience as the frame of this {@link ExportDialog} will always be an {@link ExportFrame}
+	 * @return See {@link #frame}
+	 */
+	public ExportFrame getFrame(){
+		return (ExportFrame)super.getFrame();
 	}
 	
 	/**
@@ -65,7 +45,7 @@ public class ZabExporterDialog extends JDialog{
 	 */
 	public void open(){
 		// Ensure this Dialog box remains on the top
-		this.setAlwaysOnTop(true);
+		this.toFront();
 		
 		// Open the JDialog
 		if(ZabConstants.ENABLE_DIALOG) this.setVisible(true);
@@ -75,7 +55,7 @@ public class ZabExporterDialog extends JDialog{
 	}
 	
 	/**
-	 * Perform the export to a file as specified by the fields of this {@link ZabExporterDialog}
+	 * Perform the export to a file as specified by the fields of this {@link ExportDialog}
 	 * @return true if the export was successful, false otherwise
 	 */
 	public boolean export(){

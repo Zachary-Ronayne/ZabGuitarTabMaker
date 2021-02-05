@@ -18,7 +18,7 @@ public class TestZabFrame{
 	
 	private static ZabGui gui;
 	
-	private class TestFrame extends ZabFrame{
+	public static class TestFrame extends ZabFrame{
 		public TestFrame(ZabGui gui){super(gui);}
 		private static final long serialVersionUID = 1L;
 		@Override

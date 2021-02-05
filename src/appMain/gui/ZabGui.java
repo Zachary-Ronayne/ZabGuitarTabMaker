@@ -17,7 +17,7 @@ import appMain.gui.comp.ZabFrame;
 import appMain.gui.comp.ZabPanel;
 import appMain.gui.dropMenu.ZabMenuBar;
 import appMain.gui.editor.frame.EditorFrame;
-import appMain.gui.export.ZabExporterDialog;
+import appMain.gui.export.ExportDialog;
 import appUtils.ZabConstants;
 import gui.ConfirmNotSavedPopup;
 import lang.AbstractLanguage;
@@ -104,7 +104,7 @@ public class ZabGui extends JFrame{
 		list.add(this);
 		list.addAll(GuiUtils.getAllComponents(this.getContentPane()));
 		list.addAll(GuiUtils.getAllComponents(this.getZabMenuBar()));
-		ZabExporterDialog export = this.getZabMenuBar().getFileMenu().getExportDialog();
+		ExportDialog export = this.getZabMenuBar().getFileMenu().getExportDialog();
 		list.addAll(GuiUtils.getAllComponents(export));
 		
 		for(Component c : list){

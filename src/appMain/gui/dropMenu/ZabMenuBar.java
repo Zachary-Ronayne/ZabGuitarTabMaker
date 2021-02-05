@@ -24,6 +24,9 @@ public class ZabMenuBar extends JMenuBar{
 	/** The {@link ZabMenu} used for the graphics options */
 	private GraphicsMenu graphicsMenu;
 	
+	/** The {@link ZabMenu} used for the help information */
+	private HelpMenu helpMenu;
+	
 	/**
 	 * Create the drop down menu as a default state
 	 */
@@ -48,6 +51,10 @@ public class ZabMenuBar extends JMenuBar{
 		// Graphics menu
 		this.graphicsMenu = new GraphicsMenu(this.getGui());
 		this.add(this.graphicsMenu);
+		
+		// Help menu
+		this.helpMenu = new HelpMenu(this.getGui());
+		this.add(this.helpMenu);
 	}
 	
 	/** @return See {@link #gui} */
@@ -68,6 +75,11 @@ public class ZabMenuBar extends JMenuBar{
 	/** @return See {@link #graphicsMenu} */
 	public GraphicsMenu getGraphicsMenu(){
 		return this.graphicsMenu;
+	}
+	
+	/** @return See {@link #helpMenu} */
+	public HelpMenu getHelpMenu(){
+		return this.helpMenu;
 	}
 	
 }

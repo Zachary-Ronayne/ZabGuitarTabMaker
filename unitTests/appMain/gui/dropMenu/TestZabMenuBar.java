@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import appMain.gui.ZabGui;
 import appUtils.ZabAppSettings;
+import util.testUtils.Assert;
 
 public class TestZabMenuBar{
 
@@ -45,18 +46,32 @@ public class TestZabMenuBar{
 	public void getFileMenu(){
 		ZabMenu menu = bar.getFileMenu();
 		assertNotEquals(null, menu, "Checking menu initialized");
+		// Checking menu bar contains the menu
+		Assert.contains(bar.getComponents(), menu);
 	}
 	
 	@Test
 	public void getEditMenu(){
 		ZabMenu menu = bar.getEditMenu();
 		assertNotEquals(null, menu, "Checking menu initialized");
+		// Checking menu bar contains the menu
+		Assert.contains(bar.getComponents(), menu);
 	}
 	
 	@Test
 	public void getGraphicsMenu(){
 		ZabMenu menu = bar.getGraphicsMenu();
 		assertNotEquals(null, menu, "Checking menu initialized");
+		// Checking menu bar contains the menu
+		Assert.contains(bar.getComponents(), menu);
+	}
+	
+	@Test
+	public void getHelpMenu(){
+		ZabMenu menu = bar.getHelpMenu();
+		assertNotEquals(null, menu, "Checking menu initialized");
+		// Checking menu bar contains the menu
+		Assert.contains(bar.getComponents(), menu);
 	}
 	
 	@AfterAll

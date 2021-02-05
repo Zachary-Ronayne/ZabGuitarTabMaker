@@ -17,11 +17,11 @@ import appUtils.ZabAppSettings;
 import lang.Language;
 import util.testUtils.UtilsTest;
 
-public class TestExporterFrame{
+public class TestExportFrame{
 
 	private static ZabGui gui;
 	
-	private ExporterFrame frame;
+	private ExportFrame frame;
 	
 	@BeforeAll
 	public static void init(){
@@ -32,7 +32,7 @@ public class TestExporterFrame{
 	
 	@BeforeEach
 	public void setup(){
-		frame = new ExporterFrame(gui);
+		frame = new ExportFrame(gui);
 	}
 	
 	@Test

@@ -18,7 +18,7 @@ import tab.Tab;
  * A {@link ZabFrame} for selecting how a {@link Tab} is exported
  * @author zrona
  */
-public class ExporterFrame extends ZabFrame{
+public class ExportFrame extends ZabFrame{
 	private static final long serialVersionUID = 1L;
 	
 	/** The {@link ZabButton} used for selecting a file */
@@ -36,10 +36,10 @@ public class ExporterFrame extends ZabFrame{
 	private File exportFile;
 	
 	/**
-	 * Create an {@link ExporterFrame} in the default state
+	 * Create an {@link ExportFrame} in the default state
 	 * @param gui See {@link ZabFrame#gui}
 	 */
-	public ExporterFrame(ZabGui gui){
+	public ExportFrame(ZabGui gui){
 		super(gui);
 		AbstractLanguage lang = Language.get();
 
@@ -77,8 +77,8 @@ public class ExporterFrame extends ZabFrame{
 		return this.fileChooser;
 	}
 	
-	/** @return The {@link ZabExporterDialog} which this {@link ExporterFrame#gui} uses from the {@link ZabMenuBar#exportDialog} */
-	public ZabExporterDialog getExportDialog(){
+	/** @return The {@link ExportDialog} which this {@link ExportFrame#gui} uses from the {@link ZabMenuBar#exportDialog} */
+	public ExportDialog getExportDialog(){
 		return this.getGui().getZabMenuBar().getFileMenu().getExportDialog();
 	}
 	/** @return See {@link #exportButton} */
@@ -106,7 +106,7 @@ public class ExporterFrame extends ZabFrame{
 	public void parentResized(int w, int h){}
 	
 	/**
-	 * The {@link ActionListener} used by {@link ExporterFrame#fileSelectButton} 
+	 * The {@link ActionListener} used by {@link ExportFrame#fileSelectButton} 
 	 * @author zrona
 	 */
 	public class FileSelectListener implements ActionListener{
@@ -115,7 +115,7 @@ public class ExporterFrame extends ZabFrame{
 		public void actionPerformed(ActionEvent e){
 			// Get the file chooser and have the user select a file
 			ZabFileChooser choose = getFileChooser();
-			ZabExporterDialog dialog = getExportDialog();
+			ExportDialog dialog = getExportDialog();
 			dialog.setAlwaysOnTop(false);
 			setExportFile(choose.exportSelect("txt"));
 			dialog.setAlwaysOnTop(true);
@@ -123,7 +123,7 @@ public class ExporterFrame extends ZabFrame{
 	}
 	
 	/**
-	 * The {@link ActionListener} used by {@link ExporterFrame#exportButton} 
+	 * The {@link ActionListener} used by {@link ExportFrame#exportButton} 
 	 * @author zrona
 	 */
 	public class ExportListener implements ActionListener{

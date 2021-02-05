@@ -76,6 +76,13 @@ public class TestEditorKeyboard extends AbstractTestTabPainter{
 		keys.keyPressed(new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_A, 'a'));
 		assertFalse(paint.isSelected(str0.get(0), 0), "Checking note not selected after pressing a without ctrl");
 		
+		cam.setXZoomFactor(0);
+		keys.keyPressed(new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_MINUS, '-'));
+		assertEquals(0, cam.getXZoomFactor(), "Checking not zoomed in with control not held down");
+
+		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_MINUS, '-'));
+		assertEquals(2, cam.getXZoomFactor(), "Checking zoomed in with control held down");
+		
 		// Running case of invalid key press
 		keys.keyPressed(new KeyEvent(paint, 0, 0, 0, KeyEvent.KEY_LOCATION_UNKNOWN, ' '));
 	}

@@ -52,7 +52,7 @@ public class EditorKeyboard extends TabPaintController implements KeyListener{
 				case KeyEvent.VK_N: this.keyNewFile(e); break;
 			}
 			if(!e.isControlDown()) this.keyTypeTabPitch(e);
-			this.keyZoom(e);
+			else this.keyZoom(e);
 		}
 		
 		paint.repaint();
