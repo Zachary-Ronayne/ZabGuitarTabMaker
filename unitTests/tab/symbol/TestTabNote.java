@@ -122,8 +122,7 @@ public class TestTabNote{
 	public void save(){
 		assertEquals("2 \n(\n)\n", UtilsTest.testSave(note), "Checking note saved correctly");
 		
-		note.setPitch(3);
-		note.setModifier(new TabModifier("w", "e"));
+		note = new TabNote(new Pitch(3), new TabModifier("w", "e"));
 		assertEquals("3 \nw\ne\n", UtilsTest.testSave(note), "Checking note saved correctly");
 	}
 	

@@ -21,7 +21,7 @@ public abstract class TabPitch extends TabSymbol{
 	public TabPitch(Pitch pitch, TabModifier modifier){
 		super(modifier);
 		if(pitch == null) throw new IllegalArgumentException("Pitch cannot be null");
-		this.setPitch(pitch);
+		this.pitch = pitch;
 	}
 
 	/**
@@ -41,23 +41,6 @@ public abstract class TabPitch extends TabSymbol{
 	}
 	
 	/**
-	 * Set the pitch of this {@link TabPitch}
-	 * @param pitch See {@link #pitch}
-	 */
-	public void setPitch(Pitch pitch){
-		if(pitch == null) return;
-		this.pitch = pitch;
-	}
-
-	/**
-	 * Set the pitch of this {@link TabPitch} based on an integer
-	 * @param pitch The integer for see {@link #pitch}
-	 */
-	public void setPitch(int pitch){
-		this.setPitch(new Pitch(pitch));
-	}
-	
-	/**
 	 * Get the text representing this pitch as a note, i.e. E4, C#2, etc.
 	 * @param useFlats true to represent all applicable notes as flat, i.e. Db4, false to represent them as sharps, i.e. C#4
 	 * @return The text
@@ -72,13 +55,16 @@ public abstract class TabPitch extends TabSymbol{
 	}
 	
 	/**
-	 * Sets the pitch of this {@link TabPitch} so that it will have the same tab number when placed on the new string
+	 * Sets the pitch of this {@link TabPitch} so that it will have the same tab number when placed on the new string.
+	 * Will cause a {@link ClassCastException} if the {@link #copy()} method of an extension of this class does not return a {@link TabPitch}
 	 */
 	@Override
-	public void updateOnNewString(TabString oldStr, TabString newStr){
-		if(oldStr == null || newStr == null) return;
+	public TabPitch movingToNewString(TabString oldStr, TabString newStr){
+		if(oldStr == null || newStr == null) return null;
 		int oldNum = oldStr.getTabNumber(this.getPitch());
-		this.setPitch(newStr.createPitch(oldNum));
+		TabPitch newNote = (TabPitch)this.copy();
+		newNote.pitch = newStr.createPitch(oldNum);
+		return newNote;
 	}
 	
 	/***/

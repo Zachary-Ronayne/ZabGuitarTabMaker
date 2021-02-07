@@ -15,6 +15,7 @@ import org.junit.jupiter.api.function.Executable;
 
 import appUtils.ZabAppSettings;
 import music.NotePosition;
+import music.Pitch;
 import music.TimeSignature;
 import tab.symbol.TabModifier;
 import tab.symbol.TabNote;
@@ -27,7 +28,6 @@ public class TestTabPosition{
 	private TabPosition note;
 	private TabSymbol symbol;
 	private NotePosition pos;
-	private NotePosition newPos;
 
 	private TimeSignature four4;
 	private TimeSignature five8;
@@ -41,7 +41,6 @@ public class TestTabPosition{
 	public void setup(){
 		symbol = new TabNote(2);
 		pos = new NotePosition(3);
-		newPos = new NotePosition(5);
 		note = new TabPosition(symbol, pos);
 		
 		four4 = new TimeSignature(4, 4);
@@ -78,13 +77,13 @@ public class TestTabPosition{
 	}
 	
 	@Test
-	public void setSymbol(){
-		TabNote newSymbol = new TabNote(1);
-		note.setSymbol(newSymbol);
-		assertEquals(newSymbol, note.getSymbol(), "Checking symbol set");
-		
-		note.setSymbol(null);
-		assertEquals(newSymbol, note.getSymbol(), "Checking symbol not changed trying to set to null");
+	public void copySymbol(){
+		TabPosition newPos = note.copySymbol(new TabNote(1));
+		assertFalse(note == newPos, "Checking new tab position is not the original object");
+		assertEquals(new TabNote(1), newPos.getSymbol(), "Checking correct symbol set");
+		assertEquals(symbol, note.getSymbol(), "Checking old symbol unchanged");
+		assertEquals(pos, newPos.getPosition(), "Checking new position set");
+		assertEquals(pos, note.getPosition(), "Checking old position unchanged");
 	}
 	
 	@Test
@@ -98,38 +97,36 @@ public class TestTabPosition{
 	}
 	
 	@Test
-	public void setPosition(){
-		note.setPosition(newPos);
-		assertEquals(newPos, note.getPosition(), "Checking position set");
+	public void copyPosition(){
+		TabPosition newPos = note.copyPosition(2.3);
+		assertFalse(note == newPos, "Checking new tab position is not the original object");
+		assertEquals(new NotePosition(2.3), newPos.getPosition(), "Checking new position set");
+		assertEquals(pos, note.getPosition(), "Checking old position unchanged");
 		
-		note.setPosition(null);
-		assertEquals(newPos, note.getPosition(), "Checking position not changed to null");
-	}
-	
-	@Test
-	public void setPos(){
-		note.setPos(8);
-		assertEquals(8, note.getPos(), "Checking position set");
+		newPos = note.copyPosition(new NotePosition(4.3));
+		assertFalse(note == newPos, "Checking new tab position is not the original object");
+		assertEquals(new NotePosition(4.3), newPos.getPosition(), "Checking new position set");
+		assertEquals(pos, note.getPosition(), "Checking old position unchanged");
 	}
 	
 	@Test
 	public void quantize(){
-		note.setPos(4.01);
-		note.quantize(four4, 4);
+		note = note.copyPosition(4.01);
+		note = note.quantize(four4, 4);
 		assertEquals(4, note.getPos(), "Checking note is quantized");
 	}
 	
 	@Test
 	public void retime(){
-		note.setPos(2.25);
-		note.retime(five8, four4);
+		note = note.copyPosition(2.25);
+		note = note.retime(five8, four4);
 		assertEquals(3.6, note.getPos(), "Checking note is retimed to new measure");
 	}
 	
 	@Test
 	public void retimeMeasure(){
-		note.setPos(2.25);
-		note.retimeMeasure(five8, four4);
+		note = note.copyPosition(2.25);
+		note = note.retimeMeasure(five8, four4);
 		assertEquals(2.4, note.getPos(), "Checking note is retimed to the same measure");
 	}
 	
@@ -138,10 +135,10 @@ public class TestTabPosition{
 		TabPosition p = new TabPosition(new TabNote(0), 0);
 		assertTrue(p.compareTo(note) < 0, "Pos 0 should compare less than 0 for pos 3");
 		
-		p.setPos(4);
+		p = p.copyPosition(4);
 		assertTrue(p.compareTo(note) > 0, "Pos 4 should compare greater than 0 for pos 3");
 
-		p.setPos(3);
+		p = p.copyPosition(3);
 		assertTrue(p.compareTo(note) == 0, "Pos 3 should compare equal to 0 for pos 3");
 	}
 
@@ -151,16 +148,16 @@ public class TestTabPosition{
 		TabPosition same = new TabPosition(new TabNote(2), 3);
 		assertTrue(note.equals(same), "Checking notes are equal");
 		
-		same.setPos(4);
+		same = same.copyPosition(4);
 		assertFalse(note.equals(same), "Checking notes are not equal with different positions");
-		
-		same.setPos(3);
+
+		same = same.copyPosition(3);
 		assertTrue(note.equals(same), "Checking notes are equal");
 		
-		same.getSymbol().setModifier(new TabModifier(same.getSymbol().getModifier().getBefore(), "aa"));
+		same = new TabPosition(new TabNote(new Pitch(2), new TabModifier(same.getSymbol().getModifier().getBefore(), "aa")), 3);
 		assertFalse(note.equals(same), "Checking notes are not equal with different modifiers");
-
-		same.getSymbol().setModifier(new TabModifier("aa", same.getSymbol().getModifier().getAfter()));
+		
+		same = new TabPosition(new TabNote(new Pitch(2), new TabModifier("aa", same.getSymbol().getModifier().getAfter())), 3);
 		assertFalse(note.equals(symbol), "Checking notes are not equal with different object types");
 	}
 	

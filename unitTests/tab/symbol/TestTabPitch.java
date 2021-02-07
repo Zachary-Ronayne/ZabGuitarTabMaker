@@ -38,7 +38,7 @@ public class TestTabPitch{
 			super(pitch);
 		}
 		@Override
-		public TabSymbol copy(){return this;}
+		public TabSymbol copy(){return new TestPitchObject(this.getPitch(), this.getModifier());}
 		@Override
 		public TabSymbol convertToRhythm(Rhythm r){return this;}
 		@Override
@@ -89,22 +89,10 @@ public class TestTabPitch{
 	public void getPitch(){
 		assertEquals(pitch, note.getPitch(), "Checking pitch initialized");
 	}
-	
-	@Test
-	public void setPitch(){
-		note.setPitch(newPitch);
-		assertEquals(newPitch, note.getPitch(), "Checking pitch initialized");
-		
-		note.setPitch(5);
-		assertEquals(5, note.getPitch().getNote(), "Checking pitch initialized using integer");
-		
-		note.setPitch(null);
-		assertEquals(5, note.getPitch().getNote(), "Checking pitch not changed with null parameter");
-	}
-	
+
 	@Test
 	public void getPitchName(){
-		note.setPitch(1);
+		note = new TestPitchObject(new Pitch(1));
 		assertEquals("C#4", note.getPitchName(false), "Checking note is found sharp");
 		assertEquals("Db4", note.getPitchName(true), "Checking note is found flat");
 	}
@@ -113,32 +101,33 @@ public class TestTabPitch{
 	public void getSymbol(){
 		assertEquals("0", note.getSymbol(string), "Checking correct symbol is found");
 		
-		note.setPitch(6);
+		note = new TestPitchObject(new Pitch(6));
 		assertEquals("2", note.getSymbol(string), "Checking correct symbol is found");
-		
-		note.setPitch(2);
+
+		note = new TestPitchObject(new Pitch(2));
 		assertEquals("-2", note.getSymbol(string), "Checking correct symbol is found");
 	}
 	
 	@Test
 	public void updateOnNewString(){
-		note.setPitch(Music.createPitch(Music.E, 4));
-		note.updateOnNewString(new TabString(Music.C, 4), new TabString(Music.C, 4));
-		assertEquals(Music.createPitch(Music.E, 4), note.getPitch(), "Checking moving to the same string doesn't change the pitch");
-		
-		note.updateOnNewString(null, new TabString(Music.C, 4));
-		assertEquals(Music.createPitch(Music.E, 4), note.getPitch(), "Checking null strings don't change the pitch");
-		
-		note.updateOnNewString(new TabString(Music.C, 4), null);
-		assertEquals(Music.createPitch(Music.E, 4), note.getPitch(), "Checking null strings don't change the pitch");
+		TabPitch newNote;
 
-		note.setPitch(Music.createPitch(Music.E, 4));
-		note.updateOnNewString(new TabString(Music.C, 4), new TabString(Music.D, 4));
-		assertEquals(Music.createPitch(Music.F_SHARP, 4), note.getPitch(), "Checking pitch changes moving to higher string");
+		note = new TestPitchObject(Music.createPitch(Music.E, 4));
+		newNote = note.movingToNewString(new TabString(Music.C, 4), new TabString(Music.C, 4));
+		assertEquals(Music.createPitch(Music.E, 4), newNote.getPitch(), "Checking moving to the same string doesn't change the pitch");
+		
+		newNote = note.movingToNewString(null, new TabString(Music.C, 4));
+		assertEquals(null, newNote, "Checking null strings returns null");
+		
+		newNote = note.movingToNewString(new TabString(Music.C, 4), null);
+		assertEquals(null, newNote, "Checking null strings returns null");
 
-		note.setPitch(Music.createPitch(Music.E, 4));
-		note.updateOnNewString(new TabString(Music.C, 4), new TabString(Music.B_FLAT, 3));
-		assertEquals(Music.createPitch(Music.D, 4), note.getPitch(), "Checking pitch changes moving to lower string");
+		newNote = note.movingToNewString(new TabString(Music.C, 4), new TabString(Music.D, 4));
+		assertEquals(Music.createPitch(Music.F_SHARP, 4), newNote.getPitch(), "Checking pitch changes moving to higher string");
+
+		//note.setPitch(Music.createPitch(Music.E, 4));
+		newNote = note.movingToNewString(new TabString(Music.C, 4), new TabString(Music.B_FLAT, 3));
+		assertEquals(Music.createPitch(Music.D, 4), newNote.getPitch(), "Checking pitch changes moving to lower string");
 	}
 	
 	@Test
@@ -151,7 +140,7 @@ public class TestTabPitch{
 		assertFalse(n == note, "Checking objects are not the same object");
 		assertTrue(n.equals(note), "Checking objects are equal");
 		
-		n.setPitch(new Pitch(0));
+		n = new TestPitchObject(new Pitch(0), n.getModifier());
 		assertFalse(n.equals(note), "Checking objects are not equal");
 		
 		n = new TestPitchObject(newPitch, mod);

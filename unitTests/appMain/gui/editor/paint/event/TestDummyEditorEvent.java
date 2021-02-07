@@ -1,5 +1,7 @@
 package appMain.gui.editor.paint.event;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,12 +26,12 @@ public class TestDummyEditorEvent extends AbstractTestTabPainter{
 	
 	@Test
 	public void undo(){
-		event.undo(paint);
+		assertTrue(event.undo(paint), "Checking undo always returns true");
 	}
 	
 	@Test
 	public void redo(){
-		event.redo(paint);
+		assertTrue(event.redo(paint), "Checking redo always returns true");
 	}
 	
 	@AfterEach

@@ -16,9 +16,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import appMain.gui.dropMenu.FileMenu;
+import appMain.gui.editor.paint.event.EditorEventStack;
 import tab.ModifierFactory;
+import tab.Tab;
 import tab.symbol.TabModifier;
-import tab.symbol.TabSymbol;
+import tab.symbol.TabNote;
 import util.testUtils.UtilsTest;
 
 public class TestEditorKeyboard extends AbstractTestTabPainter{
@@ -61,6 +63,7 @@ public class TestEditorKeyboard extends AbstractTestTabPainter{
 		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_DELETE, ' '));
 		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_A, 'a'));
 		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_ESCAPE, ' '));
+		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_Z, ' '));
 		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_S, ' '));
 		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_L, ' '));
 		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_E, ' '));
@@ -159,11 +162,18 @@ public class TestEditorKeyboard extends AbstractTestTabPainter{
 	
 	@Test
 	public void keySelectionDelete(){
+		EditorEventStack stack = paint.getUndoStack();
 		TestTabPainter.initNotes(tab);
+		Tab oldTab = tab.copy();
 		assertFalse(tab.isEmpty(), "Checking tab notes were placed");
 		paint.selectAllNotes();
 		keys.keySelectionDelete(new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_DELETE, ' '));
 		assertTrue(tab.isEmpty(), "Checking tab notes were removed on delete press");
+		assertFalse(stack.isEmpty(), "Checking an event was added");
+		
+		assertTrue(paint.undo(), "Checking undo succeeds");
+		assertEquals(oldTab, tab, "Checking notes were placed after undo");
+		assertEquals(0, stack.undoSize(), "Checking no events remain after undo");
 	}
 	
 	@Test
@@ -184,6 +194,24 @@ public class TestEditorKeyboard extends AbstractTestTabPainter{
 		keys.keyCancelActions(new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_ESCAPE, ' '));
 		assertEquals(null, paint.getDragger().getDragPoint(), "Checking drag point reset on escape press");
 		assertEquals(null, paint.getSelectionBox().getFirstCorner(), "Checking selection box corner reset on escape press");
+	}
+	
+	@Test
+	public void keyUndo(){
+		paint.placeNote(str5.get(0), str0, true);
+		assertFalse(paint.getUndoStack().isEmpty(), "Checking undo stack has an event");
+		
+		keys.keyUndo(new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_Z, 'z'));
+		assertFalse(paint.getUndoStack().isEmpty(), "Checking undo without control didn't remove the event");
+		
+		keys.keyUndo(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_Z, 'z'));
+		assertEquals(0, paint.getUndoStack().undoSize(), "Checking undo removed the event");
+		
+		keys.keyUndo(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_Z, 'z'));
+		assertFalse(paint.getUndoStack().isEmpty(), "Checking undo without shift didn't remove the event");
+		
+		keys.keyUndo(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK, KeyEvent.VK_Z, 'z'));
+		assertEquals(1, paint.getUndoStack().undoSize(), "Checking redo added the event");
 	}
 	
 	@Test
@@ -242,17 +270,24 @@ public class TestEditorKeyboard extends AbstractTestTabPainter{
 	
 	@Test
 	public void keyTypeTabPitch(){
+		paint.select(0, 0);
+		
 		keys.keyTypeTabPitch(new KeyEvent(paint, 0, 0, 0, 0, '1'));
-		assertEquals(1, paint.getSelectedNewTabNum(), "Checking tab num updated with number");
+		assertEquals(1, str0.getTabNumber(((TabNote)str0.get(0).getSymbol()).getPitch()), "Checking tab num updated with number");
 		
 		keys.keyTypeTabPitch(new KeyEvent(paint, 0, 0, 0, 0, '-'));
-		assertEquals(-1, paint.getSelectedNewTabNum(), "Checking tab num updated with minus sign");
+		assertEquals(-1, str0.getTabNumber(((TabNote)str0.get(0).getSymbol()).getPitch()), "Checking tab num updated with minus sign");
+		
+		paint.undo();
+		assertEquals(1, str0.getTabNumber(((TabNote)str0.get(0).getSymbol()).getPitch()), "Checking tab num updated after undo");
+		
+		paint.redo();
+		assertEquals(-1, str0.getTabNumber(((TabNote)str0.get(0).getSymbol()).getPitch()), "Checking tab num updated after redo");
 	}
 	
 	@Test
 	public void keyTypeSetModifier(){
 		paint.clearSelection();
-		TabSymbol sym = str0.get(0).getSymbol();
 		
 		assertFalse(keys.keyTypeSetModifier(
 				new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_P, '1')),
@@ -262,91 +297,110 @@ public class TestEditorKeyboard extends AbstractTestTabPainter{
 		assertFalse(keys.keyTypeSetModifier(
 				new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_1, '1')),
 				"Checking nothing placed with unrecognized key");
+		assertEquals(new TabModifier(), keyTypeSetHelper(), "Checking no modifier placed");
 		
 		assertFalse(keys.keyTypeSetModifier(
 				new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_1, '1')),
 				"Checking nothing placed with control held down key");
+		assertEquals(new TabModifier(), keyTypeSetHelper(), "Checking no modifier placed");
 		
 		assertTrue(keys.keyTypeSetModifier(
 				new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_P, 'p')),
 				"Checking modifier placed");
-		assertEquals(new TabModifier("", "p"), sym.getModifier(), "Checking pull off placed");
-		
+		assertEquals(new TabModifier("", "p"), keyTypeSetHelper(), "Checking pull off placed");
+
 		assertTrue(keys.keyTypeSetModifier(
 				new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_H, 'h')),
 				"Checking modifier placed");
-		assertEquals(new TabModifier("h", ""), sym.getModifier(), "Checking hammer on placed");
-		
+		assertEquals(new TabModifier("h", ""), keyTypeSetHelper(), "Checking hammer on placed");
+
 		assertTrue(keys.keyTypeSetModifier(
 				new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_SLASH, '/')),
 				"Checking modifier placed");
-		assertEquals(new TabModifier("/", ""), sym.getModifier(), "Checking slide down placed");
-		
+		assertEquals(new TabModifier("/", ""), keyTypeSetHelper(), "Checking slide down placed");
+
 		assertTrue(keys.keyTypeSetModifier(
 				new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_BACK_SLASH, '\\')),
 				"Checking modifier placed");
-		assertEquals(new TabModifier("\\", ""), sym.getModifier(), "Checking slide up placed");
-		
+		assertEquals(new TabModifier("\\", ""), keyTypeSetHelper(), "Checking slide up placed");
+
 		assertTrue(keys.keyTypeSetModifier(
 				new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_B, 'b')),
 				"Checking modifier placed");
-		assertEquals(new TabModifier("", "b"), sym.getModifier(), "Checking bend placed");
-		
+		assertEquals(new TabModifier("", "b"), keyTypeSetHelper(), "Checking bend placed");
+
 		assertTrue(keys.keyTypeSetModifier(
 				new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_R, 'r')),
 				"Checking modifier placed");
-		assertEquals(new TabModifier("", "ph"), sym.getModifier(), "Checking pinch harmonic placed");
-		
+		assertEquals(new TabModifier("", "ph"), keyTypeSetHelper(), "Checking pinch harmonic placed");
+
 		assertTrue(keys.keyTypeSetModifier(
 				new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_BACK_QUOTE, '`')),
 				"Checking modifier placed");
-		assertEquals(new TabModifier("", "~"), sym.getModifier(), "Checking vibrato placed");
+		assertEquals(new TabModifier("", "~"), keyTypeSetHelper(), "Checking vibrato placed");
 
 		assertTrue(keys.keyTypeSetModifier(
 				new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_T, 't')),
 				"Checking modifier placed");
-		assertEquals(new TabModifier("", "t"), sym.getModifier(), "Checking tap placed");
-		
+		assertEquals(new TabModifier("", "t"), keyTypeSetHelper(), "Checking tap placed");
+
 		assertTrue(keys.keyTypeSetModifier(
 				new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_PERIOD, '.')),
 				"Checking modifier placed");
-		assertEquals(new TabModifier("<", ">"), sym.getModifier(), "Checking harmonic placed");
-		sym.setModifier(new TabModifier());
+		assertEquals(new TabModifier("<", ">"), keyTypeSetHelper(), "Checking harmonic placed");
+		paint.placeModifier(new TabModifier(), 0);
 		assertTrue(keys.keyTypeSetModifier(
 				new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_COMMA, ',')),
 				"Checking modifier placed");
-		assertEquals(new TabModifier("<", ">"), sym.getModifier(), "Checking harmonic placed");
-		
+		assertEquals(new TabModifier("<", ">"), keyTypeSetHelper(), "Checking harmonic placed");
+
 		assertTrue(keys.keyTypeSetModifier(
 				new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_9, '(')),
 				"Checking modifier placed");
-		assertEquals(new TabModifier("(", ")"), sym.getModifier(), "Checking ghost note placed");
-		sym.setModifier(new TabModifier());
+		assertEquals(new TabModifier("(", ")"), keyTypeSetHelper(), "Checking ghost note placed");
+		paint.placeModifier(new TabModifier(), 0);
 		assertTrue(keys.keyTypeSetModifier(
 				new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_0, ')')),
 				"Checking modifier placed");
-		assertEquals(new TabModifier("(", ")"), sym.getModifier(), "Checking ghost note placed");
-		
+		assertEquals(new TabModifier("(", ")"), keyTypeSetHelper(), "Checking ghost note placed");
+
 		assertTrue(keys.keyTypeSetModifier(
 				new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_P, 'p')),
 				"Checking modifier placed");
-		assertEquals(new TabModifier("", "p"), sym.getModifier(), "Checking pull off placed");
-		
+		assertEquals(new TabModifier("", "p"), keyTypeSetHelper(), "Checking pull off placed");
+
 		assertTrue(keys.keyTypeSetModifier(
 				new KeyEvent(paint, 0, 0, KeyEvent.SHIFT_DOWN_MASK, KeyEvent.VK_H, 'h')),
 				"Checking modifier placed");
-		assertEquals(new TabModifier("h", "p"), sym.getModifier(), "Checking both modifiers exist");
-		
+		assertEquals(new TabModifier("h", "p"), keyTypeSetHelper(), "Checking both modifiers exist");
+
 		assertTrue(keys.keyTypeSetModifier(
 				new KeyEvent(paint, 0, 0, KeyEvent.SHIFT_DOWN_MASK, KeyEvent.VK_SPACE, ' ')),
 				"Checking modifier removed");
-		assertEquals(new TabModifier("", ""), sym.getModifier(), "Checking removing modifier");
-		
-		sym.setModifier(ModifierFactory.hammerOn());
+		assertEquals(new TabModifier("", ""), keyTypeSetHelper(), "Checking removing modifier");
+
+		paint.placeModifier(ModifierFactory.hammerOn(), 0, true);
 		assertFalse(keys.keyTypeSetModifier(
 				new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_SPACE, ' ')),
 				"Checking modifier not changed");
-		assertEquals(new TabModifier("h", ""), sym.getModifier(), "Checking modifier unchanged with space and no shift");
+		assertEquals(new TabModifier("h", ""), keyTypeSetHelper(), "Checking modifier unchanged with space and no shift");
+		
+		paint.undo();
+		assertEquals(new TabModifier("", ""), keyTypeSetHelper(), "Checking modifier change undone");
+		
+		paint.undo();
+		assertEquals(new TabModifier("h", "p"), keyTypeSetHelper(), "Checking modifier change undone");
+		
+		paint.redo();
+		assertEquals(new TabModifier("", ""), keyTypeSetHelper(), "Checking modifier change redone");
+		
+		paint.redo();
+		assertEquals(new TabModifier("h", ""), keyTypeSetHelper(), "Checking modifier change redone");
+	}
+	
+	/** @return A modifier at a specific place on a tab for testing convenience */
+	private TabModifier keyTypeSetHelper(){
+		return paint.stringSelection(0, 0).getPos().getSymbol().getModifier();
 	}
 	
 	@AfterEach

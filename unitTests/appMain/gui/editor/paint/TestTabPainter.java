@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import appMain.gui.editor.paint.event.EditorEventStack;
 import appMain.gui.util.Camera;
 import appUtils.ZabAppSettings;
 import appUtils.settings.ZabSettings;
@@ -26,6 +27,7 @@ import tab.TabFactory;
 import tab.TabPosition;
 import tab.TabString;
 import tab.symbol.TabModifier;
+import tab.symbol.TabNote;
 import tab.symbol.TabPitch;
 import tab.symbol.TabSymbol;
 import util.testUtils.Assert;
@@ -143,6 +145,9 @@ public class TestTabPainter extends AbstractTestTabPainter{
 		assertEquals(p, paint.getHoveredPosition(), "Checking hovered position set with the position on the center of the TabPosition");
 		
 		assertTrue(paint.updateHoveredPosition(-1000, 0), "Checking update the hovered position changed even though it sets to null");
+		assertEquals(null, paint.getHoveredPosition(), "Checking hovered position set to null");
+		
+		assertFalse(paint.updateHoveredPosition(-1000, 0), "Checking update the hovered position not changed setting to null");
 		assertEquals(null, paint.getHoveredPosition(), "Checking hovered position set to null");
 	}
 	
@@ -402,22 +407,50 @@ public class TestTabPainter extends AbstractTestTabPainter{
 	
 	@Test
 	public void removeSelection(){
-		paint.removeSelection(paint.createSelection(3.5, 0));
+		EditorEventStack stack = paint.getUndoStack();
+		
+		stack.markSaved();
+		assertTrue(paint.removeSelection(paint.createSelection(3.5, 0)), "Checking selection was removed");
 		assertEquals(0, str0.size(), "Checking the TabPosition on the TabString was removed");
-		assertFalse(paint.getUndoStack().isSaved(), "Checking stack is not saved");
+		assertTrue(stack.isSaved(), "Checking stack is still saved");
+		assertTrue(stack.isEmpty(), "Checking stack has no events");
 		
 		paint.select(0, 1);
 		assertTrue(paint.getSelected().isSelected(paint.createSelection(3.25, 1)), "Checking the TabPosition is selected");
 		
 		Selection s = paint.createSelection(3.25, 1);
-		paint.removeSelection(s);
+		stack.markSaved();
+		assertTrue(paint.removeSelection(s), "Checking selection removed");
 		assertFalse(paint.getSelected().isSelected(s), "Checking the TabPosition is no longer selected");
 		assertEquals(0, str0.size(), "Checking the TabPosition on the TabString was removed");
+		assertTrue(stack.isSaved(), "Checking stack is still saved");
+		assertTrue(stack.isEmpty(), "Checking stack has no events");
+		
+		AbstractTestTabPainter.initNotes(tab);
+		stack.markSaved();
+		s = paint.createSelection(3.5, 0);
+		assertTrue(paint.removeSelection(s, true), "Checking selection removed");
+		assertEquals(null, str0.findPosition(3.5), "Checking note removed");
+		assertFalse(stack.isSaved(), "Checking stack not saved");
+		assertFalse(stack.isEmpty(), "Checking stack has events");
+		assertTrue(paint.undo(), "Checking undo succeeds");
+		assertNotEquals(null, str0.findPosition(3.5), "Checking note placed back after undo");
+		
+		tab.clearNotes();
+		stack.markSaved();
+		assertFalse(paint.removeSelection(s, true), "Checking selection not removed when it doesn't exist");
+		assertTrue(stack.isSaved(), "Checking stack saved");
+		assertEquals(0, stack.undoSize(), "Checking stack has no events");
 	}
 	
 	@Test
 	public void removeSelections(){
+		EditorEventStack stack = paint.getUndoStack();
+
+		stack.markSaved();
 		assertEquals(0, paint.removeSelections(null).size(), "Checking null parameter returns an empty list");
+		assertTrue(stack.isSaved(), "Checking stack still saved");
+		assertTrue(stack.isEmpty(), "Checking stack has no events");
 		
 		paint.select(0, 0);
 		paint.select(0, 1);
@@ -426,8 +459,11 @@ public class TestTabPainter extends AbstractTestTabPainter{
 		Selection s1 = new Selection(str1.get(0), str1, 1);
 		Selection s2 = new Selection(str2.get(0), str2, 2);
 		SelectionList list = new SelectionList();
-		
-		assertEquals(0, paint.removeSelections(list).size(), "Checking empty list returns an empty list");
+
+		stack.markSaved();
+		assertEquals(0, paint.removeSelections(list, true).size(), "Checking empty list returns an empty list");
+		assertTrue(stack.isSaved(), "Checking stack still saved");
+		assertTrue(stack.isEmpty(), "Checking stack has no events");
 		
 		list.add(s0);
 		list.add(s2);
@@ -440,17 +476,40 @@ public class TestTabPainter extends AbstractTestTabPainter{
 		assertEquals(0, str0.size(), "Checking TabPosition removed");
 		assertEquals(0, str2.size(), "Checking TabPosition removed");
 		assertEquals(s1.getPos(), str1.get(0), "Checking TabPosition not removed");
+		
+		AbstractTestTabPainter.initNotes(tab);
+		stack.markSaved();
+		list = new SelectionList();
+		list.add(s0);
+		list.add(s2);
+		removed = paint.removeSelections(list, true);
+		assertEquals(2, removed.size(), "Checking correct number of selections removed");
+		// Checking list contains correct selections which were removed
+		Assert.contains(removed, s0);
+		Assert.contains(removed, s2);
+		assertEquals(0, str0.size(), "Checking TabPosition removed");
+		assertEquals(0, str2.size(), "Checking TabPosition removed");
+		assertFalse(stack.isSaved(), "Checking stack not saved");
+		assertFalse(stack.isEmpty(), "Checking stack has events");
+		assertTrue(paint.undo(), "Checking undo succeeds");
+		assertNotEquals(null, str0.findPosition(3.5), "Checking note added back in");
+		assertNotEquals(null, str2.findPosition(3), "Checking note added back in");
 	}
 	
 	@Test
 	public void removeSelectedNotes(){
+		EditorEventStack stack = paint.getUndoStack();
+		
 		paint.selectAllNotes();
 		assertFalse(paint.getSelected().isEmpty(), "Checking notes are selected");
-		
+
+		stack.markSaved();
 		paint.removeSelectedNotes();
 		assertTrue(paint.getSelected().isEmpty(), "Checking no notes are selected");
 		assertTrue(tab.isEmpty(), "Checking the tab has no notes are selected");
-		
+		assertTrue(stack.isEmpty(), "Checking stack has no events");
+
+		stack.markSaved();
 		TabString str = tab.getStrings().get(0);
 		tab.placeQuantizedNote(0, 0, 0);
 		tab.placeQuantizedNote(0, 0, 1);
@@ -461,6 +520,22 @@ public class TestTabPainter extends AbstractTestTabPainter{
 		paint.removeSelectedNotes();
 		assertTrue(paint.getSelected().isEmpty(), "Checking no notes selected");
 		assertEquals(1, str.size(), "Checking string has 1 note");
+		assertTrue(stack.isEmpty(), "Checking stack has no events");
+		
+		tab.clearNotes();
+		AbstractTestTabPainter.initNotes(tab);
+		paint.clearSelection();
+		stack.markSaved();
+		Selection s = paint.stringSelection(0, 0);
+		assertTrue(paint.select(s), "Checking note selected");
+		SelectionList removed = paint.removeSelectedNotes(true);
+		assertEquals(1, removed.size(), "Checking 1 note removed");
+		assertEquals(s, removed.get(0), "Checking correct position removed");
+		assertEquals(null, str0.findPosition(3.5), "Checking note removed");
+		assertFalse(stack.isSaved(), "Checking stack is not saved");
+		assertFalse(stack.isEmpty(), "Checking stack has events");
+		assertTrue(paint.undo(), "Checking undo succeeds");
+		assertNotEquals(null, str0.findPosition(3.5), "Checking back in after undo");
 	}
 
 	@Test
@@ -484,28 +559,33 @@ public class TestTabPainter extends AbstractTestTabPainter{
 		assertEquals(Music.createPitch(Music.A, 2), ((TabPitch)move.getPos().getSymbol()).getPitch(), "Checking pitch of note changed after moving strings");
 
 		// Checking moving to a valid place and keeping the pitch
+		s = paint.findPosition(x, y);
 		move = paint.findMovePosition(s, 0, -2, 0, true);
 		assertEquals(0, move.getPosition(), "Checking position value");
 		assertEquals(3, move.getStringIndex(), "Checking string index");
 		assertEquals(Music.createPitch(Music.D, 3), ((TabPitch)move.getPos().getSymbol()).getPitch(), "Checking pitch of note unchanged not moving between strings");
 
 		// Checking moving to a valid place on the same string
+		s = paint.findPosition(x, y);
 		move = paint.findMovePosition(s, 0, -2, -1, true);
 		assertEquals(0, move.getPosition(), "Checking position value");
 		assertEquals(2, move.getStringIndex(), "Checking string index");
 		assertEquals(Music.createPitch(Music.D, 3), ((TabPitch)move.getPos().getSymbol()).getPitch(), "Checking pitch of note unchanged after moving strings");
-		
+
+		s = paint.findPosition(x, y);
 		move = paint.findMovePosition(s, 0, 0, 0, true);
 		assertEquals(null, move, "Checking moving to its current location, i.e. it doesn't move, returns null");
 		assertEquals(Music.createPitch(Music.D, 3), ((TabPitch)s.getPos().getSymbol()).getPitch(), "Checking pitch of note unchanged");
 		
 		// Checking moving to a valid new string, but keeping the same position value
+		s = paint.findPosition(x, y);
 		move = paint.findMovePosition(s, 0, 0, -3, false);
 		assertEquals(2, move.getPosition(), "Checking position value");
 		assertEquals(0, move.getStringIndex(), "Checking string index");
 		assertEquals(Music.createPitch(Music.E, 4), ((TabPitch)move.getPos().getSymbol()).getPitch(), "Checking pitch of note changed moving between strings");
 		
 		// Case of staying on the same string, and moving into the negative via base position
+		s = paint.findPosition(x, y);
 		move = paint.findMovePosition(s, 0, -1, 0, false);
 		assertEquals(1, move.getPosition(), "Checking position value");
 		assertEquals(3, move.getStringIndex(), "Checking string index");
@@ -553,32 +633,37 @@ public class TestTabPainter extends AbstractTestTabPainter{
 		assertEquals(4, move.getPosition(), "Checking position correct");
 		
 		// Same as before, but a line down
-		str4.get(1).setPos(9.0);
+		str4.set(1, str4.get(1).copyPosition(9.0));
 		paint.clearSelection();
 		paint.select(1, 4);
 		s = paint.stringSelection(1, 4);
 		move = paint.findMovePosition(s, 9, -1.0, 0, false);
 		assertEquals(8, move.getPosition(), "Checking position correct");
-		str4.get(1).setPos(5.0);
+		str4.set(1, str4.get(1).copyPosition(5.0));
 		
 		// Case of staying on the same string, but base position moves left out of a measure staying in positive coordinates
+		s = paint.stringSelection(1, 4);
 		move = paint.findMovePosition(s, 5, -1.01, 0, false);
 		assertEquals(null, move, "Checking move invalid");
 		
 		// Case of staying on the same string, but moving base to the edge of the left side, making the move invalid
+		s = paint.stringSelection(1, 4);
 		move = paint.findMovePosition(s, 8, 5, 0, false);
 		assertEquals(null, move, "Checking move fails");
 		
 		// Case of staying on the same string, but moving to a different line of tab
+		s = paint.stringSelection(1, 4);
 		move = paint.findMovePosition(s, 8, 7, 0, false);
 		assertEquals(12, move.getPosition(), "Checking position correct");
 		
 		// Same as previous, but a different base value makes it valid
+		s = paint.stringSelection(1, 4);
 		move = paint.findMovePosition(s, 13, 7, 0, false);
 		assertEquals(12, move.getPosition(), "Checking position correct");
 		
 		// Same as previous, but one line down
-		str4.get(1).setPos(9.0);
+		str4.set(1, str4.get(1).copyPosition(9.0));
+		s = paint.stringSelection(1, 4);
 		move = paint.findMovePosition(s, 17, 7, 0, false);
 		assertEquals(16, move.getPosition(), "Checking position correct");
 		
@@ -677,6 +762,48 @@ public class TestTabPainter extends AbstractTestTabPainter{
 	}
 	
 	@Test
+	public void clearNotes(){
+		EditorEventStack stack = paint.getUndoStack();
+		stack.markSaved();
+		paint.clearNotes();
+		assertTrue(stack.isSaved(), "Checking stack saved before clear");
+		assertTrue(stack.isSaved(), "Checking stack still saved after clear");
+		
+		this.setup();
+		stack = paint.getUndoStack();
+		Tab oldTab = tab.copy();
+		stack.markSaved();
+		assertTrue(stack.isSaved(), "Checking stack saved before clear");
+		assertTrue(stack.isEmpty(), "Checking stack has no events before clear");
+		paint.clearNotes(true);
+		assertFalse(stack.isSaved(), "Checking stack not saved after clear");
+		assertFalse(stack.isEmpty(), "Checking stack has an event after clear");
+		assertTrue(tab.isEmpty(), "Checking tab is empty after clear");
+		assertFalse(oldTab.isEmpty(), "Checking old tab is not empty after clear");
+		paint.undo();
+		assertFalse(stack.isSaved(), "Checking stack still not saved after undo");
+		assertEquals(0, stack.undoSize(), "Checking stack has no events after undo");
+		assertFalse(tab.isEmpty(), "Checking tab is not empty after undo");
+		assertEquals(tab, oldTab, "Checking tab is restored after clear");
+		
+		stack.markSaved();
+		tab.clearNotes();
+		assertTrue(stack.isSaved(), "Checking stack saved before clear");
+		assertEquals(0, stack.undoSize(), "Checking stack has no events before clear");
+		paint.clearNotes(true);
+		assertTrue(stack.isSaved(), "Checking stack still saved after clear with no notes");
+		assertEquals(0, stack.undoSize(), "Checking stack has no events clear clear with no notes");
+	
+		stack.markSaved();
+		paint.setTab(null);
+		assertTrue(stack.isSaved(), "Checking stack saved before clear");
+		assertEquals(0, stack.undoSize(), "Checking stack has no events before clear");
+		paint.clearNotes(true);
+		assertTrue(stack.isSaved(), "Checking stack still saved after clear with null tab");
+		assertEquals(0, stack.undoSize(), "Checking stack has no events after clear with null tab");
+	}
+
+	@Test
 	public void reset(){
 		paint.setTab(null);
 		paint.reset();
@@ -688,6 +815,41 @@ public class TestTabPainter extends AbstractTestTabPainter{
 		assertTrue(tab.isEmpty(), "Checking all notes removed");
 		assertEquals(2, paint.getLineTabCount(), "Checking line count");
 		assertFalse(paint.getUndoStack().isSaved(), "Checking stack is not saved");
+	}
+	
+	@Test
+	public void undo(){
+		paint.placeNote(str5.get(0), str0, true);
+		assertEquals(str5.get(0), str0.findPosition(0), "Checking note placed");
+		
+		assertTrue(paint.undo(), "Checking undo succeeds");
+		assertEquals(null, str0.findPosition(0), "Checking note removed");
+		
+		assertFalse(paint.undo(), "Checking undo fails with no events to undo");
+		
+		assertTrue(paint.placeNote(str5.get(1).copyPosition(13), str5, true), "Checking note places");
+		assertEquals(5, paint.getLineTabCount(), "Checking line count updated");
+		assertTrue(paint.undo(), "Checking undo succeeds");
+		assertEquals(2, paint.getLineTabCount(), "Checking line count updated after undo");
+	}
+	
+	@Test
+	public void redo(){
+		assertFalse(paint.undo(), "Checking redo fails with no events to redo");
+		
+		paint.placeNote(str5.get(0), str0, true);
+		assertEquals(str5.get(0), str0.findPosition(0), "Checking note placed");
+		assertTrue(paint.undo(), "Checking undo succeeds");
+		
+		assertTrue(paint.redo(), "Checking redo succeeds");
+		
+		assertTrue(paint.placeNote(str5.get(1).copyPosition(13), str5, true), "Checking note places");
+		assertEquals(5, paint.getLineTabCount(), "Checking line count updated");
+		assertTrue(paint.undo(), "Checking undo succeeds");
+		assertEquals(2, paint.getLineTabCount(), "Checking line count updated after undo");
+		
+		assertTrue(paint.redo(), "Checking redo succeeds");
+		assertEquals(5, paint.getLineTabCount(), "Checking line count updated after redo");
 	}
 	
 	@Test
@@ -741,9 +903,8 @@ public class TestTabPainter extends AbstractTestTabPainter{
 		paint.appendSelectedTabNum('1');
 		assertEquals(null, paint.getSelectedNewTabNum(), "Checking tab num null with no selection");
 
-		TabString s = tab.getStrings().get(0);
-		TabPosition p = s.get(0);
-		paint.selectOne(p, s);
+		TabPosition p = str0.get(0);
+		paint.selectOne(p, str0);
 		paint.appendSelectedTabNum('j');
 		assertEquals(null, paint.getSelectedNewTabNum(), "Checking tab num null with non number");
 		
@@ -753,62 +914,164 @@ public class TestTabPainter extends AbstractTestTabPainter{
 		paint.appendSelectedTabNum('1');
 		assertEquals(1, paint.getSelectedNewTabNum(), "Checking tab num with number");
 		assertFalse(paint.getUndoStack().isSaved(), "Checking stack is not saved");
+		appendSelectedTabNumHelper(1);
 		
 		paint.appendSelectedTabNum('2');
 		assertEquals(12, paint.getSelectedNewTabNum(), "Checking tab num with 2 numbers");
+		appendSelectedTabNumHelper(12);
 		
 		paint.appendSelectedTabNum('3');
 		assertEquals(3, paint.getSelectedNewTabNum(), "Checking tab for a third number reset to given number");
-		
+		appendSelectedTabNumHelper(3);
+
 		paint.appendSelectedTabNum('-');
 		assertEquals(-3, paint.getSelectedNewTabNum(), "Checking tab sign change with a minus sign");
+		appendSelectedTabNumHelper(-3);
 		
 		paint.appendSelectedTabNum('-');
 		assertEquals(3, paint.getSelectedNewTabNum(), "Checking tab sign change back with a minus sign");
+		appendSelectedTabNumHelper(3);
 		
 		paint.appendSelectedTabNum('s');
 		assertEquals(3, paint.getSelectedNewTabNum(), "Checking tab num not changed adding a non number or minus sign");
+		appendSelectedTabNumHelper(3);
 		
 		paint.appendSelectedTabNum('-');
 		assertEquals(-3, paint.getSelectedNewTabNum(), "Checking appending a minus sign sets it");
+		appendSelectedTabNumHelper(-3);
+		
 		paint.appendSelectedTabNum('5');
 		assertEquals(-35, paint.getSelectedNewTabNum(), "Checking appending a negative number adds it");
-
+		appendSelectedTabNumHelper(-35);
+		
 		paint.appendSelectedTabNum('7');
 		assertEquals(-7, paint.getSelectedNewTabNum(), "Checking appending a negative number resets it");
+		appendSelectedTabNumHelper(-7);
+		
+		EditorEventStack stack = paint.getUndoStack();
+		stack.markSaved();
+		assertTrue(stack.isSaved(), "Checking stack is saved before failed placement");
+		assertTrue(stack.isEmpty(), "Checking stack is empty before failed placement");
+		paint.appendSelectedTabNum('a', true);
+		assertEquals(-7, paint.getSelectedNewTabNum(), "Checking number unchanged with invalid character");
+		appendSelectedTabNumHelper(-7);
+		assertTrue(stack.isSaved(), "Checking stack is still saved");
+		assertTrue(stack.isEmpty(), "Checking stack is still empty");
+		
+		stack.markSaved();
+		assertTrue(stack.isSaved(), "Checking stack is saved before failed placement");
+		assertTrue(stack.isEmpty(), "Checking stack is empty before failed placement");
+		paint.appendSelectedTabNum('-', true);
+		assertEquals(7, paint.getSelectedNewTabNum(), "Checking number changed");
+		appendSelectedTabNumHelper(7);
+		assertFalse(stack.isSaved(), "Checking stack is not saved after symbol change");
+		assertFalse(stack.isEmpty(), "Checking stack is not empty after symbol change");
+		assertTrue(paint.undo(), "Checking undo succeeds");
+		assertEquals(null, paint.getSelectedNewTabNum(), "Checking number is null after undo");
+		
+		stack.markSaved();
+		assertTrue(stack.isSaved(), "Checking stack is saved before failed placement");
+		assertEquals(0, stack.undoSize(), "Checking stack is empty before failed placement");
+		paint.selectAllNotes();
+		paint.appendSelectedTabNum('8', true);
+		assertEquals(8, paint.getSelectedNewTabNum(), "Checking number changed");
+		appendSelectedTabNumHelper(8);
+		assertFalse(stack.isSaved(), "Checking stack is not saved after symbol change");
+		assertFalse(stack.isEmpty(), "Checking stack is not empty after symbol change");
+		assertTrue(paint.undo(), "Checking undo succeeds");
+		assertEquals(null, paint.getSelectedNewTabNum(), "Checking number is null after undo");
+		
+		
+		// Case of string's notes being cleared after the selection is made
+		paint.clearSelection();
+		paint.select(0, 0);
+		str0.clear();
+		paint.appendSelectedTabNum('7');
+		assertTrue(str0.isEmpty(), "Checking string empty even after a number was attempted to be appended");
+	}
+	
+	/**
+	 * A utility method for appendSelectedTabNum which tests that a specific selected symbol has the correct pitch
+	 * @param num The expected number for the pitch
+	 */
+	private void appendSelectedTabNumHelper(int num){
+		assertEquals(num, str0.getTabNumber(((TabNote)str0.get(0).getSymbol())), "Checking tab number correct on string");
+		assertEquals(num, str0.getTabNumber(((TabNote)paint.getSelected().get(0).getPos().getSymbol())), "Checking tab number correct in selection");
 	}
 	
 	@Test
 	public void placeModifier(){
+		TabSymbol sym;
 		paint.clearSelection();
 		paint.select(0, 0);
 		
-		TabSymbol sym = str0.get(0).getSymbol();
 		paint.placeModifier(new TabModifier("a", ""), 0);
+		sym = str0.get(0).getSymbol();
 		assertEquals(new TabModifier("a", ""), sym.getModifier(), "Checking replacing a modifier");
 		assertFalse(paint.getUndoStack().isSaved(), "Checking stack is not saved");
+		assertEquals(str0.get(0).getSymbol().getModifier(), sym.getModifier(), "Checking modifier set in tab string");
+		
+		paint.placeModifier(null, 0);
+		sym = str0.get(0).getSymbol();
+		assertEquals(new TabModifier(), sym.getModifier(), "Checking replacing modifier with null modifier");
+		assertEquals(str0.get(0).getSymbol().getModifier(), sym.getModifier(), "Checking modifier set in tab string");
 		
 		paint.placeModifier(new TabModifier("", "b"), 0);
+		sym = str0.get(0).getSymbol();
 		assertEquals(new TabModifier("", "b"), sym.getModifier(), "Checking replacing modifier");
+		assertEquals(str0.get(0).getSymbol().getModifier(), sym.getModifier(), "Checking modifier set in tab string");
 		
 		paint.placeModifier(new TabModifier("d", "f"), 0);
+		sym = str0.get(0).getSymbol();
 		assertEquals(new TabModifier("d", "f"), sym.getModifier(), "Checking replacing modifier");
+		assertEquals(str0.get(0).getSymbol().getModifier(), sym.getModifier(), "Checking modifier set in tab string");
 		
 		paint.placeModifier(new TabModifier("e", "r"), 0);
+		sym = str0.get(0).getSymbol();
 		assertEquals(new TabModifier("e", "r"), sym.getModifier(), "Checking replacing modifier");
+		assertEquals(str0.get(0).getSymbol().getModifier(), sym.getModifier(), "Checking modifier set in tab string");
 		
 		paint.placeModifier(new TabModifier("e", "r"), 2);
+		sym = str0.get(0).getSymbol();
 		assertEquals(new TabModifier("", ""), sym.getModifier(), "Checking erasing modifier");
+		assertEquals(str0.get(0).getSymbol().getModifier(), sym.getModifier(), "Checking modifier set in tab string");
 		
 		paint.placeModifier(new TabModifier("", "r"), 1);
+		sym = str0.get(0).getSymbol();
 		assertEquals(new TabModifier("", "r"), sym.getModifier(), "Checking adding modifier");
-		
-		paint.placeModifier(new TabModifier("d", "f"), 1);
-		assertEquals(new TabModifier("d", "r"), sym.getModifier(), "Checking adding modifier");
-		
-		paint.placeModifier(new TabModifier("w", "e"), 1);
-		assertEquals(new TabModifier("d", "r"), sym.getModifier(), "Checking adding modifier");
+		assertEquals(str0.get(0).getSymbol().getModifier(), sym.getModifier(), "Checking modifier set in tab string");
 
+		// Checking case of not recording undo
+		EditorEventStack stack = paint.getUndoStack();
+		stack.markSaved();
+		assertTrue(stack.isEmpty(), "Checking stack empty before event");
+		assertTrue(stack.isSaved(), "Checking stack saved before event");
+		paint.placeModifier(new TabModifier("d", "f"), 1);
+		sym = str0.get(0).getSymbol();
+		assertEquals(new TabModifier("d", "r"), sym.getModifier(), "Checking adding modifier");
+		assertEquals(str0.get(0).getSymbol().getModifier(), sym.getModifier(), "Checking modifier set in tab string");
+		assertTrue(stack.isEmpty(), "Checking stack still empty after event");
+		assertTrue(stack.isSaved(), "Checking stack still saved after event");
+		
+		paint.placeModifier(new TabModifier("w", "e"), 1, true);
+		sym = str0.get(0).getSymbol();
+		assertEquals(new TabModifier("d", "r"), sym.getModifier(), "Checking adding modifier");
+		assertEquals(str0.get(0).getSymbol().getModifier(), sym.getModifier(), "Checking modifier set in tab string");
+		
+		// Checking case of recording undo
+		stack.markSaved();
+		assertTrue(stack.isEmpty(), "Checking stack empty before event");
+		assertTrue(stack.isSaved(), "Checking stack saved before event");
+		paint.placeModifier(new TabModifier("w", "e"), 0, true);
+		sym = str0.get(0).getSymbol();
+		assertEquals(new TabModifier("w", "e"), sym.getModifier(), "Checking adding modifier");
+		assertEquals(str0.get(0).getSymbol().getModifier(), sym.getModifier(), "Checking modifier set in tab string");
+		assertFalse(stack.isEmpty(), "Checking stack not empty before event");
+		assertFalse(stack.isSaved(), "Checking stack not saved after event");
+		assertTrue(paint.undo(), "Checking undo succeeds");
+		sym = str0.get(0).getSymbol();
+		assertEquals(new TabModifier("d", "r"), sym.getModifier(), "Checking modifier change undone");
+		
 		paint.clearSelection();
 		paint.select(0, 5);
 		paint.select(1, 5);
@@ -818,22 +1081,124 @@ public class TestTabPainter extends AbstractTestTabPainter{
 		assertEquals(new TabModifier("v", "b"), str5.get(1).getSymbol().getModifier(), "Checking adding modifiers to many notes");
 		assertEquals(new TabModifier("v", "b"), str5.get(2).getSymbol().getModifier(), "Checking adding modifiers to many notes");
 		assertEquals(new TabModifier("", ""), str5.get(3).getSymbol().getModifier(), "Checking adding modifier not added");
+		
+		// Case of a string's notes being manually removed after a selection is made
+		paint.clearSelection();
+		paint.select(0, 0);
+		str0.clear();
+		paint.placeModifier(new TabModifier("a", "n"), 0);
+		assertTrue(str0.isEmpty(), "Checking string still empty after invalid modifier added");
 	}
 	
 	@Test
 	public void placeNote(){
+		EditorEventStack stack = paint.getUndoStack();
+
+		// Placing with coordinates
+		stack.markSaved();
 		assertTrue(paint.placeNote(460.0, 340.0, 0), "Checking note was placed");
-		assertEquals(2, tab.getStrings().get(0).size(), "Checking a new note added");
-		assertEquals(1, tab.getStrings().get(0).get(0).getPos(), "Checking note has correct position");
-		assertFalse(paint.getUndoStack().isSaved(), "Checking stack is not saved");
+		assertEquals(2, str0.size(), "Checking a new note added");
+		assertEquals(1, str0.get(0).getPos(), "Checking note has correct position");
+		assertTrue(stack.isSaved(), "Checking stack is still saved");
+		assertTrue(stack.isEmpty(), "Checking undo stack has no actions");
+		assertEquals(2, paint.getLineTabCount(), "Checking line count updated");
 		
 		assertFalse(paint.placeNote(460.0, 340.0, 0), "Checking note in the same position not placed");
-
+		
+		stack.markSaved();
+		str0.remove(0);
+		assertTrue(paint.placeNote(460.0, 340.0, 0, true), "Checking note was placed");
+		assertEquals(2, paint.getLineTabCount(), "Checking line count updated");
+		assertEquals(1, str0.get(0).getPos(), "Checking note has correct position");
+		assertFalse(stack.isEmpty(), "Checking undo stack has actions");
+		assertFalse(stack.isSaved(), "Checking stack is not saved");
+		assertTrue(paint.undo(), "Checking placement undone");
+		assertEquals(3.5, str0.get(0).getPos(), "Checking note is removed after undo");
+		
 		assertFalse(paint.placeNote(44.0, 628.0, 0), "Checking no note added with too low of x");
 		assertFalse(paint.placeNote(629.0, 26.0, 0), "Checking a no new note added with invalid y");
 		
 		paint.setTab(null);
 		assertFalse(paint.placeNote(687.0, 339.0, 0), "Checking note fails to place with null tab");
+		
+		// Placing with a TabPosition and TabString
+		assertFalse(paint.placeNote(str5.get(0), str0), "Checking note fails to place with null tab");
+		
+		paint.setTab(tab);
+		assertFalse(paint.placeNote(str5.get(0), new TabString(new Pitch(0))), "Checking note fails to place with unknown string");
+		
+		stack.markSaved();
+		assertTrue(paint.placeNote(str5.get(0), str0, true), "Checking note placed");
+		assertEquals(str5.get(0), str0.findPosition(0), "Checking note is on the string");
+		assertFalse(stack.isSaved(), "Checking stack is not saved");
+		assertFalse(stack.isEmpty(), "Checking undo stack has actions");
+		assertTrue(paint.undo(), "Checking undo succeeds");
+		assertEquals(null, str0.findPosition(0), "Checking note is no longer on the string");
+		
+		stack.markSaved();
+		assertTrue(paint.placeNote(str5.get(0), str0), "Checking note placed");
+		assertEquals(str5.get(0), str0.findPosition(0), "Checking note is on the string");
+		assertTrue(stack.isSaved(), "Checking stack is still saved");
+		assertEquals(0, stack.undoSize(), "Checking undo stack has no actions");
+		
+		// Placing with a Selection
+		stack.markSaved();
+		assertTrue(paint.placeNote(new Selection(str5.get(2), str0, 0), true), "Checking note placed");
+		assertEquals(str5.get(2), str0.findPosition(2), "Checking note was placed");
+		assertFalse(stack.isSaved(), "Checking stack is not saved");
+		assertFalse(stack.isEmpty(), "Checking undo stack has actions");
+		
+		stack.markSaved();
+		assertFalse(paint.placeNote(new Selection(str5.get(2), str0, 0)), "Checking note not placed in the same position");
+		assertTrue(stack.isSaved(), "Checking stack is still saved");
+		assertFalse(stack.isEmpty(), "Checking undo stack has actions");
+		assertTrue(paint.undo(), "Checking undo succeeds");
+		assertEquals(null, str0.findPosition(2), "Checking note is no longer placed");
+		
+		assertTrue(paint.placeNote(new Selection(str5.get(2).copyPosition(13), str0, 0)), "Checking note placed on new line");
+		assertEquals(5, paint.getLineTabCount(), "Checking line count updated");
+	}
+	
+	@Test
+	public void placeNotes(){
+		EditorEventStack stack = paint.getUndoStack();
+		
+		SelectionList list = new SelectionList();
+		list.add(paint.stringSelection(0, 0));
+		list.add(paint.stringSelection(0, 5));
+		assertFalse(paint.placeNotes(list), "Checking no notes were placed");
+		assertTrue(stack.isEmpty(), "Checking no events in undo stack");
+		
+		list = new SelectionList();
+		list.add(paint.stringSelection(0, 0));
+		Selection place = new Selection(new TabPosition(new TabNote(0), 1), str0, 0);
+		list.add(place);
+		assertTrue(paint.placeNotes(list), "Checking at least one note was placed");
+		assertEquals(place.getPos(), str0.findPosition(1), "Checking other note was placed");
+		assertTrue(stack.isEmpty(), "Checking no events in undo stack");
+		
+		list = new SelectionList();
+		place = new Selection(new TabPosition(new TabNote(0), 2), str0, 0);
+		list.add(place);
+		assertTrue(paint.placeNotes(list), "Checking all notes were placed");
+		assertEquals(place.getPos(), str0.findPosition(2), "Checking note was placed");
+		assertTrue(stack.isEmpty(), "Checking no events in undo stack");
+		
+		list = new SelectionList();
+		list.add(paint.stringSelection(0, 0));
+		assertFalse(paint.placeNotes(list, true), "Checking no notes were placed");
+		assertTrue(stack.isEmpty(), "Checking no events added to undo stack");
+		
+		tab.clearNotes();
+		list = new SelectionList();
+		list.add(new Selection(new TabPosition(new TabNote(0), 0), str0, 0));
+		list.add(new Selection(new TabPosition(new TabNote(0), 1), str1, 1));
+		list.add(new Selection(new TabPosition(new TabNote(0), 2), str5, 5));
+		assertTrue(paint.placeNotes(list, true), "Checking all notes were placed");
+		assertFalse(tab.isEmpty(), "Checking tab has notes");
+		assertFalse(stack.isEmpty(), "Checking events added to undo stack");
+		assertTrue(paint.undo(), "Checking undo succeeds");
+		assertTrue(tab.isEmpty(), "Checking tab has no notes after undo");
 	}
 	
 	@Test

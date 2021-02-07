@@ -104,7 +104,8 @@ public class TabString extends ArrayList<TabPosition> implements Copyable<TabStr
 	public TabSymbol replace(int i, TabSymbol symbol){
 		TabPosition p = this.get(i);
 		TabSymbol old = p.getSymbol();
-		p.setSymbol(symbol);
+		TabPosition newP = p.copySymbol(symbol);
+		this.set(i, newP);
 		return old;
 	}
 
@@ -140,6 +141,18 @@ public class TabString extends ArrayList<TabPosition> implements Copyable<TabStr
 	 */
 	public boolean add(TabSymbol e, double pos){
 		return this.add(e, new NotePosition(pos));
+	}
+	
+	/**
+	 * Set the {@link TabSymbol} of the note at the given index
+	 * @param i The index
+	 * @param symbol The new symbol
+	 * @return The {@link TabPosition} which used to be at the index, 
+	 * or null if the index was invalid, or if symbol was null
+	 */
+	public TabPosition setSymbol(int i, TabSymbol symbol){
+		if(i < 0 || i > this.size() - 1 || symbol == null) return null;
+		return this.set(i, this.get(i).copySymbol(symbol));
 	}
 	
 	/**
@@ -224,7 +237,7 @@ public class TabString extends ArrayList<TabPosition> implements Copyable<TabStr
 	public TabPosition placeQuantizedNote(TimeSignature sig, int fret, double pos){
 		TabSettings settings = ZabAppSettings.get().tab();
 		TabPosition p = TabFactory.modifiedFret(this, fret, pos);
-		p.quantize(sig, settings.quantizeDivisor());
+		p = p.quantize(sig, settings.quantizeDivisor());
 		if(!this.add(p)) return null;
 		return p;
 	}
@@ -257,13 +270,16 @@ public class TabString extends ArrayList<TabPosition> implements Copyable<TabStr
 	}
 	
 	/**
-	 * Quantize all {@link TabSymbol} objects on this {@link TabString}
+	 * Quantize all {@link TabPosition} objects on this {@link TabString}
 	 * @param sig The time signature to base the quantization off of
 	 * @param divisor The amount to divide up the units of a whole note.<br>
 	 * 	i.e. use 4 to quantize to quarter notes, use 6 to quantize to dotted quarter notes, etc
 	 */
 	public void quantize(TimeSignature sig, int divisor){
-		for(TabPosition p : this) p.setPosition(p.getPosition().quantize(sig, divisor));
+		for(int i = 0; i < this.size(); i++){
+			TabPosition p = this.get(i);
+			this.set(i, p.quantize(sig, divisor));
+		}
 	}
 	
 	/***/

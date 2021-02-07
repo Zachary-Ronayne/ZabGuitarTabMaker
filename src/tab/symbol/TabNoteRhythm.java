@@ -27,7 +27,7 @@ public class TabNoteRhythm extends TabPitch{
 	public TabNoteRhythm(Pitch pitch, Rhythm rhythm, TabModifier modifier){
 		super(pitch, modifier);
 		if(rhythm == null) throw new IllegalArgumentException("Rhythm cannot be null");
-		this.setRhythm(rhythm);
+		this.rhythm = rhythm;
 	}
 	
 	/**
@@ -57,23 +57,11 @@ public class TabNoteRhythm extends TabPitch{
 		return new TabNoteRhythm(p, r, mod);
 	}
 	
-	/**
-	 * Get the rhythm of this {@link TabNoteRhythm}
-	 * @return see {@link #rhythm}
-	 */
+	/** @return see {@link #rhythm}  */
 	public Rhythm getRhythm(){
 		return rhythm;
 	}
 
-	/**
-	 * Set the rhythm of this {@link TabNoteRhythm}
-	 * @param rhythm see {@link #rhythm}
-	 */
-	public void setRhythm(Rhythm rhythm){
-		if(rhythm == null) return;
-		this.rhythm = rhythm;
-	}
-	
 	/**
 	 * Convert this {@link TabNoteRhythm} to a version with no rhythmic information as a {@link TabNote}
 	 * @return The {@link TabNote}
@@ -86,7 +74,7 @@ public class TabNoteRhythm extends TabPitch{
 	/***/
 	@Override
 	public TabNoteRhythm convertToRhythm(Rhythm r){
-		return this;
+		return this.copy();
 	}
 	
 	/***/
@@ -96,10 +84,20 @@ public class TabNoteRhythm extends TabPitch{
 	}
 	
 	/**
-	 * Quantize this note's position, and also quantize its rhythm
+	 * Create a new {@link TabNoteRhythm} which is the same as this object, but with the new pitch
 	 */
-	public void quantize(TimeSignature sig, int divisor){
-		this.setRhythm(sig.guessRhythmWholeNotes(this.getRhythm().getLength()));
+	@Override
+	public TabNoteRhythm createPitchNote(Pitch p){
+		return new TabNoteRhythm(p, this.getRhythm(), this.getModifier());
+	}
+	
+	/**
+	 * Create a new {@link TabNoteRhythm} which is identical to this one, but with its rhythm quantized to a grid
+	 */
+	public TabNoteRhythm quantized(TimeSignature sig, int divisor){
+		TabNoteRhythm note = this.copy();
+		note.rhythm = sig.guessRhythmWholeNotes(this.getRhythm().getLength());
+		return note;
 	}
 
 	/**

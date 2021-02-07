@@ -17,6 +17,7 @@ import org.junit.jupiter.api.function.Executable;
 import appUtils.ZabAppSettings;
 import music.Pitch;
 import music.Rhythm;
+import tab.ModifierFactory;
 import tab.TabString;
 
 public class TestTabSymbol{
@@ -43,7 +44,7 @@ public class TestTabSymbol{
 		@Override
 		public boolean usesRhythm(){return false;}
 		@Override
-		public void updateOnNewString(TabString oldStr, TabString newStr){}
+		public TabSymbol movingToNewString(TabString oldStr, TabString newStr){return this.copy();}
 		@Override
 		public boolean load(Scanner reader){return false;}
 		@Override
@@ -84,30 +85,40 @@ public class TestTabSymbol{
 	}
 	
 	@Test
-	public void setModifier(){
-		symbol.setModifier(newMod);
+	public void copyNewModifier(){
+		symbol = symbol.copyNewModifier(newMod);
 		assertEquals(newMod, symbol.getModifier(), "Checking modifier set");
-		
-		symbol.setModifier(null);
-		assertEquals(newMod, symbol.getModifier(), "Checking modifier not chaNged to null");
+
+		assertEquals(null, symbol.copyNewModifier(null), "Checking giving modifier null returns null");
 	}
 	
 	@Test
-	public void addModifier(){
-		symbol.setModifier(new TabModifier("a", ""));
-		symbol.addModifier(new TabModifier("b", "d"));
+	public void copyAddModifier(){
+		symbol = new TestSymbolObject(new TabModifier("a", ""));
+		symbol = symbol.copyAddModifier(new TabModifier("b", "d"));
 		assertEquals(new TabModifier("a", "d"), symbol.getModifier(), "Checking modifier added correctly");
 		
-		symbol.setModifier(new TabModifier("", ""));
-		symbol.addModifier(new TabModifier("b", "d"));
+		symbol = new TestSymbolObject(new TabModifier("", ""));
+		symbol = symbol.copyAddModifier(new TabModifier("b", "d"));
 		assertEquals(new TabModifier("b", "d"), symbol.getModifier(), "Checking modifier added correctly");
+		
+		assertEquals(null, symbol.copyAddModifier(null), "Checking null modifier returns null");
+	}
+	
+	@Test
+	public void createPitchNote(){
+		symbol = new TestSymbolObject(ModifierFactory.bend());
+		TabPitch newSymbol = symbol.createPitchNote(new Pitch(2));
+		assertFalse(symbol == newSymbol, "Checking the new symbol is not the same object");
+		assertEquals(2, newSymbol.getPitch().getNote(), "Checking correct pitch set");
+		assertEquals(ModifierFactory.bend(), newSymbol.getModifier(), "Checking modifier is the same");
 	}
 	
 	@Test
 	public void getModifiedSymbol(){
 		assertEquals("[A]", symbol.getModifiedSymbol(string), "Checking modified symbol obtained");
 		
-		symbol.setModifier(newMod);
+		symbol = new TestSymbolObject(newMod);
 		assertEquals("{A}", symbol.getModifiedSymbol(string), "Checking modified symbol obtained after changing fields");
 	}
 
@@ -120,12 +131,12 @@ public class TestTabSymbol{
 		assertFalse(s == symbol, "Checking objects are not the same object");
 		assertTrue(s.equals(symbol), "Checking objects are equal");
 		
-		s.setModifier(new TabModifier("ab", "bc"));
+		s = new TestSymbolObject(new TabModifier("ab", "bc"));
 		assertFalse(s.equals(symbol), "Checking objects are not equal");
 
-		s.setModifier(new TabModifier("[", "]"));
+		s = new TestSymbolObject(new TabModifier("[", "]"));
 		assertTrue(s.equals(symbol), "Checking objects are equal");
-		s.setModifier(new TabModifier("a", "b"));
+		s = new TestSymbolObject(new TabModifier("a", "b"));
 		assertFalse(s.equals(symbol), "Checking objects are not equal");
 	}
 

@@ -161,7 +161,7 @@ public class EditorMouse extends TabPaintController implements MouseListener, Mo
 		TabPainter paint = this.getPainter();
 		double x = e.getX();
 		double y = e.getY();
-		paint.placeNote(x, y, 0);
+		paint.placeNote(x, y, 0, true);
 	}
 	
 	/**
@@ -200,7 +200,7 @@ public class EditorMouse extends TabPaintController implements MouseListener, Mo
 
 		if(drag.isDragging()){
 			drag.update(x, y);
-			drag.place(x, y, e.isShiftDown());
+			drag.place(x, y, e.isShiftDown(), true);
 			drag.reset();
 		}
 		

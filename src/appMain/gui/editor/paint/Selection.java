@@ -1,5 +1,6 @@
 package appMain.gui.editor.paint;
 
+import music.NotePosition;
 import tab.TabPosition;
 import tab.TabString;
 import util.Copyable;
@@ -10,7 +11,7 @@ import util.ObjectUtils;
  * @author zrona
  */
 public class Selection implements Comparable<Selection>, Copyable<Selection>{
-	/** The {@link TabPosition} of this selection */
+	/** A copy of the {@link TabPosition} of this selection, this does not represent the object which was used to create this selection */
 	private TabPosition pos;
 	/** The {@link TabString} which {@link #hold} is on */
 	private TabString string;
@@ -18,14 +19,20 @@ public class Selection implements Comparable<Selection>, Copyable<Selection>{
 	private int stringIndex;
 	
 	/**
-	 * Create a new selection
-	 * @param pos See #pos
+	 * Create a new selection which will keep track of the {@link NotePosition} of a {@link TabPosition}.
+	 * 	This object tracks the position on a particular string, any changes to the original {@link TabPosition} 
+	 * sent in this constructor will not carry over to this object.
+	 * @param pos See {@link #pos} This object will not be stored, but a copy of it. Future modifications to the given object will not effect this selection.
 	 * @param string See {@link #string}
 	 * @param stringIndex See {@link #stringIndex}
+	 * @throws IllegalArgumentException If pos is null or string is null
 	 */
 	public Selection(TabPosition pos, TabString string, int stringIndex){
 		super();
-		this.pos = pos;
+		if(pos == null) throw new IllegalArgumentException("The TabPosition of a selection cannot be null");
+		if(string == null) throw new IllegalArgumentException("The TabString of a selection cannot be null");
+		
+		this.pos = pos.copy();
 		this.string = string;
 		this.stringIndex = stringIndex;
 	}
@@ -36,13 +43,22 @@ public class Selection implements Comparable<Selection>, Copyable<Selection>{
 		return new Selection(ObjectUtils.copy(this.getPos()), ObjectUtils.copy(this.getString()), stringIndex);
 	}
 	
+	/**
+	 * Find the {@link TabPosition} on {@link #string} which was used to create this selection.
+	 * If that position is not on the string anymore, this method returns null
+	 * @return The position, or null if it is not on the string
+	 */
+	public TabPosition getStringPos(){
+		TabPosition p = this.getString().findPosition(this.getPosition());
+		if(this.getPos().equals(p)) return p;
+		else return null;
+	}
 	/** @return See {@link #pos} */
 	public TabPosition getPos(){
 		return pos;
 	}
-	/** @return The position value of the symbol in {@link #pos}, or -1 if pos is null */
+	/** @return See {@link #pos} */
 	public double getPosition(){
-		if(pos == null) return -1;
 		return pos.getPos();
 	}
 	

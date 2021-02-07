@@ -162,8 +162,11 @@ public class TestEditorMouse extends AbstractTestTabPainter{
 	@Test
 	public void rightMousePressed(){
 		paint.clearSelection();
+		assertTrue(paint.getUndoStack().isEmpty(), "Checking no events in undo stack");
 		mouse.mousePressed(new MouseEvent(paint, 0, 0, 0, 460, 340, 0, 0, 0, false, MouseEvent.BUTTON3));
 		assertEquals(2, tab.getStrings().get(0).size(), "Checking a new note added on right click");
+		
+		assertFalse(paint.getUndoStack().isEmpty(), "Checking event is added to undo stack");
 	}
 	
 	@Test

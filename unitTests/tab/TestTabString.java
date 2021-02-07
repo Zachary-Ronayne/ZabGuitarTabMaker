@@ -159,6 +159,24 @@ public class TestTabString{
 	}
 	
 	@Test
+	public void setSymbol(){
+		string.add(notes[0]);
+		string.add(notes[1]);
+		string.add(notes[2]);
+		
+		TabPosition pos = TabFactory.hammerOn(string, 2, 2.3);
+		TabSymbol note = pos.getSymbol();
+		assertEquals(notes[1], string.setSymbol(1, note), "Checking correct old position returned");
+		assertEquals(note, string.symbol(1), "Checking note set");
+		assertEquals(pitches[0], string.symbol(0), "Checking other notes not changed");
+		assertEquals(pitches[2], string.symbol(2), "Checking other notes not changed");
+		
+		assertEquals(null, string.setSymbol(-1, note), "Checking too low index returns null");
+		assertEquals(null, string.setSymbol(3, note), "Checking too high index returns null");
+		assertEquals(null, string.setSymbol(0, null), "Checking null symbol returns null");
+	}
+	
+	@Test
 	public void getAll(){
 		string.add(notes[1]);
 		string.add(notes[2]);
@@ -227,11 +245,11 @@ public class TestTabString{
 		assertFalse(string.contains(notes[5]), "Checking TabString doesn't contain TabPositions");
 		
 		TabPosition copy = notes[1].copy();
-		copy.setSymbol(new TabDeadNote());
+		copy = copy.copySymbol(new TabDeadNote());
 		assertFalse(string.contains(copy), "Checking TabString doesn't contain TabPosition with different symbol but same position");
 
 		copy = notes[1].copy();
-		copy.setPos(100);
+		copy = copy.copyPosition(100);
 		assertFalse(string.contains(copy), "Checking TabString doesn't contain TabPosition with same symbol but different position");
 	}
 	
@@ -300,9 +318,10 @@ public class TestTabString{
 
 	@Test
 	public void quantize(){
-		for(TabPosition p : notes){
-			p.setPosition(p.getPosition().added(1.1));
-			string.add(p);
+		for(int i = 0; i < notes.length; i++){
+			TabPosition p = notes[i];
+			notes[i] = p.copyPosition(p.getPosition().added(1.1));
+			string.add(notes[i]);
 		}
 		
 		string.quantize(new TimeSignature(4, 4), 1);

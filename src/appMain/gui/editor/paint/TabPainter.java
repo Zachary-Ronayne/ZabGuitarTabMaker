@@ -17,18 +17,22 @@ import java.util.List;
 import appMain.gui.ZabGui;
 import appMain.gui.ZabTheme;
 import appMain.gui.comp.ZabPanel;
-import appMain.gui.editor.paint.event.DummyEditorEvent;
 import appMain.gui.editor.paint.event.EditorEventStack;
+import appMain.gui.editor.paint.event.PlaceNotesEvent;
+import appMain.gui.editor.paint.event.RemoveNotesEvent;
+import appMain.gui.editor.paint.event.RemovePlaceNotesEvent;
+import appMain.gui.editor.paint.event.SelectedTabNumberEvent;
 import appMain.gui.util.Camera;
 import appUtils.ZabAppSettings;
 import appUtils.settings.TabPaintSettings;
 import appUtils.settings.TabSettings;
 import tab.Tab;
+import tab.TabFactory;
 import tab.TabPosition;
 import tab.TabString;
 import tab.symbol.TabModifier;
-import tab.symbol.TabNote;
 import tab.symbol.TabSymbol;
+import util.ObjectUtils;
 
 /**
  * A class used to handle drawing a {@link Tab} with a graphics object. Additionally, handles storing objects for input and output.
@@ -65,10 +69,10 @@ public class TabPainter extends ZabPanel{
 	/** A list containing {@link Selection} objects for every user selected {@link TabPositiono} */
 	private SelectionList selected;
 	
-	/** The {@link Selection} which was last selected by the user, i.e. the most recent {@link TabSymbol} they clicked on, null if no selection exists */
+	/** A copy of the {@link Selection} which was last selected by the user, i.e. the most recent {@link TabSymbol} they clicked on, null if no selection exists */
 	private Selection lastSelected;
 	
-	/** The {@link TabPosition} which the user is currently hovering, and should have an extra highlight */
+	/** The {@link TabPosition} which the user is currently hovering, and should have an extra highlight. Can be null none is hovered */
 	private TabPosition hoveredPosition;
 	
 	/** The tab number which will be applied to the selected symbols, null if not set */
@@ -249,7 +253,7 @@ public class TabPainter extends ZabPanel{
 
 	/** @param hoveredPosition See {@link #hoveredPosition} */
 	public void setHoveredPosition(TabPosition hoveredPosition){
-		this.hoveredPosition = hoveredPosition;
+		this.hoveredPosition = ObjectUtils.copy(hoveredPosition);
 	}
 	
 	/**
@@ -259,10 +263,19 @@ public class TabPainter extends ZabPanel{
 	 * @return true if the position was changed, false otherwise
 	 */
 	public boolean updateHoveredPosition(double mX, double mY){
+		// Find the position
 		Selection s = findPosition(mX, mY);
+		
+		// Either set the position to null, or the position of the selection 
 		TabPosition old = this.getHoveredPosition();
 		setHoveredPosition((s == null) ? null : s.getPos());
-		return old != this.getHoveredPosition();
+		TabPosition newPos = this.getHoveredPosition();
+		
+		// If both objects were null, the hover was not changed
+		if(old == null) return newPos != null;
+		
+		// Otherwise, check if they are equal
+		return !old.equals(newPos);
 	}
 
 	/** @return See {@link #selectionBox} */
@@ -528,24 +541,37 @@ public class TabPainter extends ZabPanel{
 	/**
 	 * Remove the {@link TabPosition} contained by the given {@link Selection}
 	 * @param s The selection
+	 * @param recordUndo true to record this action in {@link #undoStack}, false otherwise
+	 * @return true if the position was removed, false otherwise
+	 */
+	public boolean removeSelection(Selection s, boolean recordUndo){
+		this.getSelected().deselect(s);
+		boolean success = s.getString().remove(s.getPos());
+		
+		// If recording undo, and the remove occurred, add the event to the stack
+		if(recordUndo && success) this.getUndoStack().addEvent(new RemoveNotesEvent(s));
+		
+		return success;
+	}
+	
+	/**
+	 * Remove the {@link TabPosition} contained by the given {@link Selection}, not recording undo
+	 * @param s The selection
 	 * @return true if the position was removed, false otherwise
 	 */
 	public boolean removeSelection(Selection s){
-		// TODO implement proper EditorEvent, handle case of a list of removals happening
-		this.getUndoStack().addEvent(new DummyEditorEvent());
-		
-		this.getSelected().deselect(s);
-		return s.getString().remove(s.getPos());
+		return this.removeSelection(s, false);
 	}
-
+	
 	/**
 	 * Remove every {@link TabPosition} in the given {@link SelectionList} from the {@link Tab}
+	 * @param list The list of selections to remove
+	 * @param recordUndo true to record this action in {@link #undoStack}, false otherwise
 	 * @return The removed {@link Selection} objects, can be an empty list if nothing was removed
 	 */
-	public SelectionList removeSelections(List<Selection> list){
+	public SelectionList removeSelections(List<Selection> list, boolean recordUndo){
 		SelectionList removed = new SelectionList();
 		if(list == null) return removed;
-		
 		for(int i = 0; i < list.size(); i++){
 			Selection s = list.get(i);
 			if(this.removeSelection(s)){
@@ -553,18 +579,42 @@ public class TabPainter extends ZabPanel{
 				i--;
 			}
 		}
+		
+		// If recording undo, and at least one item was removed, record the undo
+		if(recordUndo && !removed.isEmpty()){
+			this.getUndoStack().addEvent(new RemoveNotesEvent(removed));
+		}
+		
 		return removed;
 	}
 	
 	/**
+	 * Remove every {@link TabPosition} in the given list of {@link Selection} objects from the {@link Tab}, with not recording the undo
+	 * @param list The list of selections to remove
+	 * @return The removed {@link Selection} objects, can be an empty list if nothing was removed
+	 */
+	public SelectionList removeSelections(List<Selection> list){
+		return this.removeSelections(list, false);
+	}
+	
+	/**
 	 * Remove every selected {@link TabPosition} from the tab
+	 * @param recordUndo true to record this action in {@link #undoStack}, false otherwise
 	 * @return The removed {@link Selection} objects
 	 */
-	public SelectionList removeSelectedNotes(){
-		SelectionList removed = this.removeSelections(this.getSelected());
+	public SelectionList removeSelectedNotes(boolean recordUndo){
+		SelectionList removed = this.removeSelections(this.getSelected(), recordUndo);
 		this.updateLineTabCount();
 		this.clearSelection();
 		return removed;
+	}
+	
+	/**
+	 * Remove every selected {@link TabPosition} from the tab, without recording the undo
+	 * @return The removed {@link Selection} objects
+	 */
+	public SelectionList removeSelectedNotes(){
+		return this.removeSelectedNotes(false);
 	}
 
 	
@@ -582,8 +632,6 @@ public class TabPainter extends ZabPanel{
 	public Selection findMovePosition(Selection s, double newBaseValue, double posValueChange, int stringIndexChange, boolean keepPitch){
 		Tab t = this.getTab();
 		if(s == null || t == null) return null;
-		// Ensure the selection is not modifying any previous references
-		s = s.copy();
 		
 		ArrayList<TabString> strs = t.getStrings();
 		
@@ -621,16 +669,17 @@ public class TabPainter extends ZabPanel{
 		// Find if the note exists on the string
 		// If it does not, then create the Selection to be placed
 		if(newString.findPosition(newPosValue) == null){
-			newTabPos.setPos(newPosValue);
+			newTabPos = new TabPosition(newTabPos.getSymbol(), newPosValue);
 			placed = new Selection(newTabPos, newString, newStringIndex);
 		}
 		// Otherwise, the position cannot be moved there, return null
 		else return null;
-
+		
 		// If necessary, update the pitch
 		if(!keepPitch){
 			TabSymbol newSymbol = newTabPos.getSymbol();
-			newSymbol.updateOnNewString(oldString, newString);
+			newTabPos = new TabPosition(newSymbol.movingToNewString(oldString, newString), newTabPos.getPos());
+			placed = new Selection(newTabPos, newString, newStringIndex);
 		}
 		
 		return placed;
@@ -716,18 +765,60 @@ public class TabPainter extends ZabPanel{
 	}
 	
 	/**
+	 * Remove every note in {@link #tab}
+	 * @param recordUndo true to record this action in {@link #undoStack}, false otherwise
+	 */
+	public void clearNotes(boolean recordUndo){
+		Tab t = this.getTab();
+		
+		// If recording undo, and there is a tab with notes, add a new event containing all of the notes
+		if(recordUndo && t != null && !t.isEmpty()){
+			this.selectAllNotes();
+			this.getUndoStack().addEvent(new RemoveNotesEvent(this.getSelected()));
+			this.clearSelection();
+		}
+		
+		if(t != null) t.clearNotes();
+	}
+
+	/**
+	 * Remove every note in {@link #tab} without recording undo
+	 */
+	public void clearNotes(){
+		this.clearNotes(false);
+	}
+
+	/**
 	 * Reset the entire tab painter to a default state, removing all notes, and resetting the camera
 	 */
 	public void reset(){
-		// TODO implement proper EditorEvent
-		this.getUndoStack().addEvent(new DummyEditorEvent());
-		
 		Tab t = this.getTab();
-		if(t != null) t.clearNotes();
+		
+		if(t != null) this.clearNotes();
 		this.updateLineTabCount();
 		this.getDragger().reset();
 		this.getSelectionBox().clear();
 		this.resetCamera();
+	}
+	
+	/**
+	 * Undo the last recorded action in this {@link TabPainter}
+	 * @return true if the undo was successful i.e. there was an event to undo, false otherwise
+	 */
+	public boolean undo(){
+		boolean success = this.getUndoStack().undo();
+		this.updateLineTabCount();
+		return success;
+	}
+	
+	/**
+	 * Redo the last undone action in this {@link TabPainter}
+	 * @return true if the redo was successful i.e. there was an event to redo, false otherwise
+	 */
+	public boolean redo(){
+		boolean success = this.getUndoStack().redo();
+		this.updateLineTabCount();
+		return success;
 	}
 	
 	/**
@@ -772,15 +863,21 @@ public class TabPainter extends ZabPanel{
 	 * Only contributes to the number when a selection is made.<br>
 	 * Automatically resets the number to null if it goes beyond the range
 	 * @param num The number, does nothing if the character is not a minus sign or a number
+	 * @param recordUndo true to record this action in {@link #undoStack}, false otherwise
 	 * @return The new value of selectedNewTabNum
 	 */
-	public Integer appendSelectedTabNum(char num){
+	public Integer appendSelectedTabNum(char num, boolean recordUndo){
 		if(this.getSelected().isEmpty()) return this.selectedNewTabNum;
 
-		// TODO implement proper EditorEvent
-		this.getUndoStack().addEvent(new DummyEditorEvent());
+		// Keep track of the original number
+		Integer oldNum = this.selectedNewTabNum;
 		
-		Integer n = this.selectedNewTabNum;
+		// If recording undo, keep track of the list of notes that will be changed
+		SelectionList oldSel = new SelectionList();
+		if(recordUndo) oldSel.addAll(this.getSelected());
+		
+		// Determine the new number based on the given character
+		Integer n = oldNum;
 		boolean isMinus = num == '-';
 		boolean isNum = num >= '0' && num <= '9';
 		int newNum = num - '0';
@@ -799,10 +896,15 @@ public class TabPainter extends ZabPanel{
 		
 		// Update the number display
 		if(n != null){
-			for(Selection sel : this.getSelected()){
+			SelectionList list = this.getSelected();
+			for(int i = 0; i < list.size(); i++){
+				Selection sel = list.get(i);
+				
 				// Unpack selection
-				TabPosition p = sel.getPos();
-				TabSymbol t = p.getSymbol();
+				TabPosition p = sel.getStringPos();
+				// Ensure the note exists
+				if(p == null) continue;
+				
 				TabString s = sel.getString();
 				
 				// Ensure the note stays within only 2 digits
@@ -811,15 +913,34 @@ public class TabPainter extends ZabPanel{
 					this.selectedNewTabNum = n;
 				}
 				
-				// Set the note
-				p.setSymbol(new TabNote(s.createPitch(n), t.getModifier().copy()));
+				// Set the note on the string and update the selection
+				p = p.copySymbol(p.getSymbol().createPitchNote(s.createPitch(n)));
+				sel.getString().setSymbol(sel.getString().findIndex(p.getPos()), p.getSymbol());
+				list.set(i, new Selection(p, s, sel.getStringIndex()));
 			}
 		}
 		this.repaint();
 		
+		// If recording undo, and a valid character was given, record the action
+		if(recordUndo && (isNum || isMinus)){
+			// The event places the current state of the selected notes, and removes the original placements
+			this.getUndoStack().addEvent(new SelectedTabNumberEvent(this.getSelected(), oldSel));
+		}
+		
 		return this.selectedNewTabNum;
 	}
-
+	
+	/**
+	 * Add the given numerical character to the selected tab number, without recording undo.<br>
+	 * Only contributes to the number when a selection is made.<br>
+	 * Automatically resets the number to null if it goes beyond the range
+	 * @param num The number, does nothing if the character is not a minus sign or a number
+	 * @return The new value of selectedNewTabNum
+	 */
+	public Integer appendSelectedTabNum(char num){
+		return this.appendSelectedTabNum(num, false);
+	}
+	
 	/**
 	 * Apply the given modifier to every selected {@link TabPosition}.<br>
 	 * Will use a empty modifier for mod if it is null
@@ -831,24 +952,65 @@ public class TabPainter extends ZabPanel{
 	 * <li>2: Remove: Completely remove the modifier from the selected symbols. In this case the value of mod is not used </li>
 	 * </ul>
 	 * 	An unrecognized value will default to 0, i.e. replace mode.
+	 * @param recordUndo true to record this action in {@link #undoStack}, false otherwise
 	 */
-	public void placeModifier(TabModifier mod, int mode){
-		// TODO implement proper EditorEvent
-		this.getUndoStack().addEvent(new DummyEditorEvent());
+	public void placeModifier(TabModifier mod, int mode, boolean recordUndo){
+		// If recording undo, keep track of the list of notes that will be changed
+		SelectionList oldSel = new SelectionList();
+		if(recordUndo) oldSel.addAll(this.getSelected());
+		boolean changed = false;
 		
 		if(mod == null) mod = new TabModifier();
-		for(Selection s : this.getSelected()){
+		SelectionList list = this.getSelected();
+		for(int i = 0; i < list.size(); i++){
+			Selection s = list.get(i);
+			
+			// Find the new modifier
 			TabSymbol sym = s.getPos().getSymbol();
 			switch(mode){
 				default:
 				// Replace
-				case 0: sym.setModifier(mod); break;
+				case 0: sym = sym.copyNewModifier(mod); break;
 				// Add
-				case 1: sym.addModifier(mod); break;
+				case 1: sym = sym.copyAddModifier(mod); break;
 				// Remove
-				case 2: sym.setModifier(new TabModifier()); break;
+				case 2: sym = sym.copyNewModifier(new TabModifier()); break;
+			}
+			
+			// Set the symbol of the position on the string only if the new symbol is different
+			TabPosition p = s.getStringPos();
+			if(p != null && !p.getSymbol().equals(sym)){
+				// If any symbols are set, mark this as having changed
+				changed = true;
+				p = p.copySymbol(sym);
+				
+				// If a symbol modified, set the new version in the selection and place it in the tab
+				s.getString().setSymbol(s.getString().findIndex(p.getPos()), p.getSymbol());
+				list.set(i, new Selection(p, s.getString(), s.getStringIndex()));
 			}
 		}
+
+		// If recording undo, and a modifier was changed, add the undo event
+		if(recordUndo && changed){
+			// The event places the current state of the selected notes, and removes the original placements
+			this.getUndoStack().addEvent(new RemovePlaceNotesEvent(this.getSelected(), oldSel));
+		}
+	}
+	
+	/**
+	 * Apply the given modifier to every selected {@link TabPosition}, without recording undo.<br>
+	 * Will use a empty modifier for mod if it is null
+	 * @param mod The modifier to give to the notes
+	 * @param mode The way to apply the modifier. Values to use:
+	 * <ul>
+	 * <li>0: Replace: remove the modifier currently used by the selection, and apply the new one</li>
+	 * <li>1: Add: If the modifier is empty, use the given modifier, otherwise don't change the modifier </li>
+	 * <li>2: Remove: Completely remove the modifier from the selected symbols. In this case the value of mod is not used </li>
+	 * </ul>
+	 * 	An unrecognized value will default to 0, i.e. replace mode.
+	 */
+	public void placeModifier(TabModifier mod, int mode){
+		this.placeModifier(mod, mode, false);
 	}
 	
 	/**
@@ -857,49 +1019,120 @@ public class TabPainter extends ZabPanel{
 	 * @param mX The x coordinate, usually a mouse position
 	 * @param mY The y coordinate, usually a mouse position
 	 * @param fret The fret number to place
+	 * @param recordUndo true to record this action in {@link #undoStack}, false otherwise
 	 * @return true if the note was placed, false otherwise
 	 */
-	public boolean placeNote(double mX, double mY, int fret){
-		// TODO implement proper EditorEvent
-		this.getUndoStack().addEvent(new DummyEditorEvent());
-		
+	public boolean placeNote(double mX, double mY, int fret, boolean recordUndo){
 		double x = xToTabPos(mX, mY);
 		int y = pixelYToStringNum(mY);
 		Tab t = this.getTab();
 		// If either coordinate is invalid, or the tab is null, the placement fails
 		if(x < 0 || y < 0 || t == null) return false;
-		TabPosition p = t.placeQuantizedNote(y, fret, x);
-		// Only add and select the note if it was placed
 		
-		boolean placed = p != null;
+		// Find the string and create a position to place there
+		TabString str = t.getStrings().get(y);
+		TabPosition p = TabFactory.modifiedFret(str, fret, x);
+		p = p.quantize(t.getTimeSignature(), ZabAppSettings.get().tab().quantizeDivisor());
+		
+		// Try to add the note, and select it if it was placed
+		boolean placed = this.placeNote(p, str, recordUndo);
 		if(placed){
-			this.selectOne(p, t.getStrings().get(y));
+			this.selectOne(p, str);
 		}
-
+		
 		this.updateLineTabCount();
 		return placed;
+	}
+	
+	/**
+	 * Place a note based on the given coordinates in pixel space, without recording the undo.<br>
+	 * Can do nothing if the coordinates aren't near the tab, or if the note cannot be placed
+	 * @param mX The x coordinate, usually a mouse position
+	 * @param mY The y coordinate, usually a mouse position
+	 * @param fret The fret number to place
+	 * @return true if the note was placed, false otherwise
+	 */
+	public boolean placeNote(double mX, double mY, int fret){
+		return this.placeNote(mX, mY, fret, false);
 	}
 	
 	/**
 	 * Place the given {@link TabPosition} on the given {@link TabString}
 	 * @param p The {@link TabPosition} to place
 	 * @param s The {@link TabString}
+	 * @param recordUndo true to record this action in {@link #undoStack}, false otherwise
+	 * @return true if the note was placed, false otherwise
+	 */
+	public boolean placeNote(TabPosition p, TabString s, boolean recordUndo){
+		Tab t = this.getTab();
+		if(t == null) return false;
+		
+		int index = t.getStrings().indexOf(s);
+		if(!this.validStringIndex(index)) return false;
+		
+		return this.placeNote(new Selection(p, s, index), recordUndo);
+	}
+	
+	/**
+	 * Place the given {@link TabPosition} on the given {@link TabString}, without recording the undo
+	 * @param p The {@link TabPosition} to place
+	 * @param s The {@link TabString}
 	 * @return true if the note was placed, false otherwise
 	 */
 	public boolean placeNote(TabPosition p, TabString s){
-		// TODO implement proper EditorEvent, also handle case of multiple placements at the same time
-		this.getUndoStack().addEvent(new DummyEditorEvent());
-		
-		return s.add(p);
+		return this.placeNote(p, s, false);
 	}
 	
 	/**
 	 * Place the {@link TabPosition} of the given {@link Selection} on its {@link TabString}
 	 * @param s The {@link Selection}
-	 * @return true if the note was placed, false otherwise
+	 * @param recordUndo true to record this action in {@link #undoStack}, false otherwise
+	 * @return true if the selection was placed, false otherwise
+	 */
+	public boolean placeNote(Selection s, boolean recordUndo){
+		boolean success = s.getString().add(s.getPos());
+		
+		// If the note was placed, and recording undo, then record this placement action
+		if(success && recordUndo) this.getUndoStack().addEvent(new PlaceNotesEvent(s));
+		this.updateLineTabCount();
+		
+		return success;
+	}
+	
+	/**
+	 * Place the {@link TabPosition} of the given {@link Selection} on its {@link TabString}, without recording undo
+	 * @param s The {@link Selection}
+	 * @return true if the selection was placed, false otherwise
 	 */
 	public boolean placeNote(Selection s){
-		return this.placeNote(s.getPos(), s.getString());
+		return this.placeNote(s, false);
+	}
+	
+	/**
+	 * Place the every {@link TabPosition} of the given {@link List} of {@link Selection} objects
+	 * @param list The {@link List}
+	 * @param recordUndo true to record this action in {@link #undoStack}, false otherwise
+	 * @return true if at least one selection was placed, false otherwise
+	 */
+	public boolean placeNotes(List<Selection> list, boolean recordUndo){
+		SelectionList placed = new SelectionList();
+		for(Selection s : list){
+			if(this.placeNote(s)) placed.add(s);
+		}
+		
+		// If recording undo, record the placed notes as an action in the undo
+		if(recordUndo && placed.size() > 0) this.getUndoStack().addEvent(new PlaceNotesEvent(placed));
+		
+		return !placed.isEmpty();
+	}
+	
+	/**
+	 * Place the every {@link TabPosition} of the given {@link List} of {@link Selection} objects without recording the undo
+	 * @param list The {@link List}
+	 * @return true if at least one selection was placed, false otherwise
+	 */
+	public boolean placeNotes(List<Selection> list){
+		return this.placeNotes(list, false);
 	}
 	
 	/**

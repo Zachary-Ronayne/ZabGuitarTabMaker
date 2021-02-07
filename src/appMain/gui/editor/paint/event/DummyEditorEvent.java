@@ -10,16 +10,20 @@ public class DummyEditorEvent implements EditorEvent{
 
 	/**
 	 * Create a new {@link DummyEditorEvent}, this event does not need to do anything, 
-	 * and is only in place as an easy way to cause an event with no action;
+	 * and is only in place as an easy way to cause an event with no action
 	 */
 	public DummyEditorEvent(){}
 	
 	/** Does nothing */
 	@Override
-	public void undo(TabPainter p){}
+	public boolean undo(TabPainter p){
+		return true;
+	}
 
 	/** Does nothing */
 	@Override
-	public void redo(TabPainter p){}
+	public boolean redo(TabPainter p){
+		return true;
+	}
 
 }

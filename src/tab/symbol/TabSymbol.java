@@ -26,7 +26,7 @@ public abstract class TabSymbol implements Copyable<TabSymbol>, Saveable{
 	 */
 	public TabSymbol(TabModifier modifier){
 		if(modifier == null) throw new IllegalArgumentException("Modifier cannot be null");
-		this.setModifier(modifier);
+		this.modifier = modifier;
 	}
 
 	/**
@@ -38,21 +38,36 @@ public abstract class TabSymbol implements Copyable<TabSymbol>, Saveable{
 	}
 
 	/**
-	 * Set the {@link #modifier} of this {@link TabSymbol}
-	 * @param See {@link #modifier}
+	 * Create a new {@link TabSymbol} which is a copy of this one, but with the given modifier
+	 * @return The new {@link TabSymbol}, or null if modifier is null
 	 */
-	public void setModifier(TabModifier modifier){
-		if(modifier == null) return;
-		this.modifier = modifier;
+	public TabSymbol copyNewModifier(TabModifier modifier){
+		if(modifier == null) return null;
+		TabSymbol symbol = this.copy();
+		symbol.modifier = modifier;
+		return symbol;
 	}
 	
 	/**
-	 * Add the given {@link TabModifier} to this {@link TabSymbol}. 
+	 * Create a new {@link TabSymbol} which is a copy of this one, but with the given modifier added on. 
 	 * For definition of adding, see {@link TabModifier#added(TabModifier)}
-	 * @param mod The modifier to add
+	 * @return The new {@link TabSymbol}, or null if mod is null
 	 */
-	public void addModifier(TabModifier mod){
-		this.setModifier(this.getModifier().added(mod));
+	public TabSymbol copyAddModifier(TabModifier mod){
+		if(mod == null) return null;
+		TabSymbol symbol = this.copy();
+		symbol.modifier = this.getModifier().added(mod);
+		return symbol;
+	}
+	
+	/**
+	 * Create a new {@link TabSymbol} with should be otherwise the same as this object, but also holding the given pitch information. 
+	 * Override this method to change what kind of {@link TabPitch} is returned, defaults to a {@link TabNote}
+	 * @param p The pitch to use for the note
+	 * @return The new {@link TabPitch}, should never be null
+	 */
+	public TabPitch createPitchNote(Pitch p){
+		return new TabNote(p, this.getModifier().copy());
 	}
 
 	/**
@@ -71,7 +86,6 @@ public abstract class TabSymbol implements Copyable<TabSymbol>, Saveable{
 		String symbol = this.getSymbol(string);
 		return this.getModifier().modifySymbol(symbol);
 	}
-	
 
 	/**
 	 * Create a new version of this {@link TabSymbol} as using the given {@link Rhythm}.<br>
@@ -95,11 +109,12 @@ public abstract class TabSymbol implements Copyable<TabSymbol>, Saveable{
 	public abstract boolean usesRhythm();
 	
 	/**
-	 * Update the state of this {@link TabSymbol} so that it remains the same symbol when changing {@link TabString} objects
+	 * Create a version of this state of this {@link TabSymbol} so that it remains the same symbol when changing {@link TabString} objects
 	 * @param oldStr The {@link TabString} it used to be on
 	 * @param newStr The {@link TabString} it will be moved to
+	 * @return The new {@link TabSymbol}, or null if the pitch couldn't be generated
 	 */
-	public abstract void updateOnNewString(TabString oldStr, TabString newStr);
+	public abstract TabSymbol movingToNewString(TabString oldStr, TabString newStr);
 
 	/***/
 	@Override

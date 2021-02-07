@@ -37,8 +37,7 @@ public final class TabFactory{
 	 */
 	public static TabPosition modifiedRhythm(String note, int octave, Rhythm r, double pos, TabModifier mod){
 		TabPosition p = modifiedPitch(note, octave, pos, mod);
-		p.setSymbol(p.getSymbol().convertToRhythm(r));
-		return p;
+		return p.copySymbol(p.getSymbol().convertToRhythm(r));
 	}
 	
 	/**
@@ -76,8 +75,7 @@ public final class TabFactory{
 	 */
 	public static TabPosition modifiedFretRhythm(TabString string, int fret, Rhythm r, double pos, TabModifier mod){
 		TabPosition p = modifiedFret(string, fret, pos, mod);
-		p.setSymbol(p.getSymbol().convertToRhythm(r));
-		return p;
+		return p.copySymbol(p.getSymbol().convertToRhythm(r));
 	}
 	
 	/**

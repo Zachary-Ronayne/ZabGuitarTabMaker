@@ -80,8 +80,10 @@ public class ControlsFrame extends ZabFrame{
 			lang.ctrlKey() + " " + lang.shiftKey() + " D / " + lang.deleteKey() + ": " + lang.deleteSelection(),
 			lang.ctrlKey() + " A: " + lang.selectAllNotes(),
 			lang.escapeKey() + ": " + lang.cancelSelection(),
+			lang.ctrlKey() + " Z: " + lang.undo(),
+			lang.ctrlKey() + " " + lang.shiftKey() + " Z: " + lang.redo(),
 			lang.ctrlKey() + " S: " + lang.saveTab(),
-			lang.ctrlKey() + " S: " + lang.saveAsTab(),
+			lang.ctrlKey() + " " + lang.shiftKey() + " S: " + lang.saveAsTab(),
 			lang.ctrlKey() + " L: " + lang.loadTab(),
 			lang.ctrlKey() + " " + lang.shiftKey() + " e: " + lang.exportWindow(),
 			lang.ctrlKey() + " n: " + lang.newTab(),
@@ -104,8 +106,8 @@ public class ControlsFrame extends ZabFrame{
 			"R: " + lang.pinchHarmonic(),
 			"~: " + lang.vibrato(),
 			"T: " + lang.tap(),
-			"( / ): " + lang.ghostNote(),
-			"< / >: " + lang.naturalHarmonic(),
+			"( ): " + lang.ghostNote(),
+			"< >: " + lang.naturalHarmonic(),
 		});
 		this.modifiersInfo.setTitle(lang.modifiersDescription());
 		this.mainPanel.add(this.modifiersInfo);

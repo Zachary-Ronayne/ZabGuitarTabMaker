@@ -101,6 +101,11 @@ public class TestTabPaintSettings{
 		TestZabSettings.assertSettingInitialized(settings.getStringLabelSpace(), TabPaintSettings.STRING_LABEL_SPACE);
 		assertEquals(TabPaintSettings.STRING_LABEL_SPACE, settings.stringLabelSpace(), "Checking value getter correct");
 	}
+	@Test
+	public void maxUndo(){
+		TestZabSettings.assertSettingInitialized(settings.getMaxUndo(), TabPaintSettings.MAX_UNDO);
+		assertEquals(TabPaintSettings.MAX_UNDO, settings.maxUndo(), "Checking value getter correct");
+	}
 	
 	@AfterEach
 	public void end(){}

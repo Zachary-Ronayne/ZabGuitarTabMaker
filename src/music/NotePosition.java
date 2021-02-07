@@ -50,6 +50,24 @@ public class NotePosition implements Copyable<NotePosition>, Comparable<NotePosi
 	}
 	
 	/**
+	 * Given a position value, both in number of measures, determine if it is in the same measure as this position
+	 * @param pos The other position
+	 * @return true if they are in the same measure, false otherwise
+	 */
+	public boolean sameMeasure(NotePosition pos){
+		return this.sameMeasure(pos.getValue());
+	}
+	
+	/**
+	 * Given a position value, both in number of measures, determine if it is in the same measure as this position
+	 * @param pos The other position
+	 * @return true if they are in the same measure, false otherwise
+	 */
+	public boolean sameMeasure(double pos){
+		return (int)pos == (int)this.getValue();
+	}
+	
+	/**
 	 * Create a note position with the same value as this one, plus specified amount
 	 * @param value The amount to add to {@link #value}
 	 * @return The new {@link NotePosition}

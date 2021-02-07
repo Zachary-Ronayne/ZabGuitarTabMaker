@@ -2,18 +2,21 @@ package appMain.gui.editor.paint;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 import appUtils.ZabAppSettings;
 import music.Pitch;
 import music.TimeSignature;
 import tab.TabPosition;
 import tab.TabString;
+import tab.symbol.TabModifier;
 import util.testUtils.Assert;
 
 public class TestSelection{
@@ -45,6 +48,23 @@ public class TestSelection{
 	}
 	
 	@Test
+	public void constructor(){
+		assertThrows(IllegalArgumentException.class, new Executable(){
+			@Override
+			public void execute() throws Throwable{
+				new Selection(null, str, 0);
+			}
+		}, "Checking null TabPosition throws error");
+		
+		assertThrows(IllegalArgumentException.class, new Executable(){
+			@Override
+			public void execute() throws Throwable{
+				new Selection(pos, null, 0);
+			}
+		}, "Checking null TabString throws error");
+	}
+	
+	@Test
 	public void copy(){
 		Selection copy = sel.copy();
 		assertFalse(copy == sel, "Checking copy is not the same object as the original");
@@ -52,15 +72,31 @@ public class TestSelection{
 	}
 	
 	@Test
+	public void getStringPos(){
+		Selection find = new Selection(pos, str, 0);
+		assertEquals(pos, find.getStringPos(), "Checking position is found");
+		assertTrue(pos == find.getStringPos(), "Checking position is the same object");
+		
+		str.clear();
+		assertEquals(null, find.getStringPos(), "Checking position is not found");
+		
+		str.add(pos.copy());
+		assertEquals(pos, find.getStringPos(), "Checking position is found after a copy is added back to string");
+		
+		str.clear();
+		pos = pos.copySymbol(pos.getSymbol().copyNewModifier((new TabModifier("a", "g"))));
+		str.add(pos.copy());
+		assertEquals(null, find.getStringPos(), "Checking position is not found after changing the symbol on the string");
+	}
+	
+	@Test
 	public void getPos(){
 		assertEquals(pos, sel.getPos(), "Checking position initialized");
+		assertFalse(pos == sel.getPos(), "Checking position is not the same object as what is stored");
 	}
 	@Test
 	public void getPosition(){
 		assertEquals(2, sel.getPosition(), "Checking position initialized");
-		
-		sel = new Selection(null, str, 0);
-		assertEquals(-1, sel.getPosition(), "Checking -1 found on null pos");
 	}
 	
 	@Test
@@ -75,8 +111,6 @@ public class TestSelection{
 	@Test
 	public void compareTo(){
 		Assert.lessThan(sel.compareTo(null), 0, "Checking comparing to null is negative");
-		Assert.lessThan(sel.compareTo(new Selection(null, str, 0)), 0, "Checking comparing to selection with null position negative");
-		Assert.lessThan(new Selection(null, str, 0).compareTo(sel), 0, "Checking comparing selection with null position negative");
 		
 		assertEquals(0, sel.compareTo(new Selection(pos, str, 1)), "Checking comparing equivalent objects");
 		
@@ -84,7 +118,7 @@ public class TestSelection{
 		Assert.greaterThan(sel.compareTo(new Selection(pos, str, 0)), 0, "Checking comparing to lower string index");
 		
 		Assert.lessThan(sel.compareTo(new Selection(newPos, str, 1)), 0, "Checking comparing to equal string index and higher position");
-		newPos.setPos(0);
+		newPos = newPos.copyPosition(0);
 		Assert.greaterThan(sel.compareTo(new Selection(newPos, str, 1)), 0, "Checking comparing to equal string index and lower position");
 	}
 	

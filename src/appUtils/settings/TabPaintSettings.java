@@ -46,6 +46,8 @@ public class TabPaintSettings extends Settings{
 	public static final double SYMBOL_BORDER_SIZE = 2;
 	/** Default for {@link #stringLabelSpace} */
 	public static final double STRING_LABEL_SPACE = 14;
+	/** Default for {@link #maxUndo} */
+	public static final int MAX_UNDO = 500;
 	
 	/** The base x coordinate at which the painted {@link Tab} of a {@link TabPainter} is rendered */
 	private SettingDouble baseX;
@@ -79,6 +81,8 @@ public class TabPaintSettings extends Settings{
 	private SettingDouble symbolBorderSize;
 	/** The extra amount of space added between the pitch labels of rendered {@link TabString} objects, in pixels. This pixel amount is the same regardless of zoom level */
 	private SettingDouble stringLabelSpace;
+	/** The maximum number of undo events which can be stored in the undo stack, use 0 to disable, use a negative value for unlimited */
+	private SettingInt maxUndo;
 
 	/**
 	 * Create a new set of {@link TabPaintSettings} with all default values loaded
@@ -101,6 +105,7 @@ public class TabPaintSettings extends Settings{
 		this.stringLabelYAlign = this.addInt(STRING_LABEL_Y_ALIGN);
 		this.symbolBorderSize = this.addDouble(SYMBOL_BORDER_SIZE);
 		this.stringLabelSpace = this.addDouble(STRING_LABEL_SPACE);
+		this.maxUndo = this.addInt(MAX_UNDO);
 	}
 
 	/** @return See {@link #baseX} */
@@ -135,6 +140,8 @@ public class TabPaintSettings extends Settings{
 	public SettingDouble getSymbolBorderSize(){ return this.symbolBorderSize; }
 	/** @return See {@link #stringLabelSpace} */
 	public SettingDouble getStringLabelSpace(){ return this.stringLabelSpace; }
+	/** @return See {@link #maxUndo} */
+	public SettingInt getMaxUndo(){ return this.maxUndo; }
 
 	/** @return See {@link #baseX} */
 	public Double baseX(){ return this.getBaseX().get(); }
@@ -168,4 +175,6 @@ public class TabPaintSettings extends Settings{
 	public Double symbolBorderSize(){ return this.getSymbolBorderSize().get(); }
 	/** @return See {@link #stringLabelSpace} */
 	public Double stringLabelSpace(){ return this.getStringLabelSpace().get(); }
+	/** @return See {@link #maxUndo} */
+	public Integer maxUndo(){ return this.getMaxUndo().get(); }
 }

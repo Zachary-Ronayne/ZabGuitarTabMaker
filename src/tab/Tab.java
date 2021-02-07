@@ -6,6 +6,7 @@ import java.util.Scanner;
 
 import appUtils.ZabAppSettings;
 import appUtils.settings.TabSettings;
+import music.NotePosition;
 import music.Pitch;
 import music.Rhythm;
 import music.TimeSignature;
@@ -223,9 +224,14 @@ public class Tab implements Copyable<Tab>, Saveable{
 			for(TabString s : this.getStrings()){
 				// Make a list to store all of the symbols to be removed
 				ArrayList<TabPosition> toDelete = new ArrayList<TabPosition>();
-				for(TabPosition p : s){
+				for(int i = 0; i < s.size(); i++){
+					TabPosition p = s.get(i);
+					NotePosition oldPos = p.getPosition();
+					
 					// Retime the note
-					boolean outside = !p.retimeMeasure(newTime, oldTime);
+					p = p.retimeMeasure(newTime, oldTime);
+					s.set(i, p);
+					boolean outside = !p.getPosition().sameMeasure(oldPos);
 					// If the position is outside the measure, remove it
 					if(outside) toDelete.add(p);
 				}
@@ -236,7 +242,10 @@ public class Tab implements Copyable<Tab>, Saveable{
 		else{
 			// Retime every note on every string
 			for(TabString s : this.getStrings()){
-				for(TabPosition p : s) p.retime(newTime, oldTime);
+				for(int i = 0; i < s.size(); i++){
+					TabPosition p = s.get(i);
+					s.set(i, p.retime(newTime, oldTime));
+				}
 			}
 		}
 	}

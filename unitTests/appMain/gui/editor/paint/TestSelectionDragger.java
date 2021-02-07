@@ -2,6 +2,7 @@ package appMain.gui.editor.paint;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.geom.Point2D;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import appMain.gui.editor.paint.SelectionDragger.DragSorter;
+import appMain.gui.editor.paint.event.EditorEventStack;
 import appUtils.ZabAppSettings;
 import appUtils.settings.ZabSettings;
 import music.Music;
@@ -340,6 +342,50 @@ public class TestSelectionDragger extends AbstractTestTabPainter{
 		assertEquals(5, str4.get(2).getPos(), "Checking position of note");
 		assertEquals(8, str4.get(3).getPos(), "Checking position of note");
 		
+		// Checking case of undo recorded
+		this.setup();
+		EditorEventStack stack = paint.getUndoStack();
+		// Moving a line of notes up, all 4 notes on the low E string, where the base note moves to an empty position
+		paint.clearSelection();
+		drag.reset();
+		stack.markSaved();
+		Tab oldTab = tab.copy();
+		assertTrue(stack.isEmpty(), "Checking stack has no events");
+		assertTrue(stack.isSaved(), "Checking stack is saved");
+		assertTrue(paint.selectLine(149.0, 200.0, false), "Checking line selection begins");
+		assertTrue(paint.selectLine(299.0, 202.0, false), "Checking line selection ends");
+		assertTrue(drag.begin(149.0, 200.0), "Checking drag begins");
+		assertTrue(drag.place(151.0, 174.0, true, true), "Checking moving a line of notes with the base note going to an empty space");
+		
+		// Checking undo was recorded, and performs the actions correctly
+		assertFalse(stack.isEmpty(), "Checking stack has an event");
+		assertFalse(stack.isSaved(), "Checking stack is no longer saved");
+		assertNotEquals(oldTab, tab, "Checking original tab state is different from current state");
+		assertTrue(paint.undo(), "Checking undo succeeded");
+		assertEquals(0, stack.undoSize(), "Checking stack has no events");
+		assertFalse(stack.isSaved(), "Checking stack is still not saved");
+		assertEquals(oldTab, tab, "Checking original tab state was restored");
+		
+		// Checking case of undo recorded, but nothing is moved
+		this.setup();
+		stack = paint.getUndoStack();
+		// Moving a line of notes up, all 4 notes on the low E string, where the base note moves to an empty position
+		paint.clearSelection();
+		drag.reset();
+		stack.markSaved();
+		oldTab = tab.copy();
+		assertTrue(stack.isEmpty(), "Checking stack has no events");
+		assertTrue(stack.isSaved(), "Checking stack is saved");
+		assertTrue(paint.selectLine(149.0, 200.0, false), "Checking line selection begins");
+		assertTrue(paint.selectLine(299.0, 202.0, false), "Checking line selection ends");
+		assertTrue(drag.begin(149.0, 200.0), "Checking drag begins");
+		tab.clearNotes();
+		assertFalse(drag.place(151.0, 174.0, true, true), "Checking place fails with no notes in the tab");
+		
+		// Checking undo was not recorded, nothing happened
+		assertTrue(stack.isEmpty(), "Checking stack has no events");
+		assertTrue(stack.isSaved(), "Checking stack is still saved");
+		
 		// Putting settings back to normal for the test of the tests in this test case file
 		AbstractTestTabPainter.init();
 	}
@@ -386,19 +432,11 @@ public class TestSelectionDragger extends AbstractTestTabPainter{
 	public void compareDragSorter(){
 		TabString str = new TabString(new Pitch(0));
 		Selection lowPosLowStr = new Selection(TabFactory.modifiedFret(str, 0, 0.0), str, 0);
-		Selection highPosLowStr = new Selection(TabFactory.modifiedFret(str, 0, 3.0), str, 0);
-		Selection lowPosHighStr = new Selection(TabFactory.modifiedFret(str, 0, 0.0), str, 3);
 		Selection highPosHighStr = new Selection(TabFactory.modifiedFret(str, 0, 3.0), str, 3);
 
 		DragSorter sort = new DragSorter(true, true, false);
 		assertEquals(0, sort.compare(lowPosLowStr, null), "Checking comparing null s1 is 0");
 		assertEquals(0, sort.compare(null, highPosHighStr), "Checking comparing null s2 is 0");
-		
-		highPosLowStr = new Selection(null, str, 0);
-		assertEquals(0, sort.compare(highPosLowStr, highPosHighStr), "Checking comparing null TabPosition in s1 is 0");
-		
-		lowPosHighStr = new Selection(null, str, 3);
-		assertEquals(0, sort.compare(lowPosLowStr, lowPosHighStr), "Checking comparing null TabPosition in s2 is 0");
 		
 		compareDragSortHelper(false, false, false);
 		compareDragSortHelper(false, false, true);

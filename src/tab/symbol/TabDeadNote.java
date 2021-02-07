@@ -17,10 +17,17 @@ public class TabDeadNote extends TabSymbol{
 	
 	/**
 	 * Create a dead note for a tab
-	 * @param pos The {@link TabSymbol#pos} of this {@link TabDeadNote}
+	 * @param mod The {@link TabModifier} to use
+	 */
+	public TabDeadNote(TabModifier mod){
+		super(mod);
+	}
+	
+	/**
+	 * Create a dead note for a tab
 	 */
 	public TabDeadNote(){
-		super(new TabModifier());
+		this(new TabModifier());
 	}
 	
 	/***/
@@ -48,7 +55,7 @@ public class TabDeadNote extends TabSymbol{
 	
 	/** Does nothing, {@link TabDeadNote} objects don't change going from string to string */
 	@Override
-	public void updateOnNewString(TabString oldStr, TabString newStr){}
+	public TabDeadNote movingToNewString(TabString oldStr, TabString newStr){return this.copy();}
 	
 	/**
 	 * Get the text representing this dead note

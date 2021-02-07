@@ -73,7 +73,7 @@ public class TabNote extends TabPitch{
 	/***/
 	@Override
 	public TabNote removeRhythm(){
-		return this;
+		return this.copy();
 	}
 	
 	/***/

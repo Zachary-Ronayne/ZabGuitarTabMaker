@@ -58,8 +58,7 @@ public class TestTabDeadNote{
 	
 	@Test
 	public void updateOnNewString(){
-		// Running method to test, does nothing
-		note.updateOnNewString(null, null);
+		assertEquals(note, note.movingToNewString(null, null), "Checking note is equal to itself on a new string");
 	}
 	
 	@Test
@@ -81,13 +80,7 @@ public class TestTabDeadNote{
 	public void save(){
 		assertEquals("\n\n", UtilsTest.testSave(note), "Checking note saved correctly");
 		
-		note.setModifier(new TabModifier("{", "}"));
-		assertEquals("{\n}\n", UtilsTest.testSave(note), "Checking note saved correctly");
-
-		note.setModifier(new TabModifier("<", ">"));
-		assertEquals("<\n>\n", UtilsTest.testSave(note), "Checking note saved correctly");
-
-		note.setModifier(new TabModifier("{", "}"));
+		note = new TabDeadNote(new TabModifier("{", "}"));
 		assertEquals("{\n}\n", UtilsTest.testSave(note), "Checking note saved correctly");
 	}
 	
@@ -95,7 +88,7 @@ public class TestTabDeadNote{
 	public void testToString(){
 		assertEquals("[TabDeadNote, X, [TabModifier: \"\" \"\"]]", note.toString(), "Checking correct string");
 		
-		note.setModifier(new TabModifier("a", "b"));
+		note = new TabDeadNote(new TabModifier("a", "b"));
 		assertEquals("[TabDeadNote, X, [TabModifier: \"a\" \"b\"]]", note.toString(), "Checking correct string");
 	}
 	

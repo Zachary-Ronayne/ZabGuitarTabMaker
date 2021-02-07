@@ -46,9 +46,23 @@ public class TestNotePosition{
 	public void getValue(){
 		assertEquals(3, pos.getValue(), "Checking value is initialized");
 	}
+
+	@Test
+	public void sameMeasure(){
+		assertTrue(pos.sameMeasure(3), "Checking same measure when equal");
+		assertTrue(pos.sameMeasure(3.1), "Checking same measure when slightly higher");
+		assertFalse(pos.sameMeasure(new NotePosition(2.9)), "Checking not same measure when slightly lower");
+		assertFalse(pos.sameMeasure(new NotePosition(4)), "Checking not same measure when different numbers");
+		
+		pos = new NotePosition(3.2);
+		assertTrue(pos.sameMeasure(new NotePosition(3)), "Checking same measure when equal");
+		assertTrue(pos.sameMeasure(new NotePosition(3.1)), "Checking same measure when slightly higher");
+		assertFalse(pos.sameMeasure(2.9), "Checking not same measure when slightly lower");
+		assertFalse(pos.sameMeasure(4), "Checking not same measure when different numbers");
+	}
 	
 	@Test
-	public void addValue(){
+	public void added(){
 		pos = new NotePosition(2);
 		NotePosition p = pos.added(3);
 		assertEquals(5, p.getValue(), "Checking value is added");

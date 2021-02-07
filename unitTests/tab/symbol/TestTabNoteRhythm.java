@@ -28,8 +28,6 @@ public class TestTabNoteRhythm{
 	private Rhythm rhythm;
 	private TabModifier mod;
 	
-	private Rhythm newRhythm;
-
 	private TabNoteRhythm noteNoMod;
 	private TabNoteRhythm noteValues;
 
@@ -40,8 +38,6 @@ public class TestTabNoteRhythm{
 	
 	@BeforeEach
 	public void setup(){
-		newRhythm = new Rhythm(1, 2);
-		
 		pitch = new Pitch(3);
 		rhythm = new Rhythm(1, 2);
 		mod = new TabModifier("[", "]");
@@ -83,15 +79,6 @@ public class TestTabNoteRhythm{
 	}
 	
 	@Test
-	public void setRhythm(){
-		note.setRhythm(newRhythm);
-		assertEquals(newRhythm, note.getRhythm(), "Checking rhythm set");
-		
-		note.setRhythm(null);
-		assertEquals(newRhythm, note.getRhythm(), "Checking rhythm not changed with null parameter");
-	}
-	
-	@Test
 	public void removeRhythm(){
 		TabNote n = note.removeRhythm();
 		assertTrue(n.getPitch().equals(note.getPitch()), "Checking pitch is equal");
@@ -112,19 +99,32 @@ public class TestTabNoteRhythm{
 	}
 	
 	@Test
-	public void quantize(){
+	public void createPitchNote(){
+		TabNoteRhythm newNote = note.createPitchNote(new Pitch(5));
+		assertFalse(newNote == note, "Checking notes not equal");
+		assertEquals(3, note.getPitch().getNote(), "Checking original pitch unchanged");
+		assertEquals(5, newNote.getPitch().getNote(), "Checking new pitch set");
+		assertEquals(rhythm, note.getRhythm(), "Checking original rhythm not changed");
+		assertEquals(rhythm, newNote.getRhythm(), "Checking new note has the same rhythm");
+		assertEquals(mod, note.getModifier(), "Checking original modifier not changed");
+		assertEquals(mod, newNote.getModifier(), "Checking new note has the same modifier");
+	}
+	
+	@Test
+	public void quantized(){
 		TimeSignature sig = new TimeSignature(4, 4);
+		TabNoteRhythm r;
 		
-		note.setRhythm(new Rhythm(33, 64));
-		note.quantize(sig, 4);
+		r = new TabNoteRhythm(0, new Rhythm(33, 64));
+		note = r.quantized(sig, 4);
 		TestTimeSignature.guessRhythmHelper(1, 2, note.getRhythm().getLength(), sig, false);
 
-		note.setRhythm(new Rhythm(18, 32));
-		note.quantize(sig, 4);
+		r = new TabNoteRhythm(0, new Rhythm(18, 32));
+		note = r.quantized(sig, 4);
 		TestTimeSignature.guessRhythmHelper(9, 16, note.getRhythm().getLength(), sig, false);
 
-		note.setRhythm(new Rhythm(5, 64));
-		note.quantize(sig, 4);
+		r = new TabNoteRhythm(0, new Rhythm(5, 64));
+		note = r.quantized(sig, 4);
 		TestTimeSignature.guessRhythmHelper(1, 16, note.getRhythm().getLength(), sig, false);
 	}
 	
@@ -151,9 +151,7 @@ public class TestTabNoteRhythm{
 	public void save(){
 		assertEquals("3 \n1 2 \n[\n]\n", UtilsTest.testSave(note), "Checking note saved correctly");
 		
-		note.setPitch(4);
-		note.setRhythm(new Rhythm(3, 2));
-		note.setModifier(new TabModifier("a", "s"));
+		note = new TabNoteRhythm(new Pitch(4), new Rhythm(3, 2), new TabModifier("a", "s"));
 		assertEquals("4 \n3 2 \na\ns\n", UtilsTest.testSave(note), "Checking note saved correctly");
 	}
 	
@@ -166,8 +164,11 @@ public class TestTabNoteRhythm{
 		assertFalse(n == note, "Checking objects are not the same object");
 		assertTrue(n.equals(note), "Checking objects are equal");
 		
-		n.setRhythm(new Rhythm(20, 10));
+		n = new TabNoteRhythm(pitch, new Rhythm(20, 10), mod);
 		assertFalse(n.equals(note), "Checking objects are not equal");
+
+		n = new TabNoteRhythm(pitch, rhythm, new TabModifier());
+		assertFalse(n.equals(note), "Checking objects are not equal with different modifiers");
 	}
 	
 	@Test

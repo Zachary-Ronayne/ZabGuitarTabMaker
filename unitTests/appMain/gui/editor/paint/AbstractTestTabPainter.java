@@ -4,6 +4,8 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import org.junit.jupiter.api.AfterAll;
+
 import appMain.gui.ZabGui;
 import appMain.gui.util.Camera;
 import appUtils.ZabAppSettings;
@@ -138,6 +140,12 @@ public abstract class AbstractTestTabPainter{
 		cam = paint.getCamera();
 		initCam(cam);
 		if(willPaint) paint.paint(g);
+	}
+	
+	@AfterAll
+	public static void endAll(){
+		gui.setVisible(false);
+		gui.dispose();
 	}
 	
 }

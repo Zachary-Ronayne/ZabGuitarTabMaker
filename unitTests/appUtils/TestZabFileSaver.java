@@ -97,6 +97,7 @@ public class TestZabFileSaver{
 			+ "1 1 null null \n"
 			+ "2.0 2.0 null null \n"
 			+ "14.0 14.0 null null \n"
+			+ "500 500 null null \n"
 			+ "false false \n"
 			+ "false false \n"
 			+ "0.1 0.1 null null \n"

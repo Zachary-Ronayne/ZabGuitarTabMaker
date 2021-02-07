@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import appMain.gui.editor.paint.event.RemovePlaceNotesEvent;
 import appMain.gui.util.Camera;
 import appUtils.ZabAppSettings;
 import appUtils.settings.TabControlSettings;
@@ -150,10 +151,11 @@ public class SelectionDragger extends TabPaintController{
 	 * @param mY The y painter coordinate to place the selection, usually a mouse position
 	 * @param keepPitch Only applies when the note uses pitch. Use true to make the pitch stay the same, 
 	 * i.e. the fret number will change if the strings have a different tuning, 
-	 * 	use false to make the fret number stay the same, modifying the pitch if necessary 
+	 * 	use false to make the fret number stay the same, modifying the pitch if necessary
+	 * @param recordUndo true to record this action in {@link TabPainter#undoStack}, false otherwise 
 	 * @return true if the selection was placed, false otherwise
 	 */
-	public boolean place(double mX, double mY, boolean keepPitch){
+	public boolean place(double mX, double mY, boolean keepPitch, boolean recordUndo){
 		TabPainter paint = this.getPainter();
 		// If the position to place is not on a valid line of tab, do nothing
 		if(paint.xToTabPos(mX, mY) < 0 || paint.pixelYToStringNum(mY) < 0) return false;
@@ -181,6 +183,10 @@ public class SelectionDragger extends TabPaintController{
 		// Remove all of the notes and save them in a list
 		ArrayList<Selection> oldPositions = paint.removeSelectedNotes();
 		
+		// If recording undo, keep track of all of the original notes which were removed and placed
+		SelectionList removedUndo = new SelectionList();
+		SelectionList addedUndo = new SelectionList();
+		
 		/*
 		 * Create a copy of all of the Selections which will be the newly placed notes
 		 * Copying each object to avoid objects being modified elsewhere
@@ -188,7 +194,7 @@ public class SelectionDragger extends TabPaintController{
 		ArrayList<Selection> added = new ArrayList<Selection>();
 		for(Selection s : oldPositions){
 			TabPosition p = s.getPos().copy();
-			p.setPos(s.getPosition());
+			p = p.copyPosition(s.getPosition());
 			added.add(new Selection(p, s.getString(), s.getStringIndex()));
 		}
 		/*
@@ -225,6 +231,13 @@ public class SelectionDragger extends TabPaintController{
 			}
 			// Otherwise, replace the Selection with its new location, also state that a note was placed
 			else{
+				// Additionally, if recording undo, keep track of the selections which were added, and which were removed
+				if(recordUndo){
+					addedUndo.add(moved);
+					removedUndo.add(added.get(i));
+				}
+				
+				// Replace the selection
 				paint.placeAndSelect(moved);
 				added.set(i, moved);
 				failedToPlace = false;
@@ -240,11 +253,31 @@ public class SelectionDragger extends TabPaintController{
 			paint.placeAndSelect(oldPositions);
 		}
 		
+		// If recording undo, at least one note was removed, add an undo event which removes new notes and removes new notes
+		if(recordUndo){
+			// If all the old positions are the same as the new ones, then an event is not added, as no change was made
+			if(!addedUndo.equals(oldPositions)) paint.getUndoStack().addEvent(new RemovePlaceNotesEvent(addedUndo, removedUndo));
+		}
+		
 		// Ensure the correct number of tab lines is updated
 		paint.updateLineTabCount();
 		
 		// End the drag selection, returning if the selection was placed in some way
 		return !failedToPlace;
+	}
+	
+	/**
+	 * End the selection drag, placing the current selection based on the given position. 
+	 * Depending on settings, may not move, or may delete parts, of the selection if the given position cannot place the selection
+	 * @param mX The x painter coordinate to place the selection, usually a mouse position
+	 * @param mY The y painter coordinate to place the selection, usually a mouse position
+	 * @param keepPitch Only applies when the note uses pitch. Use true to make the pitch stay the same, 
+	 * i.e. the fret number will change if the strings have a different tuning, 
+	 * 	use false to make the fret number stay the same, modifying the pitch if necessary
+	 * @return true if the selection was placed, false otherwise
+	 */
+	public boolean place(double mX, double mY, boolean keepPitch){
+		return this.place(mX, mY, keepPitch, false);
 	}
 	
 	/**
@@ -315,7 +348,6 @@ public class SelectionDragger extends TabPaintController{
 			TabPosition p1 = s1.getPos();
 			TabPosition p2 = s2.getPos();
 			int pos;
-			if(p1 == null || p2 == null) return 0;
 			if(this.moveRight) pos = p1.compareTo(p2);
 			else pos = p2.compareTo(p1);
 			

@@ -46,6 +46,7 @@ public class EditorKeyboard extends TabPaintController implements KeyListener{
 				case KeyEvent.VK_DELETE: this.keySelectionDelete(e); break;
 				case KeyEvent.VK_A: this.keySelectAll(e); break;
 				case KeyEvent.VK_ESCAPE: this.keyCancelActions(e); break;
+				case KeyEvent.VK_Z: this.keyUndo(e); break;
 				case KeyEvent.VK_S: this.keySave(e); break;
 				case KeyEvent.VK_L: this.keyLoad(e); break;
 				case KeyEvent.VK_E: this.keyExport(e); break;
@@ -95,7 +96,7 @@ public class EditorKeyboard extends TabPaintController implements KeyListener{
 	 */
 	public void keyReset(KeyEvent e){
 		TabPainter paint = this.getPainter();
-		if(e.isControlDown()) paint.resetCamera(); 
+		if(e.isControlDown()) paint.resetCamera();
 	}
 	
 	/**
@@ -117,7 +118,7 @@ public class EditorKeyboard extends TabPaintController implements KeyListener{
 	 */
 	public void keySelectionDelete(KeyEvent e){
 		TabPainter paint = this.getPainter();
-		paint.removeSelectedNotes();
+		paint.removeSelectedNotes(true);
 	}
 	
 	/**
@@ -137,6 +138,18 @@ public class EditorKeyboard extends TabPaintController implements KeyListener{
 		TabPainter paint = this.getPainter();
 		paint.getDragger().reset();
 		paint.getSelectionBox().clear();
+	}
+	
+	/**
+	 * Called when the key associated with the undo or redo action, is pressed
+	 * @param e The event of the key, it is assumed the event is for the appropriate action
+	 */
+	public void keyUndo(KeyEvent e){
+		TabPainter paint = this.getPainter();
+		if(e.isControlDown()){
+			if(e.isShiftDown()) paint.redo();
+			else paint.undo();
+		}
 	}
 	
 	/**
@@ -199,7 +212,7 @@ public class EditorKeyboard extends TabPaintController implements KeyListener{
 	 */
 	public void keyTypeTabPitch(KeyEvent e){
 		TabPainter paint = this.getPainter();
-		paint.appendSelectedTabNum(e.getKeyChar());
+		paint.appendSelectedTabNum(e.getKeyChar(), true);
 	}
 	
 	/**
@@ -218,7 +231,7 @@ public class EditorKeyboard extends TabPaintController implements KeyListener{
 		
 		// If space and shift were held down, remove the modifier and end the method
 		if(key == KeyEvent.VK_SPACE && shift){
-			paint.placeModifier(null, 2);
+			paint.placeModifier(null, 2, true);
 			return true;
 		}
 		
@@ -251,11 +264,10 @@ public class EditorKeyboard extends TabPaintController implements KeyListener{
 				mode = 0;
 				break;
 		}
-		
 		// If no valid modifier was found, do nothing
 		if(mod == null) return false;
 		
-		paint.placeModifier(mod, mode);
+		paint.placeModifier(mod, mode, true);
 		
 		return true;
 	}

@@ -12,7 +12,7 @@ import util.Saveable;
 
 
 /**
- * A class used to hold {@link TabSymbol} objects in a {@link TabString}, along with a position
+ * A class used to hold {@link TabSymbol} objects in a {@link TabString}, along with a position.<br>
  * @author zrona
  */
 public class TabPosition implements Comparable<TabPosition>, Copyable<TabPosition>, Saveable{
@@ -32,8 +32,8 @@ public class TabPosition implements Comparable<TabPosition>, Copyable<TabPositio
 		if(symbol == null) throw new IllegalArgumentException("Pos cannot be null");
 		if(position == null) throw new IllegalArgumentException("Pos cannot be null");
 		
-		this.setSymbol(symbol);
-		this.setPosition(position);
+		this.symbol = symbol;
+		this.position = position;
 	}
 	
 	/**
@@ -58,11 +58,14 @@ public class TabPosition implements Comparable<TabPosition>, Copyable<TabPositio
 	}
 	
 	/**
-	 * @param symbol See {@link #symbol}
+	 * Create a new {@link TabPosition} which is a copy of this one, but with the given {@link TabSymbol}
+	 * @param pos The new position
+	 * @return The {@link TabPosition}
 	 */
-	public void setSymbol(TabSymbol symbol){
-		if(symbol == null) return;
-		this.symbol = symbol;
+	public TabPosition copySymbol(TabSymbol sym){
+		TabPosition p = this.copy();
+		p.symbol = sym;
+		return p;
 	}
 	
 	/**
@@ -82,51 +85,54 @@ public class TabPosition implements Comparable<TabPosition>, Copyable<TabPositio
 	}
 	
 	/**
-	 * Set the {@link #position} of this {@link TabSymbol}
-	 * @param pos See {@link #position}
+	 * Create a new {@link TabPosition} which is a copy of this one, but with the given position
+	 * @param pos The new position
+	 * @return The {@link TabPosition}
 	 */
-	public void setPosition(NotePosition position){
-		if(position == null) return;
-		this.position = position;
-	}
-
-	/**
-	 * Set the value for the {@link #position} of this {@link TabSymbol} creating a new {@link NotePosition} object
-	 * @param pos See {@link #position}
-	 */
-	public void setPos(double pos){
-		this.setPosition(new NotePosition(pos));
+	public TabPosition copyPosition(NotePosition pos){
+		return this.copyPosition(pos.getValue());
 	}
 	
 	/**
-	 * Quantize this {@link TabSymbol} position to the nearest place in a measure
+	 * Create a new {@link TabPosition} which is a copy of this one, but with the given position
+	 * @param pos The new position value
+	 * @return The {@link TabPosition}
+	 */
+	public TabPosition copyPosition(double pos){
+		TabPosition p = this.copy();
+		p.position = new NotePosition(pos);
+		return p;
+	}
+	
+	/**
+	 * Create a new {@link TabPosition} which is quantized to the nearest place in a measure
 	 * @param sig The time signature to base the quantization off of
 	 * @param divisor The amount to divide up the units of a whole note.<br>
 	 * 	i.e. use 4 to quantize to quarter notes, use 6 to quantize to dotted quarter notes, etc
+	 * @return The new {@link TabPosition}
 	 */
-	public void quantize(TimeSignature sig, double divisor){
-		this.setPosition(getPosition().quantize(sig, divisor));
+	public TabPosition quantize(TimeSignature sig, double divisor){
+		return this.copyPosition(this.getPosition().quantize(sig, divisor));
 	}
 	
 	/**
-	 * Convert this {@link TabPosition} objects position so that it is the same number of whole notes, but in the new time signature
+	 * Create a new {@link TabPosition} with this objects position so that it is the same number of whole notes, but in the new time signature
 	 * @param newTime The {@link TimeSignature} to convert to
 	 * @param oldTime The {@link TimeSignature} which this position was in
+	 * @return The new {@link TabPosition}
 	 */
-	public void retime(TimeSignature newTime, TimeSignature oldTime){
-		this.setPosition(this.getPosition().retime(newTime, oldTime));
+	public TabPosition retime(TimeSignature newTime, TimeSignature oldTime){
+		return this.copyPosition(this.getPosition().retime(newTime, oldTime));
 	}
 	
 	/**
-	 * Set the {@link NotePosition} of this {@link NoteSymbol} so that it stays in the same measure and same relative position in the measure.<br>
+	 * Create a new {@link TabPosition} Set the {@link NotePosition} of this {@link NoteSymbol} so that it stays in the same measure and same relative position in the measure.<br>
 	 * @param newTime The {@link TimeSignature} to convert to
 	 * @param oldTime The {@link TimeSignature} which the position was in
-	 * @return true if the position is in the same measure, false otherwise
+	 * @return The new {@link TabPosition}
 	 */
-	public boolean retimeMeasure(TimeSignature newTime, TimeSignature oldTime){
-		int oldPos = (int)this.getPos();
-		this.setPosition(this.getPosition().retimeMeasure(newTime, oldTime));
-		return oldPos == (int)this.getPos();
+	public TabPosition retimeMeasure(TimeSignature newTime, TimeSignature oldTime){
+		return this.copyPosition(this.getPosition().retimeMeasure(newTime, oldTime));
 	}
 	
 	/***/
@@ -162,7 +168,7 @@ public class TabPosition implements Comparable<TabPosition>, Copyable<TabPositio
 		
 		TabSymbol s = TabUtils.stringToSymbol(type);
 		if(s == null) return false;
-		this.setSymbol(s);
+		this.symbol = s;
 		
 		// Load the symbol and position
 		return Saveable.loadMultiple(reader, this.getSaveObjects());
