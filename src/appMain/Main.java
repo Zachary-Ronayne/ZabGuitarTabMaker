@@ -23,6 +23,7 @@ public final class Main{
 			gui.dispose();
 			gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		}
+
 	}
 	
 	/** Cannot instantiate {@link Main} */

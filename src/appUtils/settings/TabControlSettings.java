@@ -10,6 +10,9 @@ import tab.TabPosition;
  * @author zrona
  */
 public class TabControlSettings extends Settings{
+	
+	/** Default for {@link #moveOverwrite} */
+	public static final boolean MOVE_OVERWRITE = false;
 	/** Default for {@link #moveDeleteInvalid} */
 	public static final boolean MOVE_DELETE_INVALID = false;
 	/** Default for {@link #moveCancelInvalid} */
@@ -24,6 +27,13 @@ public class TabControlSettings extends Settings{
 	public static final boolean SCROLL_X_INVERTED = false;
 	/** Default for {@link #scrollYInverted} */
 	public static final boolean SCROLL_Y_INVERTED = false;
+	
+	/**
+	 * true if, when moving a {@link TabPosition} selection, 
+	 * they should replace positions when they overlap with them, 
+	 * false if they should not move 
+	 */
+	private SettingBoolean moveOverwrite;
 	
 	/**
 	 * true if, when moving a {@link TabPosition} selection, 
@@ -53,6 +63,7 @@ public class TabControlSettings extends Settings{
 	 */
 	public TabControlSettings(){
 		super();
+		this.moveOverwrite = this.addBoolean(MOVE_OVERWRITE);
 		this.moveDeleteInvalid = this.addBoolean(MOVE_DELETE_INVALID);
 		this.moveCancelInvalid = this.addBoolean(MOVE_CANCEL_INVALID);
 		this.zoomFactor = this.addDouble(ZOOM_FACTOR);
@@ -62,6 +73,8 @@ public class TabControlSettings extends Settings{
 		this.scrollYInverted = this.addBoolean(SCROLL_Y_INVERTED);
 	}
 	
+	/** @return See {@link #moveOverwrite} */
+	public SettingBoolean getMoveOverwrite(){ return this.moveOverwrite; }
 	/** @return See {@link #moveDeleteInvalid} */
 	public SettingBoolean getMoveDeleteInvalid(){ return this.moveDeleteInvalid; }
 	/** @return See {@link #moveCancelInvalid} */
@@ -76,8 +89,10 @@ public class TabControlSettings extends Settings{
 	public SettingBoolean getScrollXInverted(){ return this.scrollXInverted; }
 	/** @return See {@link #scrollYInverted} */
 	public SettingBoolean getScrollYInverted(){ return this.scrollYInverted; }
-	/** @return See {@link #moveDeleteInvalid} */
 	
+	/** @return See {@link #moveOverwrite} */
+	public Boolean moveOverwrite(){ return this.getMoveOverwrite().get(); }
+	/** @return See {@link #moveDeleteInvalid} */
 	public Boolean moveDeleteInvalid(){ return this.getMoveDeleteInvalid().get(); }
 	/** @return See {@link #moveCancelInvalid} */
 	public Boolean cancelInvalid(){ return this.getMoveCancelInvalid().get(); }

@@ -626,8 +626,9 @@ public class TabPainter extends ZabPanel{
 	 * 	Essentially, the new location of s must be on the same line of tab as this base position. If it is not, then the movement will fail.
 	 * @param posValueChange The amount to add to the position, can be negative
 	 * @param stringIndexChange The amount to add to the string index, can be negative
-	 * @param keepPitch True to keep the pitch the same if the note moves position, false to keep the tab number
-	 * @return The selection in the moved place if the given selection can be moved there, null otherwise
+	 * @param keepPitch true to keep the pitch the same if the note moves position, false to keep the tab number
+	 * @return The selection in the moved place if the given selection can be moved there, null otherwise. The position value 
+	 * can be negative. This method will return a selection even if the selection would be on the same location as the given note. 
 	 */
 	public Selection findMovePosition(Selection s, double newBaseValue, double posValueChange, int stringIndexChange, boolean keepPitch){
 		Tab t = this.getTab();
@@ -665,24 +666,15 @@ public class TabPainter extends ZabPanel{
 		// Find the new valid string index
 		TabString newString = strs.get(newStringIndex);
 		
-		Selection placed = null;
-		// Find if the note exists on the string
-		// If it does not, then create the Selection to be placed
-		if(newString.findPosition(newPosValue) == null){
-			newTabPos = new TabPosition(newTabPos.getSymbol(), newPosValue);
-			placed = new Selection(newTabPos, newString, newStringIndex);
-		}
-		// Otherwise, the position cannot be moved there, return null
-		else return null;
-		
 		// If necessary, update the pitch
 		if(!keepPitch){
 			TabSymbol newSymbol = newTabPos.getSymbol();
 			newTabPos = new TabPosition(newSymbol.movingToNewString(oldString, newString), newTabPos.getPos());
-			placed = new Selection(newTabPos, newString, newStringIndex);
 		}
 		
-		return placed;
+		// Create the selection
+		newTabPos = new TabPosition(newTabPos.getSymbol(), newPosValue);
+		return new Selection(newTabPos, newString, newStringIndex);
 	}
 	
 	/**
@@ -1138,10 +1130,12 @@ public class TabPainter extends ZabPanel{
 	/**
 	 * Place and select the given {@link Selection}
 	 * @param s The {@link Selection} to place and select
+	 * @return true if the {@link Selection} was placed, false otherwise
 	 */
-	public void placeAndSelect(Selection s){
-		this.placeNote(s);
+	public boolean placeAndSelect(Selection s){
+		boolean success = this.placeNote(s);
 		this.select(s);
+		return success;
 	}
 	
 	/**

@@ -47,6 +47,34 @@ public class TestRemovePlaceNotesEvent extends AbstractTestTabPainter{
 	}
 	
 	@Test
+	public void getPlaced(){
+		SelectionList added = new SelectionList();
+		added.add(paint.stringSelection(0, 5));
+		added.add(paint.stringSelection(1, 5));
+		assertEquals(added, eventList.getPlaced(), "Checking placed set correctly");
+		
+		added.add(paint.stringSelection(0, 0));
+		assertNotEquals(added, eventList.getPlaced(), "Checking placed not updated");
+		
+		eventList.getPlaced().add(paint.stringSelection(0, 0));
+		assertEquals(added, eventList.getPlaced(), "Checking placed updated");
+	}
+	
+	@Test
+	public void getRemoved(){
+		SelectionList removed = new SelectionList();
+		removed.add(paint.stringSelection(2, 5));
+		removed.add(paint.stringSelection(3, 5));
+		assertEquals(removed, eventList.getRemoved(), "Checking removed set correctly");
+		
+		removed.add(paint.stringSelection(0, 0));
+		assertNotEquals(removed, eventList.getRemoved(), "Checking removed not updated");
+		
+		eventList.getRemoved().add(paint.stringSelection(0, 0));
+		assertEquals(removed, eventList.getRemoved(), "Checking removed updated");
+	}
+	
+	@Test
 	public void undo(){
 		str1.clear();
 		assertNotEquals(null, str0.findPosition(3.5), "Checking note is there before event");

@@ -550,10 +550,15 @@ public class TestTabPainter extends AbstractTestTabPainter{
 		assertEquals(null, paint.findMovePosition(null, 0, 0, -10, false), "Checking null selection returns null");
 		assertEquals(null, paint.findMovePosition(s, s.getPosition(), 0, -4, false), "Checking invalid new string index returns null");
 		assertEquals(null, paint.findMovePosition(s, s.getPosition(), 2, -3, false), "Checking negative invalid new tab position returns null");
-		assertEquals(null, paint.findMovePosition(s, s.getPosition(), -1, 1, false), "Checking moving to an occupied tab position returns null");
+		
+		// Case of overlapping position is valid
+		Selection move = paint.findMovePosition(s, s.getPosition(), -1, 1, false);
+		assertEquals(1, move.getPosition(), "Checking position value");
+		assertEquals(4, move.getStringIndex(), "Checking string index");
+		assertEquals(Music.createPitch(Music.A, 2), ((TabPitch)move.getPos().getSymbol()).getPitch(), "Checking pitch of note changed after moving strings");
 
 		// Checking moving to a valid place not keeping the pitch
-		Selection move = paint.findMovePosition(s, 0, -2, 1, false);
+		move = paint.findMovePosition(s, 0, -2, 1, false);
 		assertEquals(0, move.getPosition(), "Checking position value");
 		assertEquals(4, move.getStringIndex(), "Checking string index");
 		assertEquals(Music.createPitch(Music.A, 2), ((TabPitch)move.getPos().getSymbol()).getPitch(), "Checking pitch of note changed after moving strings");
@@ -574,7 +579,7 @@ public class TestTabPainter extends AbstractTestTabPainter{
 
 		s = paint.findPosition(x, y);
 		move = paint.findMovePosition(s, 0, 0, 0, true);
-		assertEquals(null, move, "Checking moving to its current location, i.e. it doesn't move, returns null");
+		assertEquals(paint.findPosition(x, y), move, "Checking moving to its current location finds itself");
 		assertEquals(Music.createPitch(Music.D, 3), ((TabPitch)s.getPos().getSymbol()).getPitch(), "Checking pitch of note unchanged");
 		
 		// Checking moving to a valid new string, but keeping the same position value
@@ -680,7 +685,17 @@ public class TestTabPainter extends AbstractTestTabPainter{
 		move = paint.findMovePosition(s, 5, 1, 0, false);
 		assertEquals(null, move, "Checking move invalid");
 		
-		// Final null case
+		// Case of a position being found even if it is on the same location, no movement
+		s = paint.stringSelection(0, 0);
+		move = paint.findMovePosition(s, 3.5, 0, 0, false);
+		assertEquals(new TabPosition(new TabNote(Music.createNote(Music.E, 4)), 3.5), move.getPos(), "Checking move found");
+		
+		// Case of a position being found even if it is moving to an existing note
+		s = paint.stringSelection(0, 0);
+		move = paint.findMovePosition(new Selection(new TabPosition(s.getPos().getSymbol(), 0), str0, 0), 0, 3.5, 0, false);
+		assertEquals(new TabPosition(new TabNote(Music.createNote(Music.E, 4)), 3.5), move.getPos(), "Checking move found");
+		
+		// Final null case of a null tab
 		paint.setTab(null);
 		assertEquals(null, paint.findMovePosition(s, s.getPosition(), -2, 1, false), "Checking null tab returns null");
 	}
@@ -1209,9 +1224,10 @@ public class TestTabPainter extends AbstractTestTabPainter{
 		assertFalse(paint.isSelected(s0.getPos(), 0), "Checking position not selected");
 		assertEquals(null, paint.createSelection(3.5, 0), "Checking note removed");
 		
-		paint.placeAndSelect(s0);
+		assertTrue(paint.placeAndSelect(s0), "Checking placement succeeds");
 		assertTrue(paint.isSelected(s0.getPos(), 0), "Checking position selected");
 		assertEquals(s0, paint.createSelection(3.5, 0), "Checking note added again");
+		assertFalse(paint.placeAndSelect(s0), "Checking placement fails with existing note in the same place");
 		
 		SelectionList list = new SelectionList();
 		paint.removeSelection(s0);

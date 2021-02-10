@@ -36,6 +36,24 @@ public class RemovePlaceNotesEvent implements EditorEvent{
 	}
 	
 	/**
+	 * Get the {@link SelectionList} holding all of the {@link Selection} objects which were placed by this event. 
+	 * Selections can be added to the returned list to update the event.
+	 * @return The list
+	 */
+	public SelectionList getPlaced(){
+		return this.placed.getPlaced();
+	}
+	
+	/**
+	 * Get the {@link SelectionList} holding all of the {@link Selection} objects which were removed by this event. 
+	 * Selections can be added to the returned list to update the event.
+	 * @return The list
+	 */
+	public SelectionList getRemoved(){
+		return this.removed.getPlaced();
+	}
+	
+	/**
 	 * First remove all of the notes that were placed as a part of this event,
 	 * and then place all of the notes removed as a part of this event
 	 */

@@ -422,8 +422,16 @@ public class Tab implements Copyable<Tab>, Saveable{
 	public boolean equals(Object obj){
 		if(!ObjectUtils.isType(obj, this.getClass())) return false;
 		Tab t = (Tab)obj;
+		
+		// Verifying that each string is equal
+		int strings = this.getStrings().size();
+		boolean stringsEqual = strings == t.getStrings().size();
+		for(int i = 0; i < strings && stringsEqual; i++){
+			stringsEqual = this.getStrings().get(i).equals(t.getStrings().get(i));
+		}
+		
 		return	super.equals(obj) ||
-				this.getStrings().equals(t.getStrings()) &&
+				stringsEqual &&
 				this.getTimeSignature().equals(t.getTimeSignature()) &&
 				this.usesRhythm() == t.usesRhythm();
 	}

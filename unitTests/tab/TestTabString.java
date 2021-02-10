@@ -470,6 +470,15 @@ public class TestTabString{
 		assertFalse(s.equals(string), "Checking objects are not equal");
 		s.add(notes[0]);
 		assertTrue(s.equals(string), "Checking objects are equal");
+		
+		s.clear();
+		string.clear();
+		s.placeQuantizedNote(sig, 0, 0);
+		string.placeQuantizedNote(sig, 0, 1);
+		assertFalse(s.equals(string), "Checking objects are not equal with different notes on a string");
+		s.clear();
+		s.placeQuantizedNote(sig, 0, 1);
+		assertTrue(s.equals(string), "Checking objects are equal");
 	}
 
 	@Test

@@ -23,6 +23,11 @@ public class TestTabControlSettings{
 	public void setup(){}
 
 	@Test
+	public void moveOverwrite(){
+		TestZabSettings.assertSettingInitialized(settings.getMoveOverwrite(), TabControlSettings.MOVE_OVERWRITE);
+		assertEquals(TabControlSettings.MOVE_OVERWRITE, settings.moveOverwrite(), "Checking value getter correct");
+	}
+	@Test
 	public void moveDeleteInvalid(){
 		TestZabSettings.assertSettingInitialized(settings.getMoveDeleteInvalid(), TabControlSettings.MOVE_DELETE_INVALID);
 		assertEquals(TabControlSettings.MOVE_DELETE_INVALID, settings.moveDeleteInvalid(), "Checking value getter correct");

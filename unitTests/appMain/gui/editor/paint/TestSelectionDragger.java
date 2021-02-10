@@ -6,26 +6,21 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import appMain.gui.editor.paint.SelectionDragger.DragSorter;
 import appMain.gui.editor.paint.event.EditorEventStack;
 import appUtils.ZabAppSettings;
 import appUtils.settings.ZabSettings;
 import music.Music;
-import music.Pitch;
 import tab.InstrumentFactory;
 import tab.Tab;
-import tab.TabFactory;
 import tab.TabPosition;
-import tab.TabString;
+import tab.symbol.TabNote;
 import tab.symbol.TabPitch;
-import util.testUtils.Assert;
 
 public class TestSelectionDragger extends AbstractTestTabPainter{
 
@@ -93,11 +88,6 @@ public class TestSelectionDragger extends AbstractTestTabPainter{
 	}
 	
 	@Test
-	public void getDraggedTab(){
-		assertEquals(null, drag.getDraggedTab(), "Checking dragged tab initially null");
-	}
-	
-	@Test
 	public void reset(){
 		Selection s = paint.createSelection(3.5, 0);
 		drag.setBaseSelection(s);
@@ -107,7 +97,7 @@ public class TestSelectionDragger extends AbstractTestTabPainter{
 		drag.reset();
 		assertEquals(null, drag.getBaseSelection(), "Checking base selection null after reset");
 		assertEquals(null, drag.getDragPoint(), "Checking drag point null after reset");
-		assertEquals(null, drag.getDraggedTab(), "Checking dragged tab null after reset");
+		assertEquals(null, drag.getSelectedTab(), "Checking dragged tab null after reset");
 		assertEquals(null, drag.getAnchorPoint(), "Checking anchor point null after reset");
 	}
 	
@@ -130,7 +120,7 @@ public class TestSelectionDragger extends AbstractTestTabPainter{
 		assertEquals(pos, drag.getBaseSelection().getPos(), "Checking correct base position set");
 		Tab t = InstrumentFactory.guitarStandard();
 		t.placeQuantizedNote(0, 0, 3.5);
-		assertEquals(t, drag.getDraggedTab(), "Checking selection tab is correct");
+		assertEquals(t, drag.getSelectedTab(), "Checking selection tab is correct");
 		assertEquals(new Point2D.Double(cam.toCamX(pX), cam.toCamY(pY)), drag.getAnchorPoint(), "Checking anchor point set");
 		
 		assertFalse(drag.begin(pX, pY), "Checking drag fails to begin with a drag in progress");
@@ -155,9 +145,7 @@ public class TestSelectionDragger extends AbstractTestTabPainter{
 	
 	@Test
 	public void place(){
-		/**
-		 * Checking invalid placement scenarios
-		 */
+		// Checking invalid placement scenarios
 		assertFalse(drag.place(pX, pY, false), "Checking place fails with null base selection");
 		
 		drag.setBaseSelection(paint.stringSelection(0, 0));
@@ -174,6 +162,7 @@ public class TestSelectionDragger extends AbstractTestTabPainter{
 		 */
 		drag.reset();
 		ZabSettings settings = ZabAppSettings.get();
+		settings.control().getMoveOverwrite().set(false);
 		settings.control().getMoveDeleteInvalid().set(false);
 		settings.control().getMoveCancelInvalid().set(false);
 		// Moving one note to the left on the same string
@@ -232,11 +221,13 @@ public class TestSelectionDragger extends AbstractTestTabPainter{
 		 */
 		settings.control().getMoveDeleteInvalid().set(true);
 		
-		// Moving notes on different strings, and base is moving to an empty spot
+		// Moving notes on different strings, and base is moving to an occupied space
 		resetPlace();
 		assertTrue(paint.select(0, 4), "Checking selection succeeds");
 		assertTrue(paint.select(1, 5), "Checking selection succeeds");
+		// Beginning selection on string 5, tab pos 1
 		assertTrue(drag.begin(201.0, 201.0), "Checking drag begins");
+		// Placing on string 5, tab pos 2
 		assertTrue(drag.place(248.0, 196.0, true), "Checking moving notes from separate strings to a new place, and the base position is moved to an occupied space.");
 		// Checking A string note moved
 		assertEquals(2, str4.get(0).getPos(), "Checking position of note");
@@ -380,11 +371,28 @@ public class TestSelectionDragger extends AbstractTestTabPainter{
 		assertTrue(paint.selectLine(299.0, 202.0, false), "Checking line selection ends");
 		assertTrue(drag.begin(149.0, 200.0), "Checking drag begins");
 		tab.clearNotes();
-		assertFalse(drag.place(151.0, 174.0, true, true), "Checking place fails with no notes in the tab");
+		Tab expect = tab.copy();
+		expect.placeQuantizedNote(4, -5, 0);
+		expect.placeQuantizedNote(4, -5, 1);
+		expect.placeQuantizedNote(4, -5, 2);
+		expect.placeQuantizedNote(4, -5, 3);
+		assertTrue(drag.place(151.0, 174.0, true, true), "Checking place still happens with no notes in the tab");
+		assertEquals(expect, tab, "Checking notes placed");
+		// Checking undo was recorded, the placement
+		assertFalse(stack.isEmpty(), "Checking stack has events");
+		assertFalse(stack.isSaved(), "Checking stack not saved");
+		assertTrue(paint.undo(), "Checking undo succeeds");
+		assertTrue(tab.isEmpty(), "Checking tab now has no notes after undo");
 		
-		// Checking undo was not recorded, nothing happened
-		assertTrue(stack.isEmpty(), "Checking stack has no events");
-		assertTrue(stack.isSaved(), "Checking stack is still saved");
+		settings.control().getMoveOverwrite().set(true);
+		tab.clearNotes();
+		AbstractTestTabPainter.initNotes(tab);
+		drag.reset();
+		assertTrue(paint.select(0, 1), "Checking selection succeeds");
+		assertTrue(drag.begin(311.0, 101.0), "Checking drag begins");
+		assertTrue(drag.place(pX, pY, true), "Checking drag places");
+		assertTrue(str1.isEmpty(), "Checking string no longer has notes");
+		assertEquals(Music.createPitch(Music.B, 3), ((TabNote)(str0.get(0).getSymbol())).getPitch(), "Checking correct pitch moved");
 		
 		// Putting settings back to normal for the test of the tests in this test case file
 		AbstractTestTabPainter.init();
@@ -426,179 +434,6 @@ public class TestSelectionDragger extends AbstractTestTabPainter{
 		drag.begin(pX, pY);
 		drag.update(pX, pY);
 		assertTrue(drag.draw(), "Checking draw succeeds with all objects set");
-	}
-	
-	@Test
-	public void compareDragSorter(){
-		TabString str = new TabString(new Pitch(0));
-		Selection lowPosLowStr = new Selection(TabFactory.modifiedFret(str, 0, 0.0), str, 0);
-		Selection highPosHighStr = new Selection(TabFactory.modifiedFret(str, 0, 3.0), str, 3);
-
-		DragSorter sort = new DragSorter(true, true, false);
-		assertEquals(0, sort.compare(lowPosLowStr, null), "Checking comparing null s1 is 0");
-		assertEquals(0, sort.compare(null, highPosHighStr), "Checking comparing null s2 is 0");
-		
-		compareDragSortHelper(false, false, false);
-		compareDragSortHelper(false, false, true);
-		compareDragSortHelper(false, true, false);
-		compareDragSortHelper(false, true, true);
-		compareDragSortHelper(true, false, false);
-		compareDragSortHelper(true, false, true);
-		compareDragSortHelper(true, true, false);
-		compareDragSortHelper(true, true, true);
-	}
-	
-	/**
-	 * A helper method for checking that drag sorter compares correctly by checking every case
-	 * @param moveRight Same field for new {@link DragSorter}
-	 * @param moveDown Same field for new {@link DragSorter}
-	 * @param prioritizeStrings Same field for new {@link DragSorter}
-	 */
-	private void compareDragSortHelper(boolean moveRight, boolean moveDown, boolean prioritizeStrings){
-		TabString str = new TabString(new Pitch(0));
-		Selection lowPosLowStr = new Selection(TabFactory.modifiedFret(str, 0, 0.0), str, 0);
-		Selection highPosLowStr = new Selection(TabFactory.modifiedFret(str, 0, 3.0), str, 0);
-		Selection lowPosHighStr = new Selection(TabFactory.modifiedFret(str, 0, 0.0), str, 3);
-		Selection highPosHighStr = new Selection(TabFactory.modifiedFret(str, 0, 3.0), str, 3);
-		
-		DragSorter sort = new DragSorter(moveRight, moveDown, prioritizeStrings);
-		assertEquals(0, sort.compare(lowPosLowStr, lowPosLowStr), "Checking objects compare to equal");
-		if(moveRight){
-			Assert.lessThan(sort.compare(lowPosLowStr, highPosLowStr), 0, "Checking low to high position is negative");
-			Assert.greaterThan(sort.compare(highPosLowStr, lowPosLowStr), 0, "Checking high to low position is positive");
-			if(moveDown){
-				Assert.lessThan(sort.compare(lowPosLowStr, lowPosHighStr), 0, "Checking low to high string is negative");
-				Assert.greaterThan(sort.compare(lowPosHighStr, lowPosLowStr), 0, "Checking high to low string is positive");
-				if(prioritizeStrings){
-					Assert.lessThan(sort.compare(highPosLowStr, lowPosHighStr), 0, "Checking low to high string is negative, with opposing positions");
-					Assert.greaterThan(sort.compare(lowPosHighStr, highPosLowStr), 0, "Checking high to low string is positive, with opposing positions");
-					
-					Assert.lessThan(sort.compare(lowPosLowStr, highPosHighStr), 0, "Checking low to high string is negative, with matching positions");
-					Assert.greaterThan(sort.compare(highPosHighStr, lowPosLowStr), 0, "Checking high to low string is positive, with matching positions");
-				}
-				else{
-					Assert.lessThan(sort.compare(lowPosHighStr, highPosLowStr), 0, "Checking low to high position is negative, with opposing strings");
-					Assert.greaterThan(sort.compare(highPosLowStr, lowPosHighStr), 0, "Checking high to low position is positive, with opposing strings");
-					
-					Assert.lessThan(sort.compare(lowPosLowStr, highPosHighStr), 0, "Checking low to high position is negative, with matching strings");
-					Assert.greaterThan(sort.compare(highPosHighStr, lowPosLowStr), 0, "Checking high to low position is positive, with matching strings");
-				}
-			}
-			else{
-				Assert.greaterThan(sort.compare(lowPosLowStr, lowPosHighStr), 0, "Checking low to high string is positive");
-				Assert.lessThan(sort.compare(lowPosHighStr, lowPosLowStr), 0, "Checking high to low string is negative");
-				if(prioritizeStrings){
-					Assert.greaterThan(sort.compare(highPosLowStr, lowPosHighStr), 0, "Checking low to high string is positive, with opposing positions");
-					Assert.lessThan(sort.compare(lowPosHighStr, highPosLowStr), 0, "Checking high to low string is negative, with opposing positions");
-					
-					Assert.greaterThan(sort.compare(lowPosLowStr, highPosHighStr), 0, "Checking low to high string is positive, with matching positions");
-					Assert.lessThan(sort.compare(highPosHighStr, lowPosLowStr), 0, "Checking high to low string is negative, with matching positions");
-				}
-				else{
-					Assert.lessThan(sort.compare(lowPosHighStr, highPosLowStr), 0, "Checking low to high position is negative, with opposing strings");
-					Assert.greaterThan(sort.compare(highPosLowStr, lowPosHighStr), 0, "Checking high to low position is positive, with opposing strings");
-					
-					Assert.lessThan(sort.compare(lowPosLowStr, highPosHighStr), 0, "Checking low to high position is negative, with matching strings");
-					Assert.greaterThan(sort.compare(highPosHighStr, lowPosLowStr), 0, "Checking high to low position is positive, with matching strings");
-				}
-			}
-		}
-		else{
-			Assert.greaterThan(sort.compare(lowPosLowStr, highPosLowStr), 0, "Checking low to high position is positive");
-			Assert.lessThan(sort.compare(highPosLowStr, lowPosLowStr), 0, "Checking high to low position is negative");
-			if(moveDown){
-				Assert.lessThan(sort.compare(lowPosLowStr, lowPosHighStr), 0, "Checking low to high string is negative");
-				Assert.greaterThan(sort.compare(lowPosHighStr, lowPosLowStr), 0, "Checking high to low string is positive");
-				if(prioritizeStrings){
-					Assert.lessThan(sort.compare(highPosLowStr, lowPosHighStr), 0, "Checking low to high string is negative, with opposing positions");
-					Assert.greaterThan(sort.compare(lowPosHighStr, highPosLowStr), 0, "Checking high to low string is positive, with opposing positions");
-					
-					Assert.lessThan(sort.compare(lowPosLowStr, highPosHighStr), 0, "Checking low to high string is negative, with matching positions");
-					Assert.greaterThan(sort.compare(highPosHighStr, lowPosLowStr), 0, "Checking high to low string is positive, with matching positions");
-				}
-				else{
-					Assert.greaterThan(sort.compare(lowPosHighStr, highPosLowStr), 0, "Checking low to high position is positive, with opposing strings");
-					Assert.lessThan(sort.compare(highPosLowStr, lowPosHighStr), 0, "Checking high to low position is negative, with opposing strings");
-					
-					Assert.greaterThan(sort.compare(lowPosLowStr, highPosHighStr), 0, "Checking low to high position is positive, with matching strings");
-					Assert.lessThan(sort.compare(highPosHighStr, lowPosLowStr), 0, "Checking high to low position is negative, with matching strings");
-				}
-			}
-			else{
-				Assert.greaterThan(sort.compare(lowPosLowStr, lowPosHighStr), 0, "Checking low to high string is positive");
-				Assert.lessThan(sort.compare(lowPosHighStr, lowPosLowStr), 0, "Checking high to low string is negative");
-				if(prioritizeStrings){
-					Assert.greaterThan(sort.compare(highPosLowStr, lowPosHighStr), 0, "Checking low to high string is positive, with opposing positions");
-					Assert.lessThan(sort.compare(lowPosHighStr, highPosLowStr), 0, "Checking high to low string is negative, with opposing positions");
-					
-					Assert.greaterThan(sort.compare(lowPosLowStr, highPosHighStr), 0, "Checking low to high string is positive, with matching positions");
-					Assert.lessThan(sort.compare(highPosHighStr, lowPosLowStr), 0, "Checking high to low string is negative, with matching positions");
-				}
-				else{
-					Assert.greaterThan(sort.compare(lowPosHighStr, highPosLowStr), 0, "Checking low to high position is positive, with opposing strings");
-					Assert.lessThan(sort.compare(highPosLowStr, lowPosHighStr), 0, "Checking high to low position is negative, with opposing strings");
-					
-					Assert.greaterThan(sort.compare(lowPosLowStr, highPosHighStr), 0, "Checking low to high position is positive, with matching strings");
-					Assert.lessThan(sort.compare(highPosHighStr, lowPosLowStr), 0, "Checking high to low position is negative, with matching strings");
-				}
-			}
-		
-		}
-	}
-	
-	@Test
-	public void sortDragSorter(){
-		ArrayList<Selection> list;
-		DragSorter sorter;
-		TabString str = new TabString(new Pitch(0));
-		Selection s0 = new Selection(TabFactory.modifiedFret(str, 0, 0), str, 0);
-		Selection s1 = new Selection(TabFactory.modifiedFret(str, 0, 0), str, 1);
-		Selection s2 = new Selection(TabFactory.modifiedFret(str, 0, 3), str, 0);
-		Selection s3 = new Selection(TabFactory.modifiedFret(str, 0, 3), str, 1);
-		
-		// Case of sorting increasing tab position and increasing string index
-		sorter = new DragSorter(true, true, false);
-		list = sortDragSorterReset();
-		sorter.sort(list);
-		Assert.listSame(list, s0, s1, s2, s3);
-		
-		// Case of sorting increasing tab position and decreasing string index
-		sorter = new DragSorter(true, false, false);
-		list = sortDragSorterReset();
-		sorter.sort(list);
-		Assert.listSame(list, s1, s0, s3, s2);
-		
-		// Case of sorting decreasing tab position and increasing string index
-		sorter = new DragSorter(false, true, true);
-		list = sortDragSorterReset();
-		sorter.sort(list);
-		Assert.listSame(list, s2, s0, s3, s1);
-		
-		// Case of sorting decreasing tab position and decreasing string index
-		sorter = new DragSorter(false, false, true);
-		list = sortDragSorterReset();
-		sorter.sort(list);
-		Assert.listSame(list, s3, s1, s2, s0);
-	}
-	
-	/**
-	 * Utility for testing DragSorter.sort for resetting the list
-	 * @return The list with elements
-	 */
-	private ArrayList<Selection> sortDragSorterReset(){
-		TabString str = new TabString(new Pitch(0));
-		ArrayList<Selection> list = new ArrayList<Selection>();
-		Selection s0 = new Selection(TabFactory.modifiedFret(str, 0, 0), str, 0);
-		Selection s1 = new Selection(TabFactory.modifiedFret(str, 0, 0), str, 1);
-		Selection s2 = new Selection(TabFactory.modifiedFret(str, 0, 3), str, 0);
-		Selection s3 = new Selection(TabFactory.modifiedFret(str, 0, 3), str, 1);
-		
-		// Adding elements in arbitrary order
-		list.add(s2);
-		list.add(s1);
-		list.add(s3);
-		list.add(s0);
-		return list;
 	}
 	
 	@AfterEach

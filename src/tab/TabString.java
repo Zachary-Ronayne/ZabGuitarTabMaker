@@ -333,11 +333,15 @@ public class TabString extends ArrayList<TabPosition> implements Copyable<TabStr
 	public boolean equals(Object obj){
 		if(!ObjectUtils.isType(obj, this.getClass())) return false;
 		TabString s = (TabString)obj;
-		// If the strings don't have the same number of elements, they are not equal
-		if(this.size() != s.size()) return false;
+
+		// Checking the strings have the same TabPositions
+		boolean equalPositions = this.size() == s.size();
+		for(int i = 0; i < this.size() && equalPositions; i++){
+			equalPositions = this.get(i).equals(s.get(i));
+		}
 		
 		// Check if the root pitches are equal and if each element on the string is equal
-		return this.getRootPitch().equals(s.getRootPitch());
+		return equalPositions && this.getRootPitch().equals(s.getRootPitch());
 	}
 	
 	/***/

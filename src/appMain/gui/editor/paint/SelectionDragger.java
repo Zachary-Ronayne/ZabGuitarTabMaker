@@ -1,23 +1,18 @@
 package appMain.gui.editor.paint;
 
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 
 import appMain.gui.editor.paint.event.RemovePlaceNotesEvent;
 import appMain.gui.util.Camera;
 import appUtils.ZabAppSettings;
 import appUtils.settings.TabControlSettings;
 import tab.Tab;
-import tab.TabPosition;
-import tab.TabString;
 
 /**
  * A class used by {@link TabPainter} to keep track of and control moving a selection of notes around
  * @author zrona
  */
-public class SelectionDragger extends TabPaintController{
+public class SelectionDragger extends SelectionPlacer{
 	
 	/** The {@link Selection} which was clicked to initialize a drag, null if nothing is selected */
 	private Selection baseSelection;
@@ -29,12 +24,6 @@ public class SelectionDragger extends TabPaintController{
 	 * This is used, when rendering the selection to line up the selection to where it was with the mouse when the selection was initiated
 	 */
 	private Point2D.Double dragAnchorPoint;
-	
-	/**
-	 * The {@link TabPosition} objects which are being moved by the current drag. Can be null when a drag is not initialized.<br>
-	 * This should only be used for display purposes 
-	 */
-	private Tab draggedTab;
 	
 	/**
 	 * Create a new {@link SelectionDragger} which is used by the given {@link TabPainter}
@@ -71,18 +60,13 @@ public class SelectionDragger extends TabPaintController{
 		this.dragAnchorPoint = anchorPoint;
 	}
 	
-	/** @return See {@link #draggedTab} */
-	public Tab getDraggedTab(){
-		return this.draggedTab;
-	}
-	
 	/**
 	 * Cancel the current drag selection
 	 */
 	public void reset(){
+		super.reset();
 		this.setBaseSelection(null);
 		this.setDragPoint(null);
-		this.draggedTab = null;
 		this.dragAnchorPoint = null;
 	}
 	
@@ -107,24 +91,16 @@ public class SelectionDragger extends TabPaintController{
 		Selection s = paint.findPosition(mX, mY);
 		// If a selected note was not found, do nothing
 		if(s == null || !paint.getSelected().isSelected(s)) return false;
-		
-		// Otherwise set the base selection, set the notes to be dragged, and return success
-		
-		// Base selection
+
+		// Set the base selection
 		this.setBaseSelection(s);
-		// Copy over all relevant TabPositions
-		Tab pTab = paint.getTab();
-		this.draggedTab = pTab.copyWithoutSymbols();
-		ArrayList<TabString> strs = this.draggedTab.getStrings();
-		for(Selection sel : paint.getSelected()){
-			strs.get(sel.getStringIndex()).add(sel.getPos());
-		}
-		// Set the internal anchor position appropriately so that the moved notes are around the mouse
+		
+		// Set up the anchor point for dragging
 		Camera cam = paint.getCamera();
 		this.dragAnchorPoint = new Point2D.Double(cam.toCamX(mX), cam.toCamY(mY));
-			
-		// Return success
-		return true;
+		
+		// Otherwise begin the drag by performing a selection with the selected notes of the painter
+		return this.select(paint.getSelected());
 	}
 	
 	/**
@@ -153,117 +129,75 @@ public class SelectionDragger extends TabPaintController{
 	 * i.e. the fret number will change if the strings have a different tuning, 
 	 * 	use false to make the fret number stay the same, modifying the pitch if necessary
 	 * @param recordUndo true to record this action in {@link TabPainter#undoStack}, false otherwise 
-	 * @return true if the selection was placed, false otherwise
+	 * @return true if the selection was moved, false otherwise
 	 */
 	public boolean place(double mX, double mY, boolean keepPitch, boolean recordUndo){
+		// If the painter tab is null, fail the drag
 		TabPainter paint = this.getPainter();
-		// If the position to place is not on a valid line of tab, do nothing
-		if(paint.xToTabPos(mX, mY) < 0 || paint.pixelYToStringNum(mY) < 0) return false;
+		Tab t = paint.getTab();
+		Selection base = this.getBaseSelection();
+		if(t == null) return false;
+		int stringNum = paint.pixelYToStringNum(mY);
 		
+		// If the position to place is not on a valid line of tab, or a the base position isn't selected, fail the drag
+		if(paint.xToTabPos(mX, mY) < 0 || stringNum < 0 || base == null) return false;
+		
+		// Find the position where the note will be placed
+		double quantizedPos = paint.quanitzedTabPos(mX, mY);
+		
+		// Remove the selections of this dragger and store them
+		SelectionList removed = paint.removeSelections(this.getSelectedList());
+		
+		// Get the settings
 		TabControlSettings settings = ZabAppSettings.get().control();
+		boolean overwrite = settings.moveOverwrite();
 		boolean deleteInvalid = settings.moveDeleteInvalid();
 		boolean cancelInvalid = settings.cancelInvalid();
-		
-		// If tab or the base position is null, the selection cannot be placed, do nothing
-		Selection base = this.getBaseSelection();
-		Tab t = paint.getTab();
-		if(t == null || base == null) return false;
-		// Find the position values for the newly placed position for the base TabPosition, and the old position value
-		double newBasePosValue = paint.quanitzedTabPos(mX, mY);
-		double oldBasePosValue = base.getPosition();
-		// Find the amount that needs to be added to all TabPosition position values when they are moved
-		double posValueChange = newBasePosValue - oldBasePosValue;
-		
-		// Find the indexes of the new and old strings for the base selection TabPosition
-		int newBaseStringIndex = paint.pixelYToStringNum(mY);
-		int oldBaseStringIndex = base.getStringIndex();
-		// Find the amount that needs to be added to all TabPosition objects when they are moved
-		int stringIndexChange = newBaseStringIndex - oldBaseStringIndex;
 
-		// Remove all of the notes and save them in a list
-		ArrayList<Selection> oldPositions = paint.removeSelectedNotes();
+		// Call the main place method
+		RemovePlaceNotesEvent event = super.place(
+				base.getPosition(), quantizedPos,
+				base.getStringIndex(), stringNum,
+				keepPitch,
+				!deleteInvalid, overwrite, cancelInvalid);
 		
-		// If recording undo, keep track of all of the original notes which were removed and placed
-		SelectionList removedUndo = new SelectionList();
-		SelectionList addedUndo = new SelectionList();
-		
-		/*
-		 * Create a copy of all of the Selections which will be the newly placed notes
-		 * Copying each object to avoid objects being modified elsewhere
-		 */
-		ArrayList<Selection> added = new ArrayList<Selection>();
-		for(Selection s : oldPositions){
-			TabPosition p = s.getPos().copy();
-			p = p.copyPosition(s.getPosition());
-			added.add(new Selection(p, s.getString(), s.getStringIndex()));
+		// If the placement failed, then put back all of the removed notes, and return failure
+		if(event == null){
+			paint.placeAndSelect(removed);
+			return false;
 		}
-		/*
-		 * Sort the list copy based on the order of how the notes are being moved. 
-		 * This is to ensure that, when a note is moved to where another selected note 
-		 * 	that also needs to move, there are no overlapping issues
-		 */
-		DragSorter sorter = new DragSorter(posValueChange < 0, stringIndexChange < 0, true);
-		sorter.sort(added);
-		
-		boolean failedToPlace = true;
-		
-		// Go through all of the Selection objects to see which can be moved, and move the ones that can be moved
-		for(int i = 0; i < added.size(); i++){
-			// Try to move the selection and find if it was moved successfully
-			Selection moved = paint.findMovePosition(added.get(i), newBasePosValue, posValueChange, stringIndexChange, keepPitch);
-			// If it cannot be moved, then move onto the next item, or fail the move depending on settings
-			if(moved == null){
-				// Fail the entire move and end the loop
-				if(cancelInvalid){
-					failedToPlace = true;
-					break;
-				}
-				// Move onto the next Selection
-				else{
-					/*
-					 * If the elements which could not be moved need to be deleted,
-					 *	remove from the list the selection which could not be moved
-					 */
-					if(!deleteInvalid){
-						paint.placeAndSelect(added.get(i));
-					}
+		// Otherwise, add the notes that this method removed, to the event's removed list
+		else{
+			// If the any of the added notes are the same as the ones which where initially removed, take them out of the event
+			SelectionList eventAdded = event.getPlaced();
+			for(int i = 0; i < eventAdded.size(); i++){
+				if(removed.contains(eventAdded.get(i))){
+					eventAdded.remove(i);
+					i--;
 				}
 			}
-			// Otherwise, replace the Selection with its new location, also state that a note was placed
-			else{
-				// Additionally, if recording undo, keep track of the selections which were added, and which were removed
-				if(recordUndo){
-					addedUndo.add(moved);
-					removedUndo.add(added.get(i));
+			
+			// If any of the initially removed notes are in the tab, take them out of the removed list
+			for(int i = 0; i < removed.size(); i++){
+				Selection s = removed.get(i);
+				if(s.getString().contains(s.getPos())){
+					removed.remove(i);
+					i--;
 				}
-				
-				// Replace the selection
-				paint.placeAndSelect(moved);
-				added.set(i, moved);
-				failedToPlace = false;
 			}
+			
+			// Add applicable notes which were removed
+			event.getRemoved().addAll(removed);
 		}
+
+		// Determine if at least some notes were placed
+		boolean madeAction = !event.getPlaced().isEmpty();
 		
-		/*
-		 * If the entire move should be canceled if one note fails to place, and a note failed to place, 
-		 * restore the original positions
-		 */
-		if(cancelInvalid && failedToPlace){
-			paint.removeSelections(added);
-			paint.placeAndSelect(oldPositions);
-		}
-		
-		// If recording undo, at least one note was removed, add an undo event which removes new notes and removes new notes
-		if(recordUndo){
-			// If all the old positions are the same as the new ones, then an event is not added, as no change was made
-			if(!addedUndo.equals(oldPositions)) paint.getUndoStack().addEvent(new RemovePlaceNotesEvent(addedUndo, removedUndo));
-		}
-		
-		// Ensure the correct number of tab lines is updated
-		paint.updateLineTabCount();
-		
-		// End the drag selection, returning if the selection was placed in some way
-		return !failedToPlace;
+		// If recording undo, and an action occurred, add the event
+		if(madeAction && recordUndo) paint.getUndoStack().addEvent(event);
+
+		// Return if the method did anything
+		return madeAction;
 	}
 	
 	/**
@@ -274,7 +208,7 @@ public class SelectionDragger extends TabPaintController{
 	 * @param keepPitch Only applies when the note uses pitch. Use true to make the pitch stay the same, 
 	 * i.e. the fret number will change if the strings have a different tuning, 
 	 * 	use false to make the fret number stay the same, modifying the pitch if necessary
-	 * @return true if the selection was placed, false otherwise
+	 * @return true if the selection was moved, false otherwise
 	 */
 	public boolean place(double mX, double mY, boolean keepPitch){
 		return this.place(mX, mY, keepPitch, false);
@@ -286,88 +220,12 @@ public class SelectionDragger extends TabPaintController{
 	 * @return true if the draw took place, false otherwise
 	 */
 	public boolean draw(){
-		if(!this.isDragging() || this.draggedTab == null) return false;
+		if(!this.isDragging() || this.getSelectedTab() == null) return false;
 		
 		TabPainter paint = this.getPainter();
 		Point2D.Double p = this.getDragPoint();
 		Point2D.Double anchor = this.getAnchorPoint();
 		if(p == null || anchor == null) return false;
-		return paint.drawSymbols(this.draggedTab, p.getX() - anchor.getX(), p.getY() - anchor.getY());
+		return paint.drawSymbols(this.getSelectedTab(), p.getX() - anchor.getX(), p.getY() - anchor.getY());
 	}
-	
-	/**
-	 * A {@link Comparator} used for sorting a list of {@link Selection} objects in various orders. 
-	 */
-	public static class DragSorter implements Comparator<Selection>{
-		/** 
-		 * true if this sorter should sort with {@link TabPosition} objects moving to the right as greater,  
-		 * i.e. increasing tab position value, 
-		 * false for moving to the left as greater, i.e. decreasing tab position value
-		 */
-		private boolean moveRight;
-		/** 
-		 * true if this sorter should sort with {@link TabPosition} objects moving down as greater,  
-		 * i.e. increasing string index
-		 * false for moving up as greater, i.e. decreasing string index */
-		private boolean moveDown;
-		
-		/**
-		 * true if first string indexes should be compared, then positions, 
-		 * false for comparing positions, then string indexes
-		 */
-		private boolean prioritizeStrings;
-		
-		/**
-		 * Create a new drag sorted with the given sort order
-		 * @param moveRight See {@link #moveRight}
-		 * @param moveDown See {@link #moveDown}
-		 * @param prioritizeStrings See {@link #prioritizeStrings}
-		 */
-		public DragSorter(boolean moveRight, boolean moveDown, boolean prioritizeStrings){
-			this.moveRight = moveRight;
-			this.moveDown = moveDown;
-			this.prioritizeStrings = prioritizeStrings;
-		}
-		
-		/**
-		 * Note, the {@link TabString} stored in each selection is not relevant to this sorting, 
-		 * only the string index and {@link TabPosition} object are relevant 
-		 */
-		@Override
-		public int compare(Selection s1, Selection s2){
-			// Ensure both selections are not null
-			if(s1 == null || s2 == null) return 0;
-			
-			// Comparing string indexes
-			int i1 = s1.getStringIndex();
-			int i2 = s2.getStringIndex();
-			int str = i2 - i1;
-			if(this.moveDown) str *= -1;
-			
-			// Comparing positions
-			TabPosition p1 = s1.getPos();
-			TabPosition p2 = s2.getPos();
-			int pos;
-			if(this.moveRight) pos = p1.compareTo(p2);
-			else pos = p2.compareTo(p1);
-			
-			if(prioritizeStrings){
-				if(str == 0) return pos;
-				else return str;
-			}
-			else{
-				if(pos == 0) return str;
-				else return pos;
-			}
-		}
-		
-		/**
-		 * Sort the given {@link List} of {@link Selection} objects based on this {@link Comparator}
-		 * @param list The list to sort
-		 */
-		public void sort(List<Selection> list){
-			list.sort(this);
-		}
-	}
-	
 }

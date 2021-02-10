@@ -559,8 +559,8 @@ public class TestTab{
 		assertTrue(tab.equals(tab), "Checking tab is equal to itself");
 		
 		ArrayList<TabString> s = new ArrayList<TabString>();
-		s.add(highString);
-		s.add(lowString);
+		s.add(highString.copy());
+		s.add(lowString.copy());
 		Tab t = new Tab(s);
 		assertFalse(t == tab, "Checking objects are not the same object");
 		assertTrue(t.equals(tab), "Checking objects are equal");
@@ -568,6 +568,18 @@ public class TestTab{
 		s.remove(lowString);
 		assertFalse(t.equals(tab), "Checking objects are not equal after changing strings");
 		s.add(lowString);
+		assertTrue(t.equals(tab), "Checking objects equal");
+		
+		tab.placeQuantizedNote(0, 0, 0);
+		assertFalse(t.equals(tab), "Checking objects are not equal after adding a note on the TabString");
+		tab.getStrings().get(0).clear();
+		assertTrue(t.equals(tab), "Checking objects equal");
+		
+		tab.placeQuantizedNote(0, 0, 0);
+		t.placeQuantizedNote(0, 0, 1);
+		assertFalse(t.equals(tab), "Checking objects are not equal with differing notes on tab strings");
+		t.clearNotes();
+		t.placeQuantizedNote(0, 0, 0);
 		assertTrue(t.equals(tab), "Checking objects equal");
 		
 		t.setTimeSignature(new TimeSignature(1, 8));
