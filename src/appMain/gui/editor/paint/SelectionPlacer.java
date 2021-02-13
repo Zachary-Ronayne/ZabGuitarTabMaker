@@ -228,7 +228,7 @@ public class SelectionPlacer extends TabPaintController{
 		if(!removed.isEmpty() || !added.isEmpty()) return event;
 		return null;
 	}
-
+	
 	/**
 	 * A {@link Comparator} used for sorting a list of {@link Selection} objects in various orders. 
 	 */

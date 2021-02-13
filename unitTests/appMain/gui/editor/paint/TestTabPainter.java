@@ -162,6 +162,11 @@ public class TestTabPainter extends AbstractTestTabPainter{
 	}
 	
 	@Test
+	public void getCopyPaster(){
+		assertNotEquals(null, paint.getCopyPaster(), "Checking selection copy paster initialized");
+	}
+	
+	@Test
 	public void selected(){
 		paint.select(0, 0);
 		paint.select(0, 1);

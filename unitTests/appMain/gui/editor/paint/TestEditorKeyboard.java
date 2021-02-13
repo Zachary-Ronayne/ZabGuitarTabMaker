@@ -68,6 +68,10 @@ public class TestEditorKeyboard extends AbstractTestTabPainter{
 		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_L, ' '));
 		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_E, ' '));
 		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_N, ' '));
+		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_C, ' '));
+		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_V, ' '));
+		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_X, ' '));
+		keys.keyPressed(new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_X, ' '));
 		keys.keyPressed(new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_MINUS, '-'));
 		keys.keyPressed(new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_EQUALS, '='));
 		
@@ -266,6 +270,38 @@ public class TestEditorKeyboard extends AbstractTestTabPainter{
 		menu.setLoadedFile(new File(UtilsTest.UNIT_PATH));
 		keys.keyNewFile(new KeyEvent(gui, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_N, 'n'));
 		assertEquals(null, menu.getLoadedFile(), "Checking loaded file reset");
+	}
+	
+	@Test
+	public void keyCopy(){
+		SelectionCopyPaster paster = paint.getCopyPaster();
+		assertEquals(null, paster.getBaseSelection(), "Checking no base selection");
+		paint.select(0, 0);
+		keys.keyCopy(new KeyEvent(gui, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_C, 'c'));
+		assertEquals(paint.stringSelection(0, 0), paster.getBaseSelection(), "Checking base selection after copy");
+		
+	}
+	
+	@Test
+	public void keyPaste(){
+		Tab oldTab = tab.copy();
+		Tab newTab = tab.copy();
+		newTab.placeQuantizedNote(0, 0, 3);
+		EditorEventStack stack = paint.getUndoStack();
+		stack.markSaved();
+		SelectionCopyPaster paster = paint.getCopyPaster();
+		paint.select(0, 0);
+		assertTrue(stack.isSaved(), "Checking stack saved before paste");
+		assertTrue(stack.isEmpty(), "Checking stack empty before paste");
+		paster.runCopy();
+		paint.getMouseInput().mouseClicked(new MouseEvent(gui, 0, 0, 0, 800, 341, 0, 0, 0, false, MouseEvent.BUTTON1));
+		keys.keyPaste(new KeyEvent(gui, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_V, 'v'));
+		assertFalse(stack.isSaved(), "Checking stack not saved after paste");
+		assertFalse(stack.isEmpty(), "Checking stack not empty after paste");
+		assertEquals(newTab, tab, "Checking tab has pasted note");
+		
+		assertTrue(paint.undo(), "Checking undo succeeds");
+		assertEquals(oldTab, tab, "Checking tab restored to original state");
 	}
 	
 	@Test

@@ -3,6 +3,7 @@ package appMain;
 import javax.swing.JFrame;
 
 import appMain.gui.ZabGui;
+import appMain.gui.editor.paint.AbstractTestTabPainter;
 import appUtils.ZabAppSettings;
 import appUtils.ZabConstants;
 
@@ -23,7 +24,7 @@ public final class Main{
 			gui.dispose();
 			gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		}
-
+		
 	}
 	
 	/** Cannot instantiate {@link Main} */

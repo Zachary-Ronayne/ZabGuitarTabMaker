@@ -38,6 +38,16 @@ public class TestTabControlSettings{
 		assertEquals(TabControlSettings.MOVE_CANCEL_INVALID, settings.cancelInvalid(), "Checking value getter correct");
 	}
 	@Test
+	public void  pasteOverwrite(){
+		TestZabSettings.assertSettingInitialized(settings.getPasteOverwrite(), TabControlSettings.PASTE_OVERWRITE);
+		assertEquals(TabControlSettings.PASTE_OVERWRITE, settings. pasteOverwrite(), "Checking value getter correct");
+	}
+	@Test
+	public void pasteCancelInvalid(){
+		TestZabSettings.assertSettingInitialized(settings.getPasteCancelInvalid(), TabControlSettings.PASTE_CANCEL_INVALID);
+		assertEquals(TabControlSettings.PASTE_CANCEL_INVALID, settings.pasteCancelInvalid(), "Checking value getter correct");
+	}
+	@Test
 	public void zoomFactor(){
 		TestZabSettings.assertSettingInitialized(settings.getZoomFactor(), TabControlSettings.ZOOM_FACTOR);
 		assertEquals(TabControlSettings.ZOOM_FACTOR, settings.zoomFactor(), "Checking value getter correct");

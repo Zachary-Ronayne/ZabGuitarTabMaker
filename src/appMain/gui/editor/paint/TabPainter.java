@@ -84,6 +84,9 @@ public class TabPainter extends ZabPanel{
 	/** The {@link SelectionDragger} used by this {@link TabPainter} to track moving selected notes around */
 	private SelectionDragger dragger;
 	
+	/** The {@link SelectionCopyPaster} used by this {@link TabPainter} to track copy and pasting notes */
+	private SelectionCopyPaster copyPaster;
+	
 	/**
 	 * The stack keeping track of all actions which the user applied to the painter. 
 	 * This also tracks if the painter has been saved recently
@@ -119,6 +122,7 @@ public class TabPainter extends ZabPanel{
 		this.selectedNewTabNum = null;
 		this.selectionBox = new SelectionBox(this);
 		this.dragger = new SelectionDragger(this);
+		this.copyPaster = new SelectionCopyPaster(this);
 		this.lastSymbolFont = null;
 		this.hoveredPosition = null;
 		
@@ -283,8 +287,14 @@ public class TabPainter extends ZabPanel{
 		return this.selectionBox;
 	}
 	
+	/** @return See {@link #dragger} */
 	public SelectionDragger getDragger(){
 		return this.dragger;
+	}
+	
+	/** @return See {@link #copyPaster} */
+	public SelectionCopyPaster getCopyPaster(){
+		return this.copyPaster;
 	}
 	
 	/**

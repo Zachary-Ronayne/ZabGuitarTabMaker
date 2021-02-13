@@ -129,7 +129,7 @@ public class SelectionDragger extends SelectionPlacer{
 	 * i.e. the fret number will change if the strings have a different tuning, 
 	 * 	use false to make the fret number stay the same, modifying the pitch if necessary
 	 * @param recordUndo true to record this action in {@link TabPainter#undoStack}, false otherwise 
-	 * @return true if the selection was moved, false otherwise
+	 * @return true if at least one note was moved, false otherwise
 	 */
 	public boolean place(double mX, double mY, boolean keepPitch, boolean recordUndo){
 		// If the painter tab is null, fail the drag
