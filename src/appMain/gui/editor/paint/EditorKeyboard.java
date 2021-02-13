@@ -205,6 +205,7 @@ public class EditorKeyboard extends TabPaintController implements KeyListener{
 	 * @param e The event of the key, it is assumed the event is for the appropriate action
 	 */
 	public void keyNewFile(KeyEvent e){
+		if(!e.isControlDown()) return;
 		FileMenu file = this.findFileMenu();
 		file.newFile();
 	}
@@ -214,6 +215,7 @@ public class EditorKeyboard extends TabPaintController implements KeyListener{
 	 * @param e The event of the key, it is assumed the event is for the appropriate action
 	 */
 	public void keyCopy(KeyEvent e){
+		if(!e.isControlDown()) return;
 		TabPainter paint = this.getPainter();
 		SelectionCopyPaster paster = paint.getCopyPaster();
 		paster.runCopy();
@@ -224,6 +226,7 @@ public class EditorKeyboard extends TabPaintController implements KeyListener{
 	 * @param e The event of the key, it is assumed the event is for the appropriate action
 	 */
 	public void keyPaste(KeyEvent e){
+		if(!e.isControlDown()) return;
 		TabPainter paint = this.getPainter();
 		SelectionCopyPaster paster = paint.getCopyPaster();
 		paster.paste(this.mouseX(), this.mouseY(), e.isShiftDown(), true);
@@ -234,6 +237,7 @@ public class EditorKeyboard extends TabPaintController implements KeyListener{
 	 * @param e The event of the key, it is assumed the event is for the appropriate action
 	 */
 	public void keyCut(KeyEvent e){
+		if(!e.isControlDown()) return;
 		TabPainter paint = this.getPainter();
 		SelectionCopyPaster paster = paint.getCopyPaster();
 		paster.runCopy();
@@ -247,6 +251,9 @@ public class EditorKeyboard extends TabPaintController implements KeyListener{
 	public void keyTypeTabPitch(KeyEvent e){
 		TabPainter paint = this.getPainter();
 		paint.appendSelectedTabNum(e.getKeyChar(), true);
+		
+		// Special case for pressing X to type a dead note
+		if(e.getKeyCode() == KeyEvent.VK_X) paint.placeDeadNote(true);
 	}
 	
 	/**
@@ -286,8 +293,7 @@ public class EditorKeyboard extends TabPaintController implements KeyListener{
 			case KeyEvent.VK_BACK_QUOTE: mod = ModifierFactory.vibrato(); break;
 			case KeyEvent.VK_T: mod = ModifierFactory.tap(); break;
 			
-			case KeyEvent.VK_9:
-			case KeyEvent.VK_0:
+			case KeyEvent.VK_G:
 				mod = ModifierFactory.ghostNote();
 				mode = 0;
 				break;

@@ -19,6 +19,7 @@ import appMain.gui.dropMenu.FileMenu;
 import appMain.gui.editor.paint.event.EditorEventStack;
 import tab.ModifierFactory;
 import tab.Tab;
+import tab.symbol.TabDeadNote;
 import tab.symbol.TabModifier;
 import tab.symbol.TabNote;
 import util.testUtils.UtilsTest;
@@ -267,7 +268,11 @@ public class TestEditorKeyboard extends AbstractTestTabPainter{
 	@Test
 	public void keyNewFile(){
 		FileMenu menu = gui.getZabMenuBar().getFileMenu();
-		menu.setLoadedFile(new File(UtilsTest.UNIT_PATH));
+		File f = new File(UtilsTest.UNIT_PATH);
+		menu.setLoadedFile(f);
+		keys.keyNewFile(new KeyEvent(gui, 0, 0, 0, KeyEvent.VK_N, 'n'));
+		assertEquals(f, menu.getLoadedFile(), "Checking loaded file not reset without ctrl held down");
+		
 		keys.keyNewFile(new KeyEvent(gui, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_N, 'n'));
 		assertEquals(null, menu.getLoadedFile(), "Checking loaded file reset");
 	}
@@ -277,9 +282,12 @@ public class TestEditorKeyboard extends AbstractTestTabPainter{
 		SelectionCopyPaster paster = paint.getCopyPaster();
 		assertEquals(null, paster.getBaseSelection(), "Checking no base selection");
 		paint.select(0, 0);
+		
+		keys.keyCopy(new KeyEvent(gui, 0, 0, 0, KeyEvent.VK_C, 'c'));
+		assertEquals(null, paster.getBaseSelection(), "Checking base selection null without ctrl held down");
+		
 		keys.keyCopy(new KeyEvent(gui, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_C, 'c'));
 		assertEquals(paint.stringSelection(0, 0), paster.getBaseSelection(), "Checking base selection after copy");
-		
 	}
 	
 	@Test
@@ -294,6 +302,13 @@ public class TestEditorKeyboard extends AbstractTestTabPainter{
 		assertTrue(stack.isSaved(), "Checking stack saved before paste");
 		assertTrue(stack.isEmpty(), "Checking stack empty before paste");
 		paster.runCopy();
+		
+		paint.getMouseInput().mouseClicked(new MouseEvent(gui, 0, 0, 0, 800, 341, 0, 0, 0, false, MouseEvent.BUTTON1));
+		keys.keyPaste(new KeyEvent(gui, 0, 0, 0, KeyEvent.VK_V, 'v'));
+		assertTrue(stack.isSaved(), "Checking stack still saved with ctrl not held down");
+		assertTrue(stack.isEmpty(), "Checking stack still empty with ctrl not held down");
+		assertEquals(oldTab, tab, "Checking tab unmodified with ctrl not held down");
+		
 		paint.getMouseInput().mouseClicked(new MouseEvent(gui, 0, 0, 0, 800, 341, 0, 0, 0, false, MouseEvent.BUTTON1));
 		keys.keyPaste(new KeyEvent(gui, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_V, 'v'));
 		assertFalse(stack.isSaved(), "Checking stack not saved after paste");
@@ -310,6 +325,11 @@ public class TestEditorKeyboard extends AbstractTestTabPainter{
 		assertEquals(null, paster.getBaseSelection(), "Checking no base selection");
 		paint.select(0, 0);
 		Selection s = paint.stringSelection(0, 0);
+		
+		keys.keyCut(new KeyEvent(gui, 0, 0, 0, KeyEvent.VK_X, 'x'));
+		assertEquals(null, paster.getBaseSelection(), "Checking no base selection with not holding ctrl");
+		assertFalse(str0.isEmpty(), "Checking selection not removed removed");
+		
 		keys.keyCut(new KeyEvent(gui, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_X, 'x'));
 		assertEquals(s, paster.getBaseSelection(), "Checking base selection after cut");
 		assertTrue(str0.isEmpty(), "Checking selection removed");
@@ -319,10 +339,10 @@ public class TestEditorKeyboard extends AbstractTestTabPainter{
 	public void keyTypeTabPitch(){
 		paint.select(0, 0);
 		
-		keys.keyTypeTabPitch(new KeyEvent(paint, 0, 0, 0, 0, '1'));
+		keys.keyTypeTabPitch(new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_1, '1'));
 		assertEquals(1, str0.getTabNumber(((TabNote)str0.get(0).getSymbol()).getPitch()), "Checking tab num updated with number");
 		
-		keys.keyTypeTabPitch(new KeyEvent(paint, 0, 0, 0, 0, '-'));
+		keys.keyTypeTabPitch(new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_MINUS, '-'));
 		assertEquals(-1, str0.getTabNumber(((TabNote)str0.get(0).getSymbol()).getPitch()), "Checking tab num updated with minus sign");
 		
 		paint.undo();
@@ -330,6 +350,12 @@ public class TestEditorKeyboard extends AbstractTestTabPainter{
 		
 		paint.redo();
 		assertEquals(-1, str0.getTabNumber(((TabNote)str0.get(0).getSymbol()).getPitch()), "Checking tab num updated after redo");
+
+		keys.keyTypeTabPitch(new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_X, 'x'));
+		assertEquals(new TabDeadNote(), str0.get(0).getSymbol(), "Checking tab symbol changed to a dead note");
+		paint.undo();
+		assertEquals(1, str0.getTabNumber(((TabNote)str0.get(0).getSymbol()).getPitch()), "Checking note put back after undo");
+		
 	}
 	
 	@Test
@@ -402,12 +428,7 @@ public class TestEditorKeyboard extends AbstractTestTabPainter{
 		assertEquals(new TabModifier("<", ">"), keyTypeSetHelper(), "Checking harmonic placed");
 
 		assertTrue(keys.keyTypeSetModifier(
-				new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_9, '(')),
-				"Checking modifier placed");
-		assertEquals(new TabModifier("(", ")"), keyTypeSetHelper(), "Checking ghost note placed");
-		paint.placeModifier(new TabModifier(), 0);
-		assertTrue(keys.keyTypeSetModifier(
-				new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_0, ')')),
+				new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_G, 'g')),
 				"Checking modifier placed");
 		assertEquals(new TabModifier("(", ")"), keyTypeSetHelper(), "Checking ghost note placed");
 

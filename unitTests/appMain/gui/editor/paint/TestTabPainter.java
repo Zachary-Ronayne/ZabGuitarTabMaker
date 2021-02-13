@@ -26,6 +26,7 @@ import tab.Tab;
 import tab.TabFactory;
 import tab.TabPosition;
 import tab.TabString;
+import tab.symbol.TabDeadNote;
 import tab.symbol.TabModifier;
 import tab.symbol.TabNote;
 import tab.symbol.TabPitch;
@@ -1108,6 +1109,59 @@ public class TestTabPainter extends AbstractTestTabPainter{
 		str0.clear();
 		paint.placeModifier(new TabModifier("a", "n"), 0);
 		assertTrue(str0.isEmpty(), "Checking string still empty after invalid modifier added");
+	}
+	
+	@Test
+	public void placeDeadNote(){
+		EditorEventStack stack = paint.getUndoStack();
+		
+		paint.setTab(null);
+		assertFalse(paint.placeDeadNote(), "Checking placement fails with null tab");
+		
+		paint.setTab(tab);
+		assertFalse(paint.placeDeadNote(), "Checking placement fails with no selection");
+		
+		paint.select(0, 0);
+		
+		stack.markSaved();
+		assertTrue(stack.isEmpty(), "Checking stack has no events before dead note placement");
+		assertTrue(stack.isSaved(), "Checking stack is saved before dead note placement");
+		assertTrue(paint.placeDeadNote(), "Checking note placed");
+		assertEquals(new TabDeadNote(), str0.get(0).getSymbol(), "Checking note has correct symbol");
+		assertTrue(stack.isEmpty(), "Checking stack still has no events without recording undo");
+		assertTrue(stack.isSaved(), "Checking stack is still saved without recording undo");
+		
+		Tab oldTab = tab.copy();
+		paint.clearSelection();
+		paint.select(0, 1);
+		paint.select(0, 2);
+		stack.markSaved();
+		assertTrue(stack.isEmpty(), "Checking stack has no events before dead note placement");
+		assertTrue(stack.isSaved(), "Checking stack is saved before dead note placement");
+		assertTrue(paint.placeDeadNote(true), "Checking note placed");
+		assertEquals(new TabDeadNote(), str1.get(0).getSymbol(), "Checking note has correct symbol");
+		assertEquals(new TabDeadNote(), str2.get(0).getSymbol(), "Checking note has correct symbol");
+		assertFalse(stack.isEmpty(), "Checking stack has events after dead note placement");
+		assertFalse(stack.isSaved(), "Checking stack is not saved after dead note placement");
+		assertTrue(paint.undo(), "Checking undo succeeds");
+		assertEquals(oldTab, tab, "Checking tab state restored");
+		
+		paint.clearSelection();
+		stack.markSaved();
+		stack.clearStack();
+		assertTrue(stack.isEmpty(), "Checking stack has no events before dead note placement");
+		assertTrue(stack.isSaved(), "Checking stack is saved before dead note placement");
+		paint.select(0, 0);
+		tab.clearNotes();
+		assertFalse(paint.placeDeadNote(true), "Checking note not placed with no placements being made");
+		assertTrue(stack.isEmpty(), "Checking stack has no events after failed placement");
+		assertTrue(stack.isSaved(), "Checking stack is still saved after failed");
+		
+		paint.clearSelection();
+		str0.add(new TabPosition(new TabDeadNote(), 0));
+		stack.markSaved();
+		paint.select(0, 0);
+		assertFalse(paint.placeDeadNote(), "Checking placement fails with a dead note already in place");
 	}
 	
 	@Test

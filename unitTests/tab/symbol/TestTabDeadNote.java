@@ -68,28 +68,24 @@ public class TestTabDeadNote{
 	
 	@Test
 	public void load(){
-		Scanner scan = new Scanner("<\n>\ng");
+		Scanner scan = new Scanner("\n");
 		assertTrue(note.load(scan), "Checking load successful");
-		assertEquals("<", note.getModifier().getBefore(), "Checking modifier before loaded correctly");
-		assertEquals(">", note.getModifier().getAfter(), "Checking modifier after loaded correctly");
+		assertEquals(new TabModifier(), note.getModifier(), "Checking modifier unchanged after load");
 
 		assertFalse(note.load(scan), "Checking load fails without enough data");
 	}
 	
 	@Test
 	public void save(){
-		assertEquals("\n\n", UtilsTest.testSave(note), "Checking note saved correctly");
+		assertEquals("\n", UtilsTest.testSave(note), "Checking note saved correctly");
 		
-		note = new TabDeadNote(new TabModifier("{", "}"));
-		assertEquals("{\n}\n", UtilsTest.testSave(note), "Checking note saved correctly");
+		note = new TabDeadNote();
+		assertEquals("\n", UtilsTest.testSave(note), "Checking note saved correctly");
 	}
 	
 	@Test
 	public void testToString(){
-		assertEquals("[TabDeadNote, X, [TabModifier: \"\" \"\"]]", note.toString(), "Checking correct string");
-		
-		note = new TabDeadNote(new TabModifier("a", "b"));
-		assertEquals("[TabDeadNote, X, [TabModifier: \"a\" \"b\"]]", note.toString(), "Checking correct string");
+		assertEquals("[TabDeadNote, X]", note.toString(), "Checking correct string");
 	}
 	
 	@AfterEach

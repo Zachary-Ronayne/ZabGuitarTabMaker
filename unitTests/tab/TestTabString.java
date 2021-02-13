@@ -186,6 +186,7 @@ public class TestTabString{
 		Assert.listSame(all, pitches[1], pitches[2], pitches[4]);
 	}
 	
+	@SuppressWarnings("unlikely-arg-type")
 	@Test
 	public void remove(){
 		string.add(notes[1]);
@@ -200,6 +201,17 @@ public class TestTabString{
 		Assert.listSame(string, notes[1]);
 
 		assertFalse(string.remove(pitches[4], 1.5), "Checking note not in list isn't removed");
+		assertFalse(string.remove(null), "Checking fails to remove null");
+		assertFalse(string.remove(string), "Checking fails to remove a non tab position");
+		
+		string.clear();
+		string.add(notes[1]);
+		string.add(notes[2]);
+		string.add(notes[4]);
+		assertFalse(string.remove(new TabPosition(pitches[4], notes[2].getPos())),
+				"Checking fails to remove a note which is at the same position, but with a different symbol");
+		
+		assertFalse(string.remove(notes[5]), "Checking fails to remove a note which would be added to the end of the list, but is not in the list");
 	}
 	
 	@Test
@@ -433,7 +445,6 @@ public class TestTabString{
 				+ "\n"
 				+ "2.0 \n"
 				+ "TabDeadNote\n"
-				+ "\n"
 				+ "\n"
 				+ "3.0 \n"
 				+ "TabNoteRhythm\n"

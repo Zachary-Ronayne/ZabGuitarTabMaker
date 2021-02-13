@@ -30,6 +30,7 @@ import tab.Tab;
 import tab.TabFactory;
 import tab.TabPosition;
 import tab.TabString;
+import tab.symbol.TabDeadNote;
 import tab.symbol.TabModifier;
 import tab.symbol.TabSymbol;
 import util.ObjectUtils;
@@ -1013,6 +1014,62 @@ public class TabPainter extends ZabPanel{
 	 */
 	public void placeModifier(TabModifier mod, int mode){
 		this.placeModifier(mod, mode, false);
+	}
+	
+	/**
+	 * Replace all of the notes in {@link #selected} with dead notes, removing their modifiers
+	 * @param recordUndo true to record this action in {@link #undoStack}, false otherwise
+	 * @return true if at least one dead note was placed, false otherwise
+	 */
+	public boolean placeDeadNote(boolean recordUndo){
+		Tab t = this.getTab();
+		if(t == null) return false;
+		
+		SelectionList list = this.getSelected();
+		SelectionList added = new SelectionList();
+		SelectionList removed = new SelectionList();
+		if(list.isEmpty()) return false;
+		
+		for(int i = 0; i < list.size(); i++){
+			// Find the string and the index on the string to make the replacement
+			Selection s = list.get(i);
+			int strI = s.getStringIndex();
+			TabString str = t.getStrings().get(strI);
+			TabPosition oldPos = str.findPosition(s.getPosition());
+			
+			// If the position on the selection does not match that of the string, or it is already a dead note, skip that selection
+			if(oldPos == null || oldPos.getSymbol().equals(new TabDeadNote())) continue;
+			
+			// Replace the symbol
+			str.remove(s.getPos().getSymbol(), s.getPosition());
+			TabPosition newPos = s.getPos().copySymbol(new TabDeadNote());
+			str.add(newPos);
+			
+			// Remove the selection from the list
+			list.remove(i);
+			removed.add(s);
+			Selection toAdd = new Selection(newPos, str, strI);
+			added.add(toAdd);
+			i--;
+		}
+		for(Selection s : added) list.add(s);
+		
+		boolean changed = added.size() > 0;
+		
+		// If recording undo and at least one note was added, add an undo event
+		if(recordUndo && changed){
+			this.getUndoStack().addEvent(new RemovePlaceNotesEvent(added, removed));
+		}
+		
+		return changed;
+	}
+	
+	/**
+	 * Replace all of the notes in {@link #selected} with dead notes, removing their modifiers, without recording undo
+	 * @return true if at least one dead note was placed, false otherwise
+	 */
+	public boolean placeDeadNote(){
+		return this.placeDeadNote(false);
 	}
 	
 	/**

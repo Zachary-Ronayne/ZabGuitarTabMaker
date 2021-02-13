@@ -109,7 +109,7 @@ public class ControlsFrame extends ZabFrame{
 			"R: " + lang.pinchHarmonic(),
 			"~: " + lang.vibrato(),
 			"T: " + lang.tap(),
-			"( ): " + lang.ghostNote(),
+			"G: " + lang.ghostNote(),
 			"< >: " + lang.naturalHarmonic(),
 		});
 		this.modifiersInfo.setTitle(lang.modifiersDescription());

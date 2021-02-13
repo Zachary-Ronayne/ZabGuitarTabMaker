@@ -179,9 +179,23 @@ public class TabString extends ArrayList<TabPosition> implements Copyable<TabStr
 	}
 	
 	/**
+	 * Use a binary search to find the given Object and remove it from this {@link TabString}. 
+	 * This will only remove an object if the parameter is a {@link TabPosition}
+	 */
+	@Override
+	public boolean remove(Object o){
+		if(!ObjectUtils.isType(o, TabPosition.class)) return false;
+		int index = this.findIndex(((TabPosition)o).getPos());
+		if(index >= this.size() || !o.equals(this.get(index))) return false;
+		super.remove(index); // At this point, index is guaranteed to be valid
+		return true;
+	}
+	
+	/**
 	 * Find the index of the symbol at the exact given position
 	 * @param pos The position of the symbol to find, if the floating point positions do not match exactly, the position will not be found 
-	 * @return The index found, or the index to insert a note to insert it in a sorted order
+	 * @return The index found, or the index to insert a note to insert it in a sorted order. 
+	 * 	This returned value will always be at least zero, and at most equal to the number of notes on the string
 	 */
 	public int findIndex(double pos){
 		// The TabDeadNote is used as a simple placeholder for the position, because TabPositions compare based on their NotePosition value

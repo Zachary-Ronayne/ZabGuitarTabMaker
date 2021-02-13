@@ -17,23 +17,23 @@ public class TabDeadNote extends TabSymbol{
 	
 	/**
 	 * Create a dead note for a tab
-	 * @param mod The {@link TabModifier} to use
-	 */
-	public TabDeadNote(TabModifier mod){
-		super(mod);
-	}
-	
-	/**
-	 * Create a dead note for a tab
 	 */
 	public TabDeadNote(){
-		this(new TabModifier());
+		super(new TabModifier());
 	}
 	
 	/***/
 	@Override
 	public TabDeadNote copy(){
 		return new TabDeadNote();
+	}
+	
+	/**
+	 * {@link TabDeadNote} never have modifiers
+	 */
+	@Override
+	public TabModifier getModifier(){
+		return new TabModifier();
 	}
 	
 	/***/
@@ -68,15 +68,15 @@ public class TabDeadNote extends TabSymbol{
 	/***/
 	@Override
 	public boolean load(Scanner reader){
-		// Load the modifier
-		return Saveable.load(reader, this.getModifier());
+		// Dead notes have no fields, so they save no data
+		return Saveable.nextLine(reader);
 	}
 	
 	/***/
 	@Override
 	public boolean save(PrintWriter writer){
-		// Save the modifier
-		return Saveable.save(writer, this.getModifier());
+		// Dead notes have no fields, so they save no data
+		return Saveable.newLine(writer);
 	}
 	
 	/***/
@@ -84,8 +84,6 @@ public class TabDeadNote extends TabSymbol{
 	public String toString(){
 		StringBuilder b = new StringBuilder("[TabDeadNote, ");
 		b.append(this.getSymbol(null));
-		b.append(", ");
-		b.append(this.getModifier());
 		b.append("]");
 		return b.toString();
 	}

@@ -274,7 +274,7 @@ public class Tab implements Copyable<Tab>, Saveable{
 	}
 	
 	/**
-	 * Remove all notes from the tab
+	 * Remove all notes from the tab, does not record undo
 	 */
 	public void clearNotes(){
 		for(TabString s : this.getStrings()) s.clear();
