@@ -63,15 +63,15 @@ public class TestEditorKeyboard extends AbstractTestTabPainter{
 		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_DELETE, ' '));
 		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_A, 'a'));
 		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_ESCAPE, ' '));
-		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_Z, ' '));
-		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_S, ' '));
-		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_L, ' '));
-		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_E, ' '));
-		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_N, ' '));
-		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_C, ' '));
-		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_V, ' '));
-		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_X, ' '));
-		keys.keyPressed(new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_X, ' '));
+		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_Z, 'z'));
+		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_S, 's'));
+		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_L, 'l'));
+		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_E, 'e'));
+		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_N, 'n'));
+		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_C, 'c'));
+		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_V, 'v'));
+		keys.keyPressed(new KeyEvent(paint, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_X, 'x'));
+		keys.keyPressed(new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_X, 'x'));
 		keys.keyPressed(new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_MINUS, '-'));
 		keys.keyPressed(new KeyEvent(paint, 0, 0, 0, KeyEvent.VK_EQUALS, '='));
 		
@@ -302,6 +302,17 @@ public class TestEditorKeyboard extends AbstractTestTabPainter{
 		
 		assertTrue(paint.undo(), "Checking undo succeeds");
 		assertEquals(oldTab, tab, "Checking tab restored to original state");
+	}
+	
+	@Test
+	public void keyCut(){
+		SelectionCopyPaster paster = paint.getCopyPaster();
+		assertEquals(null, paster.getBaseSelection(), "Checking no base selection");
+		paint.select(0, 0);
+		Selection s = paint.stringSelection(0, 0);
+		keys.keyCut(new KeyEvent(gui, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_X, 'x'));
+		assertEquals(s, paster.getBaseSelection(), "Checking base selection after cut");
+		assertTrue(str0.isEmpty(), "Checking selection removed");
 	}
 	
 	@Test

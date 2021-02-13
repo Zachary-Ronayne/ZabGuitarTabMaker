@@ -3,7 +3,6 @@ package appMain;
 import javax.swing.JFrame;
 
 import appMain.gui.ZabGui;
-import appMain.gui.editor.paint.AbstractTestTabPainter;
 import appUtils.ZabAppSettings;
 import appUtils.ZabConstants;
 

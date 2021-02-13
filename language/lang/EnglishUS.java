@@ -110,6 +110,12 @@ public class EnglishUS implements AbstractLanguage{
 	@Override
 	public String cancelSelection(){ return "Cancel click and drag and selection box"; }
 	@Override
+	public String copy(){ return "Copy"; }
+	@Override
+	public String paste(){ return "Paste"; }
+	@Override
+	public String cut(){ return "Cut"; }
+	@Override
 	public String saveTab(){ return "Save tab"; }
 	@Override
 	public String saveAsTab(){ return "Save tab as a new file"; }

@@ -53,6 +53,7 @@ public class EditorKeyboard extends TabPaintController implements KeyListener{
 				case KeyEvent.VK_N: this.keyNewFile(e); break;
 				case KeyEvent.VK_C: this.keyCopy(e); break;
 				case KeyEvent.VK_V: this.keyPaste(e); break;
+				case KeyEvent.VK_X: this.keyCut(e); break;
 			}
 			if(!e.isControlDown()) this.keyTypeTabPitch(e);
 			else this.keyZoom(e);
@@ -226,6 +227,17 @@ public class EditorKeyboard extends TabPaintController implements KeyListener{
 		TabPainter paint = this.getPainter();
 		SelectionCopyPaster paster = paint.getCopyPaster();
 		paster.paste(this.mouseX(), this.mouseY(), e.isShiftDown(), true);
+	}
+	
+	/**
+	 * Called when the key associated with copying and then delete a selected copying a selection of notes, is pressed
+	 * @param e The event of the key, it is assumed the event is for the appropriate action
+	 */
+	public void keyCut(KeyEvent e){
+		TabPainter paint = this.getPainter();
+		SelectionCopyPaster paster = paint.getCopyPaster();
+		paster.runCopy();
+		paint.removeSelectedNotes(true);
 	}
 	
 	/**

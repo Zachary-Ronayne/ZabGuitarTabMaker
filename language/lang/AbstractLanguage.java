@@ -123,6 +123,12 @@ public interface AbstractLanguage{
 	public String selectAllNotes();
 	/** Get the text describing canceling a selection box and selection movement */
 	public String cancelSelection();
+	/** Get the text describing copying a selection */
+	public String copy();
+	/** Get the text describing pasting a copied a selection */
+	public String paste();
+	/** Get the text describing copying, then immediately deleting, a selection */
+	public String cut();
 	/** Get the text describing saving a tab */
 	public String saveTab();
 	/** Get the text describing saving a tab as a new file */
