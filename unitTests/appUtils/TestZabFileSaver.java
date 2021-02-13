@@ -83,8 +83,8 @@ public class TestZabFileSaver{
 			+ "|\n"
 			+ "100.0 100.0 null null \n"
 			+ "-100.0 -100.0 null null \n"
-			+ "200.0 200.0 null null \n"
-			+ "8 8 null null \n"
+			+ "400.0 400.0 null null \n"
+			+ "4 4 null null \n"
 			+ "30.0 30.0 null null \n"
 			+ "15.0 15.0 null null \n"
 			+ "40.0 40.0 null null \n"
@@ -108,7 +108,8 @@ public class TestZabFileSaver{
 			+ "40.0 40.0 null null \n"
 			+ "false false \n"
 			+ "false false \n"
-			+ "8.0 8.0 null null \n"
+			+ "36 36 null null \n"
+			+ "16.0 16.0 null null \n"
 			+ "1 4 \n"
 			+ "1 4 \n";
 	

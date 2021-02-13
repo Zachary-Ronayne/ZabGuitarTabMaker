@@ -26,6 +26,7 @@ public class TestTabTextExporter{
 	public static void init(){
 		ZabAppSettings.init();
 		text = ZabAppSettings.get().text();
+		ZabAppSettings.get().tab().getQuantizeDivisor().set(8.0);
 	}
 	
 	@BeforeEach

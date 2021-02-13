@@ -13,7 +13,7 @@ import settings.Settings;
 public class TabSettings extends Settings{
 
 	/** Default for {@link #quantizeDivisor} */
-	public static final double QUANTIZE_DIVISOR = 8.0;
+	public static final double QUANTIZE_DIVISOR = 16.0;
 	/** @return Default for {@link #rhythmConversionEndValue} */
 	public static Rhythm RHYTHM_CONVERSION_END_VALUE = new Rhythm(1, 4);
 

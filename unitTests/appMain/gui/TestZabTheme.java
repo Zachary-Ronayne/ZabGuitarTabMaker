@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 
 import javax.swing.JButton;
@@ -229,16 +230,22 @@ public class TestZabTheme{
 	}
 	
 	@Test
+	public void actionPerformedButtonHoverSensor(){
+		button.setBackground(Color.RED);
+		sensor.actionPerformed(new ActionEvent(button, 0, ""));
+		assertEquals(dark.background(), button.getBackground(), "Checking correct color set");
+	}
+	@Test
 	public void mouseEnteredButtonHoverSensor(){
 		button.setBackground(Color.RED);
 		sensor.mouseEntered(new MouseEvent(button, 0, 0, 0, 0, 0, 0, 0, 0, false, 0));
-		assertEquals(dark.buttonHover(), button.getBackground());
+		assertEquals(dark.buttonHover(), button.getBackground(), "Checking correct color set");
 	}
 	@Test
 	public void mouseExitedButtonHoverSensor(){
 		button.setBackground(Color.RED);
 		sensor.mouseExited(new MouseEvent(button, 0, 0, 0, 0, 0, 0, 0, 0, false, 0));
-		assertEquals(dark.background(), button.getBackground());
+		assertEquals(dark.background(), button.getBackground(), "Checking correct color set");
 	}
 	
 	@Test

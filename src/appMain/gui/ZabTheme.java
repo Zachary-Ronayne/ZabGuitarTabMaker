@@ -3,6 +3,8 @@ package appMain.gui;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -85,7 +87,9 @@ public interface ZabTheme{
 				if(m[i] instanceof ButtonHoverSensor) b.removeMouseListener(m[i]);
 			}
 			// Add a new listener
-			b.addMouseListener(new ButtonHoverSensor(b));
+			ButtonHoverSensor sensor = new ButtonHoverSensor(b);
+			b.addMouseListener(sensor);
+			b.addActionListener(sensor);
 		}
 		
 		// Set fields in the case of an JButton
@@ -282,7 +286,7 @@ public interface ZabTheme{
 	 * are set to use  a {@link ZabTheme}
 	 * @author zrona
 	 */
-	public static class ButtonHoverSensor extends MouseAdapter{
+	public static class ButtonHoverSensor extends MouseAdapter implements ActionListener{
 		/** The {@link AbstractButton} which uses this sensor */
 		private AbstractButton button;
 		private ZabTheme theme;
@@ -292,6 +296,10 @@ public interface ZabTheme{
 			this.theme = ZabAppSettings.theme();
 		}
 		
+		@Override
+		public void actionPerformed(ActionEvent e){
+			this.button.setBackground(this.theme.background());
+		}
 		@Override
 		public void mouseEntered(MouseEvent e){
 			this.button.setBackground(this.theme.buttonHover());

@@ -72,6 +72,11 @@ public class TestTabControlSettings{
 		TestZabSettings.assertSettingInitialized(settings.getScrollYInverted(), TabControlSettings.SCROLL_Y_INVERTED);
 		assertEquals(TabControlSettings.SCROLL_Y_INVERTED, settings.scrollYInverted(), "Checking value getter correct");
 	}
+	@Test
+	public void maxFretNum(){
+		TestZabSettings.assertSettingInitialized(settings.getMaxFretNum(), TabControlSettings.MAX_FRET_NUM);
+		assertEquals(TabControlSettings.MAX_FRET_NUM, settings.maxFretNum(), "Checking value getter correct");
+	}
 	
 	@AfterEach
 	public void end(){}

@@ -910,8 +910,9 @@ public class TabPainter extends ZabPanel{
 				
 				TabString s = sel.getString();
 				
-				// Ensure the note stays within only 2 digits
-				if(n < -99 || n > 99){
+				// Ensure the note stays within a certain range
+				int maxFretNum = ZabAppSettings.get().control().maxFretNum();
+				if(n < -maxFretNum || n > maxFretNum){
 					n %= 10;
 					this.selectedNewTabNum = n;
 				}

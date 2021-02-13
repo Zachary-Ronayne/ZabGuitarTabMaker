@@ -2,6 +2,7 @@ package appUtils.settings;
 
 import settings.SettingBoolean;
 import settings.SettingDouble;
+import settings.SettingInt;
 import settings.Settings;
 import tab.TabPosition;
 
@@ -31,6 +32,8 @@ public class TabControlSettings extends Settings{
 	public static final boolean SCROLL_X_INVERTED = false;
 	/** Default for {@link #scrollYInverted} */
 	public static final boolean SCROLL_Y_INVERTED = false;
+	/** Default for {@link #maxFretNum} */
+	public static final int MAX_FRET_NUM = 36;
 	
 	/**
 	 * true if, when moving a {@link TabPosition} selection, 
@@ -73,7 +76,9 @@ public class TabControlSettings extends Settings{
 	private SettingBoolean scrollXInverted;
 	/** true to reverse the direction of scrolling on the y axis, false otherwise */
 	private SettingBoolean scrollYInverted;
-
+	/** The maximum number which can be typed to a fret, this is the absolute value, the fret number itself can be negative or positive of this number */
+	private SettingInt maxFretNum;
+	
 	/**
 	 * Create a new set of {@link TabControlSettings} with all default values loaded
 	 */
@@ -89,6 +94,7 @@ public class TabControlSettings extends Settings{
 		this.scrollFactor = this.addDouble(SCROLL_FACTOR);
 		this.scrollXInverted = this.addBoolean(SCROLL_X_INVERTED);
 		this.scrollYInverted = this.addBoolean(SCROLL_Y_INVERTED);
+		this.maxFretNum = this.addInt(MAX_FRET_NUM);
 	}
 	
 	/** @return See {@link #moveOverwrite} */
@@ -111,6 +117,8 @@ public class TabControlSettings extends Settings{
 	public SettingBoolean getScrollXInverted(){ return this.scrollXInverted; }
 	/** @return See {@link #scrollYInverted} */
 	public SettingBoolean getScrollYInverted(){ return this.scrollYInverted; }
+	/** @return See {@link #maxFretNum} */
+	public SettingInt getMaxFretNum(){ return this.maxFretNum; }
 	
 	/** @return See {@link #moveOverwrite} */
 	public Boolean moveOverwrite(){ return this.getMoveOverwrite().get(); }
@@ -132,5 +140,7 @@ public class TabControlSettings extends Settings{
 	public Boolean scrollXInverted(){ return this.getScrollXInverted().get(); }
 	/** @return See {@link #scrollYInverted} */
 	public Boolean scrollYInverted(){ return this.getScrollYInverted().get(); }
+	/** @return See {@link #maxFretNum} */
+	public Integer maxFretNum(){ return this.getMaxFretNum().get(); }
 	
 }

@@ -19,9 +19,9 @@ public class TabPaintSettings extends Settings{
 	/** Default for {@link #baseY} */
 	public static final double BASE_Y = -100;
 	/** Default for {@link #measureWidth} */
-	public static final double MEASURE_WIDTH = 200;
+	public static final double MEASURE_WIDTH = 400;
 	/** Default for {@link #lineMeasures} */
-	public static final int LINE_MEASURES = 8;
+	public static final int LINE_MEASURES = 4;
 	/** Default for {@link #stringSpace} */
 	public static final double STRING_SPACE = 30;
 	/** Default for {@link #selectionBuffer} */
