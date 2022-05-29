@@ -32,6 +32,7 @@ import tab.TabPosition;
 import tab.TabString;
 import tab.symbol.TabDeadNote;
 import tab.symbol.TabModifier;
+import tab.symbol.TabPitch;
 import tab.symbol.TabSymbol;
 import util.ObjectUtils;
 
@@ -67,7 +68,7 @@ public class TabPainter extends ZabPanel{
 	/** The number of lines of tab to display */
 	private int tabLineCount;
 	
-	/** A list containing {@link Selection} objects for every user selected {@link TabPositiono} */
+	/** A list containing {@link Selection} objects for every user selected {@link TabPosition} */
 	private SelectionList selected;
 	
 	/** A copy of the {@link Selection} which was last selected by the user, i.e. the most recent {@link TabSymbol} they clicked on, null if no selection exists */
@@ -871,7 +872,7 @@ public class TabPainter extends ZabPanel{
 	 */
 	public Integer appendSelectedTabNum(char num, boolean recordUndo){
 		if(this.getSelected().isEmpty()) return this.selectedNewTabNum;
-
+		
 		// Keep track of the original number
 		Integer oldNum = this.selectedNewTabNum;
 		
@@ -916,7 +917,6 @@ public class TabPainter extends ZabPanel{
 					n %= 10;
 					this.selectedNewTabNum = n;
 				}
-				
 				// Set the note on the string and update the selection
 				p = p.copySymbol(p.getSymbol().createPitchNote(s.createPitch(n)));
 				sel.getString().setSymbol(sel.getString().findIndex(p.getPos()), p.getSymbol());
@@ -930,7 +930,6 @@ public class TabPainter extends ZabPanel{
 			// The event places the current state of the selected notes, and removes the original placements
 			this.getUndoStack().addEvent(new SelectedTabNumberEvent(this.getSelected(), oldSel));
 		}
-		
 		return this.selectedNewTabNum;
 	}
 	
@@ -943,6 +942,44 @@ public class TabPainter extends ZabPanel{
 	 */
 	public Integer appendSelectedTabNum(char num){
 		return this.appendSelectedTabNum(num, false);
+	}
+	
+	/**
+	 * Modify the octave of the current selection by the given amount
+	 * 
+	 * @param octaves The number of octaves to add or subtract
+	 * @param recordUndo true to record this action in {@link #undoStack}, false otherwise
+	 */
+	public void modifyOctave(int octaves, boolean recordUndo){
+		// If recording undo, keep track of the list of notes that will be changed
+		SelectionList oldSel = new SelectionList();
+		if(recordUndo) oldSel.addAll(this.getSelected());
+
+		// TODO fix a bug where typing a note then trying to immediately change the octave will not work
+		SelectionList list = this.getSelected();
+		for(int i = 0; i < list.size(); i++){
+			Selection sel = list.get(i);
+			
+			// Unpack selection
+			TabPosition p = sel.getStringPos();
+			// Ensure the note exists and uses a pitch
+			if(p == null || !(p.getSymbol() instanceof TabPitch)) continue;
+			TabPitch pitch = (TabPitch)(p.getSymbol());
+			
+			TabString s = sel.getString();
+			
+			// Set the note on the string to the modified octave and update the selection
+			p = p.copySymbol(p.getSymbol().createPitchNote(s.createPitch(s.getTabNumber(pitch) + octaves * 12)));
+			sel.getString().setSymbol(sel.getString().findIndex(p.getPos()), p.getSymbol());
+			list.set(i, new Selection(p, s, sel.getStringIndex()));
+		}
+		
+		// If recording undo, record the action
+		if(recordUndo){
+			// The event places the current state of the selected notes, and removes the original placements
+			this.getUndoStack().addEvent(new SelectedTabNumberEvent(this.getSelected(), oldSel));
+		}
+		this.repaint();
 	}
 	
 	/**
@@ -1236,8 +1273,8 @@ public class TabPainter extends ZabPanel{
 		cam.setDrawOnlyInBounds(true);
 
 		// Center the camera around the tab
-		double numMeasues = settings.lineMeasures();
-		cam.center(cam.zoomX(this.tabPosToCamX(numMeasues * 0.5)), this.tabPosToCamY(numMeasues, 0));
+		double numMeasures = settings.lineMeasures();
+		cam.center(cam.zoomX(this.tabPosToCamX(numMeasures * 0.5)), this.tabPosToCamY(numMeasures, 0));
 	}
 	
 	/**
@@ -1503,7 +1540,7 @@ public class TabPainter extends ZabPanel{
 	 * @param mY The y coordinate on the painter
 	 * @return The tab position, or -1 if no valid position could be generated
 	 */
-	public double quanitzedTabPos(double mX, double mY){
+	public double quantizedTabPos(double mX, double mY){
 		Tab t = this.getTab();
 		if(t == null) return -1;
 		TabSettings settings = ZabAppSettings.get().tab();

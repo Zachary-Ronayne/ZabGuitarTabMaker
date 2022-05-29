@@ -43,7 +43,6 @@ public class TestZabMenu{
 		assertEquals(gui, menu.getGui(), "Checking gui initialized");
 	}
 	
-	@SuppressWarnings("serial")
 	@Test
 	public void getComponents(){
 		ZabMenuItem[] items = new ZabMenuItem[4];

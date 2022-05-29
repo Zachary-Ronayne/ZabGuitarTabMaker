@@ -56,7 +56,6 @@ public class TestGuiUtils{
 		layer2Item.setBackground(new Color(5));
 		JPanel duplicate = new JPanel(); // Case of an item appearing more than once should only be counted once
 		duplicate.setBackground(new Color(6));
-		@SuppressWarnings("serial")
 		Component nonContainer = new Component(){}; // Case of an item which is not a container
 		nonContainer.setBackground(new Color(7));
 		

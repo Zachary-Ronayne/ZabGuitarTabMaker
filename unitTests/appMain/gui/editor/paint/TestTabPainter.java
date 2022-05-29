@@ -1563,17 +1563,17 @@ public class TestTabPainter extends AbstractTestTabPainter{
 	
 	@Test
 	public void quanitzedTabPos(){
-		assertEquals(0, paint.quanitzedTabPos(234.0, 804.0), "Checking position at the beginning of a line");
-		assertEquals(2, paint.quanitzedTabPos(688.0, 459.0), "Checking position in the middle of a line");
-		assertEquals(2.5, paint.quanitzedTabPos(794.0, 574.0), "Checking position in the middle of a measure");
+		assertEquals(0, paint.quantizedTabPos(234.0, 804.0), "Checking position at the beginning of a line");
+		assertEquals(2, paint.quantizedTabPos(688.0, 459.0), "Checking position in the middle of a line");
+		assertEquals(2.5, paint.quantizedTabPos(794.0, 574.0), "Checking position in the middle of a measure");
 		
-		assertEquals(-1, paint.quanitzedTabPos(44.0, 636.0), "Checking invalid position left of a line");
-		assertEquals(-1, paint.quanitzedTabPos(1436.0, 602.0), "Checking invalid position right of a line");
-		assertEquals(2.25, paint.quanitzedTabPos(730.0, 219.0), "Checking position above a line");
-		assertEquals(0.75, paint.quanitzedTabPos(391.0, 949.0), "Checking position below a line");
+		assertEquals(-1, paint.quantizedTabPos(44.0, 636.0), "Checking invalid position left of a line");
+		assertEquals(-1, paint.quantizedTabPos(1436.0, 602.0), "Checking invalid position right of a line");
+		assertEquals(2.25, paint.quantizedTabPos(730.0, 219.0), "Checking position above a line");
+		assertEquals(0.75, paint.quantizedTabPos(391.0, 949.0), "Checking position below a line");
 		
 		paint.setTab(null);
-		assertEquals(-1, paint.quanitzedTabPos(234.0, 804.0), "Checking invalid position with no tab");
+		assertEquals(-1, paint.quantizedTabPos(234.0, 804.0), "Checking invalid position with no tab");
 	}
 	
 	@Test

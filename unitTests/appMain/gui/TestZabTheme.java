@@ -56,7 +56,6 @@ public class TestZabTheme{
 		JPanel panel = new JPanel();
 		JMenu menu = new JMenu();
 		JMenuBar bar = new JMenuBar();
-		@SuppressWarnings("serial")
 		Component component = new Component(){};
 		ZabTheme.setToTheme(panel);
 		ZabTheme.setToTheme(menu);

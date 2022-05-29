@@ -75,7 +75,7 @@ public class SelectionCopyPaster extends SelectionPlacer{
 		if(paint.xToTabPos(mX, mY) < 0 || stringNum < 0 || base == null) return false;
 		
 		// Find the position where the note will be placed
-		double quantizedPos = paint.quanitzedTabPos(mX, mY);
+		double quantizedPos = paint.quantizedTabPos(mX, mY);
 		
 		TabControlSettings settings = ZabAppSettings.get().control();
 		boolean overwrite = settings.pasteOverwrite();

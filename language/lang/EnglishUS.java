@@ -68,6 +68,10 @@ public class EnglishUS implements AbstractLanguage{
 	@Override
 	public String escapeKey(){ return "ESC"; }
 	@Override
+	public String bracketLeft(){ return "LEFT BRACKET"; }
+	@Override
+	public String bracketRight(){ return "RIGHT BRACKET"; }
+	@Override
 	public String mouse(){ return "Mouse"; }
 	@Override
 	public String leftClick(){ return "Left click"; }
@@ -137,6 +141,10 @@ public class EnglishUS implements AbstractLanguage{
 	public String number(){ return "number"; }
 	@Override
 	public String typeTabNumber(){ return "Type a tab number on a selection"; }
+	@Override
+	public String subtractOctave(){ return "Lower a selection by an octave"; }
+	@Override
+	public String addOctave(){ return "Increase a selection by an octave"; }
 	@Override
 	public String modifiersDescription(){ return "Modifiers i.e. pull off, slide, etc."; }
 	@Override

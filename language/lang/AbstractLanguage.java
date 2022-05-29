@@ -81,6 +81,10 @@ public interface AbstractLanguage{
 	public String deleteKey();
 	/** Get the text for the escape key */
 	public String escapeKey();
+	/** Get the text for the left bracket key */
+	public String bracketLeft();
+	/** Get the text for the right bracket key */
+	public String bracketRight();
 	/** Get the text for the mouse */
 	public String mouse();
 	/** Get the text for the left button on a mouse */
@@ -151,6 +155,10 @@ public interface AbstractLanguage{
 	public String number();
 	/** Get the text for describing typing the number of a note on a tab */
 	public String typeTabNumber();
+	/** Get the text for describing subtracting an octave from the selected notes on a tab */
+	public String subtractOctave();
+	/** Get the text for describing adding an octave from the selected notes on a tab */
+	public String addOctave();
 	/** Get the text for describing what a tab modifier is */
 	public String modifiersDescription();
 	/** Get the text for describing pressing a key and that applies a modifier to a selection */
