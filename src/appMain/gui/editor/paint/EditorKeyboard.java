@@ -94,7 +94,7 @@ public class EditorKeyboard extends TabPaintController implements KeyListener{
 					break;
 				case KeyEvent.VK_OPEN_BRACKET:
 				case KeyEvent.VK_CLOSE_BRACKET:
-					this.keyOctave(e);
+					this.keyAddNotePitch(e);
 					break;
 			}
 			if(!e.isControlDown()) this.keyTypeTabPitch(e);
@@ -118,10 +118,10 @@ public class EditorKeyboard extends TabPaintController implements KeyListener{
 	 * 
 	 * @param e The event of the key, it is assumed the event is for the appropriate action
 	 */
-	public void keyOctave(KeyEvent e){
-		if(!e.isAltDown()) return;
+	public void keyAddNotePitch(KeyEvent e){
 		int c = (e.getKeyCode() == KeyEvent.VK_OPEN_BRACKET) ? -1 : 1;
-		this.getPainter().modifyOctave(c, true);
+		if(e.isShiftDown()) c *= 12;
+		this.getPainter().addPitchToSelection(c, true);
 	}
 	
 	/**

@@ -93,8 +93,10 @@ public class ControlsFrame extends ZabFrame{
 			lang.ctrlKey() + " " + lang.minus() + ": " + lang.zoomOut(),
 			lang.ctrlKey() + " " + lang.plus() + ":" + lang.zoomIn(),
 			lang.number() + " / " + lang.minus() + ": " + lang.typeTabNumber(),
-			lang.altKey() + " " + lang.bracketLeft() + ": " + lang.subtractOctave(),
-			lang.altKey() + " " + lang.bracketRight() + ": " + lang.addOctave()
+			lang.bracketLeft() + ": " + lang.subtractOctave(),
+			lang.bracketRight() + ": " + lang.addOctave(),
+			lang.shiftKey() + " " + lang.bracketLeft() + ": " + lang.subtractOctave(),
+			lang.shiftKey() + " " + lang.bracketRight() + ": " + lang.addOctave()
 		});
 		this.keyInfo.setTitle(lang.keyboard());
 		this.mainPanel.add(this.keyInfo);

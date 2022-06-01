@@ -25,6 +25,26 @@ public class EditMenu extends ZabMenu{
 	/** The {@link RedoListener} used by {@link #redoItem} to perform a redo action */
 	private RedoListener redoListener;
 	
+	/** The {@link ZabMenuItem} used for the subtract fret function */
+	private ZabMenuItem subtractFretItem;
+	/** The {@link RedoListener} used by {@link #redoItem} to perform the subtract fret action */
+	private FretModifyListener subtractFretListener;
+	
+	/** The {@link ZabMenuItem} used for the add fret function */
+	private ZabMenuItem addFretItem;
+	/** The {@link RedoListener} used by {@link #redoItem} to perform the subtract fret action */
+	private FretModifyListener addFretListener;
+	
+	/** The {@link ZabMenuItem} used for the subtract octave function */
+	private ZabMenuItem subtractOctaveItem;
+	/** The {@link RedoListener} used by {@link #redoItem} to perform the subtract octave action */
+	private FretModifyListener subtractOctaveListener;
+	
+	/** The {@link ZabMenuItem} used for the add octave function */
+	private ZabMenuItem addOctaveItem;
+	/** The {@link RedoListener} used by {@link #redoItem} to perform the add octave action */
+	private FretModifyListener addOctaveListener;
+	
 	/**
 	 * Create a new default {@link EditMenu}
 	 * @param gui See {@link ZabMenu#gui}
@@ -45,6 +65,27 @@ public class EditMenu extends ZabMenu{
 		this.redoListener = new RedoListener();
 		this.redoItem.addActionListener(this.redoListener);
 		this.add(this.redoItem);
+
+		// Fret modify
+		this.subtractFretItem = new ZabMenuItem(lang.subtractFretShort());
+		this.addFretItem = new ZabMenuItem(lang.addFretShort());
+		this.subtractOctaveItem = new ZabMenuItem(lang.subtractOctaveShort());
+		this.addOctaveItem = new ZabMenuItem(lang.addOctaveShort());
+
+		this.subtractFretListener = new FretModifyListener(-1, false);
+		this.addFretListener = new FretModifyListener(1, false);
+		this.subtractOctaveListener = new FretModifyListener(-1, true);
+		this.addOctaveListener = new FretModifyListener(1, true);
+
+		this.subtractFretItem.addActionListener(this.subtractFretListener);
+		this.addFretItem.addActionListener(this.addFretListener);
+		this.subtractOctaveItem.addActionListener(this.subtractOctaveListener);
+		this.addOctaveItem.addActionListener(this.addOctaveListener);
+
+		this.add(subtractFretItem);
+		this.add(addFretItem);
+		this.add(subtractOctaveItem);
+		this.add(addOctaveItem);
 	}
 	
 	/** @return See {@link #undoItem} */
@@ -93,6 +134,30 @@ public class EditMenu extends ZabMenu{
 			TabPainter paint = getPainter();
 			paint.redo();
 			paint.repaint();
+		}
+	}
+	
+	/**
+	 * An {@link ActionListener} which adds or subtracts a certain number of frets from the selection of the {@link TabPainter} of the {@link ZabGui}
+	 * 
+	 * @author zrona
+	 */
+	public class FretModifyListener implements ActionListener{
+		/** The amount to add or subtract, negative numbers to subtract */
+		private int amount;
+		/** true if {@link #amount} refers to a number of octaves, false for a number of frets */
+		private boolean octave;
+
+		public FretModifyListener(int amount, boolean octave){
+			this.amount = amount;
+			this.octave = octave;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e){
+			TabPainter paint = getPainter();
+			if(this.octave) paint.modifyOctave(this.amount, true);
+			else paint.addPitchToSelection(this.amount, true);
 		}
 	}
 	

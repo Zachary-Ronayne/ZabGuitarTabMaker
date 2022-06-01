@@ -142,9 +142,21 @@ public class EnglishUS implements AbstractLanguage{
 	@Override
 	public String typeTabNumber(){ return "Type a tab number on a selection"; }
 	@Override
+	public String subtractFret(){ return "Lower a selection by one fret"; }
+	@Override
+	public String addFret(){ return "Increase a selection by one fret"; }
+	@Override
 	public String subtractOctave(){ return "Lower a selection by an octave"; }
 	@Override
 	public String addOctave(){ return "Increase a selection by an octave"; }
+	@Override
+	public String subtractFretShort(){ return "-Fret"; }
+	@Override
+	public String addFretShort(){ return "+Fret"; }
+	@Override
+	public String subtractOctaveShort(){ return "-Octave"; }
+	@Override
+	public String addOctaveShort(){ return "+Octave"; }
 	@Override
 	public String modifiersDescription(){ return "Modifiers i.e. pull off, slide, etc."; }
 	@Override

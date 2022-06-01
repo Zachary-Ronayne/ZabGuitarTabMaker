@@ -155,10 +155,22 @@ public interface AbstractLanguage{
 	public String number();
 	/** Get the text for describing typing the number of a note on a tab */
 	public String typeTabNumber();
+	/** Get the text for describing subtracting the value of the fret numbers by one for the selected notes on a tab */
+	public String subtractFret();
+	/** Get the text for describing increasing the value of the fret numbers by one for the selected notes on a tab */
+	public String addFret();
 	/** Get the text for describing subtracting an octave from the selected notes on a tab */
 	public String subtractOctave();
 	/** Get the text for describing adding an octave from the selected notes on a tab */
 	public String addOctave();
+	/** A version of {@link #subtractFret()} with fewer characters for a menu */
+	public String subtractFretShort();
+	/** A version of {@link #addFret()} with fewer characters for a menu */
+	public String addFretShort();
+	/** A version of {@link #subtractOctave()} with fewer characters for a menu */
+	public String subtractOctaveShort();
+	/** A version of {@link #addOctave()} with fewer characters for a menu */
+	public String addOctaveShort();
 	/** Get the text for describing what a tab modifier is */
 	public String modifiersDescription();
 	/** Get the text for describing pressing a key and that applies a modifier to a selection */

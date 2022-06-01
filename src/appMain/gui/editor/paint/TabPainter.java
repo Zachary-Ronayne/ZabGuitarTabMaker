@@ -943,7 +943,7 @@ public class TabPainter extends ZabPanel{
 	public Integer appendSelectedTabNum(char num){
 		return this.appendSelectedTabNum(num, false);
 	}
-	
+
 	/**
 	 * Modify the octave of the current selection by the given amount
 	 * 
@@ -951,6 +951,16 @@ public class TabPainter extends ZabPanel{
 	 * @param recordUndo true to record this action in {@link #undoStack}, false otherwise
 	 */
 	public void modifyOctave(int octaves, boolean recordUndo){
+		this.addPitchToSelection(octaves * 12, recordUndo);
+	}
+	
+	/**
+	 * Modify the pitch of the current selection by the given number of frets
+	 * 
+	 * @param octaves The number of frets to add or subtract
+	 * @param recordUndo true to record this action in {@link #undoStack}, false otherwise
+	 */
+	public void addPitchToSelection(int frets, boolean recordUndo){
 		// If recording undo, keep track of the list of notes that will be changed
 		SelectionList oldSel = new SelectionList();
 		if(recordUndo) oldSel.addAll(this.getSelected());
@@ -968,8 +978,8 @@ public class TabPainter extends ZabPanel{
 			
 			TabString s = sel.getString();
 			
-			// Set the note on the string to the modified octave and update the selection
-			p = p.copySymbol(p.getSymbol().createPitchNote(s.createPitch(s.getTabNumber(pitch) + octaves * 12)));
+			// Set the note on the string to the modified note and update the selection
+			p = p.copySymbol(p.getSymbol().createPitchNote(s.createPitch(s.getTabNumber(pitch) + frets)));
 			sel.getString().setSymbol(sel.getString().findIndex(p.getPos()), p.getSymbol());
 			list.set(i, new Selection(p, s, sel.getStringIndex()));
 		}
